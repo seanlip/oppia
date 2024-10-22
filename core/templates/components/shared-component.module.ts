@@ -204,6 +204,7 @@ import {RteHelperModalComponent} from 'services/rte-helper-modal.controller';
 import {DirectivesModule} from 'directives/directives.module';
 import {PreviewSummaryTileModalComponent} from 'pages/exploration-editor-page/settings-tab/templates/preview-summary-tile-modal.component';
 import {LostChangesModalComponent} from 'pages/exploration-editor-page/modal-templates/lost-changes-modal.component';
+import {ChangesInHumanReadableFormComponent} from 'pages/exploration-editor-page/changes-in-human-readable-form/changes-in-human-readable-form.component';
 @NgModule({
   imports: [
     BackgroundBannerModule,
@@ -393,6 +394,7 @@ import {LostChangesModalComponent} from 'pages/exploration-editor-page/modal-tem
     ExplorationObjectiveEditorComponent,
     PreviewSummaryTileModalComponent,
     LostChangesModalComponent,
+    ChangesInHumanReadableFormComponent,
   ],
 
   entryComponents: [
@@ -541,6 +543,7 @@ import {LostChangesModalComponent} from 'pages/exploration-editor-page/modal-tem
     ExplorationObjectiveEditorComponent,
     PreviewSummaryTileModalComponent,
     LostChangesModalComponent,
+    ChangesInHumanReadableFormComponent,
   ],
 
   exports: [

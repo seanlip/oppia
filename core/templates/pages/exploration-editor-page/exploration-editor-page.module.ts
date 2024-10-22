@@ -28,7 +28,6 @@ import {DeleteStateSkillModalComponent} from './editor-tab/templates/modal-templ
 import {InteractionExtensionsModule} from 'interactions/interactions.module';
 import {SaveVersionMismatchModalComponent} from './modal-templates/save-version-mismatch-modal.component';
 import {SaveValidationFailModalComponent} from './modal-templates/save-validation-fail-modal.component';
-import {ChangesInHumanReadableFormComponent} from './changes-in-human-readable-form/changes-in-human-readable-form.component';
 import {WelcomeModalComponent} from './modal-templates/welcome-modal.component';
 import {StateDiffModalComponent} from './modal-templates/state-diff-modal.component';
 import {CreateFeedbackThreadModalComponent} from './feedback-tab/templates/create-feedback-thread-modal.component';
@@ -119,7 +118,6 @@ import {ExplorationEditorPageAuthGuard} from './exploration-editor-page-auth.gua
     StateParamChangesEditorComponent,
     SaveVersionMismatchModalComponent,
     SaveValidationFailModalComponent,
-    ChangesInHumanReadableFormComponent,
     VoiceoverRemovalConfirmModalComponent,
     WelcomeModalComponent,
     StateDiffModalComponent,
@@ -179,7 +177,6 @@ import {ExplorationEditorPageAuthGuard} from './exploration-editor-page-auth.gua
     StateParamChangesEditorComponent,
     SaveVersionMismatchModalComponent,
     SaveValidationFailModalComponent,
-    ChangesInHumanReadableFormComponent,
     VoiceoverRemovalConfirmModalComponent,
     WelcomeModalComponent,
     StateDiffModalComponent,
