@@ -344,11 +344,16 @@ class DeleteTranslationsForInvalidContentIDsJob(base_jobs.JobBase):
             (tuple(str, EntityTranslationsModel)). A tuple of entity id
             and latest entity translation model corresponding to it.
         """
+        version_list = list(
+            model.entity_version for model in entity_translation_models)
+        latest_version = max(version_list)
         latest_model = entity_translation_models[0]
         for model in entity_translation_models:
-            if model.entity_version > latest_model.entity_version:
+            if model.entity_version == latest_version:
                 latest_model = model
-        return entity_id, latest_model
+                break
+
+        return (entity_id, latest_model)
 
     def run(self) -> beam.PCollection[job_run_result.JobRunResult]:
         """Returns a PCollection of entity translation model update results.
