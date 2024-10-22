@@ -691,6 +691,7 @@ import {LostChangesModalComponent} from 'pages/exploration-editor-page/modal-tem
     FullExpandAccordionComponent,
     ExplorationTitleEditorComponent,
     ExplorationObjectiveEditorComponent,
+    LostChangesModalComponent,
   ],
 })
 export class SharedComponentsModule {}
