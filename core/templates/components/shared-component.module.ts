@@ -203,6 +203,7 @@ import {DonationBoxModalComponent} from 'pages/donate-page/donation-box/donation
 import {RteHelperModalComponent} from 'services/rte-helper-modal.controller';
 import {DirectivesModule} from 'directives/directives.module';
 import {PreviewSummaryTileModalComponent} from 'pages/exploration-editor-page/settings-tab/templates/preview-summary-tile-modal.component';
+import {LostChangesModalComponent} from 'pages/exploration-editor-page/modal-templates/lost-changes-modal.component';
 @NgModule({
   imports: [
     BackgroundBannerModule,
@@ -391,6 +392,7 @@ import {PreviewSummaryTileModalComponent} from 'pages/exploration-editor-page/se
     ExplorationTitleEditorComponent,
     ExplorationObjectiveEditorComponent,
     PreviewSummaryTileModalComponent,
+    LostChangesModalComponent,
   ],
 
   entryComponents: [
@@ -538,6 +540,7 @@ import {PreviewSummaryTileModalComponent} from 'pages/exploration-editor-page/se
     ExplorationTitleEditorComponent,
     ExplorationObjectiveEditorComponent,
     PreviewSummaryTileModalComponent,
+    LostChangesModalComponent,
   ],
 
   exports: [
