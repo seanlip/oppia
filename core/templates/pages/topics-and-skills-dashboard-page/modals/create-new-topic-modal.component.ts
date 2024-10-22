@@ -80,6 +80,9 @@ export class CreateNewTopicModalComponent extends ConfirmOrCancelModal {
     if (!this.newlyCreatedTopic.urlFragment) {
       return;
     }
+    this.newlyCreatedTopic.urlFragment = this.newlyCreatedTopic.urlFragment
+      .trim()
+      .replace(/\s+/g, '-');
 
     this.topicEditorStateService.updateExistenceOfTopicUrlFragment(
       this.newlyCreatedTopic.urlFragment,
