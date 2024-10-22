@@ -1,5 +1,5 @@
 <oppia-loading-message [message]="loadingMessage"></oppia-loading-message>
-<div *ngFor="let featureFlag of featureFlags; index as index">
+<div *ngFor="let featureFlag of featureFlagViewModels; index as index">
   <div *ngIf="getFeatureValidOnCurrentServer(featureFlag)" class="container oppia-page-card oppia-long-text oppia-features e2e-test-feature-flag e2e-test-feature-flag-{{index}}">
     <h2 class="oppia-feature-name e2e-test-feature-name">{{featureFlag.name}}</h2>
     <div class="row oppia-feature-top-margin">
@@ -52,6 +52,36 @@
       <div class="col-2 oppia-feature-column-mobile"><b>Last Updated:</b></div>
       <div class="col-10">{{ getLastUpdatedDate(featureFlag) }}</div>
     </div>
+    <div class="row oppia-feature-top-margin">
+      <div class="col-2 oppia-feature-column-mobile"><b>User Groups:</b></div>
+      <div class="col-10">
+        <mat-chip-list #chipList aria-label="Associated User Groups" tabindex="0">
+          <mat-chip *ngFor="let userGroupId of featureFlag.userGroupIds"
+                    [selectable]="true"
+                    [removable]="true"
+                    (removed)="removeUserGroupFromFeatureFlag(userGroupId, featureFlag)">
+            {{ getUserGroupName(userGroupId) }}
+            <button class="oppia-cancel-button" role="button" tabindex="0" matChipRemove aria-label=". Remove" *ngIf="removable">
+              <mat-icon class="oppia-cancel-button-text">cancel</mat-icon>
+            </button>
+          </mat-chip>
+          <input placeholder="Add User Group"
+                 #userGroupInput
+                 name="userGroupInput-{{featureFlag.name}}"
+                 [attr.data-feature-flag-id]="featureFlag.name"
+                 [matAutocomplete]="auto"
+                 [matChipInputFor]="chipList"
+                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                 (matChipInputTokenEnd)="addUserGroupToFeatureFlag($event, featureFlag)"
+                 [(ngModel)]="featureFlag.searchQuery" (ngModelChange)="filterUserGroups(featureFlag)" (click)="resetUserGroupSearch(featureFlag)">
+        </mat-chip-list>
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectUserGroup($event, featureFlag)">
+          <mat-option *ngFor="let userGroup of featureFlag.filteredUserGroups" [value]="userGroup.name">
+            {{ userGroup.name }}
+          </mat-option>
+        </mat-autocomplete>
+      </div>
+    </div>
     <div class="row oppia-control-buttons-container oppia-feature-top-margin">
       <!-- Control Buttons -->
       <button
@@ -70,7 +100,7 @@
   </div>
 </div>
 
-<div *ngFor="let featureFlag of featureFlags;">
+<div *ngFor="let featureFlag of featureFlagViewModels;">
   <div *ngIf="!getFeatureValidOnCurrentServer(featureFlag)" class="container oppia-page-card oppia-long-text oppia-features">
     <div class="oppia-feature-configuration-warning">
       <i class="material-icons oppia-feature-configuration-warning-icon">&#xe002;</i>
@@ -84,7 +114,7 @@
   </div>
 </div>
 
-<div *ngIf="featureFlags.length === 0 && featureFlagsAreFetched" class="oppia-page-card oppia-long-text oppia-features oppia-empty-indicator e2e-test-no-feature">
+<div *ngIf="featureFlagViewModels.length === 0 && featureFlagsAreFetched" class="oppia-page-card oppia-long-text oppia-features oppia-empty-indicator e2e-test-no-feature">
   No feature flags are available.
 </div>
 
