@@ -424,6 +424,10 @@ export class ExplorationFooterComponent {
       !this.footerIsInQuestionPlayerMode &&
       !this.hasLearnerHasViewedLessonInfoTooltip() &&
       this.getMostRecentlyReachedCheckpointIndex() === 2;
+
+    if (lessonInfoTooltipShouldBeShown) {
+      this.lessonInfoButton.nativeElement.focus();
+    }
     return lessonInfoTooltipShouldBeShown;
   }
 
