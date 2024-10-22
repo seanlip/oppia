@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Unit tests for CardDisplayComponent
+ * @fileoverview Unit tests for AddGoalsModal
  */
 
 import {HttpClientTestingModule} from '@angular/common/http/testing';
