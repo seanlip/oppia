@@ -35,7 +35,6 @@ export class CardDisplayComponent implements AfterContentInit {
   @Input() numCards!: number;
   @Input() controlType: string = 'arrows';
   @Input() displayMaxWidth: string = '100%';
-  @Input() tabType!: string;
   @Input() cardWidth: number = 232;
 
   @ViewChild('cards', {static: false}) cards!: ElementRef;
