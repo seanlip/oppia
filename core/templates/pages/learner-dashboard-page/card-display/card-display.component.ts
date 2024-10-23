@@ -113,7 +113,7 @@ export class CardDisplayComponent implements AfterContentInit {
   }
 
   getVisibility(): string {
-    if (!this.tabType.includes('progress')) {
+    if (this.controlType === 'arrows') {
       return '';
     }
     return this.currentToggleState
@@ -122,7 +122,7 @@ export class CardDisplayComponent implements AfterContentInit {
   }
 
   isToggleButtonVisible(): boolean {
-    if (this.tabType.includes('home')) {
+    if (this.controlType === 'arrows') {
       return false;
     }
 

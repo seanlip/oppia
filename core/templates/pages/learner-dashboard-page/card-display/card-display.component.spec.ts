@@ -61,7 +61,7 @@ describe('CardDisplayComponent', () => {
     TestBed.inject(TranslateService);
 
     component.numCards = 5;
-    component.tabType = 'progress';
+    component.controlType = 'view';
     component.headingI18n = 'I18N_LEARNER_DASHBOARD_HOME_SAVED_SECTION';
     component.isLanguageRTL = false;
     component.toggleButtonVisibility = false;
@@ -312,17 +312,17 @@ describe('CardDisplayComponent', () => {
     });
   });
 
-  it('should return empty string for getVisibility if tabType is not progress', () => {
-    component.tabType = 'home';
+  it('should return empty string for getVisibility if controlType is arrows', () => {
+    component.controlType = 'arrows';
     fixture.detectChanges();
     expect(component.getVisibility()).toEqual('');
   });
 
-  it('should return hidden class for getVisibility if tabType is progress', () => {
+  it('should return hidden class for getVisibility if controlType is view', () => {
     expect(component.getVisibility()).toEqual('card-display-content-hidden');
   });
 
-  it('should return shown class for getVisibility after toggling if tabType is progress', () => {
+  it('should return shown class for getVisibility after toggling if controlType is view', () => {
     expect(component.currentToggleState).toBeFalse();
 
     fixture.whenRenderingDone().then(() => {
@@ -340,13 +340,13 @@ describe('CardDisplayComponent', () => {
     });
   });
 
-  it('should return false for isToggleButtonVisible if tabType is not progress', () => {
-    component.tabType = 'home';
+  it('should return false for isToggleButtonVisible if controlType is arrows', () => {
+    component.controlType = 'arrows';
     fixture.detectChanges();
     expect(component.isToggleButtonVisible()).toBeFalse();
   });
 
-  it('should return false for isToggleButtonVisible if tabType is progress and all the cards fit', () => {
+  it('should return false for isToggleButtonVisible if controlType is view and all the cards fit', () => {
     offsetWidthGetterSpy.and.returnValue(600);
     component.numCards = 2;
     fixture.detectChanges();
@@ -354,7 +354,7 @@ describe('CardDisplayComponent', () => {
     expect(component.isToggleButtonVisible()).toBeFalse();
   });
 
-  it('should return true for isToggleButtonVisible if tabType is progress and all the cards do not fit', () => {
+  it('should return true for isToggleButtonVisible if controlType is view and all the cards do not fit', () => {
     expect(component.isToggleButtonVisible()).toBeTrue();
   });
 
