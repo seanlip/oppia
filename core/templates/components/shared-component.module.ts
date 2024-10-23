@@ -205,6 +205,7 @@ import {DirectivesModule} from 'directives/directives.module';
 import {PreviewSummaryTileModalComponent} from 'pages/exploration-editor-page/settings-tab/templates/preview-summary-tile-modal.component';
 import {LostChangesModalComponent} from 'pages/exploration-editor-page/modal-templates/lost-changes-modal.component';
 import {ChangesInHumanReadableFormComponent} from 'pages/exploration-editor-page/changes-in-human-readable-form/changes-in-human-readable-form.component';
+import {SaveVersionMismatchModalComponent} from 'pages/exploration-editor-page/modal-templates/save-version-mismatch-modal.component';
 @NgModule({
   imports: [
     BackgroundBannerModule,
@@ -395,6 +396,7 @@ import {ChangesInHumanReadableFormComponent} from 'pages/exploration-editor-page
     PreviewSummaryTileModalComponent,
     LostChangesModalComponent,
     ChangesInHumanReadableFormComponent,
+    SaveVersionMismatchModalComponent,
   ],
 
   entryComponents: [
@@ -544,6 +546,7 @@ import {ChangesInHumanReadableFormComponent} from 'pages/exploration-editor-page
     PreviewSummaryTileModalComponent,
     LostChangesModalComponent,
     ChangesInHumanReadableFormComponent,
+    SaveVersionMismatchModalComponent,
   ],
 
   exports: [
@@ -694,7 +697,6 @@ import {ChangesInHumanReadableFormComponent} from 'pages/exploration-editor-page
     FullExpandAccordionComponent,
     ExplorationTitleEditorComponent,
     ExplorationObjectiveEditorComponent,
-    LostChangesModalComponent,
   ],
 })
 export class SharedComponentsModule {}
