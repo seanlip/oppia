@@ -206,6 +206,7 @@ import {PreviewSummaryTileModalComponent} from 'pages/exploration-editor-page/se
 import {LostChangesModalComponent} from 'pages/exploration-editor-page/modal-templates/lost-changes-modal.component';
 import {ChangesInHumanReadableFormComponent} from 'pages/exploration-editor-page/changes-in-human-readable-form/changes-in-human-readable-form.component';
 import {SaveVersionMismatchModalComponent} from 'pages/exploration-editor-page/modal-templates/save-version-mismatch-modal.component';
+import {ConfirmDeleteStateModalComponent} from 'pages/exploration-editor-page/editor-tab/templates/modal-templates/confirm-delete-state-modal.component';
 @NgModule({
   imports: [
     BackgroundBannerModule,
@@ -397,6 +398,7 @@ import {SaveVersionMismatchModalComponent} from 'pages/exploration-editor-page/m
     LostChangesModalComponent,
     ChangesInHumanReadableFormComponent,
     SaveVersionMismatchModalComponent,
+    ConfirmDeleteStateModalComponent,
   ],
 
   entryComponents: [
@@ -547,6 +549,7 @@ import {SaveVersionMismatchModalComponent} from 'pages/exploration-editor-page/m
     LostChangesModalComponent,
     ChangesInHumanReadableFormComponent,
     SaveVersionMismatchModalComponent,
+    ConfirmDeleteStateModalComponent,
   ],
 
   exports: [
