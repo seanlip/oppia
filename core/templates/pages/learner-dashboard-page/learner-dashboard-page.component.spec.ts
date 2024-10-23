@@ -1107,6 +1107,35 @@ describe('Learner dashboard page', () => {
       })
     );
 
+    it('should return home greeting when current tab is set to home', () => {
+      component.activeSection = 'I18N_LEARNER_DASHBOARD_HOME_SECTION';
+      fixture.detectChanges();
+
+      expect(component.getDashboardTabHeading()).toBe(
+        'I18N_LEARNER_DASHBOARD_HOME_SECTION_HEADING'
+      );
+    });
+
+    it('should return goal greeting when current tab is set to goals', () => {
+      component.activeSection = 'I18N_LEARNER_DASHBOARD_GOALS_SECTION';
+      fixture.detectChanges();
+
+      expect(component.getDashboardTabHeading()).toBe(
+        'I18N_LEARNER_DASHBOARD_GOALS_SECTION_HEADING'
+      );
+    });
+
+    // TODO(#18384): Change community-lessons to progress.
+    it('should return progress greeting when current tab is set to progress', () => {
+      component.activeSection =
+        'I18N_LEARNER_DASHBOARD_COMMUNITY_LESSONS_SECTION';
+      fixture.detectChanges();
+
+      expect(component.getDashboardTabHeading()).toBe(
+        'I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_HEADING'
+      );
+    });
+
     it('should unsubscribe upon component destruction', () => {
       spyOn(component.directiveSubscriptions, 'unsubscribe');
 
