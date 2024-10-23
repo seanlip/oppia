@@ -126,8 +126,8 @@
         <oppia-classroom-button [classroom]="item.key" [variant]="'blue'"></oppia-classroom-button>
       </ng-container>
        <!--TODO(#18384): Replace with saved lessons data (placeholder with explorations); affects numCards and ng-content-->
-      <oppia-card-display [headingI18n]="'I18N_LEARNER_DASHBOARD_HOME_SAVED_SECTION'" [numCards]="incompleteExplorationsList.length">
-        <ng-container *ngFor="let lesson of incompleteExplorationsList">
+      <oppia-card-display [headingI18n]="'I18N_LEARNER_DASHBOARD_HOME_SAVED_SECTION'" [numCards]="totalLessonsInPlaylists.length">
+        <ng-container *ngFor="let lesson of totalLessonsInPlaylists">
           <lesson-card [story]="lesson"></lesson-card>
         </ng-container>
       </oppia-card-display>

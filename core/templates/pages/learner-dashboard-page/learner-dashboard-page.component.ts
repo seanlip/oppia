@@ -172,6 +172,8 @@ export class LearnerDashboardPageComponent implements OnInit, OnDestroy {
   windowIsNarrow: boolean = false;
   directiveSubscriptions = new Subscription();
   LEARNER_GROUP_FEATURE_IS_ENABLED: boolean = false;
+  totalLessonsInPlaylists: (LearnerExplorationSummary | CollectionSummary)[] =
+    [];
 
   constructor(
     private alertsService: AlertsService,
@@ -552,6 +554,10 @@ export class LearnerDashboardPageComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.loaderService.hideLoadingScreen();
           this.communityLessonsDataLoaded = true;
+          this.totalLessonsInPlaylists = [
+            ...this.explorationPlaylist,
+            ...this.collectionPlaylist,
+          ];
           // So that focus is applied after the loading screen has dissapeared.
           this.focusManagerService.setFocusWithoutScroll('ourLessonsBtn');
         }, 0);
