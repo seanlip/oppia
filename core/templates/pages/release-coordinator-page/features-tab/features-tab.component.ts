@@ -56,7 +56,7 @@ interface FeatureFlagViewModel extends FeatureFlag {
   templateUrl: './features-tab.component.html',
 })
 export class FeaturesTabComponent implements OnInit {
-  @ViewChildren('userGroupInput') userGroupInputs: QueryList<
+  @ViewChildren('userGroupInput') userGroupInputs!: QueryList<
     ElementRef<HTMLInputElement>
   >;
   @Output() setStatusMessage = new EventEmitter<string>();
@@ -128,6 +128,11 @@ export class FeaturesTabComponent implements OnInit {
     }
 
     const selectedUserGroup = this.allUserGroups.find(ug => ug.name === value);
+
+    if (!selectedUserGroup) {
+      this.setStatusMessage.emit(`User group with name "${value}" not found.`);
+      return;
+    }
     if (
       selectedUserGroup &&
       this.validUserGroupInput(selectedUserGroup.userGroupId, featureFlagVM)
@@ -155,6 +160,12 @@ export class FeaturesTabComponent implements OnInit {
     const selectedUserGroup = this.allUserGroups.find(
       ug => ug.name === selectedUserGroupName
     );
+    if (!selectedUserGroup) {
+      this.setStatusMessage.emit(
+        `User group with name "${selectedUserGroupName}" not found.`
+      );
+      return;
+    }
     if (
       featureFlagVM.userGroupIds.indexOf(selectedUserGroup.userGroupId) > -1
     ) {

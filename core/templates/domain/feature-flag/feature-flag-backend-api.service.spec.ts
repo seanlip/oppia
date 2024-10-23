@@ -44,6 +44,7 @@ describe('FeatureFlagBackendApiService', () => {
       },
     ],
     server_stage: 'dev',
+    user_group_dicts: [],
   };
 
   beforeEach(() => {
@@ -68,6 +69,7 @@ describe('FeatureFlagBackendApiService', () => {
         FeatureFlag.createFromBackendDict(dict)
       ),
       serverStage: featureFlagsResponse.server_stage,
+      userGroups: [],
     };
     featureFlagBackendApiService
       .getFeatureFlags()

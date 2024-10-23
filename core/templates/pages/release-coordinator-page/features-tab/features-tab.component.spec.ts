@@ -244,17 +244,9 @@ describe('Release coordinator page feature tab', function () {
       component.ngOnInit();
       tick();
       component.userGroupInputs = new QueryList<ElementRef>();
-      component.userGroupInputs.reset([
-        {
-          nativeElement: {value: 'group1', getAttribute: () => 'UserGroup1'},
-        } as ElementRef,
-        {
-          nativeElement: {value: 'group2', getAttribute: () => 'UserGroup2'},
-        } as ElementRef,
-      ]);
+      component.userGroupInputs.reset([]);
 
       let featureFlagVM = component.featureFlagViewModels[0];
-      spyOn(component, 'resetUserGroupSearch').and.callThrough();
 
       component.addUserGroupToFeatureFlag(
         {value: 'Nonexistent Group'},
@@ -262,9 +254,6 @@ describe('Release coordinator page feature tab', function () {
       );
 
       expect(featureFlagVM.userGroupIds.length).toBe(0);
-      expect(component.resetUserGroupSearch).toHaveBeenCalledWith(
-        featureFlagVM
-      );
     }));
 
     it('should not add user group if validUserGroupInput returns false', fakeAsync(() => {
