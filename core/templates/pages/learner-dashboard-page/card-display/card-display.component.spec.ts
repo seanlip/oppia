@@ -61,7 +61,7 @@ describe('CardDisplayComponent', () => {
     TestBed.inject(TranslateService);
 
     component.numCards = 5;
-    component.controlType = 'view';
+    component.controlType = 'toggle';
     component.headingI18n = 'I18N_LEARNER_DASHBOARD_HOME_SAVED_SECTION';
     component.isLanguageRTL = false;
     component.toggleButtonVisibility = false;
@@ -318,11 +318,11 @@ describe('CardDisplayComponent', () => {
     expect(component.getVisibility()).toEqual('');
   });
 
-  it('should return hidden class for getVisibility if controlType is view', () => {
+  it('should return hidden class for getVisibility if controlType is toggle', () => {
     expect(component.getVisibility()).toEqual('card-display-content-hidden');
   });
 
-  it('should return shown class for getVisibility after toggling if controlType is view', () => {
+  it('should return shown class for getVisibility after toggling if controlType is toggle', () => {
     expect(component.currentToggleState).toBeFalse();
 
     fixture.whenRenderingDone().then(() => {
@@ -346,7 +346,7 @@ describe('CardDisplayComponent', () => {
     expect(component.isToggleButtonVisible()).toBeFalse();
   });
 
-  it('should return false for isToggleButtonVisible if controlType is view and all the cards fit', () => {
+  it('should return false for isToggleButtonVisible if controlType is toggle and all the cards fit', () => {
     offsetWidthGetterSpy.and.returnValue(600);
     component.numCards = 2;
     fixture.detectChanges();
@@ -354,7 +354,7 @@ describe('CardDisplayComponent', () => {
     expect(component.isToggleButtonVisible()).toBeFalse();
   });
 
-  it('should return true for isToggleButtonVisible if controlType is view and all the cards do not fit', () => {
+  it('should return true for isToggleButtonVisible if controlType is toggle and all the cards do not fit', () => {
     expect(component.isToggleButtonVisible()).toBeTrue();
   });
 
