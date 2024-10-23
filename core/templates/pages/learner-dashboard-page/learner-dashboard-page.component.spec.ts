@@ -1136,6 +1136,16 @@ describe('Learner dashboard page', () => {
       );
     });
 
+    // TODO(#18384): Change community-lessons to progress.
+    it('should return default greeting when current tab is not valid', () => {
+      component.activeSection = 'I18N_LEARNER_DASHBOARD_PLAYLIST_SECTION';
+      fixture.detectChanges();
+
+      expect(component.getDashboardTabHeading()).toBe(
+        'No valid I18N key for heading of I18N_LEARNER_DASHBOARD_PLAYLIST_SECTION'
+      );
+    });
+
     it('should unsubscribe upon component destruction', () => {
       spyOn(component.directiveSubscriptions, 'unsubscribe');
 
