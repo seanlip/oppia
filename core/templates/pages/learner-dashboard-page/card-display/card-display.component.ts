@@ -33,6 +33,8 @@ import {I18nLanguageCodeService} from 'services/i18n-language-code.service';
 export class CardDisplayComponent implements AfterContentInit {
   @Input() headingI18n!: string;
   @Input() numCards!: number;
+  @Input() controlType: string = 'arrows';
+  @Input() displayMaxWidth: string = '100%';
   @Input() tabType!: string;
   @Input() cardWidth: number = 232;
 
