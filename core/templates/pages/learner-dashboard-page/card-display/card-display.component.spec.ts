@@ -392,7 +392,7 @@ describe('CardDisplayComponent', () => {
   it('should return false for isArrowButtonVisible if controlType is arrow', () => {
     component.controlType = 'arrow';
     fixture.detectChanges();
-    //expect(component.isArrowButtonVisible()).toBeTrue();
+    expect(component.isArrowButtonVisible()).toBeTrue();
   });
 
   it('should return false for isArrowButtonVisible if controlType is arrow and all the cards fit', () => {
@@ -401,12 +401,12 @@ describe('CardDisplayComponent', () => {
     component.numCards = 2;
     fixture.detectChanges();
 
-    //expect(component.isArrowButtonVisible()).toBeFalse();
+    expect(component.isArrowButtonVisible()).toBeFalse();
   });
 
   it('should return true for isArrowButtonVisible if controlType is arrow and all the cards do not fit', () => {
     component.controlType = 'arrow';
-    //expect(component.isArrowButtonVisible()).toBeTrue();
+    expect(component.isArrowButtonVisible()).toBeTrue();
   });
 
   it('should resize and be able to fit number of cards, hiding arrow buttons', () => {
@@ -414,31 +414,31 @@ describe('CardDisplayComponent', () => {
     component.numCards = 3;
     offsetWidthGetterSpy.and.returnValue(1000);
 
-    //spyOn(component, 'isArrowButtonVisible').and.callThrough();
+    spyOn(component, 'isArrowButtonVisible').and.callThrough();
     spyOn(component, 'onResize').and.callThrough();
     window.dispatchEvent(new Event('resize'));
     fixture.detectChanges();
 
     expect(component.onResize).toHaveBeenCalled();
-    //expect(component.isArrowButtonVisible).toHaveBeenCalled();
-    //expect(component.arrowButtonVisibility).toBeFalse();
+    expect(component.isArrowButtonVisible).toHaveBeenCalled();
+    expect(component.arrowButtonVisibility).toBeFalse();
   });
 
   it('should resize to smaller screen and be no longer able to fit cards, showing arrow buttons', () => {
     component.controlType = 'arrow';
     component.numCards = 3;
-    //component.arrowButtonVisibility = false;
+    component.arrowButtonVisibility = false;
     offsetWidthGetterSpy.and.returnValue(1000);
     fixture.detectChanges();
 
     offsetWidthGetterSpy.and.returnValue(500);
-    //spyOn(component, 'isArrowButtonVisible').and.callThrough();
+    spyOn(component, 'isArrowButtonVisible').and.callThrough();
     spyOn(component, 'onResize').and.callThrough();
     window.dispatchEvent(new Event('resize'));
     fixture.detectChanges();
 
     expect(component.onResize).toHaveBeenCalled();
-    //expect(component.isArrowButtonVisible).toHaveBeenCalled();
-    //expect(component.arrowButtonVisibility).toBeTrue();
+    expect(component.isArrowButtonVisible).toHaveBeenCalled();
+    expect(component.arrowButtonVisibility).toBeTrue();
   });
 });
