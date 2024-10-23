@@ -26,7 +26,7 @@ var ContributorDashboardPage = function () {
   var navigateToTranslateTextTabButton = $('.e2e-test-translateTextTab');
   var submitQuestionTabButton = $('.e2e-test-submitQuestionTab');
   var myContributionTabButton = $('.e2e-test-myContributionTab');
-  var availableTaskLabel = $('e2e-test-available-task-label');
+  var availableTaskLabel = $('.e2e-test-available-task-label');
   var opportunityLoadingPlaceholder = $(
     '.e2e-test-opportunity-loading-placeholder'
   );
