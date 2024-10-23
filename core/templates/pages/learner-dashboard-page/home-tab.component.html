@@ -85,7 +85,6 @@
   </ng-container>
 
   <div *ngIf="redesignFeatureFlag">
-    <p class="oppia-learner-dash-greeting mt-4"> {{ getTimeOfDay() | translate }}, {{ username }}! </p>
     <div class="oppia-learner-dash-section" *ngIf="isNonemptyObject(untrackedTopics) || continueWhereYouLeftOffList.length !== 0">
       <p class="oppia-learner-dash-section-heading">
         {{ (continueWhereYouLeftOffList.length !== 0 ?

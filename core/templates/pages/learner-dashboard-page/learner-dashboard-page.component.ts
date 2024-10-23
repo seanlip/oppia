@@ -564,8 +564,16 @@ export class LearnerDashboardPageComponent implements OnInit, OnDestroy {
   getDashboardTabHeading(): string {
     switch (this.activeSection) {
       // TODO(#18384): Change community-lessons to progress.
-      case 'LEARNER_DASHBOARD_SECTION_I18N_IDS.COMMUNITY_LESSONS':
+      case LearnerDashboardPageConstants.LEARNER_DASHBOARD_SECTION_I18N_IDS
+        .HOME:
+        return 'I18N_LEARNER_DASHBOARD_HOME_SECTION_HEADING';
+      case LearnerDashboardPageConstants.LEARNER_DASHBOARD_SECTION_I18N_IDS
+        .COMMUNITY_LESSONS:
         return 'I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_HEADING';
+      // TODO(#18384): I18N key is in en.json & qqq.json after #21143.
+      case LearnerDashboardPageConstants.LEARNER_DASHBOARD_SECTION_I18N_IDS
+        .GOALS:
+        return 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_HEADING';
     }
   }
 }
