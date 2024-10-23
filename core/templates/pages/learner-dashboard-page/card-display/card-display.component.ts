@@ -33,7 +33,7 @@ import {I18nLanguageCodeService} from 'services/i18n-language-code.service';
 export class CardDisplayComponent implements AfterContentInit {
   @Input() headingI18n!: string;
   @Input() numCards!: number;
-  @Input() controlType: string = 'arrows';
+  @Input() controlType: string = 'arrow';
   @Input() displayMaxWidth: string = '100%';
   @Input() cardWidth: number = 232;
 
@@ -112,7 +112,7 @@ export class CardDisplayComponent implements AfterContentInit {
   }
 
   getVisibility(): string {
-    if (this.controlType === 'arrows') {
+    if (this.controlType === 'arrow') {
       return '';
     }
     return this.currentToggleState
@@ -121,7 +121,7 @@ export class CardDisplayComponent implements AfterContentInit {
   }
 
   isToggleButtonVisible(): boolean {
-    if (this.controlType === 'arrows') {
+    if (this.controlType === 'arrow') {
       return false;
     }
 

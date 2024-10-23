@@ -312,8 +312,8 @@ describe('CardDisplayComponent', () => {
     });
   });
 
-  it('should return empty string for getVisibility if controlType is arrows', () => {
-    component.controlType = 'arrows';
+  it('should return empty string for getVisibility if controlType is arrow', () => {
+    component.controlType = 'arrow';
     fixture.detectChanges();
     expect(component.getVisibility()).toEqual('');
   });
@@ -340,8 +340,8 @@ describe('CardDisplayComponent', () => {
     });
   });
 
-  it('should return false for isToggleButtonVisible if controlType is arrows', () => {
-    component.controlType = 'arrows';
+  it('should return false for isToggleButtonVisible if controlType is arrow', () => {
+    component.controlType = 'arrow';
     fixture.detectChanges();
     expect(component.isToggleButtonVisible()).toBeFalse();
   });

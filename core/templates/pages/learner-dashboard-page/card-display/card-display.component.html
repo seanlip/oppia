@@ -1,7 +1,7 @@
 <div class="d-flex flex-column h-100 mb-4 w-100" [ngStyle]="{'max-width': displayMaxWidth}">
   <div class="d-flex justify-content-between">
     <p class="card-display-heading"> {{ headingI18n | translate }} </p>
-    <div class="card-display-button-container" *ngIf="(numCards > 1) && ((numCards - 1) * cardWidth + (cardWidth - 32) > cards.offsetWidth) && (controlType.includes('arrows'))">
+    <div class="card-display-button-container" *ngIf="(numCards > 1) && ((numCards - 1) * cardWidth + (cardWidth - 32) > cards.offsetWidth) && (controlType.includes('arrow'))">
       <button [disabled]="currentShift === 0" class="px-0 card-display-button" (click)="moveCard(currentShift - 1)">
         <span [ngClass]="'fas fa-chevron-' + (isLanguageRTL ? 'right' : 'left')"></span>
       </button>
