@@ -397,7 +397,6 @@
     </div>
   </ng-container>
   <div *ngIf="learnerDashboardRedesignFeatureFlag">
-    <p class="oppia-learner-dash-greeting mt-4"> {{ 'I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_HEADING' | translate: {username: username} }} </p>
     <ng-container *ngIf="!isLearnerStateEmpty(); else empty">
       <div tabindex="0" class="oppia-learner-dash-section">
         <p class="oppia-learner-dash-section-heading">{{ 'I18N_LEARNER_DASHBOARD_INCOMPLETE_SECTION' | translate }}</p>

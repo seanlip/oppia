@@ -560,4 +560,12 @@ export class LearnerDashboardPageComponent implements OnInit, OnDestroy {
         // This is placed here in order to satisfy Unit tests.
       });
   }
+
+  getDashboardTabHeading(): string {
+    switch (this.activeSection) {
+      // TODO(#18384): Change community-lessons to progress.
+      case 'LEARNER_DASHBOARD_SECTION_I18N_IDS.COMMUNITY_LESSONS':
+        return 'I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_HEADING';
+    }
+  }
 }
