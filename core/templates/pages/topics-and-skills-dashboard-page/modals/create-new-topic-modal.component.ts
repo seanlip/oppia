@@ -82,6 +82,7 @@ export class CreateNewTopicModalComponent extends ConfirmOrCancelModal {
     }
     this.newlyCreatedTopic.urlFragment = this.newlyCreatedTopic.urlFragment
       .trim()
+      .toLowerCase()
       .replace(/\s+/g, '-');
 
     this.topicEditorStateService.updateExistenceOfTopicUrlFragment(
