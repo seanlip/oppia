@@ -290,7 +290,6 @@ def managed_cloud_datastore_emulator(
     emulator_hostport = '%s:%d' % (
         feconf.CLOUD_DATASTORE_EMULATOR_HOST,
         feconf.CLOUD_DATASTORE_EMULATOR_PORT)
-
     emulator_args = [
         common.GCLOUD_PATH, 'beta', 'emulators', 'datastore', 'start',
         '--project', feconf.OPPIA_PROJECT_ID,
