@@ -27,7 +27,6 @@ import threading
 
 from core import feconf
 from core import utils
-from core.constants import constants
 from scripts import common
 
 import psutil
@@ -294,7 +293,7 @@ def managed_cloud_datastore_emulator(
 
     emulator_args = [
         common.GCLOUD_PATH, 'beta', 'emulators', 'datastore', 'start',
-        '--project',  feconf.OPPIA_PROJECT_ID,
+        '--project', feconf.OPPIA_PROJECT_ID,
         '--data-dir', common.CLOUD_DATASTORE_EMULATOR_DATA_DIR,
         '--host-port', emulator_hostport,
         '--consistency=1.0',
