@@ -222,10 +222,13 @@ oppia-library-page .button-alignment-div {
 .oppia-library-container {
   background-color: #afd2eb;
   min-height: 100vh;
+  justify-content: center;
 }
 .oppia-library-container-inner {
-  position: relative;
+  position: absolute;
   z-index: 3;
+  background-color: #afd2eb;
+  width: 100vw;
 }
 
 .left-carousel-btn {
@@ -704,7 +707,7 @@ oppia-library-page .community-library-breadcrumbs-container {
 }
 
 oppia-library-page .oppia-exp-summary-tiles-container {
-  display: block;
+  display: flex;
   height: 100%;
   margin-left: auto;
   margin-right: auto;
@@ -713,6 +716,8 @@ oppia-library-page .oppia-exp-summary-tiles-container {
   padding-bottom: 24px;
   padding-top: 24px;
   width: 100vw;
+  justify-content: center;
+  background-color: #afd2eb;
 }
 
 /* Ensure that the summary tiles tiles remain centered. Note that these values
