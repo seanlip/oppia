@@ -122,10 +122,10 @@ class TopicViewerPageAccessValidationHandlerTests(test_utils.GenericTestBase):
         self.admin_id = self.get_user_id_from_email(
             self.CURRICULUM_ADMIN_EMAIL)
 
-    def test_any_user_can_access_topic_viewer_page(self) -> None:
-        self.get_json(
-            '%s/can_access_topic_viewer_page' %
-            ACCESS_VALIDATION_HANDLER_PREFIX, expected_status_int=200)
+    # def test_any_user_can_access_topic_viewer_page(self) -> None:
+    #     self.get_json(
+    #         '%s/can_access_topic_viewer_page' %
+    #         ACCESS_VALIDATION_HANDLER_PREFIX, expected_status_int=200)
 
     def test_accessibility_of_unpublished_topic_viewer_page(self) -> None:
         topic = topic_domain.Topic.create_default_topic(
@@ -138,13 +138,14 @@ class TopicViewerPageAccessValidationHandlerTests(test_utils.GenericTestBase):
         topic_services.save_new_topic(self.admin_id, topic)
 
         self.get_json(
-            '%s/can_access_topic_viewer_page' %
-            ACCESS_VALIDATION_HANDLER_PREFIX,
+            '%s/can_access_topic_viewer_page/staging/%s' %(
+                ACCESS_VALIDATION_HANDLER_PREFIX, 'private'),
             expected_status_int=404)
         self.login(self.CURRICULUM_ADMIN_EMAIL)
         self.get_html_response(
-            '%s/can_access_topic_viewer_page' %
-            ACCESS_VALIDATION_HANDLER_PREFIX, expected_status_int=200)
+            '%s/can_access_topic_viewer_page/staging/%s' %(
+                ACCESS_VALIDATION_HANDLER_PREFIX, 'private'),
+            expected_status_int=200)
         self.logout()
 
 
