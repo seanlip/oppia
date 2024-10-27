@@ -40,7 +40,7 @@ describe('rich-text components', function () {
     explorationPlayerPage = new ExplorationPlayerPage.ExplorationPlayerPage();
   });
 
-  it('should display correctly', async function () {
+  it('should display correctly part 1', async function () {
     await users.createAndLoginCurriculumAdminUser(
       'user@richTextComponents.com',
       'userRichTextComponent'
@@ -138,7 +138,36 @@ describe('rich-text components', function () {
         );
       }
     );
+    await explorationEditorPage.discardChanges();
 
+    // We check the video component separately to avoid protractor errors.
+    await explorationEditorMainTab.setContent(async function (richTextEditor) {
+      await richTextEditor.appendBoldText('bold');
+      await richTextEditor.appendPlainText(' ');
+      // TODO(Jacob): Add test for image RTE component.
+      await richTextEditor.addRteComponent(
+        'Video',
+        'M7lc1UVf-VE',
+        10,
+        100,
+        false
+      );
+    });
+
+    await explorationEditorPage.navigateToPreviewTab();
+    await explorationPlayerPage.expectContentToMatch(
+      async function (richTextChecker) {
+        await richTextChecker.readBoldText('bold');
+        await richTextChecker.readPlainText(' ');
+        await richTextChecker.readRteComponent(
+          'Video',
+          'M7lc1UVf-VE',
+          10,
+          100,
+          false
+        );
+      }
+    );
     await explorationEditorPage.discardChanges();
     await users.logout();
   });
