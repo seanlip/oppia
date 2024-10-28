@@ -122,12 +122,23 @@ class TopicViewerPageAccessValidationHandlerTests(test_utils.GenericTestBase):
         self.admin_id = self.get_user_id_from_email(
             self.CURRICULUM_ADMIN_EMAIL)
 
-    # def test_any_user_can_access_topic_viewer_page(self) -> None:
-    #     self.get_json(
-    #         '%s/can_access_topic_viewer_page' %
-    #         ACCESS_VALIDATION_HANDLER_PREFIX, expected_status_int=200)
+    def test_any_user_can_access_topic_viewer_page(self) -> None:
+        self.set_curriculum_admins([self.CURRICULUM_ADMIN_USERNAME])
+        self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
+        csrf_token = self.get_new_csrf_token()
+        self.post_json(
+            '/adminhandler', {
+                'action': 'generate_dummy_classroom'
+            }, csrf_token=csrf_token)
+        self.logout()
+        self.login(self.NEW_USER_EMAIL)
+        self.get_html_response(
+            '%s/can_access_topic_viewer_page/%s/%s' % (
+                ACCESS_VALIDATION_HANDLER_PREFIX, 'math', 'fraction'),
+            expected_status_int=200)
 
     def test_accessibility_of_unpublished_topic_viewer_page(self) -> None:
+        self.login(self.NEW_USER_EMAIL)
         topic = topic_domain.Topic.create_default_topic(
             'topic_id_1', 'private_topic_name',
             'private_topic_name', 'description', 'fragm')
@@ -141,11 +152,6 @@ class TopicViewerPageAccessValidationHandlerTests(test_utils.GenericTestBase):
             '%s/can_access_topic_viewer_page/staging/%s' %(
                 ACCESS_VALIDATION_HANDLER_PREFIX, 'private'),
             expected_status_int=404)
-        self.login(self.CURRICULUM_ADMIN_EMAIL)
-        self.get_html_response(
-            '%s/can_access_topic_viewer_page/staging/%s' %(
-                ACCESS_VALIDATION_HANDLER_PREFIX, 'private'),
-            expected_status_int=200)
         self.logout()
 
 
