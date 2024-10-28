@@ -80,6 +80,13 @@ const routes: Route[] = [
     canActivate: [IsLoggedInGuard],
   },
   {
+    path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.CREATOR_DASHBOARD.ROUTE,
+    loadChildren: () =>
+      import('pages/creator-dashboard-page/creator-dashboard-page.module').then(
+        m => m.CreatorDashboardPageModule
+      ),
+  },
+  {
     path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.EMAIL_DASHBOARD.ROUTE,
     loadChildren: () =>
       import('pages/email-dashboard-pages/email-dashboard-page.module').then(
