@@ -48,9 +48,3 @@ export class MaintenancePageComponent implements OnInit {
   }
 }
 
-angular
-  .module('oppia')
-  .directive(
-    'maintenancePage',
-    downgradeComponent({component: MaintenancePageComponent})
-  );

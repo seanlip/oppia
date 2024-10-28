@@ -87,8 +87,6 @@ module.exports = {
       commonPrefix +
       '/pages/exploration-editor-page/' +
       'exploration-editor-page.import.ts',
-    maintenance:
-      commonPrefix + '/pages/maintenance-page/maintenance-page.import.ts',
     oppia_root: commonPrefix + '/pages/oppia-root/index.ts',
     lightweight_oppia_root:
       commonPrefix + '/pages/lightweight-oppia-root/index.ts',
@@ -234,15 +232,6 @@ module.exports = {
         commonPrefix +
         '/pages/exploration-editor-page/' +
         'exploration-editor-page.mainpage.html',
-      minify: htmlMinifyConfig,
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['maintenance'],
-      filename: 'maintenance-page.mainpage.html',
-      meta: defaultMeta,
-      template:
-        commonPrefix + '/pages/maintenance-page/maintenance-page.mainpage.html',
       minify: htmlMinifyConfig,
       inject: false,
     }),
