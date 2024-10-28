@@ -94,8 +94,6 @@ module.exports = {
       commonPrefix + '/pages/skill-editor-page/skill-editor-page.import.ts',
     topic_editor:
       commonPrefix + '/pages/topic-editor-page/topic-editor-page.import.ts',
-    topic_viewer:
-      commonPrefix + '/pages/topic-viewer-page/topic-viewer-page.import.ts',
   },
 
   /**
@@ -265,18 +263,6 @@ module.exports = {
         commonPrefix +
         '/pages/topic-editor-page/' +
         'topic-editor-page.mainpage.html',
-      minify: htmlMinifyConfig,
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['topic_viewer'],
-      filename: 'topic-viewer-page.mainpage.html',
-      hybrid: true,
-      meta: defaultMeta,
-      template:
-        commonPrefix +
-        '/pages/topic-viewer-page/' +
-        'topic-viewer-page.mainpage.html',
       minify: htmlMinifyConfig,
       inject: false,
     }),
