@@ -149,7 +149,7 @@ class TopicViewerPageAccessValidationHandlerTests(test_utils.GenericTestBase):
         topic_services.save_new_topic(self.admin_id, topic)
 
         self.get_json(
-            '%s/can_access_topic_viewer_page/staging/%s' %(
+            '%s/can_access_topic_viewer_page/staging/%s' % (
                 ACCESS_VALIDATION_HANDLER_PREFIX, 'private'),
             expected_status_int=404)
         self.logout()
