@@ -85,6 +85,7 @@ const routes: Route[] = [
       import('pages/creator-dashboard-page/creator-dashboard-page.module').then(
         m => m.CreatorDashboardPageModule
       ),
+    canActivate: [IsLoggedInGuard],
   },
   {
     path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.TOPIC_VIEWER.ROUTE,
