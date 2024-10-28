@@ -226,7 +226,6 @@ URLS = [
     get_redirect_route(r'/credits', pages.AboutRedirectPage),
     get_redirect_route(r'/participate', pages.TeachRedirectPage),
     get_redirect_route(r'/site_guidelines', pages.TeachRedirectPage),
-    get_redirect_route(r'/console_errors', pages.ConsoleErrorPage),
 
     get_redirect_route(r'/forum', pages.ForumRedirectPage),
 
@@ -247,6 +246,13 @@ URLS = [
         feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
         access_validators.CollectionEditorAccessValidationPage
     ),
+
+    get_redirect_route(
+        r'%s/can_access_story_editor_page/<story_id>' %
+        feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
+        access_validators.StoryEditorAccessValidationHandlerPage
+    ),
+
     get_redirect_route(
         r'%s/can_access_blog_home_page' %
         feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
@@ -443,9 +449,10 @@ URLS = [
         r'/<story_url_fragment>' % feconf.REVIEW_TEST_DATA_URL_PREFIX,
         review_tests.ReviewTestsPageDataHandler),
     get_redirect_route(
-        r'%s/review-test/<story_url_fragment>'
-        % feconf.TOPIC_VIEWER_URL_PREFIX,
-        review_tests.ReviewTestsPage),
+        r'%s/can_access_review_tests_page/<classroom_url_fragment>'
+        r'/<topic_url_fragment>/<story_url_fragment>'
+        % feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
+        access_validators.ReviewTestsPageAccessValidationHandler),
     get_redirect_route(
         r'%s/<classroom_url_fragment>/<topic_url_fragment>'
         r'/<story_url_fragment>' % feconf.STORY_DATA_HANDLER,
@@ -687,6 +694,9 @@ URLS = [
     get_redirect_route(
         r'%s' % feconf.FEATURE_FLAGS_URL,
         release_coordinator.FeatureFlagsHandler),
+    get_redirect_route(
+        r'%s' % feconf.USER_GROUPS_HANDLER_URL,
+        release_coordinator.UserGroupHandler),
 
     get_redirect_route(
         r'%s/<exploration_id>' % feconf.EXPLORATION_URL_PREFIX,
@@ -983,9 +993,6 @@ URLS = [
         skill_mastery.SubtopicMasteryDataHandler),
 
     get_redirect_route(
-        r'%s/<story_id>' % feconf.STORY_EDITOR_URL_PREFIX,
-        story_editor.StoryEditorPage),
-    get_redirect_route(
         r'%s/<story_id>' % feconf.STORY_EDITOR_DATA_URL_PREFIX,
         story_editor.EditableStoryDataHandler),
     get_redirect_route(
@@ -1001,9 +1008,6 @@ URLS = [
         email_dashboard.EmailDashboardDataHandler),
     get_redirect_route(
         r'/querystatuscheck', email_dashboard.QueryStatusCheckHandler),
-    get_redirect_route(
-        r'/emaildashboardresult/<query_id>',
-        email_dashboard.EmailDashboardResultPage),
     get_redirect_route(
         r'/emaildashboardcancelresult/<query_id>',
         email_dashboard.EmailDashboardCancelEmailHandler),
@@ -1069,8 +1073,6 @@ URLS = [
     get_redirect_route(
         r'%s' % feconf.BLOG_DASHBOARD_DATA_URL,
         blog_dashboard.BlogDashboardDataHandler),
-    get_redirect_route(
-        r'%s' % feconf.BLOG_DASHBOARD_URL, blog_dashboard.BlogDashboardPage),
 
     get_redirect_route(
         r'/issuesdatahandler/<exploration_id>', editor.FetchIssuesHandler),
@@ -1221,6 +1223,10 @@ URLS.extend((
     ),
     get_redirect_route(
         r'%s/<author_username>' % feconf.BLOG_AUTHOR_PROFILE_PAGE_URL_PREFIX,
+        oppia_root.OppiaRootPage
+    ),
+    get_redirect_route(
+        r'%s/<story_id>' % feconf.STORY_EDITOR_URL_PREFIX,
         oppia_root.OppiaRootPage
     )
 ))

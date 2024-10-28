@@ -15,14 +15,22 @@
 /**
  * @fileoverview Component to display lesson cards based on tab
  */
-import {Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  ViewChild,
+  HostListener,
+  AfterContentInit,
+  NgZone,
+} from '@angular/core';
 import {downgradeComponent} from '@angular/upgrade/static';
 import {I18nLanguageCodeService} from 'services/i18n-language-code.service';
 @Component({
   selector: 'oppia-card-display',
   templateUrl: './card-display.component.html',
 })
-export class CardDisplayComponent {
+export class CardDisplayComponent implements AfterContentInit {
   @Input() headingI18n!: string;
   @Input() numCards!: number;
   @Input() tabType!: string;
@@ -34,11 +42,30 @@ export class CardDisplayComponent {
   maxShifts: number = 0;
   lastShift: number = 0;
   isLanguageRTL: boolean = false;
+  currentToggleState: boolean = false;
+  toggleButtonVisibility: boolean = false;
 
-  constructor(private I18nLanguageCodeService: I18nLanguageCodeService) {}
+  constructor(
+    private I18nLanguageCodeService: I18nLanguageCodeService,
+    private ngZone: NgZone
+  ) {}
 
   ngOnInit(): void {
     this.isLanguageRTL = this.I18nLanguageCodeService.isCurrentLanguageRTL();
+  }
+
+  ngAfterContentInit(): void {
+    this.ngZone.onStable.subscribe(() => {
+      this.toggleButtonVisibility = this.isToggleButtonVisible();
+    });
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(): void {
+    this.toggleButtonVisibility = this.isToggleButtonVisible();
+    if (!this.toggleButtonVisibility) {
+      this.currentToggleState = false;
+    }
   }
 
   getMaxShifts(width: number): number {
@@ -77,6 +104,31 @@ export class CardDisplayComponent {
       return this.cardWidth - 32;
     }
     return nextShift === this.maxShifts ? this.lastShift : this.cardWidth;
+  }
+
+  handleToggleState(updateState: boolean): void {
+    this.currentToggleState = updateState;
+  }
+
+  getVisibility(): string {
+    if (!this.tabType.includes('progress')) {
+      return '';
+    }
+    return this.currentToggleState
+      ? 'card-display-content-shown'
+      : 'card-display-content-hidden';
+  }
+
+  isToggleButtonVisible(): boolean {
+    if (this.tabType.includes('home')) {
+      return false;
+    }
+
+    return (
+      this.cards &&
+      this.cards.nativeElement &&
+      this.numCards * this.cardWidth - 16 > this.cards.nativeElement.offsetWidth
+    );
   }
 }
 

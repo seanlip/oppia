@@ -23,7 +23,6 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core';
-import {downgradeComponent} from '@angular/upgrade/static';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {AppConstants} from 'app.constants';
 import {SelectSkillModalComponent} from 'components/skill-selector/select-skill-modal.component';
@@ -57,6 +56,9 @@ export class StoryNodeEditorComponent implements OnInit, OnDestroy {
   @Input() acquiredSkillIds: string[];
   @Input() plannedPublicationDateMsecs: number;
 
+  MAX_CHARS_IN_EXPLORATION_TITLE = AppConstants.MAX_CHARS_IN_EXPLORATION_TITLE;
+  MAX_CHARS_IN_CHAPTER_DESCRIPTION =
+    AppConstants.MAX_CHARS_IN_CHAPTER_DESCRIPTION;
   chapterPreviewCardIsShown = false;
   mainChapterCardIsShown = true;
   explorationInputButtonsAreShown = false;
@@ -636,10 +638,3 @@ export class StoryNodeEditorComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 }
-
-angular.module('oppia').directive(
-  'oppiaStoryNodeEditor',
-  downgradeComponent({
-    component: StoryNodeEditorComponent,
-  })
-);
