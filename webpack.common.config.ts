@@ -65,8 +65,6 @@ module.exports = {
     },
   },
   entry: {
-    blog_dashboard:
-      commonPrefix + '/pages/blog-dashboard-page/blog-dashboard-page.import.ts',
     creator_dashboard:
       commonPrefix +
       '/pages/creator-dashboard-page/' +
@@ -75,9 +73,6 @@ module.exports = {
       commonPrefix +
       '/pages/contributor-dashboard-page/' +
       'contributor-dashboard-page.import.ts',
-    email_dashboard_result:
-      commonPrefix +
-      '/pages/email-dashboard-pages/email-dashboard-result.import.ts',
     error: commonPrefix + '/pages/error-pages/error-page.import.ts',
     error_iframed:
       commonPrefix +
@@ -95,16 +90,12 @@ module.exports = {
       '/pages/practice-session-page/practice-session-page.import.ts',
     skill_editor:
       commonPrefix + '/pages/skill-editor-page/skill-editor-page.import.ts',
-    story_editor:
-      commonPrefix + '/pages/story-editor-page/story-editor-page.import.ts',
     topic_editor:
       commonPrefix + '/pages/topic-editor-page/topic-editor-page.import.ts',
     topics_and_skills_dashboard:
       commonPrefix +
       '/pages/topics-and-skills-dashboard-page/' +
       'topics-and-skills-dashboard-page.import.ts',
-    topic_viewer:
-      commonPrefix + '/pages/topic-viewer-page/topic-viewer-page.import.ts',
   },
 
   /**
@@ -159,16 +150,6 @@ module.exports = {
       inject: false,
     }),
     new HtmlWebpackPlugin({
-      chunks: ['email_dashboard_result'],
-      filename: 'email-dashboard-result.mainpage.html',
-      meta: defaultMeta,
-      template:
-        commonPrefix +
-        '/pages/email-dashboard-pages/email-dashboard-result.mainpage.html',
-      minify: htmlMinifyConfig,
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
       chunks: ['error_iframed'],
       filename: 'error-iframed.mainpage.html',
       meta: defaultMeta,
@@ -187,18 +168,6 @@ module.exports = {
       minify: htmlMinifyConfig,
       inject: false,
       statusCode: 400,
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['blog_dashboard'],
-      filename: 'blog-dashboard-page.mainpage.html',
-      hybrid: true,
-      meta: defaultMeta,
-      template:
-        commonPrefix +
-        '/pages/blog-dashboard-page/' +
-        'blog-dashboard-page.mainpage.html',
-      minify: htmlMinifyConfig,
-      inject: false,
     }),
     new HtmlWebpackPlugin({
       chunks: ['error'],
@@ -279,18 +248,6 @@ module.exports = {
       inject: false,
     }),
     new HtmlWebpackPlugin({
-      chunks: ['story_editor'],
-      filename: 'story-editor-page.mainpage.html',
-      hybrid: true,
-      meta: defaultMeta,
-      template:
-        commonPrefix +
-        '/pages/story-editor-page/' +
-        'story-editor-page.mainpage.html',
-      minify: htmlMinifyConfig,
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
       chunks: ['topic_editor'],
       filename: 'topic-editor-page.mainpage.html',
       hybrid: true,
@@ -311,18 +268,6 @@ module.exports = {
         commonPrefix +
         '/pages/topics-and-skills-dashboard-page/' +
         'topics-and-skills-dashboard-page.mainpage.html',
-      minify: htmlMinifyConfig,
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['topic_viewer'],
-      filename: 'topic-viewer-page.mainpage.html',
-      hybrid: true,
-      meta: defaultMeta,
-      template:
-        commonPrefix +
-        '/pages/topic-viewer-page/' +
-        'topic-viewer-page.mainpage.html',
       minify: htmlMinifyConfig,
       inject: false,
     }),
