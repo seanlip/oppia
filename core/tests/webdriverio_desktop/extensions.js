@@ -64,13 +64,6 @@ describe('rich-text components', function () {
       await richTextEditor.appendPlainText(' ');
       // TODO(Jacob): Add test for image RTE component.
       await richTextEditor.addRteComponent(
-        'Video',
-        'M7lc1UVf-VE',
-        10,
-        100,
-        false
-      );
-      await richTextEditor.addRteComponent(
         'Link',
         'https://google.com/',
         false
@@ -105,13 +98,6 @@ describe('rich-text components', function () {
         await richTextChecker.readBoldText('bold');
         await richTextChecker.readPlainText(' ');
         await richTextChecker.readRteComponent(
-          'Video',
-          'M7lc1UVf-VE',
-          10,
-          100,
-          false
-        );
-        await richTextChecker.readRteComponent(
           'Link',
           'https://google.com/',
           false
@@ -142,9 +128,6 @@ describe('rich-text components', function () {
 
     // We check the video component separately to avoid protractor errors.
     await explorationEditorMainTab.setContent(async function (richTextEditor) {
-      await richTextEditor.appendBoldText('bold');
-      await richTextEditor.appendPlainText(' ');
-      // TODO(Jacob): Add test for image RTE component.
       await richTextEditor.addRteComponent(
         'Video',
         'M7lc1UVf-VE',
@@ -157,8 +140,6 @@ describe('rich-text components', function () {
     await explorationEditorPage.navigateToPreviewTab();
     await explorationPlayerPage.expectContentToMatch(
       async function (richTextChecker) {
-        await richTextChecker.readBoldText('bold');
-        await richTextChecker.readPlainText(' ');
         await richTextChecker.readRteComponent(
           'Video',
           'M7lc1UVf-VE',
