@@ -505,9 +505,9 @@ class StoryNode:
         outline_is_finalized: bool,
         exploration_id: Optional[str],
         status: Optional[str],
-        planned_publication_date_msecs: Optional[int],
-        last_modified_msecs: Optional[int],
-        first_publication_date_msecs: Optional[int],
+        planned_publication_date_msecs: Optional[float],
+        last_modified_msecs: Optional[float],
+        first_publication_date_msecs: Optional[float],
         unpublishing_reason: Optional[str]
     ) -> None:
         """Initializes a StoryNode domain object.
