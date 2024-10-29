@@ -30,8 +30,8 @@
 </script>
 
 
-<% if (htmlWebpackPlugin.options.hybrid && webpackConfig.mode == 'production') { %>
+<% if (webpackConfig.mode == 'production') { %>
   <script src="/third_party/generated/js/third_party.min.js"></script>
-<% } else if (htmlWebpackPlugin.options.hybrid) { %>
+<% } else { %>
   <script src="/third_party/generated/js/third_party.js"></script>
 <% } %>
