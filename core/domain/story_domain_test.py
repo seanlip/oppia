@@ -905,33 +905,6 @@ class StoryDomainUnitTests(test_utils.GenericTestBase):
             'Expected status to be a string, received 2')
         self.story.story_contents.nodes[0].status = 'Draft'
 
-        # TODO(#13059): Here we use MyPy ignore because after we fully type the
-        # codebase we plan to get rid of the tests that intentionally test wrong
-        # inputs that we can normally catch by typing.
-        # self.story.story_contents.nodes[0].planned_publication_date_msecs = '10 July'  # type: ignore[assignment]
-        # self._assert_validation_error(
-        #     'Expected planned publication date to be milliseconds, received '
-        #     '10 July')
-        # self.story.story_contents.nodes[0].planned_publication_date = (
-        #     datetime.datetime.now())
-
-        # TODO(#13059): Here we use MyPy ignore because after we fully type the
-        # codebase we plan to get rid of the tests that intentionally test wrong
-        # inputs that we can normally catch by typing.
-        # self.story.story_contents.nodes[0].last_modified = 1  # type: ignore[assignment]
-        # self._assert_validation_error(
-        #     'Expected last modified to be a datetime, received 1')
-        # self.story.story_contents.nodes[0].last_modified = (
-        #     datetime.datetime.now())
-
-        # TODO(#13059): Here we use MyPy ignore because after we fully type the
-        # codebase we plan to get rid of the tests that intentionally test wrong
-        # inputs that we can normally catch by typing.
-        # self.story.story_contents.nodes[0].first_publication_date = 1  # type: ignore[assignment]
-        # self._assert_validation_error(
-        #     'Expected first publication date to be a datetime, received 1')
-        # self.story.story_contents.nodes[0].first_publication_date = None
-
     def test_node_is_upcoming(self) -> None:
         self.story.story_contents.nodes[0].status = (
             constants.STORY_NODE_STATUS_DRAFT)

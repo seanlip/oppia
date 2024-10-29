@@ -175,8 +175,8 @@ class TopicEditorStoryHandler(
                     published_chapters_count += 1
                 if node.planned_publication_date_msecs is not None:
                     current_time_msecs = utils.get_current_time_in_millisecs()
-                    planned_publication_date_msecs = ( 
-                        node.planned_publication_date_msecs )
+                    planned_publication_date_msecs = (
+                        node.planned_publication_date_msecs)
                     if node.is_node_upcoming():
                         upcoming_chapters_count += 1
                         upcoming_chapters_expected_days.append((int)((

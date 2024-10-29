@@ -622,7 +622,6 @@ def get_time_in_millisecs(datetime_obj: datetime.datetime) -> float:
     return datetime_obj.timestamp() * 1000.0
 
 
-
 def convert_naive_datetime_to_string(datetime_obj: datetime.datetime) -> str:
     """Returns a human-readable string representing the naive datetime object.
 

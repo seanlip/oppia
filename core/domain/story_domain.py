@@ -541,9 +541,9 @@ class StoryNode:
             planned_publication_date_msecs: float | None. It is the
                 expected publication date in milliseconds for a node.
             last_modified_msecs: float | None. The date time in milliseconds 
-            when a node was last modified.
+                when a node was last modified.
             first_publication_date_msecs: float | None. The date in milliseconds
-              when the node was first published.
+                when the node was first published.
             unpublishing_reason: str or None. The reason for unpublishing this
                 node. It is None when the node is published.
         """
@@ -678,7 +678,8 @@ class StoryNode:
             'outline_is_finalized': self.outline_is_finalized,
             'exploration_id': self.exploration_id,
             'status': self.status,
-            'planned_publication_date_msecs': self.planned_publication_date_msecs 
+            'planned_publication_date_msecs': 
+            self.planned_publication_date_msecs
                 if self.planned_publication_date_msecs else None,
             'last_modified_msecs': self.last_modified_msecs
                 if self.last_modified_msecs else None,
@@ -2100,7 +2101,8 @@ class Story:
                 of the node in miliseconds.
         """
         node_index = self.story_contents.get_node_index(node_id)
-        self.story_contents.nodes[node_index].last_modified_msecs = new_last_modified_msecs
+        self.story_contents.nodes[node_index].last_modified_msecs = (
+        new_last_modified_msecs)
 
     def update_node_first_publication_date(
             self, node_id: str, new_publication_date_msecs: float) -> None:
