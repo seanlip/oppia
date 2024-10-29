@@ -505,9 +505,9 @@ class StoryNode:
         outline_is_finalized: bool,
         exploration_id: Optional[str],
         status: Optional[str],
-        planned_publication_date_msecs: Optional[float],
-        last_modified_msecs: Optional[float],
-        first_publication_date_msecs: Optional[float],
+        planned_publication_date_msecs: Optional[int],
+        last_modified_msecs: Optional[int],
+        first_publication_date_msecs: Optional[int],
         unpublishing_reason: Optional[str]
     ) -> None:
         """Initializes a StoryNode domain object.
@@ -560,9 +560,18 @@ class StoryNode:
         self.outline_is_finalized = outline_is_finalized
         self.exploration_id = exploration_id
         self.status = status
-        self.planned_publication_date_msecs = planned_publication_date_msecs
-        self.last_modified_msecs = last_modified_msecs
-        self.first_publication_date_msecs = first_publication_date_msecs
+        self.planned_publication_date_msecs = (
+            planned_publication_date_msecs
+            if planned_publication_date_msecs is not None else None
+        )
+        self.last_modified_msecs = (
+            last_modified_msecs
+            if last_modified_msecs is not None else None
+        )
+        self.first_publication_date_msecs = (
+            first_publication_date_msecs
+            if first_publication_date_msecs is not None else None
+        )
         self.unpublishing_reason = unpublishing_reason
 
     @classmethod

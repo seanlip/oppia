@@ -2783,9 +2783,9 @@ class PublishChaptersOfLengthAndMeasurementTopicTest(
             'outline_is_finalized': False,
             'exploration_id': self.exp_id_1,
             'status': 'Draft',
-            'planned_publication_date_msecs': 100,
-            'last_modified_msecs': 100,
-            'first_publication_date_msecs': 200,
+            'planned_publication_date_msecs': 100.0,
+            'last_modified_msecs': 100.0,
+            'first_publication_date_msecs': 200.0,
             'unpublishing_reason': None
         }
         node_2: story_domain.StoryNodeDict = {
@@ -2803,9 +2803,9 @@ class PublishChaptersOfLengthAndMeasurementTopicTest(
             'outline_is_finalized': False,
             'exploration_id': self.exp_id_0,
             'status': 'Draft',
-            'planned_publication_date_msecs': 100,
-            'last_modified_msecs': 100,
-            'first_publication_date_msecs': 200,
+            'planned_publication_date_msecs': 100.0,
+            'last_modified_msecs': 100.0,
+            'first_publication_date_msecs': 200.0,
             'unpublishing_reason': None
         }
         node_3: story_domain.StoryNodeDict = {
@@ -2823,9 +2823,9 @@ class PublishChaptersOfLengthAndMeasurementTopicTest(
             'outline_is_finalized': False,
             'exploration_id': self.exp_id_7,
             'status': 'Draft',
-            'planned_publication_date_msecs': 100,
-            'last_modified_msecs': 100,
-            'first_publication_date_msecs': 200,
+            'planned_publication_date_msecs': 100.0,
+            'last_modified_msecs': 100.0,
+            'first_publication_date_msecs': 200.0,
             'unpublishing_reason': None
         }
         story.story_contents.nodes = [
