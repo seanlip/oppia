@@ -779,7 +779,6 @@ class UtilsTests(test_utils.GenericTestBase):
         self.assertEqual(
             dt, datetime.datetime.fromtimestamp(msecs / 1000.0))
 
-
     def test_grouper(self) -> None:
         self.assertEqual(
             [list(g) for g in utils.grouper(range(7), 3)],
