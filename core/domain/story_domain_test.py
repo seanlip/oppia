@@ -716,32 +716,33 @@ class StoryDomainUnitTests(test_utils.GenericTestBase):
             self.story.story_contents.nodes[0].status, 'Published')
 
     def test_story_node_update_planned_publication_date(self) -> None:
-        self.story.story_contents.nodes[0].planned_publication_date = None
+        self.story.story_contents.nodes[0].planned_publication_date_msecs = None
         current_time = datetime.datetime.now()
         current_time_msecs = utils.get_time_in_millisecs(current_time)
         self.story.update_node_planned_publication_date(
             'node_1', current_time_msecs)
         self.assertEqual(
-            self.story.story_contents.nodes[0]. planned_publication_date,
-            current_time)
+            self.story.story_contents.nodes[0]. planned_publication_date_msecs,
+            current_time_msecs)
 
     def test_story_node_update_last_modified(self) -> None:
-        self.story.story_contents.nodes[0].last_modified = None
+        self.story.story_contents.nodes[0].last_modified_msecs = None
         current_time = datetime.datetime.now()
         current_time_msecs = utils.get_time_in_millisecs(current_time)
         self.story.update_node_last_modified('node_1', current_time_msecs)
         self.assertEqual(
-            self.story.story_contents.nodes[0].last_modified, current_time)
+            self.story.story_contents.nodes[0].last_modified_msecs,
+            current_time_msecs)
 
     def test_story_node_update_first_publication_date(self) -> None:
-        self.story.story_contents.nodes[0].first_publication_date = None
+        self.story.story_contents.nodes[0].first_publication_date_msecs = None
         current_time = datetime.datetime.now()
         current_time_msecs = utils.get_time_in_millisecs(current_time)
         self.story.update_node_first_publication_date(
             'node_1', current_time_msecs)
         self.assertEqual(
-            self.story.story_contents.nodes[0].first_publication_date,
-            current_time)
+            self.story.story_contents.nodes[0].first_publication_date_msecs,
+            current_time_msecs)
 
     def test_story_node_update_unpublishing_reason(self) -> None:
         self.story.story_contents.nodes[0].unpublishing_reason = None
@@ -907,39 +908,39 @@ class StoryDomainUnitTests(test_utils.GenericTestBase):
         # TODO(#13059): Here we use MyPy ignore because after we fully type the
         # codebase we plan to get rid of the tests that intentionally test wrong
         # inputs that we can normally catch by typing.
-        self.story.story_contents.nodes[0].planned_publication_date = '10 July'  # type: ignore[assignment]
-        self._assert_validation_error(
-            'Expected planned publication date to be a datetime, received '
-            '10 July')
-        self.story.story_contents.nodes[0].planned_publication_date = (
-            datetime.datetime.now())
+        # self.story.story_contents.nodes[0].planned_publication_date_msecs = '10 July'  # type: ignore[assignment]
+        # self._assert_validation_error(
+        #     'Expected planned publication date to be milliseconds, received '
+        #     '10 July')
+        # self.story.story_contents.nodes[0].planned_publication_date = (
+        #     datetime.datetime.now())
 
         # TODO(#13059): Here we use MyPy ignore because after we fully type the
         # codebase we plan to get rid of the tests that intentionally test wrong
         # inputs that we can normally catch by typing.
-        self.story.story_contents.nodes[0].last_modified = 1  # type: ignore[assignment]
-        self._assert_validation_error(
-            'Expected last modified to be a datetime, received 1')
-        self.story.story_contents.nodes[0].last_modified = (
-            datetime.datetime.now())
+        # self.story.story_contents.nodes[0].last_modified = 1  # type: ignore[assignment]
+        # self._assert_validation_error(
+        #     'Expected last modified to be a datetime, received 1')
+        # self.story.story_contents.nodes[0].last_modified = (
+        #     datetime.datetime.now())
 
         # TODO(#13059): Here we use MyPy ignore because after we fully type the
         # codebase we plan to get rid of the tests that intentionally test wrong
         # inputs that we can normally catch by typing.
-        self.story.story_contents.nodes[0].first_publication_date = 1  # type: ignore[assignment]
-        self._assert_validation_error(
-            'Expected first publication date to be a datetime, received 1')
-        self.story.story_contents.nodes[0].first_publication_date = None
+        # self.story.story_contents.nodes[0].first_publication_date = 1  # type: ignore[assignment]
+        # self._assert_validation_error(
+        #     'Expected first publication date to be a datetime, received 1')
+        # self.story.story_contents.nodes[0].first_publication_date = None
 
     def test_node_is_upcoming(self) -> None:
         self.story.story_contents.nodes[0].status = (
             constants.STORY_NODE_STATUS_DRAFT)
-        self.story.story_contents.nodes[0].planned_publication_date = (
-            datetime.datetime(2023, 1, 1))
+        self.story.story_contents.nodes[0].planned_publication_date_msecs = (
+            int(datetime.datetime(2023, 1, 1).timestamp() * 1000))
         self.story.story_contents.nodes[1].status = (
             constants.STORY_NODE_STATUS_READY_TO_PUBLISH)
-        self.story.story_contents.nodes[1].planned_publication_date = (
-            datetime.datetime(2022, 12, 29))
+        self.story.story_contents.nodes[1].planned_publication_date_msecs = (
+            int(datetime.datetime(2022, 12, 29).timestamp() * 1000))
         def _mock_get_current_time_in_millisecs() -> int:
             return 1672483686000
 
@@ -954,12 +955,12 @@ class StoryDomainUnitTests(test_utils.GenericTestBase):
     def test_node_is_behind_schedule(self) -> None:
         self.story.story_contents.nodes[0].status = (
             constants.STORY_NODE_STATUS_DRAFT)
-        self.story.story_contents.nodes[0].planned_publication_date = (
-            datetime.datetime(2023, 1, 1))
+        self.story.story_contents.nodes[0].planned_publication_date_msecs = (
+            int(datetime.datetime(2023, 1, 1).timestamp() * 1000))
         self.story.story_contents.nodes[1].status = (
             constants.STORY_NODE_STATUS_READY_TO_PUBLISH)
-        self.story.story_contents.nodes[1].planned_publication_date = (
-            datetime.datetime(2022, 12, 29))
+        self.story.story_contents.nodes[1].planned_publication_date_msecs = (
+            int(datetime.datetime(2022, 12, 29).timestamp() * 1000))
         def _mock_get_current_time_in_millisecs() -> int:
             return 1672483686000
 

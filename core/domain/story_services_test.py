@@ -364,16 +364,19 @@ class StoryServicesUnitTests(test_utils.GenericTestBase):
             constants.STORY_NODE_STATUS_PUBLISHED)
         self.assertEqual(
             story.story_contents.nodes[1].
-            planned_publication_date, datetime.datetime(2023, 1, 2, 0, 0),
-            msg='Incorrect planned publication date received.')
+            planned_publication_date_msecs, (
+                datetime.datetime(2023, 1, 2, 0, 0).timestamp() * 1000),
+            msg='Incorrect planned publication date in milliseconds received.')
         self.assertEqual(
             story.story_contents.nodes[1].
-            first_publication_date, datetime.datetime(2023, 1, 1, 0, 0),
-            msg='Incorrect first publication date received.')
+            first_publication_date_msecs, (
+                datetime.datetime(2023, 1, 1, 0, 0).timestamp() * 1000),
+            msg='Incorrect first publication date in milliseconds received.')
         self.assertEqual(
             story.story_contents.nodes[1].
-            last_modified, datetime.datetime(2023, 1, 1, 0, 0),
-            msg='Incorrect last modified date received.')
+            last_modified_msecs, (
+                datetime.datetime(2023, 1, 1, 0, 0).timestamp() * 1000),
+            msg='Incorrect last modified date in milliseconds received.')
 
         story_summary = story_fetchers.get_story_summary_by_id(self.STORY_ID)
         self.assertEqual(story_summary.node_titles, ['Title 1', 'Title 2'])
