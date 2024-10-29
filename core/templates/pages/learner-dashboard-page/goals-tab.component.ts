@@ -64,7 +64,6 @@ export class GoalsTabComponent implements OnInit {
   @Input() partiallyLearntTopicsList!: LearnerTopicSummary[];
   @Input() learntToPartiallyLearntTopics!: string[];
   @Input() learnerDashboardRedesignFeatureFlag!: boolean;
-  @Input() username!: string;
   // Child dropdown is undefined because initially it is in closed state using
   // the following property: {'static' = false}.
   @ViewChild('dropdown', {static: false}) dropdownRef: ElementRef | undefined;
