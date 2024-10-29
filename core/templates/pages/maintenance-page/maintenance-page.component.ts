@@ -17,7 +17,6 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {downgradeComponent} from '@angular/upgrade/static';
 
 import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
 import {DocumentAttributeCustomizationService} from 'services/contextual/document-attribute-customization.service';
@@ -47,4 +46,3 @@ export class MaintenancePageComponent implements OnInit {
     return this.urlInterpolationService.getStaticImageUrl(imagePath);
   }
 }
-

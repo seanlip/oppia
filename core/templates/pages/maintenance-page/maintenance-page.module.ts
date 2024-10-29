@@ -23,8 +23,8 @@ import {SharedComponentsModule} from 'components/shared-component.module';
 import {MaintenancePageComponent} from 'pages/maintenance-page/maintenance-page.component';
 import {ToastrModule} from 'ngx-toastr';
 import {toastrConfig} from 'pages/oppia-root/app.module';
-import { MaintenancePageRootComponent } from './maintenance-page-root.component';
-import { CommonModule } from '@angular/common';
+import {MaintenancePageRootComponent} from './maintenance-page-root.component';
+import {CommonModule} from '@angular/common';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -41,10 +41,7 @@ import { CommonModule } from '@angular/common';
       },
     ]),
   ],
-  declarations: [
-    MaintenancePageComponent,
-    MaintenancePageRootComponent
-  ],
+  declarations: [MaintenancePageComponent, MaintenancePageRootComponent],
   entryComponents: [MaintenancePageComponent],
   bootstrap: [MaintenancePageComponent],
 })
