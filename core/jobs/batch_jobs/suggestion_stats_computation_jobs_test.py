@@ -19,7 +19,6 @@
 from __future__ import annotations
 
 import datetime
-from unittest.mock import patch
 
 from core import feconf
 from core.constants import constants
@@ -36,6 +35,7 @@ from core.jobs import job_test_utils
 from core.jobs.batch_jobs import suggestion_stats_computation_jobs
 from core.jobs.types import job_run_result
 from core.platform import models
+from core.tests import test_utils
 
 from typing import Dict, Final, List, Tuple, Type, Union
 
@@ -712,13 +712,12 @@ class GenerateContributionStatsJobTests(job_test_utils.JobTestBase):
 
     def test_creates_multiple_stats_models_from_multiple_users(
         self
-    ) -> None: 
+    ) -> None:
         # Define a fixed datetime.
-        fixed_time = datetime.datetime(2024, 10, 28)
+        mocked_now = datetime.datetime(2024, 10, 28)
 
-        with patch('datetime.datetime') as mock_datetime:
-            # Mocking datetime to return a fixed time.
-            mock_datetime.utcnow.return_value = fixed_time
+        # Using the inherited mock_datetime_utcnow() function from GenericTestBase.
+        with test_utils.GenericTestBase.mock_datetime_utcnow(self, mocked_now):
             opportunity_model = self.create_model(
                 opportunity_models.ExplorationOpportunitySummaryModel,
                 id=self.EXP_1_ID,
@@ -886,11 +885,11 @@ class GenerateContributionStatsJobTests(job_test_utils.JobTestBase):
             translation_review_stats_model.accepted_translation_word_count, 6)
         self.assertEqual(
             translation_review_stats_model.first_contribution_date,
-            fixed_time.date()
+            mocked_now.date()
         )
         self.assertEqual(
             translation_review_stats_model.last_contribution_date,
-            fixed_time.date()
+            mocked_now.date()
         )
 
     def _create_valid_question_data(
