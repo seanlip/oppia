@@ -327,7 +327,8 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
 
         self.all_test_suites = {
             'acceptance': {
-                'suites': [
+                'docker': {'count': 0, 'suites': []},
+                'python': [
                     {
                         'name': 'blog-admin/assign-roles',
                         'module': 'blog-admin/assign-roles.spec.ts'

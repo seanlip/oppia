@@ -57,7 +57,6 @@ class GenericTestSuiteDict(TypedDict):
 
     name: str
     module: str
-    use_docker: Optional[bool]
 
 
 class LighthouseTestSuiteDict(GenericTestSuiteDict):
@@ -239,8 +238,8 @@ def output_variable_to_github_workflow(
 
 
 def split_tests_by_docker(
-        test_suites: Sequence[GenericTestSuiteDict]
-) -> tuple[Sequence[GenericTestSuiteDict], Sequence[GenericTestSuiteDict]]:
+        test_suites: CITestSuitesDict
+) -> dict[str, CITestSuitesDict]:
     """Splits the test suites into Docker and Python environments.
 
     Args:
