@@ -35,7 +35,7 @@ from core.jobs import job_test_utils
 from core.jobs.batch_jobs import suggestion_stats_computation_jobs
 from core.jobs.types import job_run_result
 from core.platform import models
-from core.tests.test_utils import GenericTestBase
+from core.tests import test_utils
 
 from typing import Dict, Final, List, Tuple, Type, Union
 
@@ -713,11 +713,15 @@ class GenerateContributionStatsJobTests(job_test_utils.JobTestBase):
     def test_creates_multiple_stats_models_from_multiple_users(
         self
     ) -> None:
+        # Since, we cannot import the class directly, we need to create
+        # a new instance of the class to use the method.
+        helper = test_utils.GenericTestBase()
+
         # Define a fixed datetime.
         mocked_now = datetime.datetime(2024, 10, 28)
 
         # Using inherited mock_datetime_utcnow() function from GenericTestBase.
-        with GenericTestBase.mock_datetime_utcnow(self, mocked_now):
+        with helper.mock_datetime_utcnow(self, mocked_now):
             opportunity_model = self.create_model(
                 opportunity_models.ExplorationOpportunitySummaryModel,
                 id=self.EXP_1_ID,
