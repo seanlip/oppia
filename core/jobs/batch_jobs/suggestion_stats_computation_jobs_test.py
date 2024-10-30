@@ -35,7 +35,7 @@ from core.jobs import job_test_utils
 from core.jobs.batch_jobs import suggestion_stats_computation_jobs
 from core.jobs.types import job_run_result
 from core.platform import models
-from core.tests import test_utils
+from core.tests.test_utils import GenericTestBase
 
 from typing import Dict, Final, List, Tuple, Type, Union
 
@@ -717,7 +717,7 @@ class GenerateContributionStatsJobTests(job_test_utils.JobTestBase):
         mocked_now = datetime.datetime(2024, 10, 28)
 
         # Using inherited mock_datetime_utcnow() function from GenericTestBase.
-        with test_utils.GenericTestBase.mock_datetime_utcnow(self, mocked_now):
+        with GenericTestBase.mock_datetime_utcnow(self, mocked_now):
             opportunity_model = self.create_model(
                 opportunity_models.ExplorationOpportunitySummaryModel,
                 id=self.EXP_1_ID,
