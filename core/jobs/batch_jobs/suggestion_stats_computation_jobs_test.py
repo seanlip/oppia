@@ -716,7 +716,7 @@ class GenerateContributionStatsJobTests(job_test_utils.JobTestBase):
         # Define a fixed datetime.
         mocked_now = datetime.datetime(2024, 10, 28)
 
-        # Using the inherited mock_datetime_utcnow() function from GenericTestBase.
+        # Using inherited mock_datetime_utcnow() function from GenericTestBase.
         with test_utils.GenericTestBase.mock_datetime_utcnow(self, mocked_now):
             opportunity_model = self.create_model(
                 opportunity_models.ExplorationOpportunitySummaryModel,
