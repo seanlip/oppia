@@ -2763,8 +2763,9 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
 
     # TODO(#20377): The validation tests below should be split into separate
     # unit tests. Also, all validation errors should be covered in the tests.
-    def test_non_existing_state_in_default_outcome(self) -> None:
-        """Test that a default outcome pointing to a non-existing state raises a validation error."""
+        def test_non_existing_state_in_default_outcome(self) -> None:
+        """Test that a default outcome pointing to a non-existing 
+        state raises a validation error."""
         exploration = exp_domain.Exploration.create_default_exploration('eid')
         content_id_generator = translation_domain.ContentIdGenerator(
             exploration.next_content_id_index
@@ -2808,24 +2809,33 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
     def test_invalid_character_in_state_name(self) -> None:
         """Test that invalid characters in a state name raise validation errors."""
         exploration = exp_domain.Exploration.create_default_exploration('eid')
-        content_id_generator = translation_domain.ContentIdGenerator(exploration.next_content_id_index)
+        content_id_generator = translation_domain.ContentIdGenerator(
+            exploration.next_content_id_index
+        )
         
         bad_state = state_domain.State.create_default_state(
             '/state',
-            content_id_generator.generate(translation_domain.ContentType.CONTENT),
-            content_id_generator.generate(translation_domain.ContentType.DEFAULT_OUTCOME)
+            content_id_generator.generate(
+                translation_domain.ContentType.CONTENT),
+            content_id_generator.generate(
+                translation_domain.ContentType.DEFAULT_OUTCOME)
         )
         exploration.states = {'/state': bad_state}
-        self._assert_validation_error(exploration, 'Invalid character / in a state name')
+        self._assert_validation_error(
+            exploration, 'Invalid character / in a state name'
+        )
 
     def test_exploration_with_no_states(self) -> None:
         """Test that an exploration with no states raises a validation error."""
         exploration = exp_domain.Exploration.create_default_exploration('eid')
         exploration.states = {}
-        self._assert_validation_error(exploration, 'exploration has no states')
+        self._assert_validation_error(
+            exploration, 'exploration has no states'
+        )
 
     def test_exploration_with_no_initial_state_name(self) -> None:
-        """Test that an exploration with no initial state name raises a validation error."""
+        """Test that an exploration with no initial state name raises 
+        a validation error."""
         exploration = exp_domain.Exploration.create_default_exploration('eid')
         content_id_generator = translation_domain.ContentIdGenerator(
             exploration.next_content_id_index
@@ -2833,8 +2843,10 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
 
         state = state_domain.State.create_default_state(
             'ABC',
-            content_id_generator.generate(translation_domain.ContentType.CONTENT),
-            content_id_generator.generate(translation_domain.ContentType.DEFAULT_OUTCOME)
+            content_id_generator.generate(
+                translation_domain.ContentType.CONTENT),
+            content_id_generator.generate(
+                translation_domain.ContentType.DEFAULT_OUTCOME)
         )
 
         exploration.states = {'ABC': state}
@@ -2844,21 +2856,26 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             exploration, 'has no initial state name'
         )
 
-
     def test_invalid_initial_state(self) -> None:
         """Test that an invalid initial state name raises a validation error."""
         exploration = exp_domain.Exploration.create_default_exploration('eid')
-        content_id_generator = translation_domain.ContentIdGenerator(exploration.next_content_id_index)
+        content_id_generator = translation_domain.ContentIdGenerator(
+            exploration.next_content_id_index
+        )
         
         new_state = state_domain.State.create_default_state(
             'ABC',
-            content_id_generator.generate(translation_domain.ContentType.CONTENT),
-            content_id_generator.generate(translation_domain.ContentType.DEFAULT_OUTCOME)
+            content_id_generator.generate(
+                translation_domain.ContentType.CONTENT),
+            content_id_generator.generate(
+                translation_domain.ContentType.DEFAULT_OUTCOME)
         )
         second_state = state_domain.State.create_default_state(
             'BCD',
-            content_id_generator.generate(translation_domain.ContentType.CONTENT),
-            content_id_generator.generate(translation_domain.ContentType.DEFAULT_OUTCOME)
+            content_id_generator.generate(
+                translation_domain.ContentType.CONTENT),
+            content_id_generator.generate(
+                translation_domain.ContentType.DEFAULT_OUTCOME)
         )
         
         exploration.states = {'ABC': new_state, 'BCD': second_state}
@@ -2866,14 +2883,13 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
         
         self._assert_validation_error(
             exploration,
-            r'There is no state in \[\'ABC\'\, \'BCD\'\] corresponding to the exploration\'s initial state name InvalidStateName.'
+            r'There is no state in \[\'ABC\'\, \'BCD\'\] corresponding to '
+            r'the exploration\'s initial state name InvalidStateName.'
         )
 
-
-    
-
     def test_invalid_answer_group_destination(self) -> None:
-        """Test that an invalid answer group destination raises a validation error."""
+        """Test that an invalid answer group destination raises a 
+        validation error."""
         exploration = exp_domain.Exploration.create_default_exploration('eid')
         content_id_generator = translation_domain.ContentIdGenerator(
             exploration.next_content_id_index
@@ -2895,20 +2911,33 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
         answer_groups = interaction.answer_groups
         if not answer_groups:
             answer_groups.append(state_domain.AnswerGroup(
-                outcome=state_domain.Outcome(valid_state_name, None, state_domain.SubtitledHtml('feedback_1', 'Feedback'), False, [], None, None),
-                rule_specs=[state_domain.RuleSpec('Contains', {'x': {'contentId': 'rule_input_Contains', 'normalizedStrSet': ['Test']}})],
-                training_data=[],
-                tagged_skill_misconception_id=None
+                outcome=state_domain.Outcome(
+                    valid_state_name, None,
+                    state_domain.SubtitledHtml('feedback_1', 'Feedback'),
+                    False, [], None, None
+                ),
+                rule_specs=[state_domain.RuleSpec(
+                    'Contains', {'x': {
+                        'contentId': 'rule_input_Contains',
+                        'normalizedStrSet': ['Test']
+                    }}
+                )],
+                training_data=[], tagged_skill_misconception_id=None
             ))
 
-        init_state.recorded_voiceovers.add_content_id_for_voiceover('feedback_1')
+        init_state.recorded_voiceovers.add_content_id_for_voiceover(
+            'feedback_1'
+        )
 
-        exploration.update_next_content_id_index(content_id_generator.next_content_id_index)
+        exploration.update_next_content_id_index(
+            content_id_generator.next_content_id_index
+        )
 
         answer_group = answer_groups[0]
         answer_group.outcome.dest = 'DEF'
         self._assert_validation_error(
-            exploration, 'destination DEF is not a valid')
+            exploration, 'destination DEF is not a valid'
+        )
 
     def test_tag_validation(self) -> None:
         """Test validation of exploration tags."""
