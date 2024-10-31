@@ -2763,14 +2763,15 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
 
     # TODO(#20377): The validation tests below should be split into separate
     # unit tests. Also, all validation errors should be covered in the tests.
-        def test_non_existing_state_in_default_outcome(self) -> None:
+    def test_non_existing_state_in_default_outcome(self) -> None:
         """Test that a default outcome pointing to a non-existing 
-        state raises a validation error."""
+          state raises a validation error.
+        """
+
         exploration = exp_domain.Exploration.create_default_exploration('eid')
         content_id_generator = translation_domain.ContentIdGenerator(
             exploration.next_content_id_index
         )
-        
         new_state = state_domain.State.create_default_state(
             'ABC',
             content_id_generator.generate(
@@ -2778,7 +2779,6 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             content_id_generator.generate(
                 translation_domain.ContentType.DEFAULT_OUTCOME)
         )
-        
         exploration.states = {
             'initState': new_state,
             'BCD': state_domain.State.create_default_state(
@@ -2801,18 +2801,23 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
         )
 
     def test_invalid_character_in_title(self) -> None:
-        """Test that an invalid character in the title raises a validation error."""
+        """Test that an invalid character in the 
+          title raises a validation error.
+        """
+
         exploration = exp_domain.Exploration.create_default_exploration('eid')
         exploration.title = 'Hello #'
         self._assert_validation_error(exploration, 'Invalid character #')
 
     def test_invalid_character_in_state_name(self) -> None:
-        """Test that invalid characters in a state name raise validation errors."""
+        """Test that invalid characters in a state name 
+         raise validation errors.
+        """
+
         exploration = exp_domain.Exploration.create_default_exploration('eid')
         content_id_generator = translation_domain.ContentIdGenerator(
             exploration.next_content_id_index
         )
-        
         bad_state = state_domain.State.create_default_state(
             '/state',
             content_id_generator.generate(
@@ -2826,7 +2831,9 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
         )
 
     def test_exploration_with_no_states(self) -> None:
-        """Test that an exploration with no states raises a validation error."""
+        """Test that an exploration with no states raises a 
+            validation error.
+        """
         exploration = exp_domain.Exploration.create_default_exploration('eid')
         exploration.states = {}
         self._assert_validation_error(
@@ -2835,7 +2842,9 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
 
     def test_exploration_with_no_initial_state_name(self) -> None:
         """Test that an exploration with no initial state name raises 
-        a validation error."""
+          a validation error.
+        """
+
         exploration = exp_domain.Exploration.create_default_exploration('eid')
         content_id_generator = translation_domain.ContentIdGenerator(
             exploration.next_content_id_index
@@ -2862,7 +2871,6 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
         content_id_generator = translation_domain.ContentIdGenerator(
             exploration.next_content_id_index
         )
-        
         new_state = state_domain.State.create_default_state(
             'ABC',
             content_id_generator.generate(
@@ -2877,10 +2885,8 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             content_id_generator.generate(
                 translation_domain.ContentType.DEFAULT_OUTCOME)
         )
-        
         exploration.states = {'ABC': new_state, 'BCD': second_state}
         exploration.init_state_name = 'InvalidStateName'
-        
         self._assert_validation_error(
             exploration,
             r'There is no state in \[\'ABC\'\, \'BCD\'\] corresponding to '
@@ -2889,7 +2895,9 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
 
     def test_invalid_answer_group_destination(self) -> None:
         """Test that an invalid answer group destination raises a 
-        validation error."""
+          validation error.
+        """
+
         exploration = exp_domain.Exploration.create_default_exploration('eid')
         content_id_generator = translation_domain.ContentIdGenerator(
             exploration.next_content_id_index
