@@ -24,6 +24,7 @@ import os
 from core import feconf
 from core import utils
 from core.constants import constants
+from core.domain import caching_services
 from core.domain import exp_domain
 from core.domain import exp_fetchers
 from core.domain import exp_services
@@ -4164,6 +4165,138 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             exploration.to_dict(),
             exp_domain.Exploration.deserialize(
                 exploration.serialize()).to_dict())
+
+    def test_put_exploration_into_cache_and_retrieve_from_cache_to_verify(
+            self
+    ) -> None:
+        """Test that an Exploration object can be correctly stored in and
+        retrieved from the cache.
+        """
+        init_state_name = feconf.DEFAULT_INIT_STATE_NAME
+        exploration_id = 'expid_12145'
+        title = feconf.DEFAULT_EXPLORATION_TITLE
+        category = feconf.DEFAULT_EXPLORATION_CATEGORY
+        objective = feconf.DEFAULT_EXPLORATION_OBJECTIVE
+        language_code = constants.DEFAULT_LANGUAGE_CODE
+        content_id_generator = translation_domain.ContentIdGenerator()
+        init_state_dict = state_domain.State.create_default_state(
+            init_state_name,
+            content_id_generator.generate(
+                translation_domain.ContentType.CONTENT),
+            content_id_generator.generate(
+                translation_domain.ContentType.DEFAULT_OUTCOME),
+            is_initial_state=True).to_dict()
+
+        states_dict = {
+            init_state_name: init_state_dict
+        }
+
+        new_exploration = exp_domain.Exploration(
+              exploration_id, title, category, objective, language_code, [],
+                '', '', feconf.CURRENT_STATE_SCHEMA_VERSION,
+              init_state_name, states_dict, {}, [], 0,
+              feconf.DEFAULT_AUTO_TTS_ENABLED,
+              content_id_generator.next_content_id_index, True)
+        sub_namespace = (
+            str(new_exploration.version) if new_exploration.version else None)
+
+        is_properly_cachable = caching_services.set_multi(
+            namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
+            sub_namespace=sub_namespace,
+            id_value_mapping={exploration_id: new_exploration})
+        new_exploration_retrive_from_cache = caching_services.get_multi(
+            namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
+            sub_namespace=sub_namespace,
+            obj_ids=[exploration_id]
+        ).get(exploration_id)
+        self.assertTrue(
+            is_properly_cachable,
+            'Exploration is not properly cachable'
+        )
+
+        default_exploration_dict = (
+            exp_domain.Exploration.create_default_exploration('exp_cache_test')
+            .to_dict()
+        )
+
+        new_exploration_dict_retrive_from_cache = (
+          new_exploration_retrive_from_cache.to_dict()
+          if new_exploration_retrive_from_cache else default_exploration_dict)
+        self.assertEqual(
+            new_exploration.to_dict(),
+            new_exploration_dict_retrive_from_cache,
+            'Exploration put into cache and retrieve from cache is not same'
+        )
+
+    def test_migrate_state_schema(self) -> None:
+        """Test the migration of an Exploration object's state
+        schema version and cache integration.
+        """
+        init_state_name = feconf.DEFAULT_INIT_STATE_NAME
+        exploration_id = 'expid_12145'
+        title = feconf.DEFAULT_EXPLORATION_TITLE
+        category = feconf.DEFAULT_EXPLORATION_CATEGORY
+        objective = feconf.DEFAULT_EXPLORATION_OBJECTIVE
+        language_code = constants.DEFAULT_LANGUAGE_CODE
+
+        content_id_generator = translation_domain.ContentIdGenerator()
+        init_state_dict = state_domain.State.create_default_state(
+            init_state_name,
+            content_id_generator.generate(
+                translation_domain.ContentType.CONTENT),
+            content_id_generator.generate(
+                translation_domain.ContentType.DEFAULT_OUTCOME),
+            is_initial_state=True).to_dict()
+
+        states_dict = {
+            init_state_name: init_state_dict
+        }
+
+        new_exploration = exp_domain.Exploration(
+              exploration_id, title, category, objective, language_code, [], '',
+              '', 55,
+              init_state_name, states_dict, {}, [], 0,
+              feconf.DEFAULT_AUTO_TTS_ENABLED,
+              content_id_generator.next_content_id_index, True)
+        sub_namespace = (
+          str(new_exploration.version) if new_exploration.version else None)
+        is_properly_cachable = caching_services.set_multi(
+            namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
+            sub_namespace=sub_namespace,
+            id_value_mapping={exploration_id: new_exploration})
+        new_exploration_retrive_from_cache = caching_services.get_multi(
+            namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
+            sub_namespace=sub_namespace,
+            obj_ids=[exploration_id]
+        ).get(exploration_id)
+
+        self.assertTrue(
+            is_properly_cachable,
+            'Exploration is not properly cachable'
+        )
+
+        new_exploration_retrive_from_cache = caching_services.get_multi(
+            namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
+            sub_namespace=sub_namespace,
+            obj_ids=[exploration_id]
+        ).get(exploration_id)
+
+        default_exploration_dict = (
+            exp_domain.Exploration.create_default_exploration('exp_cache_test')
+            .to_dict()
+        )
+
+        exploration_data = (
+            new_exploration_retrive_from_cache.to_dict()
+            if new_exploration_retrive_from_cache else default_exploration_dict)
+        updated_exploration = exp_domain.Exploration.migrate_state_schema(
+            exploration_data
+        )
+        self.assertEqual(
+            updated_exploration['states_schema_version'],
+            feconf.CURRENT_STATE_SCHEMA_VERSION,
+            'Exploration state schema version is failed to updated'
+        )
 
     def test_get_all_translatable_content_for_exp(self) -> None:
         """Get all translatable fields from exploration."""
