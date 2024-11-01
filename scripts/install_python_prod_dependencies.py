@@ -23,7 +23,6 @@ import re
 import shutil
 import subprocess
 import sys
-import warnings
 
 from core import utils
 from scripts import install_python_dev_dependencies
