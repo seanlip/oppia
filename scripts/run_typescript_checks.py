@@ -22,11 +22,11 @@ import os
 import shutil
 import subprocess
 import sys
-import yaml
 
 from core import utils
 from scripts import common
 from typing import List, Optional, Sequence
+import yaml
 
 from . import build
 

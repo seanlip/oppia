@@ -33,11 +33,13 @@ import os
 import shutil
 import subprocess
 import sys
-from typing import Final, List, Optional, Tuple
 
+# `pre_commit_hook.py` is symlinked into `/.git/hooks`, so we explicitly import
+# the current working directory so that Git knows where to find the relevant
+# imports.
 sys.path.append(os.getcwd())
-
-from scripts import common  # isort:skip
+from scripts import common  # isort:skip  # pylint: disable=wrong-import-position
+from typing import Final, List, Optional, Tuple  # isort:skip  # pylint: disable=wrong-import-position
 
 FECONF_FILEPATH: Final = os.path.join('core', 'feconf.py')
 CONSTANTS_FILEPATH: Final = os.path.join('.', 'assets', 'constants.ts')
