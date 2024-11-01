@@ -52,8 +52,10 @@ from typing import Dict, List, Optional, Sequence, Tuple, cast
 MYPY = False
 if MYPY: # pragma: no cover
     from mypy_imports import topic_models
+    from mypy_imports import transaction_services
 
 (topic_models,) = models.Registry.import_models([models.Names.TOPIC])
+transaction_services = models.Registry.import_transaction_services()
 
 
 def _create_topic(
@@ -1015,6 +1017,7 @@ def add_additional_story(
         'Added %s to additional story ids' % story_id)
 
 
+@transaction_services.run_in_transaction_wrapper
 def delete_topic(
     committer_id: str, topic_id: str, force_deletion: bool = False
 ) -> None:
