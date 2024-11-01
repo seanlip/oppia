@@ -316,7 +316,7 @@
       </ul>
     </li>
   </ul>
-  <ul class="nav oppia-navbar-nav oppia-navbar-tabs oppia-navbar-profile">
+  <ul class="nav oppia-navbar-nav oppia-navbar-tabs">
     <li ngbDropdown
         #languageDropdown="ngbDropdown"
         class="nav-item oppia-navbar-clickable-dropdown dropdown"
@@ -327,7 +327,8 @@
       <div class="oppia-navbar-button-container dropdown langbtnContainer">
         <button ngbDropdownToggle
                 class="btn dropdown-toggle oppia-navbar-button oppia-language-dropdown-button e2e-test-language-dropdown langbtn"
-                (keydown)="onMenuKeypress($event, 'languageMenu', {shiftTab: ACTION_CLOSE, enter: ACTION_OPEN})">
+                (keydown)="onMenuKeypress($event, 'languageMenu', {shiftTab: ACTION_CLOSE, enter: ACTION_OPEN})"
+                [ngClass]="{'oppia-language-dropdown-button-embedded': pageIsIframed}">
           <i class="fas fa-globe language-icon langi"></i>
           <span class="mobile-view-language-code lngcd" *ngIf="windowIsNarrow"> {{ currentLanguageCode }} </span>
           <span class="desktop-view-language-code" *ngIf="!windowIsNarrow"> {{ currentLanguageText }} </span>
@@ -631,6 +632,10 @@
     :lang(ar) .pfl {
       position: relative;
       top: 6rem;
+    }
+    .oppia-language-dropdown-button-embedded {
+      margin-top: 8px;
+      padding: 0 1px 2px 2px;
     }
   }
 
