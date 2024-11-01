@@ -87,6 +87,7 @@ import {StateVersionHistoryComponent} from './editor-tab/state-version-history/s
 import {ExplorationEditorPageRootComponent} from './exploration-editor-page-root.component';
 import {CommonModule} from '@angular/common';
 import {ExplorationEditorPageAuthGuard} from './exploration-editor-page-auth.guard';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -99,6 +100,7 @@ import {ExplorationEditorPageAuthGuard} from './exploration-editor-page-auth.gua
         canActivate: [ExplorationEditorPageAuthGuard],
       },
     ]),
+    NgbModule,
     InteractionExtensionsModule,
     MatAutocompleteModule,
     ReactiveFormsModule,

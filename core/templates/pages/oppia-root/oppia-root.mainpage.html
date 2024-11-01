@@ -7,13 +7,5 @@
     <oppia-root></oppia-root>
 
     @load('pages/footer_js_libs.html')
-    <% if (webpackConfig.mode == 'production') { %>
-      <script src="/third_party/static/angularjs-1.8.2/angular.min.js"></script>
-      <script src="/third_party/generated/js/third_party.min.js"></script>
-    <% } else { %>
-      <script src="/third_party/static/angularjs-1.8.2/angular.js"></script>
-      <script src="/third_party/generated/js/third_party.js"></script>
-    <% } %>
-    
   </body>
 </html>
