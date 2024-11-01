@@ -68,13 +68,6 @@ describe('rich-text components', function () {
         'https://google.com/',
         false
       );
-      await richTextEditor.addRteComponent(
-        'Video',
-        'M7lc1UVf-VE',
-        10,
-        100,
-        false
-      );
       // We put these last as otherwise Protractor sometimes fails to scroll to
       // and click on them.
       await richTextEditor.addRteComponent(
@@ -110,13 +103,6 @@ describe('rich-text components', function () {
           false
         );
         await richTextChecker.readRteComponent(
-          'Video',
-          'M7lc1UVf-VE',
-          10,
-          100,
-          false
-        );
-        await richTextChecker.readRteComponent(
           'Collapsible',
           'title',
           await forms.toRichText('inner')
@@ -135,6 +121,51 @@ describe('rich-text components', function () {
           'Skillreview',
           'highlight',
           await forms.toRichText('description 1')
+        );
+      }
+    );
+    await explorationEditorPage.discardChanges();
+    await users.logout();
+  });
+
+  it('should display youtube player correctly', async function () {
+    await users.createAndLoginCurriculumAdminUser(
+      'user@richTextComponents.com',
+      'userRichTextComponent'
+    );
+
+    await workflow.createTopic(
+      'topic 1',
+      'topic-one',
+      'topic 1 description',
+      false
+    );
+    await workflow.createSkillAndAssignTopic(
+      'skill 1',
+      'description 1',
+      'topic 1'
+    );
+    await workflow.createExploration(true);
+
+    await explorationEditorMainTab.setContent(async function (richTextEditor) {
+      await richTextEditor.addRteComponent(
+        'Video',
+        'M7lc1UVf-VE',
+        10,
+        100,
+        false
+      );
+    });
+
+    await explorationEditorPage.navigateToPreviewTab();
+    await explorationPlayerPage.expectContentToMatch(
+      async function (richTextChecker) {
+        await richTextChecker.readRteComponent(
+          'Video',
+          'M7lc1UVf-VE',
+          10,
+          100,
+          false
         );
       }
     );
