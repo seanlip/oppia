@@ -28,9 +28,7 @@ import warnings
 from core import utils
 from scripts import install_python_dev_dependencies
 
-with warnings.catch_warnings():
-    warnings.filterwarnings('ignore', category=DeprecationWarning)
-    import pkg_resources
+import pkg_resources
 from typing import Dict, Final, List, Optional, Set, Tuple
 
 from . import common
