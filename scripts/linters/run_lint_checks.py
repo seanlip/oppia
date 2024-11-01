@@ -62,10 +62,10 @@ import re
 import subprocess
 import sys
 import threading
-from typing import Dict, List, Optional, Set, Tuple
 
 from core import utils
 from scripts import common
+from typing import Dict, List, Optional, Set, Tuple
 
 # Install third party dependencies before proceeding.
 from . import codeowner_linter  # isort:skip

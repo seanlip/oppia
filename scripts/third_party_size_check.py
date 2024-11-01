@@ -24,10 +24,9 @@ from __future__ import annotations
 import fnmatch
 import os
 import sys
-from typing import List
 
 from core import utils
-from scripts import common
+from typing import List
 
 THIRD_PARTY_PATH = os.path.join(os.getcwd(), 'third_party')
 THIRD_PARTY_SIZE_LIMIT = 15000

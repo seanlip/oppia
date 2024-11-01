@@ -24,13 +24,13 @@ import os
 import re
 import subprocess
 import sys
-from typing import Final, List, Optional
 
 from core import feconf
 from core.constants import constants
 from scripts import build
 from scripts import common
 from scripts import servers
+from typing import Final, List, Optional
 
 LIGHTHOUSE_MODE_PERFORMANCE: Final = 'performance'
 LIGHTHOUSE_MODE_ACCESSIBILITY: Final = 'accessibility'

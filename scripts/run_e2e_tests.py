@@ -21,13 +21,13 @@ import contextlib
 import os
 import subprocess
 import sys
-from typing import Final, List, Optional, Tuple
 
 from core.constants import constants
 from scripts import build
 from scripts import common
 from scripts import install_third_party_libs
 from scripts import servers
+from typing import Final, List, Optional, Tuple
 
 MAX_RETRY_COUNT: Final = 3
 

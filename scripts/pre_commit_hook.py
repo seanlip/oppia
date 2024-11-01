@@ -37,7 +37,7 @@ from typing import Final, List, Optional, Tuple
 
 sys.path.append(os.getcwd())
 
-from scripts import common
+from scripts import common  # isort:skip
 
 FECONF_FILEPATH: Final = os.path.join('core', 'feconf.py')
 CONSTANTS_FILEPATH: Final = os.path.join('.', 'assets', 'constants.ts')

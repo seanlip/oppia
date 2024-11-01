@@ -23,10 +23,10 @@ from __future__ import annotations
 import argparse
 import os
 import re
-from typing import Dict, Final, List, Optional
 
 from core import utils
 from scripts import common
+from typing import Dict, Final, List, Optional
 
 GIT_CMD_DIFF_NAMES_ONLY_FORMAT_STRING: Final = 'git diff --name-only %s %s'
 GIT_CMD_SHOW_FORMAT_STRING: Final = 'git show %s:core/feconf.py'

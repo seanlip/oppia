@@ -56,10 +56,9 @@ import os
 import socket
 import sys
 import threading
-from typing import Callable, Deque, Final, List, Optional, Sequence
 
 from core import utils
-from scripts import common
+from typing import Callable, Deque, Final, List, Optional, Sequence
 
 _PROTOCOLS: Final = [
     (socket.SOCK_STREAM, socket.IPPROTO_TCP),

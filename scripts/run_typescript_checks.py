@@ -22,12 +22,13 @@ import os
 import shutil
 import subprocess
 import sys
-from typing import List, Optional, Sequence
 import yaml
 
-from . import build
 from core import utils
 from scripts import common
+from typing import List, Optional, Sequence
+
+from . import build
 
 # Contains the name of all files that are not strictly typed.
 # This list must be kept up-to-date; the changes (only remove) should be done
