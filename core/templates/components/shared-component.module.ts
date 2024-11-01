@@ -207,6 +207,7 @@ import {LostChangesModalComponent} from 'pages/exploration-editor-page/modal-tem
 import {ChangesInHumanReadableFormComponent} from 'pages/exploration-editor-page/changes-in-human-readable-form/changes-in-human-readable-form.component';
 import {SaveVersionMismatchModalComponent} from 'pages/exploration-editor-page/modal-templates/save-version-mismatch-modal.component';
 import {ConfirmDeleteStateModalComponent} from 'pages/exploration-editor-page/editor-tab/templates/modal-templates/confirm-delete-state-modal.component';
+import {SaveValidationFailModalComponent} from 'pages/exploration-editor-page/modal-templates/save-validation-fail-modal.component';
 @NgModule({
   imports: [
     BackgroundBannerModule,
@@ -399,6 +400,7 @@ import {ConfirmDeleteStateModalComponent} from 'pages/exploration-editor-page/ed
     ChangesInHumanReadableFormComponent,
     SaveVersionMismatchModalComponent,
     ConfirmDeleteStateModalComponent,
+    SaveValidationFailModalComponent,
   ],
 
   entryComponents: [
@@ -550,6 +552,7 @@ import {ConfirmDeleteStateModalComponent} from 'pages/exploration-editor-page/ed
     ChangesInHumanReadableFormComponent,
     SaveVersionMismatchModalComponent,
     ConfirmDeleteStateModalComponent,
+    SaveValidationFailModalComponent,
   ],
 
   exports: [

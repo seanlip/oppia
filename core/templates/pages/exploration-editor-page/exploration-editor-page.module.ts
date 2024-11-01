@@ -26,7 +26,6 @@ import {SharedComponentsModule} from 'components/shared-component.module';
 import {StateParamChangesEditorComponent} from './editor-tab/state-param-changes-editor/state-param-changes-editor.component';
 import {DeleteStateSkillModalComponent} from './editor-tab/templates/modal-templates/delete-state-skill-modal.component';
 import {InteractionExtensionsModule} from 'interactions/interactions.module';
-import {SaveValidationFailModalComponent} from './modal-templates/save-validation-fail-modal.component';
 import {WelcomeModalComponent} from './modal-templates/welcome-modal.component';
 import {StateDiffModalComponent} from './modal-templates/state-diff-modal.component';
 import {CreateFeedbackThreadModalComponent} from './feedback-tab/templates/create-feedback-thread-modal.component';
@@ -116,7 +115,6 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
   declarations: [
     DeleteStateSkillModalComponent,
     StateParamChangesEditorComponent,
-    SaveValidationFailModalComponent,
     VoiceoverRemovalConfirmModalComponent,
     WelcomeModalComponent,
     StateDiffModalComponent,
@@ -173,7 +171,6 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
   entryComponents: [
     DeleteStateSkillModalComponent,
     StateParamChangesEditorComponent,
-    SaveValidationFailModalComponent,
     VoiceoverRemovalConfirmModalComponent,
     WelcomeModalComponent,
     StateDiffModalComponent,
