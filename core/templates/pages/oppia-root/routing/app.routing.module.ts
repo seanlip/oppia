@@ -48,10 +48,26 @@ const routes: Route[] = [
     canActivate: [IsLoggedInGuard],
   },
   {
+    path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.STORY_EDITOR.ROUTE,
+    loadChildren: () =>
+      import('pages/story-editor-page/story-editor-page.module').then(
+        m => m.StoryEditorPageModule
+      ),
+    canActivate: [IsLoggedInGuard],
+  },
+  {
     path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.MODERATOR.ROUTE,
     loadChildren: () =>
       import('pages/moderator-page/moderator-page.module').then(
         m => m.ModeratorPageModule
+      ),
+    canActivate: [IsLoggedInGuard],
+  },
+  {
+    path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.BLOG_DASHBOARD.ROUTE,
+    loadChildren: () =>
+      import('pages/blog-dashboard-page/blog-dashboard-page.module').then(
+        m => m.BlogDashboardPageModule
       ),
     canActivate: [IsLoggedInGuard],
   },
@@ -62,6 +78,13 @@ const routes: Route[] = [
         m => m.BlogAdminPageModule
       ),
     canActivate: [IsLoggedInGuard],
+  },
+  {
+    path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.TOPIC_VIEWER.ROUTE,
+    loadChildren: () =>
+      import('pages/topic-viewer-page/topic-viewer-page.module').then(
+        m => m.TopicViewerPageModule
+      ),
   },
   {
     path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.EMAIL_DASHBOARD.ROUTE,
@@ -187,6 +210,7 @@ const routes: Route[] = [
   {
     path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.DELETE_ACCOUNT.ROUTE,
     pathMatch: 'full',
+    canActivate: [IsLoggedInGuard],
     loadChildren: () =>
       import('pages/delete-account-page/delete-account-page.module').then(
         m => m.DeleteAccountPageModule
@@ -212,6 +236,7 @@ const routes: Route[] = [
   {
     path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.FEEDBACK_UPDATES.ROUTE,
     pathMatch: 'full',
+    canActivate: [IsLoggedInGuard],
     loadChildren: () =>
       import('pages/feedback-updates-page/feedback-updates-page.module').then(
         m => m.FeedbackUpdatesPageModule
@@ -422,6 +447,14 @@ const routes: Route[] = [
     loadChildren: () =>
       import('pages/collection-player-page/collection-player-page.module').then(
         m => m.CollectionPlayerPageModule
+      ),
+  },
+  {
+    path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.REVIEW_TEST.ROUTE,
+    pathMatch: 'full',
+    loadChildren: () =>
+      import('pages/review-test-page/review-test-page.module').then(
+        m => m.ReviewTestPageModule
       ),
   },
 ];
