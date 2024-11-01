@@ -23,11 +23,14 @@ import re
 import shutil
 import subprocess
 import sys
+import warnings
 
 from core import utils
 from scripts import install_python_dev_dependencies
 
-import pkg_resources
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', category=DeprecationWarning)
+    import pkg_resources
 from typing import Dict, Final, List, Optional, Set, Tuple
 
 from . import common
@@ -432,9 +435,9 @@ def _get_possible_normalized_metadata_directory_names(
             '%s-%s.egg-info' % (
                 library_name.replace('-', '_'), version_string)),
         normalize_directory_name(
-            '%s-%s-py3.8.egg-info' % (library_name, version_string)),
+            '%s-%s-py3.9.egg-info' % (library_name, version_string)),
         normalize_directory_name(
-            '%s-%s-py3.8.egg-info' % (
+            '%s-%s-py3.9.egg-info' % (
                 library_name.replace('-', '_'), version_string))
     }
 

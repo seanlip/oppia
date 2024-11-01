@@ -23,14 +23,10 @@ from __future__ import annotations
 import argparse
 import os
 import re
-
 from typing import Dict, Final, List, Optional
 
-# TODO(#15567): The order can be fixed after Literal in utils.py is loaded
-# from typing instead of typing_extensions, this will be possible after
-# we migrate to Python 3.8.
-from scripts import common  # isort:skip  # pylint: disable=wrong-import-position
-from core import utils  # isort:skip  # pylint: disable=wrong-import-position
+from core import utils
+from scripts import common
 
 GIT_CMD_DIFF_NAMES_ONLY_FORMAT_STRING: Final = 'git diff --name-only %s %s'
 GIT_CMD_SHOW_FORMAT_STRING: Final = 'git show %s:core/feconf.py'

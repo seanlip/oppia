@@ -33,14 +33,11 @@ import os
 import shutil
 import subprocess
 import sys
-
 from typing import Final, List, Optional, Tuple
 
-# TODO(#15567): The order can be fixed after Literal in utils.py is loaded
-# from typing instead of typing_extensions, this will be possible after
-# we migrate to Python 3.8.
 sys.path.append(os.getcwd())
-from scripts import common  # isort:skip # pylint: disable=wrong-import-position
+
+from scripts import common
 
 FECONF_FILEPATH: Final = os.path.join('core', 'feconf.py')
 CONSTANTS_FILEPATH: Final = os.path.join('.', 'assets', 'constants.ts')

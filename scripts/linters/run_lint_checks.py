@@ -62,14 +62,10 @@ import re
 import subprocess
 import sys
 import threading
-
 from typing import Dict, List, Optional, Set, Tuple
-# TODO(#15567): This can be removed after Literal in utils.py is loaded
-# from typing instead of typing_extensions, this will be possible after
-# we migrate to Python 3.8.
-from scripts import common  # isort:skip pylint: disable=wrong-import-position
 
-from core import utils  # isort:skip
+from core import utils
+from scripts import common
 
 # Install third party dependencies before proceeding.
 from . import codeowner_linter  # isort:skip

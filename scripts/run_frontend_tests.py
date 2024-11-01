@@ -20,18 +20,13 @@ import argparse
 import os
 import subprocess
 import sys
+from typing import Optional, Sequence, Set
 
-# TODO(#15567): This can be removed after Literal in utils.py is loaded
-# from typing instead of typing_extensions, this will be possible after
-# we migrate to Python 3.8.
-from scripts import common  # isort:skip pylint: disable=wrong-import-position, unused-import
-from scripts import git_changes_utils # isort:skip pylint: disable=wrong-import-position, unused-import
-
-from typing import Optional, Sequence, Set  # isort:skip
-
-from . import build  # isort:skip
-from . import check_frontend_test_coverage  # isort:skip
-from . import install_third_party_libs  # isort:skip
+from . import build
+from . import check_frontend_test_coverage
+from . import install_third_party_libs
+from scripts import common
+from scripts import git_changes_utils
 
 # These is a relative path from the oppia/ folder. They are relative because the
 # dtslint command prepends the current working directory to the path, even if
