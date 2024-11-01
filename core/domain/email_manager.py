@@ -645,27 +645,18 @@ def send_job_failure_email(job_id: str) -> None:
         'ML job %s has failed. For more information,'
         'please visit the admin page at:\n'
         'https://www.oppia.org/admin#/jobs') % job_id)
-    admin_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS.value))
-    assert isinstance(admin_email_address, str)
     admin_user_settings = user_services.get_user_settings_from_email(
-        admin_email_address)
+        feconf.ADMIN_EMAIL_ADDRESS)
     # Rulling out the possibility of admin_user_settings is None for
     # the mypy checks.
     assert admin_user_settings is not None
-    system_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS.value))
-    assert isinstance(system_email_address, str)
-    system_email_name = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.SYSTEM_EMAIL_NAME.value))
-    assert isinstance(system_email_name, str)
     _send_email(
         admin_user_settings.user_id, feconf.SYSTEM_COMMITTER_ID,
-        feconf.EMAIL_INTENT_ML_JOB_FAILURE, mail_subject, mail_body,
-        system_email_address, False, system_email_name)
+        feconf.EMAIL_INTENT_ML_JOB_FAILURE,
+        mail_subject, mail_body,
+        feconf.SYSTEM_EMAIL_ADDRESS, False,
+        feconf.SYSTEM_EMAIL_NAME
+    )
 
 
 def send_dummy_mail_to_admin(username: str) -> None:
@@ -678,19 +669,11 @@ def send_dummy_mail_to_admin(username: str) -> None:
     email_body = 'This is a test mail from %s.' % (username)
     email_subject = 'Test Mail'
     system_name_email = '%s <%s>' % (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.SYSTEM_EMAIL_NAME.value),
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS.value))
-    admin_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS.value))
-    assert isinstance(admin_email_address, str)
+        feconf.SYSTEM_EMAIL_NAME, feconf.SYSTEM_EMAIL_ADDRESS)
 
     email_services.send_mail(
-        system_name_email, admin_email_address,
-        email_subject, email_body, email_body.replace('\n', '<br/>'),
-        bcc_admin=False)
+        system_name_email, feconf.ADMIN_EMAIL_ADDRESS, email_subject,
+        email_body, email_body.replace('\n', '<br/>'), bcc_admin=False)
 
 
 def send_mail_to_admin(email_subject: str, email_body: str) -> None:
@@ -706,17 +689,10 @@ def send_mail_to_admin(email_subject: str, email_body: str) -> None:
     app_id = app_identity_services.get_application_id()
     body = '(Sent from %s)\n\n%s' % (app_id, email_body)
     system_name_email = '%s <%s>' % (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.SYSTEM_EMAIL_NAME.value),
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS.value))
-    admin_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS.value))
-    assert isinstance(admin_email_address, str)
+        feconf.SYSTEM_EMAIL_NAME, feconf.SYSTEM_EMAIL_ADDRESS)
     email_services.send_mail(
-        system_name_email, admin_email_address,
-        email_subject, body, body.replace('\n', '<br/>'), bcc_admin=False)
+        system_name_email, feconf.ADMIN_EMAIL_ADDRESS, email_subject,
+        body, body.replace('\n', '<br/>'), bcc_admin=False)
 
 
 def send_post_signup_email(
@@ -786,14 +762,10 @@ def send_post_signup_email(
         platform_parameter_list.ParamName.EMAIL_FOOTER.value)
     email_body = 'Hi %s,<br><br>%s<br><br>%s' % (
         recipient_username, email_body_content, email_footer)
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
 
     _send_email(
         user_id, feconf.SYSTEM_COMMITTER_ID, feconf.EMAIL_INTENT_SIGNUP,
-        email_subject_content, email_body, noreply_email_address)
+        email_subject_content, email_body, feconf.NOREPLY_EMAIL_ADDRESS)
 
 
 def get_moderator_unpublish_exploration_email() -> str:
@@ -890,13 +862,9 @@ def send_moderator_action_email(
         '%s<br><br>%s<br><br>%s<br><br>%s' % (
             email_salutation_html, email_body, email_signoff_html,
             email_footer))
-    system_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS.value))
-    assert isinstance(system_email_address, str)
     _send_email(
         recipient_id, sender_id, intent, email_subject, full_email_content,
-        system_email_address, bcc_admin=True)
+        feconf.SYSTEM_EMAIL_ADDRESS, bcc_admin=True)
 
 
 def send_role_notification_email(
@@ -985,15 +953,11 @@ def send_role_notification_email(
     email_body = email_body_template % (
         recipient_username, inviter_username, role_description, exploration_id,
         exploration_title, rights_html, exploration_id, email_footer)
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
 
     _send_email(
         recipient_id, feconf.SYSTEM_COMMITTER_ID,
         feconf.EMAIL_INTENT_EDITOR_ROLE_NOTIFICATION, email_subject, email_body,
-        noreply_email_address, sender_name=inviter_username)
+        feconf.NOREPLY_EMAIL_ADDRESS, sender_name=inviter_username)
 
 
 def send_emails_to_subscribers(
@@ -1047,10 +1011,6 @@ def send_emails_to_subscribers(
     )
     recipients_preferences = user_services.get_users_email_preferences(
         recipient_list)
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
     for index, username in enumerate(recipients_usernames):
         if recipients_preferences[index].can_receive_subscription_email:
             email_footer = (
@@ -1062,7 +1022,7 @@ def send_emails_to_subscribers(
             _send_email(
                 recipient_list[index], feconf.SYSTEM_COMMITTER_ID,
                 feconf.EMAIL_INTENT_SUBSCRIPTION_NOTIFICATION,
-                email_subject, email_body, noreply_email_address)
+                email_subject, email_body, feconf.NOREPLY_EMAIL_ADDRESS)
 
 
 def send_feedback_message_email(
@@ -1139,15 +1099,10 @@ def send_feedback_message_email(
         else 'a', 's' if count_messages > 1 else '', messages_html,
         email_footer)
 
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
-
     _send_email(
         recipient_id, feconf.SYSTEM_COMMITTER_ID,
         feconf.EMAIL_INTENT_FEEDBACK_MESSAGE_NOTIFICATION,
-        email_subject, email_body, noreply_email_address)
+        email_subject, email_body, feconf.NOREPLY_EMAIL_ADDRESS)
 
 
 def can_users_receive_thread_email(
@@ -1239,10 +1194,6 @@ def send_suggestion_email(
         can_users_receive_thread_email(recipient_list, exploration_id, True))
     email_footer = platform_parameter_services.get_platform_parameter_value(
         platform_parameter_list.ParamName.EMAIL_FOOTER.value)
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
     for index, recipient_id in enumerate(recipient_list):
         recipient_username = user_services.get_username(recipient_id)
         # Send email only if recipient wants to receive.
@@ -1253,7 +1204,7 @@ def send_suggestion_email(
             _send_email(
                 recipient_id, feconf.SYSTEM_COMMITTER_ID,
                 feconf.EMAIL_INTENT_SUGGESTION_NOTIFICATION,
-                email_subject, email_body, noreply_email_address)
+                email_subject, email_body, feconf.NOREPLY_EMAIL_ADDRESS)
 
 
 def send_instant_feedback_message_email(
@@ -1312,14 +1263,10 @@ def send_instant_feedback_message_email(
         email_body = email_body_template % (
             recipient_username, thread_title, exploration_id,
             exploration_title, sender_username, message, email_footer)
-        noreply_email_address = (
-            platform_parameter_services.get_platform_parameter_value(
-                platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-        assert isinstance(noreply_email_address, str)
         _send_email(
             recipient_id, feconf.SYSTEM_COMMITTER_ID,
             feconf.EMAIL_INTENT_FEEDBACK_MESSAGE_NOTIFICATION, email_subject,
-            email_body, noreply_email_address)
+            email_body, feconf.NOREPLY_EMAIL_ADDRESS)
 
 
 def send_flag_exploration_email(
@@ -1368,18 +1315,13 @@ def send_flag_exploration_email(
         reporter_username, exploration_title, report_text, exploration_id,
         email_footer)
 
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
-
     recipient_list = user_services.get_user_ids_by_role(
         feconf.ROLE_ID_MODERATOR)
     for recipient_id in recipient_list:
         _send_email(
             recipient_id, feconf.SYSTEM_COMMITTER_ID,
             feconf.EMAIL_INTENT_REPORT_BAD_CONTENT,
-            email_subject, email_body, noreply_email_address)
+            email_subject, email_body, feconf.NOREPLY_EMAIL_ADDRESS)
 
 
 def send_query_completion_email(recipient_id: str, query_id: str) -> None:
@@ -1409,14 +1351,10 @@ def send_query_completion_email(recipient_id: str, query_id: str) -> None:
         platform_parameter_list.ParamName.EMAIL_FOOTER.value)
     email_body = email_body_template % (
         recipient_username, query_id, query_id, email_footer)
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
     _send_email(
         recipient_id, feconf.SYSTEM_COMMITTER_ID,
         feconf.EMAIL_INTENT_QUERY_STATUS_NOTIFICATION, email_subject,
-        email_body, noreply_email_address)
+        email_body, feconf.NOREPLY_EMAIL_ADDRESS)
 
 
 def send_query_failure_email(
@@ -1449,14 +1387,10 @@ def send_query_failure_email(
         platform_parameter_list.ParamName.EMAIL_FOOTER.value)
     email_body = email_body_template % (
         recipient_username, query_id, email_footer)
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
     _send_email(
         recipient_id, feconf.SYSTEM_COMMITTER_ID,
         feconf.EMAIL_INTENT_QUERY_STATUS_NOTIFICATION, email_subject,
-        email_body, noreply_email_address)
+        email_body, feconf.NOREPLY_EMAIL_ADDRESS)
 
     admin_email_subject = 'Query job has failed.'
     admin_email_body_template = (
@@ -1568,14 +1502,10 @@ def send_mail_to_onboard_new_reviewers(
             platform_parameter_list.ParamName.EMAIL_FOOTER.value)
         email_body = email_body_template % (
             recipient_username, category, category, email_footer)
-        noreply_email_address = (
-            platform_parameter_services.get_platform_parameter_value(
-                platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-        assert isinstance(noreply_email_address, str)
         _send_email(
             recipient_id, feconf.SYSTEM_COMMITTER_ID,
             feconf.EMAIL_INTENT_ONBOARD_CD_USER,
-            email_subject, email_body, noreply_email_address)
+            email_subject, email_body, feconf.NOREPLY_EMAIL_ADDRESS)
 
 
 def send_mail_to_notify_users_to_review(
@@ -1623,14 +1553,10 @@ def send_mail_to_notify_users_to_review(
             platform_parameter_list.ParamName.EMAIL_FOOTER.value)
         email_body = email_body_template % (
             recipient_username, category, email_footer)
-        noreply_email_address = (
-            platform_parameter_services.get_platform_parameter_value(
-                platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-        assert isinstance(noreply_email_address, str)
         _send_email(
             recipient_id, feconf.SYSTEM_COMMITTER_ID,
             feconf.EMAIL_INTENT_REVIEW_CREATOR_DASHBOARD_SUGGESTIONS,
-            email_subject, email_body, noreply_email_address)
+            email_subject, email_body, feconf.NOREPLY_EMAIL_ADDRESS)
 
 
 def _create_html_for_reviewable_suggestion_email_info(
@@ -1816,10 +1742,6 @@ def _send_suggestions_waiting_too_long_email(
         if admin_user_setting is not None else (None, None)
         for admin_user_setting in admin_user_settings
     ]))
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
 
     for index, admin_id in enumerate(admin_ids):
         if not admin_emails[index]:
@@ -1836,7 +1758,7 @@ def _send_suggestions_waiting_too_long_email(
         _send_email(
             admin_id, feconf.SYSTEM_COMMITTER_ID,
             feconf.EMAIL_INTENT_ADDRESS_CONTRIBUTOR_DASHBOARD_SUGGESTIONS,
-            email_subject, email_body, noreply_email_address,
+            email_subject, email_body, feconf.NOREPLY_EMAIL_ADDRESS,
             recipient_email=admin_emails[index])
 
 
@@ -1889,11 +1811,6 @@ def send_reviewer_notifications(
             suggestion_descriptions.append(
                 _create_html_for_reviewable_suggestion_email_info(suggestion))
 
-        noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-        assert isinstance(noreply_email_address, str)
-
         for reviewer_id in reviewer_ids:
             reviewer_username = user_services.get_username(reviewer_id)
             email_body = email_body_template % (
@@ -1907,7 +1824,9 @@ def send_reviewer_notifications(
             _send_email(
                 reviewer_id, feconf.SYSTEM_COMMITTER_ID,
                 feconf.EMAIL_INTENT_ADDRESS_CONTRIBUTOR_DASHBOARD_SUGGESTIONS,
-                email_subject, email_body, noreply_email_address,
+                email_subject,
+                email_body,
+                feconf.NOREPLY_EMAIL_ADDRESS,
                 recipient_email=reviewer_email)
 
 
@@ -2048,10 +1967,6 @@ def _send_reviews_needed_email_to_admins(
         if admin_user_setting is not None else (None, None)
         for admin_user_setting in admin_user_settings
     ]))
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
 
     for index, admin_id in enumerate(admin_ids):
         if not admin_emails[index]:
@@ -2065,7 +1980,7 @@ def _send_reviews_needed_email_to_admins(
         _send_email(
             admin_id, feconf.SYSTEM_COMMITTER_ID,
             feconf.EMAIL_INTENT_ADD_CONTRIBUTOR_DASHBOARD_REVIEWERS,
-            email_subject, email_body, noreply_email_address,
+            email_subject, email_body, feconf.NOREPLY_EMAIL_ADDRESS,
             recipient_email=admin_emails[index])
 
 
@@ -2128,10 +2043,6 @@ def send_mail_to_notify_contributor_dashboard_reviewers(
 
     email_footer = platform_parameter_services.get_platform_parameter_value(
         platform_parameter_list.ParamName.EMAIL_FOOTER.value)
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
 
     for index, reviewer_id in enumerate(reviewer_ids):
         if not reviewers_suggestion_email_infos[index]:
@@ -2164,7 +2075,7 @@ def send_mail_to_notify_contributor_dashboard_reviewers(
         _send_email(
             reviewer_id, feconf.SYSTEM_COMMITTER_ID,
             feconf.EMAIL_INTENT_REVIEW_CONTRIBUTOR_DASHBOARD_SUGGESTIONS,
-            email_subject, email_body, noreply_email_address,
+            email_subject, email_body, feconf.NOREPLY_EMAIL_ADDRESS,
             recipient_email=reviewer_emails[index])
 
 
@@ -2222,16 +2133,12 @@ def send_mail_to_notify_contributor_ranking_achievement(
                     feconf.CONTRIBUTOR_DASHBOARD_URL
             )
 
-        noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-        assert isinstance(noreply_email_address, str)
-
         _send_email(
             contributor_ranking_email_info.contributor_user_id,
             feconf.SYSTEM_COMMITTER_ID,
             feconf.EMAIL_INTENT_NOTIFY_CONTRIBUTOR_DASHBOARD_ACHIEVEMENTS,
-            email_template['email_subject'], email_body, noreply_email_address)
+            email_template['email_subject'], email_body,
+            feconf.NOREPLY_EMAIL_ADDRESS)
 
 
 def send_reminder_mail_to_notify_curriculum_admins(
@@ -2314,22 +2221,13 @@ def send_reminder_mail_to_notify_curriculum_admins(
 
     email_body += 'Regards,<br> Oppia Foundation'
 
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
-    system_email_name = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.SYSTEM_EMAIL_NAME.value))
-    assert isinstance(system_email_name, str)
-
     if chapters_are_overdue or chapters_are_upcoming:
         bulk_email_model_id = email_models.BulkEmailModel.get_new_id('')
         _send_bulk_mail(
             curriculum_admin_ids, feconf.SYSTEM_COMMITTER_ID,
             feconf.EMAIL_INTENT_NOTIFY_CURRICULUM_ADMINS_CHAPTERS,
-            email_subject, email_body, noreply_email_address, system_email_name,
-            bulk_email_model_id)
+            email_subject, email_body, feconf.NOREPLY_EMAIL_ADDRESS,
+            feconf.SYSTEM_EMAIL_NAME, bulk_email_model_id)
 
 
 def send_account_deleted_email(user_id: str, user_email: str) -> None:
@@ -2356,14 +2254,11 @@ def send_account_deleted_email(user_id: str, user_email: str) -> None:
         return
 
     email_body = email_body_template % user_email
-    noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-    assert isinstance(noreply_email_address, str)
     _send_email(
         user_id, feconf.SYSTEM_COMMITTER_ID,
         feconf.EMAIL_INTENT_ACCOUNT_DELETED, email_subject, email_body,
-        noreply_email_address, bcc_admin=True, recipient_email=user_email)
+        feconf.NOREPLY_EMAIL_ADDRESS, bcc_admin=True,
+        recipient_email=user_email)
 
 
 def send_account_deletion_failed_email(user_id: str, user_email: str) -> None:
@@ -2485,14 +2380,10 @@ def send_email_to_new_cd_user(
 
     # Send email only if recipient wants to receive.
     if can_user_receive_email:
-        noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-        assert isinstance(noreply_email_address, str)
         _send_email(
             recipient_id, feconf.SYSTEM_COMMITTER_ID,
             feconf.EMAIL_INTENT_ONBOARD_CD_USER, email_subject, email_body,
-            noreply_email_address)
+            feconf.NOREPLY_EMAIL_ADDRESS)
 
 
 def send_email_to_removed_cd_user(
@@ -2573,14 +2464,10 @@ def send_email_to_removed_cd_user(
             recipient_username, role_description,
             rights_message,
             category_data['category'])
-        noreply_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS.value))
-        assert isinstance(noreply_email_address, str)
         _send_email(
             user_id, feconf.SYSTEM_COMMITTER_ID,
             feconf.EMAIL_INTENT_REMOVE_CD_USER, email_subject, email_body,
-            noreply_email_address)
+            feconf.NOREPLY_EMAIL_ADDRESS)
 
 
 def send_not_mergeable_change_list_to_admin_for_review(
