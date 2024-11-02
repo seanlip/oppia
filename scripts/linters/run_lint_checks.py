@@ -633,8 +633,7 @@ def main(args: Optional[List[str]] = None) -> None:
         namespace=namespace
     )
 
-    if not feconf.OPPIA_IS_DOCKERIZED:
-        install_third_party_libs.main()
+    install_third_party_libs.main()
 
     print('Starting Linter....')
 
