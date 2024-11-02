@@ -110,13 +110,6 @@ describe('Exploration Editor', function () {
       true,
       false
     );
-    await explorationEditor.addResponsesToTheInteraction(
-      INTERACTION_TYPES.MULTIPLE_CHOICE,
-      '-101',
-      'Wrong! -101 is smaller than -100.',
-      '',
-      false
-    );
     await explorationEditor.editDefaultResponseFeedback('Wrong.');
     await explorationEditor.addHintToState(
       'It is closer to zero but not a positive number.'
