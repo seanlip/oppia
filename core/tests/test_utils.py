@@ -2157,7 +2157,7 @@ class AppEngineTestBase(TestBase):
         will suppress this exception.
         """
         raise Exception('Please mock this method in the test.')
-    
+
     @contextlib.contextmanager
     def mock_datetime_utcnow(
         self, mocked_now: datetime.datetime
