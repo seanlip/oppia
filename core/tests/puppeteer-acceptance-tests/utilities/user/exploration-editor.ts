@@ -1062,7 +1062,10 @@ export class ExplorationEditor extends BaseUser {
         await this.page.type(floatFormInput, answer);
         break;
       case 'Multiple Choice':
-        await this.clickOn(multipleChoiceResponseDropdown);
+        await this.page.waitForSelector(multipleChoiceResponseDropdown, {
+          visible: true,
+        });
+        await this.page.click(multipleChoiceResponseDropdown);
         await this.page.waitForSelector(multipleChoiceResponseOption, {
           visible: true,
         });
@@ -1113,7 +1116,9 @@ export class ExplorationEditor extends BaseUser {
       await this.clickOn(correctAnswerInTheGroupSelector);
     }
     if (isLastResponse) {
-      await this.page.waitForSelector(addNewResponseButton);
+      await this.page.waitForSelector(addNewResponseButton, {
+        visible: true,
+      });
       await this.clickOn(addNewResponseButton);
       await this.page
         .waitForSelector(responseModalHeaderSelector, {
