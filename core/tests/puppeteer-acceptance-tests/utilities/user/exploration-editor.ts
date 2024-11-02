@@ -1113,9 +1113,7 @@ export class ExplorationEditor extends BaseUser {
       await this.clickOn(correctAnswerInTheGroupSelector);
     }
     if (isLastResponse) {
-      await this.page.waitForSelector(addNewResponseButton, {
-        visible: true,
-      });
+      await this.page.waitForSelector(addNewResponseButton);
       await this.clickOn(addNewResponseButton);
       await this.page
         .waitForSelector(responseModalHeaderSelector, {
