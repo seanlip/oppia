@@ -2834,7 +2834,7 @@ version: 3
         with zipfile.ZipFile(zip_file_output) as zf:
             self.assertEqual(
                 zf.namelist(), ['A title.yaml', 'assets/image/abc.png'])
-            with zf.open(zf.open('A title.yaml')) as yaml:
+            with zf.open('A title.yaml') as yaml:
                 # Read function returns bytes, so we need to decode them before
                 # we compare.
                 self.assertEqual(
