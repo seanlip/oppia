@@ -74,7 +74,6 @@ import {ValueGeneratorEditorComponent} from './param-changes-editor/value-genera
 import {ParamChangesEditorComponent} from './param-changes-editor/param-changes-editor.component';
 import {ExplorationEditorPageComponent} from './exploration-editor-page.component';
 import {VoiceoverRemovalConfirmModalComponent} from './translation-tab/voiceover-card/modals/voiceover-removal-confirm-modal.component';
-import {ModifyTranslationsModalComponent} from './modal-templates/exploration-modify-translations-modal.component';
 import {ToastrModule} from 'ngx-toastr';
 import {toastrConfig} from 'pages/oppia-root/app.module';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -165,7 +164,6 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
     TranslationTabComponent,
     ExplorationEditorPageComponent,
     StateVersionHistoryComponent,
-    ModifyTranslationsModalComponent,
     ExplorationEditorPageRootComponent,
   ],
   entryComponents: [
@@ -221,7 +219,6 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
     TranslationTabComponent,
     ExplorationEditorPageComponent,
     StateVersionHistoryComponent,
-    ModifyTranslationsModalComponent,
     ExplorationEditorPageRootComponent,
   ],
 })
