@@ -128,9 +128,12 @@ def open_file(
     """
     # Here we use cast because we are narrowing down the type from IO[Any]
     # to Union[BinaryIO, TextIO].
+    #
+    # consider-using-with is disabled here because this function callers'
+    # already uses `with`.
     file = cast(
         Union[BinaryIO, TextIO],
-        open(filename, mode, encoding=encoding, newline=newline)
+        open(filename, mode, encoding=encoding, newline=newline) # pylint: disable=consider-using-with
     )
     return file
 

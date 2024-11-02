@@ -729,25 +729,28 @@ solicit_answer_details: false
         self.assertEqual(
             response.headers['Content-Disposition'],
             'attachment; filename=%s' % filename)
-        zf_saved = zipfile.ZipFile(io.BytesIO(response.body))
-        self.assertEqual(
-            zf_saved.namelist(),
-            ['The title for ZIP download handler test.yaml'])
+        saved_yaml_filename = 'The title for ZIP download handler test.yaml'
+        gold_yaml_filename = 'The title for ZIP download handler test!.yaml'
+        with zipfile.ZipFile(io.BytesIO(response.body)) as zf_saved:
+            self.assertEqual(
+                zf_saved.namelist(),
+                [saved_yaml_filename])
 
-        # Load golden zip file.
-        golden_zip_filepath = os.path.join(
-            feconf.TESTS_DATA_DIR,
-            'oppia-ThetitleforZIPdownloadhandlertest!-v2-gold.zip')
-        with utils.open_file(
-            golden_zip_filepath, 'rb', encoding=None) as f:
-            golden_zipfile = f.read()
-        zf_gold = zipfile.ZipFile(io.BytesIO(golden_zipfile))
-        # Compare saved with golden file.
-        self.assertEqual(
-            zf_saved.open(
-                'The title for ZIP download handler test.yaml').read(),
-            zf_gold.open(
-                'The title for ZIP download handler test!.yaml').read())
+            # Load golden zip file.
+            golden_zip_filepath = os.path.join(
+                feconf.TESTS_DATA_DIR,
+                'oppia-ThetitleforZIPdownloadhandlertest!-v2-gold.zip')
+            with utils.open_file(
+                golden_zip_filepath, 'rb', encoding=None) as f:
+                golden_zipfile = f.read()
+            with zipfile.ZipFile(io.BytesIO(golden_zipfile)) as zf_gold:
+                with zf_saved.open(saved_yaml_filename) as saved_yaml:
+                    with zf_gold.open(gold_yaml_filename) as gold_yaml:
+                        # Compare saved with golden file.
+                        self.assertEqual(
+                            saved_yaml.read(),
+                            gold_yaml.read()
+                        )
 
         # Check download to JSON.
         exp_services.update_exploration(
@@ -799,8 +802,8 @@ solicit_answer_details: false
             response.headers['Content-Disposition'],
             'attachment; filename=%s' % filename)
 
-        zf_saved = zipfile.ZipFile(io.BytesIO(response.body))
-        self.assertEqual(zf_saved.namelist(), [u'Hola.yaml'])
+        with zipfile.ZipFile(io.BytesIO(response.body)) as zf_saved:
+            self.assertEqual(zf_saved.namelist(), [u'Hola.yaml'])
 
         self.logout()
 
@@ -827,8 +830,11 @@ solicit_answer_details: false
             response.headers['Content-Disposition'],
             'attachment; filename=%s' % filename)
 
-        zf_saved = zipfile.ZipFile(io.BytesIO(response.body))
-        self.assertEqual(zf_saved.namelist(), ['Unpublished_exploration.yaml'])
+        with zipfile.ZipFile(io.BytesIO(response.body)) as zf_saved:
+            self.assertEqual(
+                zf_saved.namelist(),
+                ['Unpublished_exploration.yaml']
+            )
 
         self.logout()
 
