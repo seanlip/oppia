@@ -190,7 +190,7 @@ export class StoryNodeEditorComponent implements OnInit, OnDestroy {
       this.skillBackendApiService.fetchMultiSkillsAsync(skillIds).then(
         response => {
           for (let skill of response) {
-            targetMap[skill._id] = skill._description;
+            targetSkillIdToSummaryMap[skill._id] = skill._description;
           }
         },
         error => {
