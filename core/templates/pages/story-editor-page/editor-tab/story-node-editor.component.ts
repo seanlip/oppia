@@ -184,7 +184,7 @@ export class StoryNodeEditorComponent implements OnInit, OnDestroy {
 
   getSkillsDescription(
     skillIds: string[],
-    targetMap: {[key: string]: string}
+    targetSkillIdToSummaryMap: {[key: string]: string}
   ): void {
     if (skillIds && skillIds.length > 0) {
       this.skillBackendApiService.fetchMultiSkillsAsync(skillIds).then(
