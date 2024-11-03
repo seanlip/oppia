@@ -338,7 +338,7 @@ describe('Story node editor component', () => {
     });
   }));
 
-  it('should call Alerts Service if getting acquired skill desc. fails', fakeAsync(() => {
+  it('should call Alerts Service if getting acquired skill description fails', fakeAsync(() => {
     component.acquiredSkillIds = ['2'];
     let alertsSpy = spyOn(alertsService, 'addWarning').and.callThrough();
 
@@ -351,7 +351,7 @@ describe('Story node editor component', () => {
     expect(alertsSpy).toHaveBeenCalled();
   }));
 
-  it('should call Alerts Service if getting prerequisite skill desc. fails', fakeAsync(() => {
+  it('should call Alerts Service if getting prerequisite skill description fails', fakeAsync(() => {
     component.prerequisiteSkillIds = ['2'];
     let alertsSpy = spyOn(alertsService, 'addWarning').and.callThrough();
 
