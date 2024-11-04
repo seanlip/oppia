@@ -87,6 +87,10 @@ import {CommonModule} from '@angular/common';
 import {ExplorationEditorPageAuthGuard} from './exploration-editor-page-auth.guard';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
+import 'third-party-imports/guppy.import';
+import 'third-party-imports/midi-js.import';
+import 'third-party-imports/skulpt.import';
+
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
