@@ -136,4 +136,11 @@ describe('GoalListComponent', () => {
       '/assetsdevhandler/topic/sample_topic_id/assets/thumbnail/image.svg'
     );
   });
+
+  it('should get story progress correctly', () => {
+    const story = StorySummary.createFromBackendDict(sampleStoryNode);
+
+    const progress = component.getStoryProgress(story);
+    expect(progress).toEqual(100);
+  });
 });
