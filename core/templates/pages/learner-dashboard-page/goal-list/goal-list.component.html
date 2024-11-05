@@ -19,6 +19,19 @@
         <!--TODO(#18384): Start/resume button-->
       </div>
     </div>
+    <div class="goal-list-story-nodes">
+      <ng-container *ngFor="let storyNode of story.getAllNodes(); let j = index">
+        <div class="d-flex flex-column">
+          <div [style.width.px]="36" class="d-flex justify-content-center"> 
+            <div *ngIf="j !== 0" class="goal-list-story-node-line"></div>
+          </div>
+           <!--TODO(#18384): Title-->
+          <div [style.width.px]="36" class="d-flex justify-content-center">  
+            <div *ngIf="j !== story.getAllNodes().length - 1" class="goal-list-story-node-line"></div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
   </div>
 </ng-container>
 
@@ -58,6 +71,20 @@
   .goal-list-progress-bar>div{
     background-color: rgb(0, 100, 92, 1);
     height: 4px;
+  }
+
+  .goal-list-story-nodes {
+    display: flex;
+    flex-direction: column;
+    max-height: 276px;
+    padding-bottom: 12px;
+    padding-top: 12px;
+    scrollbar-color: #205d86;
+  }
+
+  .goal-list-story-node-line {
+    border-left: 1px solid;
+    height: 12px;
   }
 
   @media screen and (max-width: 500px) {
