@@ -1,7 +1,7 @@
 <ng-container *ngFor="let story of goalTopic.getCanonicalStorySummaryDicts(); let i = index">
   <div class="oppia-learner-dash-section w-100">
     <div class="goal-list-container">
-       <!--TODO(#18384): Image-->
+      <img class="goal-list-img" [src]="imgUrl" alt="" />
       <div class="goal-list-container goal-list-container-grow"> 
         <div class="goal-list-details flex-grow-1"> 
           <p [style.font-size.px]="20"> 
@@ -40,6 +40,11 @@
     justify-content: space-between;
     padding-bottom: 8px;
     padding-top: 8px;
+  }
+
+  .goal-list-img {
+    height: 96px;
+    width: 152px;
   }
 
   @media screen and (max-width: 500px) {

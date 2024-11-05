@@ -16,15 +16,29 @@
  * @fileoverview Component for goal list
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {downgradeComponent} from '@angular/upgrade/static';
+import {AppConstants} from 'app.constants';
+import {AssetsBackendApiService} from 'services/assets-backend-api.service';
 import {LearnerTopicSummary} from 'domain/topic/learner-topic-summary.model';
 @Component({
   selector: 'oppia-goal-list',
   templateUrl: './goal-list.component.html',
 })
-export class GoalListComponent {
+export class GoalListComponent implements OnInit {
   @Input() goalTopic: LearnerTopicSummary;
+
+  imgUrl: string = '';
+
+  constructor(private assetsBackendApiService: AssetsBackendApiService) {}
+
+  ngOnInit(): void {
+    this.imgUrl = this.assetsBackendApiService.getThumbnailUrlForPreview(
+      AppConstants.ENTITY_TYPE.TOPIC,
+      this.goalTopic.getId(),
+      this.goalTopic.getThumbnailFilename()
+    );
+  }
 }
 
 angular
