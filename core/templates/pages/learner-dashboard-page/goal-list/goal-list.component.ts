@@ -21,6 +21,7 @@ import {downgradeComponent} from '@angular/upgrade/static';
 import {AppConstants} from 'app.constants';
 import {AssetsBackendApiService} from 'services/assets-backend-api.service';
 import {LearnerTopicSummary} from 'domain/topic/learner-topic-summary.model';
+import {StorySummary} from 'domain/story/story-summary.model';
 @Component({
   selector: 'oppia-goal-list',
   templateUrl: './goal-list.component.html',
@@ -37,6 +38,13 @@ export class GoalListComponent implements OnInit {
       AppConstants.ENTITY_TYPE.TOPIC,
       this.goalTopic.getId(),
       this.goalTopic.getThumbnailFilename()
+    );
+  }
+
+  getStoryProgress(story: StorySummary): number {
+    return (
+      (story.getCompletedNodeTitles().length / story.getNodeTitles().length) *
+      100
     );
   }
 }

@@ -24,6 +24,7 @@ import {AssetsBackendApiService} from 'services/assets-backend-api.service';
 import {GoalListComponent} from './goal-list.component';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {LearnerTopicSummary} from 'domain/topic/learner-topic-summary.model';
+import {StorySummary} from 'domain/story/story-summary.model';
 
 describe('GoalListComponent', () => {
   let component: GoalListComponent;
@@ -58,6 +59,19 @@ describe('GoalListComponent', () => {
     unpublishing_reason: null,
   };
 
+  let sampleStoryNode = {
+    id: '0',
+    title: 'Story Title',
+    description: 'Story Description',
+    node_titles: ['Chapter 1'],
+    thumbnail_filename: 'image.svg',
+    thumbnail_bg_color: '#F8BF74',
+    story_is_published: true,
+    completed_node_titles: ['Chapter 1'],
+    url_fragment: 'story-title',
+    all_node_dicts: [nodeDict],
+  };
+
   let sampleLearnerTopicSummaryBackendDict = {
     id: 'sample_topic_id',
     name: 'Topic Name',
@@ -71,20 +85,7 @@ describe('GoalListComponent', () => {
     classroom_name: 'math',
     classroom_url_fragment: 'math',
     practice_tab_is_displayed: false,
-    canonical_story_summary_dict: [
-      {
-        id: '0',
-        title: 'Story Title',
-        description: 'Story Description',
-        node_titles: ['Chapter 1'],
-        thumbnail_filename: 'image.svg',
-        thumbnail_bg_color: '#F8BF74',
-        story_is_published: true,
-        completed_node_titles: ['Chapter 1'],
-        url_fragment: 'story-title',
-        all_node_dicts: [nodeDict],
-      },
-    ],
+    canonical_story_summary_dict: [sampleStoryNode],
     url_fragment: 'topic-name',
     subtopics: [subtopic],
     degrees_of_mastery: {

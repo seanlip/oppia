@@ -11,7 +11,9 @@
             <p [style.font-size.px]="10" class="mb-0"> 
               {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_STORY_PROGRESS' | translate: {current: story.getCompletedNodeTitles().length, total: story.getNodeTitles().length} }}
             </p>
-            <!--TODO(#18384): Progress bar-->
+            <div class="goal-list-progress-bar">
+              <div [style.width.%]="getStoryProgress(story)"> </div>
+            </div>
           </div>
         </div>
         <!--TODO(#18384): Start/resume button-->
@@ -45,6 +47,17 @@
   .goal-list-img {
     height: 96px;
     width: 152px;
+  }
+
+  .goal-list-progress-bar {
+    background-color: rgb(0, 100, 92, .24);
+    height: 4px;
+    width: 185px;
+  }
+
+  .goal-list-progress-bar>div{
+    background-color: rgb(0, 100, 92, 1);
+    height: 4px;
   }
 
   @media screen and (max-width: 500px) {
