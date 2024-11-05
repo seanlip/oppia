@@ -1,0 +1,51 @@
+<ng-container *ngFor="let story of goalTopic.getCanonicalStorySummaryDicts(); let i = index">
+  <div class="oppia-learner-dash-section w-100">
+    <div class="goal-list-container">
+       <!--TODO(#18384): Image-->
+      <div class="goal-list-container goal-list-container-grow"> 
+        <div class="goal-list-details flex-grow-1"> 
+          <p [style.font-size.px]="20"> 
+            {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_STORY_TITLE' | translate: {title: goalTopic.getName()} }}
+          </p>
+          <div class="goal-list-container"> 
+            <p [style.font-size.px]="10" class="mb-0"> 
+              {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_STORY_PROGRESS' | translate: {current: story.getCompletedNodeTitles().length, total: story.getNodeTitles().length} }}
+            </p>
+            <!--TODO(#18384): Progress bar-->
+          </div>
+        </div>
+        <!--TODO(#18384): Start/resume button-->
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<style>
+  .goal-list-container {
+    align-items: center;
+    display: flex;
+    gap: 0 12px;
+  }
+
+  .goal-list-container-grow {
+    flex-grow: 1;
+    height: 96px;
+    justify-content: space-between;
+  }
+
+  .goal-list-details {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    padding-top: 8px;
+  }
+
+  @media screen and (max-width: 500px) {
+    .goal-list-container-grow {
+      align-items: start;
+      flex-direction: column;
+    }
+  }
+</style>
