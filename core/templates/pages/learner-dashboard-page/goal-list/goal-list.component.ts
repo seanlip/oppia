@@ -16,14 +16,16 @@
  * @fileoverview Component for goal list
  */
 
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {downgradeComponent} from '@angular/upgrade/static';
-
+import {LearnerTopicSummary} from 'domain/topic/learner-topic-summary.model';
 @Component({
   selector: 'oppia-goal-list',
   templateUrl: './goal-list.component.html',
 })
-export class GoalListComponent {}
+export class GoalListComponent {
+  @Input() goalTopic: LearnerTopicSummary;
+}
 
 angular
   .module('oppia')
