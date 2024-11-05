@@ -50,10 +50,10 @@ jobs:
           ls /home/runner/work/oppia
           ls /home/runner/work/oppia/oppia
           echo $GITHUB_WORKSPACE
-      - name: Setup Python 3.9.20
+      - name: Setup Python 3.10.15
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9.20'
+          python-version: '3.10.15'
           architecture: 'x64'
       - name: Merge develop branch into the current branch
         uses: ./.github/actions/merge
