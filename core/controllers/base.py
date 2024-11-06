@@ -74,23 +74,31 @@ class ResponseValueDict(TypedDict):
 
 @functools.lru_cache(maxsize=128)
 def load_template(
-    filename: str, *, template_is_aot_compiled: bool
+    filename: str,
+    *,
+    template_is_aot_compiled: bool,
+    is_maintenance_page: bool,
 ) -> str:
     """Return the HTML file contents at filepath.
 
     Args:
         filename: str. Name of the requested HTML file.
         template_is_aot_compiled: bool. Used to determine which bundle to use.
+        is_maintenance_page: bool. Used to determine if maintenance page is 
+            being rendered.
 
     Returns:
         str. The HTML file content.
     """
+    path=''
+    if is_maintenance_page:
+        path=feconf.FRONTEND_MAINTENANCE_DIR
+    elif template_is_aot_compiled:
+        path=feconf.FRONTEND_AOT_DIR
+    else: 
+        path=feconf.FRONTEND_TEMPLATES_DIR
     filepath = os.path.join(
-        (
-            feconf.FRONTEND_AOT_DIR
-            if template_is_aot_compiled
-            else feconf.FRONTEND_TEMPLATES_DIR
-        ),
+        (path),
         filename
     )
     with utils.open_file(filepath, 'r') as f:
@@ -312,9 +320,8 @@ class BaseHandler(
 
         if (
             not self._is_requested_path_currently_accessible_to_user()
-            and request_split.path != '/maintenance'
         ):
-            self.redirect('/maintenance')
+            self.render_template('maintenance.html',is_maintenance_page=True)
             return
 
         if self.user_is_scheduled_for_deletion:
@@ -662,7 +669,9 @@ class BaseHandler(
         filepath: str,
         iframe_restriction: Optional[str] = 'DENY',
         *,
-        template_is_aot_compiled: bool = False
+        template_is_aot_compiled: bool = False,
+        is_maintenance_page: bool = False
+
     ) -> None:
         """Prepares an HTML response to be sent to the client.
 
@@ -676,6 +685,8 @@ class BaseHandler(
                     on the same origin as the page itself.
             template_is_aot_compiled: bool. False by default. Use
                 True when the template is compiled by angular AoT compiler.
+            is_maintenance_page: bool. False by default. Use true to render
+                maintenance page.
 
         Raises:
             Exception. Invalid X-Frame-Options.
@@ -701,7 +712,9 @@ class BaseHandler(
         self.response.expires = 'Mon, 01 Jan 1990 00:00:00 GMT'
         self.response.pragma = 'no-cache'
         self.response.write(load_template(
-            filepath, template_is_aot_compiled=template_is_aot_compiled
+            filepath,
+            template_is_aot_compiled=template_is_aot_compiled,
+            is_maintenance_page=is_maintenance_page
         ))
 
     def _render_exception_json_or_html(

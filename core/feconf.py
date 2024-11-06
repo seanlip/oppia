@@ -114,6 +114,8 @@ FRONTEND_TEMPLATES_DIR = (
 FRONTEND_AOT_DIR = (
     os.path.join('dist', 'oppia-angular') if constants.DEV_MODE else
     os.path.join('dist', 'oppia-angular-prod'))
+FRONTEND_MAINTENANCE_DIR = (
+    os.path.join('dist', 'oppia-maintenance'))
 DEPENDENCIES_TEMPLATES_DIR = (
     os.path.join(EXTENSIONS_DIR_PREFIX, 'extensions', 'dependencies'))
 

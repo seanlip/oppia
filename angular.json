@@ -132,6 +132,97 @@
           }
         }
       }
+    },
+    "oppia-maintenance": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "allowedCommonJsDependencies": ["path", "stream", "zlib"],
+            "outputPath": "dist/oppia-maintenance",
+            "index": "src/maintenance.html",
+            "main": "src/maintenance-main.ts",
+            "tsConfig": "tsconfig.json",
+            "assets": [
+              "src/favicon.ico",
+              "src/assets"
+            ],
+            "styles": [
+              "core/templates/css/oppia.css",
+              "core/templates/css/oppia-material.css"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "index": {
+                "input": "src/maintenance-index.html",
+                "output": "maintenance.html"
+              },
+              "baseHref": "/dist/oppia-maintenance/",
+              "outputPath": "dist/oppia-maintenance",
+              "aot": true,
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kb",
+                  "maximumError": "2mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "28kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "oppia-maintenance:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "oppia-maintenance:build:production"
+            }
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/protractor.conf.js",
+            "devServerTarget": "oppia-maintenance:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "oppia-maintenance:serve:production"
+            }
+          }
+        }
+      }
     }
   },
   "defaultProject": "oppia-angular"
