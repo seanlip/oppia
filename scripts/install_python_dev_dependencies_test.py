@@ -116,7 +116,7 @@ class InstallPythonDevDependenciesTests(test_utils.GenericTestBase):
         expected_tools = {
             'pip': '23.1.2',
             'pip-tools': '7.1.0',
-            'setuptools': '67.7.1',
+            'setuptools': '70.0.0',
         }
         installed_tools: Dict[str, str] = {}
 

@@ -1,5 +1,5 @@
 # Added platform flag here because -- https://stackoverflow.com/questions/71040681/qemu-x86-64-could-not-open-lib64-ld-linux-x86-64-so-2-no-such-file-or-direc
-FROM --platform=linux/amd64 python:3.9.20-bullseye AS backend
+FROM --platform=linux/amd64 python:3.10.15-slim-bookworm AS backend
 
 ENV OPPIA_IS_DOCKERIZED="true"
 
@@ -23,8 +23,8 @@ RUN curl -L -o google-chrome.deb https://github.com/webnicer/chrome-downloads/ra
 RUN apt-get install -y ./google-chrome.deb
 RUN rm google-chrome.deb
 
-RUN pip install --upgrade pip==21.2.3
-RUN pip install pip-tools==6.6.2 setuptools==58.5.3 cmake
+RUN pip install --upgrade pip==23.1.2
+RUN pip install pip-tools==7.1.0 setuptools==70.0.0 cmake
 
 WORKDIR /app/vm_deps
 

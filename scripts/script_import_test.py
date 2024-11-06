@@ -48,7 +48,7 @@ class InstallThirdPartyLibsImportTests(test_utils.GenericTestBase):
         expected_commands = [
             [sys.executable, '-m', 'pip', 'install', version_string]
             for version_string in (
-                'pip==23.1.2', 'pip-tools==7.1.0', 'setuptools==67.7.1')
+                'pip==23.1.2', 'pip-tools==7.1.0', 'setuptools==70.0.0')
         ]
         expected_commands += [
             [
