@@ -55,6 +55,9 @@ var expectComponentDetailsToMatch = async function (
     'ng-reflect-start-seconds'
   );
   const endSeconds = await youtubePlayer.getAttribute('ng-reflect-end-seconds');
+  console.log('startSeconds: ', +startSeconds);
+  console.log('endSeconds: ', +endSeconds);
+  browser.debug();
   expect(startTime).toBe(+startSeconds);
   expect(endTime).toBe(+endSeconds);
   expect(videoInfo).toMatch('autoplay=' + (ifAutoplay ? 1 : 0));
