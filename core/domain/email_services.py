@@ -286,5 +286,6 @@ def convert_email_to_loggable_string(
             bcc_email_list_str if bcc else 'None',
             reply_to if reply_to else 'None',
             len(recipient_variables) if recipient_variables else 0))
-    loggable_msg = textwrap.dedent(msg) + textwrap.dedent(optional_msg_description)
+    loggable_msg = textwrap.dedent(msg) + textwrap.dedent(
+        optional_msg_description)
     return loggable_msg
