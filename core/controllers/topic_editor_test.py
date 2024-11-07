@@ -19,10 +19,10 @@ from __future__ import annotations
 import datetime
 import os
 
+from core import feature_flag_list
 from core import feconf
 from core import utils
 from core.constants import constants
-from core import feature_flag_list
 from core.domain import platform_parameter_list
 from core.domain import skill_services
 from core.domain import story_domain
