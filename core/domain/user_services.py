@@ -65,6 +65,7 @@ if MYPY: # pragma: no cover
 )
 
 bulk_email_services = models.Registry.import_bulk_email_services()
+datastore_services = models.Registry.import_datastore_services()
 transaction_services = models.Registry.import_transaction_services()
 
 # Size (in px) of the gravatar being retrieved.
