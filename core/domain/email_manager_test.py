@@ -652,7 +652,10 @@ class SignupEmailTests(test_utils.EmailTestBase):
                     'value_when_matched': new_email_subject_content
                 })
             ],
-            platform_parameter_list.ParamName.SIGNUP_EMAIL_SUBJECT_CONTENT.default_value
+            platform_parameter_registry.Registry.get_platform_parameter(
+                platform_parameter_list.ParamName.
+                SIGNUP_EMAIL_SUBJECT_CONTENT.value
+            ).default_value
         )
         platform_parameter_registry.Registry.update_platform_parameter(
             platform_parameter_list.ParamName.SIGNUP_EMAIL_BODY_CONTENT.value,
