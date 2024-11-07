@@ -170,13 +170,7 @@ class EmailDashboardResultTests(test_utils.EmailTestBase):
             [self.SUBMITTER_USERNAME, self.NEW_SUBMITTER_USERNAME])
 
     @test_utils.set_platform_parameters(
-        [
-            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
-            (
-                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
-                'system@example.com'
-            )
-        ]
+        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
     )
     @test_utils.set_platform_parameters(
         [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
@@ -255,17 +249,7 @@ class EmailDashboardResultTests(test_utils.EmailTestBase):
         self.logout()
 
     @test_utils.set_platform_parameters(
-        [
-            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
-            (
-                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS,
-                'testadmin@example.com'
-            ),
-            (
-                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
-                'system@example.com'
-            )
-        ]
+        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
     )
     def test_that_test_email_for_bulk_emails_is_sent(self) -> None:
         self.login(self.SUBMITTER_EMAIL, is_super_admin=True)
