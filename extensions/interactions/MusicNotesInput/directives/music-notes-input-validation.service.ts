@@ -49,7 +49,13 @@ export class MusicNotesInputValidationService {
     answerGroups: AnswerGroup[],
     defaultOutcome: Outcome
   ): Warning[] {
-    var partialWarningsList = [];
+    var partialWarningsList = this.getCustomizationArgsWarnings(customizationArgs).concat(
+      this.baseInteractionValidationServiceInstance.getAllOutcomeWarnings(
+        answerGroups,
+        defaultOutcome,
+        stateName
+      )
+    );
 
     for (var ansGroupIdx = 0; ansGroupIdx < answerGroups.length; ansGroupIdx++) {
       const answerGroup = answerGroups[ansGroupIdx];
@@ -70,15 +76,7 @@ export class MusicNotesInputValidationService {
       }
     }
 
-    return partialWarningsList.concat(
-      this.getCustomizationArgsWarnings(customizationArgs).concat(
-        this.baseInteractionValidationServiceInstance.getAllOutcomeWarnings(
-          answerGroups,
-          defaultOutcome,
-          stateName
-        )
-      )
-    );
+    return partialWarningsList;
   }
 }
 
