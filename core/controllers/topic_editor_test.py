@@ -22,6 +22,7 @@ import os
 from core import feconf
 from core import utils
 from core.constants import constants
+from core import feature_flag_list
 from core.domain import platform_parameter_list
 from core.domain import skill_services
 from core.domain import story_domain
@@ -116,6 +117,10 @@ class BaseTopicEditorControllerTests(test_utils.GenericTestBase):
 
 class TopicEditorStoryHandlerTests(BaseTopicEditorControllerTests):
 
+    @test_utils.enable_feature_flags([
+        feature_flag_list.FeatureNames
+        .SERIAL_CHAPTER_LAUNCH_CURRICULUM_ADMIN_VIEW
+    ])
     def test_handler_updates_story_summary_dicts(self) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL)
         self.save_new_valid_exploration(
