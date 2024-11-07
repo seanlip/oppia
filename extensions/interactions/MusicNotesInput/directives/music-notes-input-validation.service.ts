@@ -61,17 +61,17 @@ export class MusicNotesInputValidationService {
       const answerGroup = answerGroups[ansGroupIdx];
       const groupId = String(ansGroupIdx + 1);
       // Specific edge case for when HasLengthInclusivelyBetween is used.
-      if (
-        answerGroup.rules.length > 0 &&
-        answerGroup.rules[0].type === 'HasLengthInclusivelyBetween'
-      ) {
-        if (answerGroup.rules[0].inputs.a > answerGroup.rules[0].inputs.b) {
-          partialWarningsList.push({
-            type: AppConstants.WARNING_TYPES.ERROR,
-            message:
-              `The rule in response group ${groupId} is invalid. ` +
-              `${answerGroup.rules[0].inputs.a} is more than ${answerGroup.rules[0].inputs.b}`,
-          });
+      for (var ruleIdx = 0; ruleIdx < answerGroup.rules.length; ruleIdx++) {
+        var rule = answerGroup.rules[ruleIdx];
+        if (rule.type === 'HasLengthInclusivelyBetween') {
+          if (rule.inputs.a > rule.inputs.b) {
+            partialWarningsList.push({
+              type: AppConstants.WARNING_TYPES.ERROR,
+              message:
+                `The rule in response group ${groupId} is invalid. ` +
+                `${rule.inputs.a} is more than ${rule.inputs.b}`,
+            });
+          }
         }
       }
     }
