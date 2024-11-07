@@ -20,6 +20,8 @@ import {Component, Input, OnInit} from '@angular/core';
 import {downgradeComponent} from '@angular/upgrade/static';
 import {AppConstants} from 'app.constants';
 import {AssetsBackendApiService} from 'services/assets-backend-api.service';
+import {UrlService} from 'services/contextual/url.service';
+import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
 import {LearnerTopicSummary} from 'domain/topic/learner-topic-summary.model';
 import {StorySummary} from 'domain/story/story-summary.model';
 @Component({
@@ -31,7 +33,11 @@ export class GoalListComponent implements OnInit {
 
   imgUrl: string = '';
 
-  constructor(private assetsBackendApiService: AssetsBackendApiService) {}
+  constructor(
+    private assetsBackendApiService: AssetsBackendApiService,
+    private urlInterpolationService: UrlInterpolationService,
+    private urlService: UrlService
+  ) {}
 
   ngOnInit(): void {
     this.imgUrl = this.assetsBackendApiService.getThumbnailUrlForPreview(
@@ -46,6 +52,42 @@ export class GoalListComponent implements OnInit {
       (story.getCompletedNodeTitles().length / story.getNodeTitles().length) *
       100
     );
+  }
+
+  getNodeLessonUrl(story: StorySummary, currentNode: StoryNode): string {
+    const explorationId = currentNode.getExplorationId();
+    if (
+      !story.getClassroomUrlFragment() ||
+      !story.getTopicUrlFragment() ||
+      explorationId === null
+    ) {
+      throw new Error('Class and/or topic does not exist');
+    }
+    let resultUrl = this.urlInterpolationService.interpolateUrl(
+      '/explore/<exp_id>',
+      {exp_id: explorationId}
+    );
+    resultUrl = this.urlService.addField(
+      resultUrl,
+      'topic_url_fragment',
+      story.getTopicUrlFragment()
+    );
+    resultUrl = this.urlService.addField(
+      resultUrl,
+      'classroom_url_fragment',
+      story.getClassroomUrlFragment()
+    );
+    resultUrl = this.urlService.addField(
+      resultUrl,
+      'story_url_fragment',
+      story.getUrlFragment()
+    );
+    resultUrl = this.urlService.addField(
+      resultUrl,
+      'node_id',
+      currentNode.getId()
+    );
+    return resultUrl;
   }
 }
 

@@ -25,7 +25,7 @@ import {GoalListComponent} from './goal-list.component';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {LearnerTopicSummary} from 'domain/topic/learner-topic-summary.model';
 import {StorySummary} from 'domain/story/story-summary.model';
-
+import {StoryNode} from 'domain/story/story-node.model';
 describe('GoalListComponent', () => {
   let component: GoalListComponent;
   let fixture: ComponentFixture<GoalListComponent>;
@@ -40,7 +40,7 @@ describe('GoalListComponent', () => {
     url_fragment: 'subtopic-name',
   };
 
-  let nodeDict = {
+  let sampleStoryNode = {
     id: 'node_1',
     thumbnail_filename: 'image.png',
     title: 'Title 1',
@@ -49,7 +49,7 @@ describe('GoalListComponent', () => {
     acquired_skill_ids: ['skill_2'],
     destination_node_ids: ['node_2'],
     outline: 'Outline',
-    exploration_id: null,
+    exploration_id: 'exp_id_1',
     outline_is_finalized: false,
     thumbnail_bg_color: '#a33f40',
     status: 'Published',
@@ -59,7 +59,7 @@ describe('GoalListComponent', () => {
     unpublishing_reason: null,
   };
 
-  let sampleStoryNode = {
+  let sampleStorySummary = {
     id: '0',
     title: 'Story Title',
     description: 'Story Description',
@@ -69,7 +69,26 @@ describe('GoalListComponent', () => {
     story_is_published: true,
     completed_node_titles: ['Chapter 1'],
     url_fragment: 'story-title',
-    all_node_dicts: [nodeDict],
+    all_node_dicts: [sampleStoryNode],
+    topic_name: 'Topic',
+    classroom_url_fragment: 'math',
+    topic_url_fragment: 'topic',
+  };
+
+  let undefinedStorySummary = {
+    id: '0',
+    title: 'Story Title',
+    description: 'Story Description',
+    node_titles: ['Chapter 1'],
+    thumbnail_filename: 'image.svg',
+    thumbnail_bg_color: '#F8BF74',
+    story_is_published: true,
+    completed_node_titles: ['Chapter 1'],
+    url_fragment: 'story-title',
+    all_node_dicts: [sampleStoryNode],
+    topic_name: 'Topic',
+    classroom_url_fragment: 'math',
+    topic_url_fragment: undefined,
   };
 
   let sampleLearnerTopicSummaryBackendDict = {
@@ -85,7 +104,7 @@ describe('GoalListComponent', () => {
     classroom_name: 'math',
     classroom_url_fragment: 'math',
     practice_tab_is_displayed: false,
-    canonical_story_summary_dict: [sampleStoryNode],
+    canonical_story_summary_dict: [sampleStorySummary],
     url_fragment: 'topic-name',
     subtopics: [subtopic],
     degrees_of_mastery: {
@@ -138,9 +157,29 @@ describe('GoalListComponent', () => {
   });
 
   it('should get story progress correctly', () => {
-    const story = StorySummary.createFromBackendDict(sampleStoryNode);
+    const story = StorySummary.createFromBackendDict(sampleStorySummary);
 
     const progress = component.getStoryProgress(story);
     expect(progress).toEqual(100);
+  });
+
+  it('should return the correct lesson url with getNodeLessonUrl', () => {
+    const story = StorySummary.createFromBackendDict(sampleStorySummary);
+    const node = StoryNode.createFromBackendDict(sampleStoryNode);
+    const progress = component.getNodeLessonUrl(story, node);
+
+    expect(progress).toEqual(
+      '/explore/exp_id_1?topic_url_fragment=topic&classroom_url_fragment=math&story_url_fragment=story-title&node_id=node_id_1'
+    );
+  });
+
+  it('should throw an error for undefined topic_url_fragment with getNodeLessonUrl', () => {
+    expect(() => {
+      const undefinedStory = StorySummary.createFromBackendDict(
+        undefinedStorySummary
+      );
+      const node = StoryNode.createFromBackendDict(sampleStoryNode);
+      component.getNodeLessonUrl(undefinedStory, node);
+    }).toThrowError('Class and/or topic does not exist');
   });
 });
