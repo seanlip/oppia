@@ -18,6 +18,7 @@
         </div>
         <div class="goal-list-details goal-list-options"> 
           <oppia-content-toggle-button (contentToggleEmitter)="handleToggleState($event)"> </oppia-content-toggle-button>
+            <!--TODO(#18384): Resume state, can only check if node is completed or not.-->
           <a *ngIf="story.getAllNodes().length !== story.getCompletedNodeTitles().length"
              class="oppia-learner-dash-button-sm oppia-learner-dash-button--default text-underline-none"
              [href]="getNodeLessonUrl(story, story.getAllNodes()[allCurrentNodes[i]])"
