@@ -47,6 +47,7 @@ import {ToastrModule} from 'ngx-toastr';
 import {LearnerDashboardActivityBackendApiService} from 'domain/learner_dashboard/learner-dashboard-activity-backend-api.service';
 import {AddGoalsModalComponent} from './add-goals-modal/add-goals-modal.component';
 import {MatDialogModule} from '@angular/material/dialog';
+import {NgCircleProgressModule} from 'ng-circle-progress';
 @NgModule({
   imports: [
     CommonModule,
@@ -61,6 +62,18 @@ import {MatDialogModule} from '@angular/material/dialog';
         component: LearnerDashboardPageRootComponent,
       },
     ]),
+    NgCircleProgressModule.forRoot({
+      radius: 16,
+      outerStrokeWidth: 2,
+      innerStrokeWidth: 2,
+      space: -2,
+      innerStrokeColor: '#e7e8ea',
+      outerStrokeColor: '#00645c',
+      showBackground: false,
+      showSubtitle: false,
+      titleFontSize: '11',
+      titleColor: '#00645c',
+    }),
   ],
   declarations: [
     AddGoalsModalComponent,

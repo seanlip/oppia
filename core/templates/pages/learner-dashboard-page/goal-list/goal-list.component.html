@@ -25,7 +25,17 @@
           <div [style.width.px]="36" class="d-flex justify-content-center"> 
             <div *ngIf="j !== 0" class="goal-list-story-node-line"></div>
           </div>
-           <!--TODO(#18384): Title-->
+          <div [style.position]="relative" class="goal-list-container">
+            <circle-progress [percent]="story.isNodeCompleted(storyNode.getTitle()) ? 100 : 0"> </circle-progress>
+            <p class="mb-0"> {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_NODE_TITLE' | translate: {number: (j + 1), title: storyNode.getTitle()} }} </p>
+            <!--TODO(#18384): Add button styling that depends on progress-->
+            <a *ngIf="!story.isNodeCompleted(storyNode.getTitle())"
+               class="oppia-learner-dash-button-sm oppia-learner-dash-button--end text-underline-none"
+               [href]="getNodeLessonUrl(story, storyNode)"
+            > 
+              {{ 'I18N_LEARNER_DASHBOARD_CARD_BUTTON_START' | translate }}
+            </a>
+          </div>
           <div [style.width.px]="36" class="d-flex justify-content-center">  
             <div *ngIf="j !== story.getAllNodes().length - 1" class="goal-list-story-node-line"></div>
           </div>
@@ -85,6 +95,19 @@
   .goal-list-story-node-line {
     border-left: 1px solid;
     height: 12px;
+  }
+
+  .oppia-learner-dash-button--end {
+    position: absolute;
+    right: 0;
+  }
+
+  .oppia-learner-dash-button--incomplete-goal {
+    opacity: 0;
+  }
+
+  .oppia-learner-dash-button--incomplete-goal:hover {
+    opacity: 1;
   }
 
   @media screen and (max-width: 500px) {
