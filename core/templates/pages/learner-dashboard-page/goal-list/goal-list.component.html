@@ -16,10 +16,18 @@
             </div>
           </div>
         </div>
-        <!--TODO(#18384): Start/resume button-->
+        <div class="goal-list-details goal-list-options"> 
+          <oppia-content-toggle-button (contentToggleEmitter)="handleToggleState($event)"> </oppia-content-toggle-button>
+          <a *ngIf="story.getAllNodes().length !== story.getCompletedNodeTitles().length"
+             class="oppia-learner-dash-button-sm oppia-learner-dash-button--default text-underline-none"
+             [href]="getNodeLessonUrl(story, story.getAllNodes()[allCurrentNodes[i]])"
+          > 
+            {{ 'I18N_LEARNER_DASHBOARD_CARD_BUTTON_START' | translate }}
+          </a>
+        </div>
       </div>
     </div>
-    <div class="goal-list-story-nodes">
+    <div *ngIf="displayAllNodes" class="goal-list-story-nodes">
       <ng-container *ngFor="let storyNode of story.getAllNodes(); let j = index">
         <div class="d-flex flex-column">
           <div [style.width.px]="36" class="d-flex justify-content-center"> 
@@ -28,7 +36,6 @@
           <div [style.position]="relative" class="goal-list-container">
             <circle-progress [percent]="story.isNodeCompleted(storyNode.getTitle()) ? 100 : 0"> </circle-progress>
             <p class="mb-0"> {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_NODE_TITLE' | translate: {number: (j + 1), title: storyNode.getTitle()} }} </p>
-            <!--TODO(#18384): Add button styling that depends on progress-->
             <a *ngIf="!story.isNodeCompleted(storyNode.getTitle())"
                class="oppia-learner-dash-button-sm oppia-learner-dash-button--end text-underline-none"
                [ngClass]="(allCurrentNodes[i] + 1) === j ? 'oppia-learner-dash-button--default' : 'oppia-learner-dash-button--inverse oppia-learner-dash-button--incomplete-goal'"
@@ -120,6 +127,14 @@
     .goal-list-container-grow {
       align-items: start;
       flex-direction: column;
+    }
+
+    .goal-list-options {
+      align-items: center;
+      flex-direction: row;
+      flex-grow: 1;
+      max-width: 100%;
+      padding-top: 0;
     }
   }
 </style>

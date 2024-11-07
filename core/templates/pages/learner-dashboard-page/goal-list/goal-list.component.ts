@@ -33,6 +33,7 @@ export class GoalListComponent implements OnInit {
   @Input() goalTopic: LearnerTopicSummary;
 
   imgUrl: string = '';
+  displayAllNodes: boolean = false;
   allCurrentNodes: number[] = [];
 
   constructor(
@@ -131,6 +132,10 @@ export class GoalListComponent implements OnInit {
       earliestCompletedNode = earliestNode;
     }
     return earliestCompletedNode;
+  }
+
+  handleToggleState(updateState: boolean): void {
+    this.displayAllNodes = updateState;
   }
 }
 

@@ -22,10 +22,13 @@ import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MockTranslatePipe} from 'tests/unit-test-utils';
 import {AssetsBackendApiService} from 'services/assets-backend-api.service';
 import {GoalListComponent} from './goal-list.component';
+import {ContentToggleButtonComponent} from '../content-toggle-button/content-toggle-button.component';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {LearnerTopicSummary} from 'domain/topic/learner-topic-summary.model';
 import {StorySummary} from 'domain/story/story-summary.model';
 import {StoryNode} from 'domain/story/story-node.model';
+import {By} from '@angular/platform-browser';
+
 describe('GoalListComponent', () => {
   let component: GoalListComponent;
   let fixture: ComponentFixture<GoalListComponent>;
@@ -337,5 +340,20 @@ describe('GoalListComponent', () => {
     );
 
     expect(currentNode).toEqual(1);
+  });
+
+  it('should set displayAllNodes false when handleToggleState', () => {
+    expect(component.displayAllNodes).toBeFalse();
+
+    spyOn(component, 'handleToggleState').and.callThrough();
+
+    const button = fixture.debugElement.query(
+      By.directive(ContentToggleButtonComponent)
+    ).componentInstance;
+    button.toggle();
+
+    fixture.detectChanges();
+
+    expect(component.displayAllNodes).toBeTrue();
   });
 });
