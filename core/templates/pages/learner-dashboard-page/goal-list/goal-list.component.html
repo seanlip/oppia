@@ -31,6 +31,7 @@
             <!--TODO(#18384): Add button styling that depends on progress-->
             <a *ngIf="!story.isNodeCompleted(storyNode.getTitle())"
                class="oppia-learner-dash-button-sm oppia-learner-dash-button--end text-underline-none"
+               [ngClass]="(allCurrentNodes[i] + 1) === j ? 'oppia-learner-dash-button--default' : 'oppia-learner-dash-button--inverse oppia-learner-dash-button--incomplete-goal'"
                [href]="getNodeLessonUrl(story, storyNode)"
             > 
               {{ 'I18N_LEARNER_DASHBOARD_CARD_BUTTON_START' | translate }}
@@ -65,6 +66,11 @@
     justify-content: space-between;
     padding-bottom: 8px;
     padding-top: 8px;
+  }
+
+  .goal-list-details p {
+    font-family: "Roboto";
+    font-weight: 500;
   }
 
   .goal-list-img {
