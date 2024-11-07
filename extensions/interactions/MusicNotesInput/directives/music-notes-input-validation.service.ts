@@ -55,7 +55,6 @@ export class MusicNotesInputValidationService {
       const answerGroup = answerGroups[ansGroupIdx];
       const groupId = String(ansGroupIdx + 1);
       // Specific edge case for when HasLengthInclusivelyBetween is used.
-      console.log(answerGroup)
       if (
         answerGroup.rules.length > 0 &&
         answerGroup.rules[0].type === 'HasLengthInclusivelyBetween'
