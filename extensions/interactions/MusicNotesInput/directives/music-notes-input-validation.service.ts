@@ -51,10 +51,11 @@ export class MusicNotesInputValidationService {
   ): Warning[] {
     var partialWarningsList = [];
 
-    for (var i = 0; i < answerGroups.length; i++) {
-      const answerGroup = answerGroups[i];
-      const groupId = String(i + 1);
+    for (var ansGroupIdx = 0; ansGroupIdx < answerGroups.length; ansGroupIdx++) {
+      const answerGroup = answerGroups[ansGroupIdx];
+      const groupId = String(ansGroupIdx + 1);
       // Specific edge case for when HasLengthInclusivelyBetween is used.
+      console.log(answerGroup)
       if (
         answerGroup.rules.length > 0 &&
         answerGroup.rules[0].type === 'HasLengthInclusivelyBetween'
@@ -63,7 +64,7 @@ export class MusicNotesInputValidationService {
           partialWarningsList.push({
             type: AppConstants.WARNING_TYPES.ERROR,
             message:
-              `The rule in response group ${groupId} is impossible. ` +
+              `The rule in response group ${groupId} is invalid. ` +
               `${answerGroup.rules[0].inputs.a} is more than ${answerGroup.rules[0].inputs.b}`,
           });
         }
