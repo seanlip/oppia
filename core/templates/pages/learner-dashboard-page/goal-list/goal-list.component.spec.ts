@@ -59,36 +59,90 @@ describe('GoalListComponent', () => {
     unpublishing_reason: null,
   };
 
+  let sampleStoryNode2 = {
+    id: 'node_2',
+    thumbnail_filename: 'image.png',
+    title: 'Title 2',
+    description: 'Description 2',
+    prerequisite_skill_ids: ['skill_2'],
+    acquired_skill_ids: ['skill_3'],
+    destination_node_ids: ['node_3'],
+    outline: 'Outline',
+    exploration_id: 'exp_id_2',
+    outline_is_finalized: false,
+    thumbnail_bg_color: '#a33f40',
+    status: 'Published',
+    planned_publication_date_msecs: 100,
+    last_modified_msecs: 100,
+    first_publication_date_msecs: 200,
+    unpublishing_reason: null,
+  };
+
+  let sampleStoryNode3 = {
+    id: 'node_3',
+    thumbnail_filename: 'image.png',
+    title: 'Title 3',
+    description: 'Description 2',
+    prerequisite_skill_ids: ['skill_3'],
+    acquired_skill_ids: ['skill_4'],
+    destination_node_ids: ['node_4'],
+    outline: 'Outline',
+    exploration_id: 'exp_id_3',
+    outline_is_finalized: false,
+    thumbnail_bg_color: '#a33f40',
+    status: 'Published',
+    planned_publication_date_msecs: 100,
+    last_modified_msecs: 100,
+    first_publication_date_msecs: 200,
+    unpublishing_reason: null,
+  };
+
   let sampleStorySummary = {
     id: '0',
     title: 'Story Title',
     description: 'Story Description',
-    node_titles: ['Chapter 1'],
+    node_titles: ['Title 1', 'Title 2', 'Title 3'],
     thumbnail_filename: 'image.svg',
     thumbnail_bg_color: '#F8BF74',
     story_is_published: true,
-    completed_node_titles: ['Chapter 1'],
+    completed_node_titles: ['Title 1', 'Title 2', 'Title 3'],
     url_fragment: 'story-title',
-    all_node_dicts: [sampleStoryNode],
+    all_node_dicts: [sampleStoryNode, sampleStoryNode2, sampleStoryNode3],
     topic_name: 'Topic',
     classroom_url_fragment: 'math',
     topic_url_fragment: 'topic',
   };
 
-  let undefinedStorySummary = {
-    id: '0',
+  let newStorySummary = {
+    id: '1',
     title: 'Story Title',
     description: 'Story Description',
-    node_titles: ['Chapter 1'],
+    node_titles: ['Title 1', 'Title 2'],
     thumbnail_filename: 'image.svg',
     thumbnail_bg_color: '#F8BF74',
     story_is_published: true,
-    completed_node_titles: ['Chapter 1'],
+    completed_node_titles: [],
     url_fragment: 'story-title',
-    all_node_dicts: [sampleStoryNode],
+    all_node_dicts: [sampleStoryNode, sampleStoryNode2],
     topic_name: 'Topic',
     classroom_url_fragment: 'math',
-    topic_url_fragment: undefined,
+    topic_url_fragment: 'topic',
+  };
+
+  let incompleteStorySummary = {
+    id: '2',
+    title: 'Story Title',
+    description: 'Story Description',
+    node_titles: ['Title 1', 'Title 2', 'Title 3'],
+    thumbnail_filename: 'image.svg',
+    thumbnail_bg_color: '#F8BF74',
+    story_is_published: true,
+    completed_node_titles: ['Title 1', 'Title 2'],
+    url_fragment: 'story-title',
+    all_node_dicts: [sampleStoryNode, sampleStoryNode2, sampleStoryNode3],
+    topic_name: 'Topic',
+    classroom_url_fragment: 'math',
+    topic_url_fragment: 'topic',
   };
 
   let sampleLearnerTopicSummaryBackendDict = {
@@ -98,13 +152,17 @@ describe('GoalListComponent', () => {
     description: 'description',
     version: 1,
     story_titles: ['Story 1'],
-    total_published_node_count: 2,
+    total_published_node_count: 3,
     thumbnail_filename: 'image.svg',
     thumbnail_bg_color: '#C6DCDA',
     classroom_name: 'math',
     classroom_url_fragment: 'math',
     practice_tab_is_displayed: false,
-    canonical_story_summary_dict: [sampleStorySummary],
+    canonical_story_summary_dict: [
+      sampleStorySummary,
+      newStorySummary,
+      incompleteStorySummary,
+    ],
     url_fragment: 'topic-name',
     subtopics: [subtopic],
     degrees_of_mastery: {
@@ -174,6 +232,22 @@ describe('GoalListComponent', () => {
   });
 
   it('should throw an error for undefined topic_url_fragment with getNodeLessonUrl', () => {
+    let undefinedStorySummary = {
+      id: '0',
+      title: 'Story Title',
+      description: 'Story Description',
+      node_titles: ['Title 1'],
+      thumbnail_filename: 'image.svg',
+      thumbnail_bg_color: '#F8BF74',
+      story_is_published: true,
+      completed_node_titles: ['Title 1'],
+      url_fragment: 'story-title',
+      all_node_dicts: [sampleStoryNode],
+      topic_name: 'Topic',
+      classroom_url_fragment: 'math',
+      topic_url_fragment: undefined,
+    };
+
     expect(() => {
       const undefinedStory = StorySummary.createFromBackendDict(
         undefinedStorySummary
@@ -181,5 +255,87 @@ describe('GoalListComponent', () => {
       const node = StoryNode.createFromBackendDict(sampleStoryNode);
       component.getNodeLessonUrl(undefinedStory, node);
     }).toThrowError('Class and/or topic does not exist');
+  });
+
+  it('should return the correct current node for multiple canonical story summaries', () => {
+    const getMostRecentCompletedNodeSpy = spyOn(
+      component,
+      'getMostRecentCompletedNode'
+    ).and.callThrough();
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    expect(getMostRecentCompletedNodeSpy).toHaveBeenCalledTimes(2);
+    expect(component.allCurrentNodes).toEqual([2, 0, 1]);
+  });
+
+  it('should return the first node as the earliest if the only completed node is the last and there are remaining nodes', () => {
+    let lastStorySummary = {
+      id: '0',
+      title: 'Story Title',
+      description: 'Story Description',
+      node_titles: ['Title 1', 'Title 2', 'Title 3'],
+      thumbnail_filename: 'image.svg',
+      thumbnail_bg_color: '#F8BF74',
+      story_is_published: true,
+      completed_node_titles: ['Title 2', 'Title 3'],
+      url_fragment: 'story-title',
+      all_node_dicts: [sampleStoryNode, sampleStoryNode2, sampleStoryNode3],
+      topic_name: 'Topic',
+      classroom_url_fragment: 'math',
+      topic_url_fragment: 'topic',
+    };
+    const currentNode = component.getMostRecentCompletedNode(
+      StorySummary.createFromBackendDict(lastStorySummary)
+    );
+
+    expect(currentNode).toEqual(0);
+  });
+
+  it('should return the earliest node of multiple nodes completed out of order', () => {
+    let unorderedStorySummary = {
+      id: '0',
+      title: 'Story Title',
+      description: 'Story Description',
+      node_titles: ['Title 1', 'Title 2', 'Title 3'],
+      thumbnail_filename: 'image.svg',
+      thumbnail_bg_color: '#F8BF74',
+      story_is_published: true,
+      completed_node_titles: ['Title 1', 'Title 3'],
+      url_fragment: 'story-title',
+      all_node_dicts: [sampleStoryNode, sampleStoryNode2, sampleStoryNode3],
+      topic_name: 'Topic',
+      classroom_url_fragment: 'math',
+      topic_url_fragment: 'topic',
+    };
+    const currentNode = component.getMostRecentCompletedNode(
+      StorySummary.createFromBackendDict(unorderedStorySummary)
+    );
+
+    expect(currentNode).toEqual(0);
+  });
+
+  it('should return the most recent node of multiple nodes', () => {
+    let noOrderStorySummary = {
+      id: '0',
+      title: 'Story Title',
+      description: 'Story Description',
+      node_titles: ['Title 1', 'Title 2', 'Title 3'],
+      thumbnail_filename: 'image.svg',
+      thumbnail_bg_color: '#F8BF74',
+      story_is_published: true,
+      completed_node_titles: ['Title 2'],
+      url_fragment: 'story-title',
+      all_node_dicts: [sampleStoryNode, sampleStoryNode2, sampleStoryNode3],
+      topic_name: 'Topic',
+      classroom_url_fragment: 'math',
+      topic_url_fragment: 'topic',
+    };
+    const currentNode = component.getMostRecentCompletedNode(
+      StorySummary.createFromBackendDict(noOrderStorySummary)
+    );
+
+    expect(currentNode).toEqual(1);
   });
 });

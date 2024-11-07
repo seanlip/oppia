@@ -24,6 +24,7 @@ import {UrlService} from 'services/contextual/url.service';
 import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
 import {LearnerTopicSummary} from 'domain/topic/learner-topic-summary.model';
 import {StorySummary} from 'domain/story/story-summary.model';
+import {StoryNode} from 'domain/story/story-node.model';
 @Component({
   selector: 'oppia-goal-list',
   templateUrl: './goal-list.component.html',
@@ -32,6 +33,7 @@ export class GoalListComponent implements OnInit {
   @Input() goalTopic: LearnerTopicSummary;
 
   imgUrl: string = '';
+  allCurrentNodes: number[] = [];
 
   constructor(
     private assetsBackendApiService: AssetsBackendApiService,
@@ -44,6 +46,10 @@ export class GoalListComponent implements OnInit {
       AppConstants.ENTITY_TYPE.TOPIC,
       this.goalTopic.getId(),
       this.goalTopic.getThumbnailFilename()
+    );
+
+    this.allCurrentNodes = this.goalTopic.canonicalStorySummaryDicts.map(
+      story => this.getMostRecentCompletedNode(story)
     );
   }
 
@@ -88,6 +94,43 @@ export class GoalListComponent implements OnInit {
       currentNode.getId()
     );
     return resultUrl;
+  }
+
+  /* TODO(#18384): Is there a way to check for nodes started but not completed (progress?) */
+  /* TODO(#18384): Are completed nodes added in order of completion or in order of topic sequence? */
+  /* TODO(#18384): What if completed the last possible story node, but not ones prior? What would be the next node? Would the story be considered completed? */
+  getMostRecentCompletedNode(story: StorySummary): number {
+    const allNodes = story.getAllNodes();
+    let earliestCompletedNode = 0;
+    if (story.getCompletedNodeTitles().length === 0) {
+      earliestCompletedNode = 0;
+    } else if (story.getCompletedNodeTitles().length === allNodes.length) {
+      earliestCompletedNode = allNodes.length - 1;
+    } else {
+      const orderedCompletedTitles = [];
+      for (let i = 0; i < allNodes.length; i++) {
+        if (story.isNodeCompleted(allNodes[i].getTitle())) {
+          orderedCompletedTitles.push(i);
+        }
+      }
+
+      let earliestNode = orderedCompletedTitles[0];
+      if (orderedCompletedTitles.length > 1) {
+        let currentNode = 1;
+        while (earliestNode + 1 === orderedCompletedTitles[currentNode]) {
+          earliestNode = orderedCompletedTitles[currentNode];
+          currentNode++;
+        }
+      }
+      if (
+        earliestNode === allNodes.length - 1 &&
+        orderedCompletedTitles.length !== allNodes.length
+      ) {
+        earliestNode = 0;
+      }
+      earliestCompletedNode = earliestNode;
+    }
+    return earliestCompletedNode;
   }
 }
 
