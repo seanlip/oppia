@@ -589,3 +589,11 @@ Registry.create_platform_parameter(
     # TODO(release-scripts#137): Update post the first trial release.
     default=feconf.OPPIA_PROJECT_ID
 )
+
+Registry.create_platform_parameter(
+    ParamName.OPPIA_SITE_URL_FOR_EMAILS,
+    'Oppia site URL used in emails.',
+    platform_parameter_domain.DataTypes.STRING,
+    # TODO(release-scripts#137): Update post the first trial release.
+    default=feconf.OPPIA_SITE_URL
+)
