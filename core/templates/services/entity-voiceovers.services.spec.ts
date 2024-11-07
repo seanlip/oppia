@@ -182,4 +182,41 @@ describe('Entity voiceovers service', () => {
       content0: [voiceover1, voiceover2],
     });
   });
+
+  it('should check content ID availability in entity voiceovers correctly', () => {
+    let availableContentId = 'content0';
+    let unavailableContentId = 'content1';
+    entityVoiceoversService.addEntityVoiceovers('en-US', entityVoiceovers);
+
+    expect(
+      entityVoiceoversService.checkVoiceoverWithGivenContentIdIsAvailable(
+        availableContentId
+      )
+    ).toBeTrue();
+
+    expect(
+      entityVoiceoversService.checkVoiceoverWithGivenContentIdIsAvailable(
+        unavailableContentId
+      )
+    ).toBeFalse();
+  });
+
+  it('should mark the voiceover as stale on content update', () => {
+    entityVoiceoversService.addEntityVoiceovers('en-US', entityVoiceovers);
+    let contentId = 'content0';
+
+    expect(
+      entityVoiceovers.voiceoversMapping[contentId].manual.needsUpdate
+    ).toBeFalse();
+
+    entityVoiceoversService.markVoiceoverAsStaleOnContentUpdate(contentId);
+
+    let updatedEntityVoiceoversInUSAccent =
+      entityVoiceoversService.getEntityVoiceoversByLanguageAccentCode('en-US');
+
+    expect(
+      updatedEntityVoiceoversInUSAccent.voiceoversMapping[contentId].manual
+        .needsUpdate
+    ).toBeTrue();
+  });
 });

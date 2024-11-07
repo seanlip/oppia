@@ -388,6 +388,11 @@ describe('Translation status service', () => {
               content_value: '<p>This is first card.</p>',
               needs_update: true,
             },
+            content_8: {
+              content_format: 'html',
+              content_value: '<p>Translation content in hindi.</p>',
+              needs_update: false,
+            },
           },
         });
 

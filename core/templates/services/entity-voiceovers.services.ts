@@ -171,7 +171,7 @@ export class EntityVoiceoversService {
     return false;
   }
 
-  markVoiceoversWithGivenContentIdAsStale(contentId: string): void {
+  markVoiceoverAsStaleOnContentUpdate(contentId: string): void {
     for (let languageAccentCode in this.languageAccentCodeToEntityVoiceovers) {
       let entityVoiceovers =
         this.languageAccentCodeToEntityVoiceovers[languageAccentCode];

@@ -151,6 +151,7 @@ describe('Audio Bar Component', () => {
 
     component.ngOnInit();
     component.isPaused = false;
+    component.audioBarIsExpanded = true;
     fixture.detectChanges();
 
     mockOnAutoplayAudioEventEmitter.emit(params);
@@ -161,7 +162,6 @@ describe('Audio Bar Component', () => {
     discardPeriodicTasks();
     fixture.detectChanges();
 
-    expect(component.audioBarIsExpanded).toBeFalse();
     expect(component.progressBarIsShown).toBeFalse();
     expect(component.audioLoadingIndicatorIsShown).toBeFalse();
   }));

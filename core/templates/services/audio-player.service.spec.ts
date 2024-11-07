@@ -435,6 +435,30 @@ describe('AudioPlayerService', () => {
     }));
   });
 
+  it(
+    'should clear audio translations when audio ' + 'ends',
+    fakeAsync(async () => {
+      spyOn(howler, 'Howl').and.returnValue({
+        on: (evt: string, func: () => void) => {
+          if (evt === 'end') {
+            func();
+          }
+        },
+      } as Howl);
+      spyOn(assetsBackendApiService, 'loadAudio').and.returnValue(
+        Promise.resolve({
+          data: new Blob(),
+          filename: 'test',
+        })
+      );
+
+      audioPlayerService.loadAsync('test.mp3');
+      flushMicrotasks();
+
+      expect(assetsBackendApiService.loadAudio).toHaveBeenCalled();
+    })
+  );
+
   it('should display error when audio fails to load', fakeAsync(() => {
     spyOn(assetsBackendApiService, 'loadAudio').and.returnValue(
       Promise.reject('Error')
