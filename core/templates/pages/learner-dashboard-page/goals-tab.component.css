@@ -426,7 +426,7 @@
 
 @media screen and (min-width: 767px) {
   .oppia-learner-dash-button--add-goals {
-    gap: 0 8px;
+    gap: 0 4px;
   }
 }
 
