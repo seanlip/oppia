@@ -30,7 +30,7 @@ import {StoryNode} from 'domain/story/story-node.model';
   templateUrl: './goal-list.component.html',
 })
 export class GoalListComponent implements OnInit {
-  @Input() goalTopic: LearnerTopicSummary;
+  @Input() goalTopic!: LearnerTopicSummary;
 
   imgUrl: string = '';
   displayAllNodes: boolean = false;
@@ -77,12 +77,12 @@ export class GoalListComponent implements OnInit {
     resultUrl = this.urlService.addField(
       resultUrl,
       'topic_url_fragment',
-      story.getTopicUrlFragment()
+      story.getTopicUrlFragment() || ''
     );
     resultUrl = this.urlService.addField(
       resultUrl,
       'classroom_url_fragment',
-      story.getClassroomUrlFragment()
+      story.getClassroomUrlFragment() || ''
     );
     resultUrl = this.urlService.addField(
       resultUrl,
