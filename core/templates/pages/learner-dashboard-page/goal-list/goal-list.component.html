@@ -38,11 +38,13 @@
           <div [style.width.px]="36" class="d-flex justify-content-center">
             <div *ngIf="j !== 0" class="goal-list-story-node-line"></div>
           </div>
-          <div class="goal-list-center">
-            <circle-progress [percent]="story.isNodeCompleted(storyNode.getTitle()) ? 100 : 0"> </circle-progress>
-            <p class="mb-0"> {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_NODE_TITLE' | translate: {number: (j + 1), title: storyNode.getTitle()} }} </p>
+          <div class="goal-list-center" [ngStyle]="{'justify-content' : 'space-between'}">
+            <div class="goal-list-center">
+              <circle-progress [percent]="story.isNodeCompleted(storyNode.getTitle()) ? 100 : 0"> </circle-progress>
+              <p class="mb-0"> {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_NODE_TITLE' | translate: {number: (j + 1), title: storyNode.getTitle()} }} </p>
+            </div>
             <a *ngIf="!story.isNodeCompleted(storyNode.getTitle())"
-               class="oppia-learner-dash-button-sm oppia-learner-dash-button--end text-underline-none"
+               class="oppia-learner-dash-button-sm text-underline-none"
                [ngClass]="allCurrentNodes[i] === j ? 'oppia-learner-dash-button--default' : 'oppia-learner-dash-button--inverse oppia-learner-dash-button--incomplete-goal'"
                [href]="getNodeLessonUrl(story, storyNode)"
                [ngStyle]="{'width': '96px'}"
@@ -128,11 +130,6 @@
 
   .goal-list-title {
     font-size: 20px;
-  }
-
-  .oppia-learner-dash-button--end {
-    position: absolute;
-    right: 0;
   }
 
   .oppia-learner-dash-button--incomplete-goal {
