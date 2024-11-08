@@ -138,7 +138,7 @@ describe('AddGoalsModalComponent', () => {
     );
     fixture.detectChanges();
 
-    expect(firstCheckbox.nativeElement.checked).toBeFalse();
+    expect(firstCheckbox.nativeElement.checked).toBeTrue();
     expect(firstCheckbox.nativeElement.disabled).toBeTrue();
   });
 

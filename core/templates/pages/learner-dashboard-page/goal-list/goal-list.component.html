@@ -1,5 +1,5 @@
 <ng-container *ngFor="let story of goalTopic.getCanonicalStorySummaryDicts(); let i = index">
-  <div class="oppia-learner-dash-section w-100">
+  <div class="oppia-learner-dash-section w-100" [ngStyle]="{'box-shadow': '0px 2px 2px 0px #00000040'}">
     <div class="goal-list-stretch w-100">
       <img class="goal-list-img" [src]="imgUrl" alt="" />
       <div class="goal-list-stretch flex-grow-1">
@@ -17,11 +17,15 @@
           </div>
         </div>
         <div class="goal-list-options">
-          <oppia-content-toggle-button (contentToggleEmitter)="handleToggleState($event)"> </oppia-content-toggle-button>
+          <div class="goal-list-center">
+            <ng-content></ng-content>
+            <oppia-content-toggle-button (contentToggleEmitter)="handleToggleState($event)"> </oppia-content-toggle-button>
+          </div>
             <!--TODO(#18384): Resume state, can only check if node is completed or not.-->
           <a *ngIf="story.getAllNodes().length !== story.getCompletedNodeTitles().length && !displayAllNodes"
-             class="oppia-learner-dash-button-sm oppia-learner-dash-button--default text-underline-none"
+             class="oppia-learner-dash-button-sm oppia-learner-dash-button--default text-underline-none align-self-end"
              [href]="getNodeLessonUrl(story, story.getAllNodes()[allCurrentNodes[i]])"
+             [ngStyle]="{'width': '96px'}"
           >
             {{ 'I18N_LEARNER_DASHBOARD_CARD_BUTTON_START' | translate }}
           </a>
@@ -41,6 +45,7 @@
                class="oppia-learner-dash-button-sm oppia-learner-dash-button--end text-underline-none"
                [ngClass]="allCurrentNodes[i] === j ? 'oppia-learner-dash-button--default' : 'oppia-learner-dash-button--inverse oppia-learner-dash-button--incomplete-goal'"
                [href]="getNodeLessonUrl(story, storyNode)"
+               [ngStyle]="{'width': '96px'}"
             >
               {{ 'I18N_LEARNER_DASHBOARD_CARD_BUTTON_START' | translate }}
             </a>
