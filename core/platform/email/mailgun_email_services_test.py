@@ -223,8 +223,8 @@ class EmailTests(test_utils.GenericTestBase):
             """)
         mailgun_exception = self.assertRaisesRegex(
             Exception, (
-                "Mailgun API key is not available. Here is the email that "
-                "failed sending: %s" % msg_body)
+                'Mailgun API key is not available. Here is the email that '
+                'failed sending: %s' % msg_body)
         )
         with self.swap_api_key_secrets_return_none, mailgun_exception:
             with self.capture_logging() as logs:
@@ -261,8 +261,8 @@ class EmailTests(test_utils.GenericTestBase):
             """)
         mailgun_exception = self.assertRaisesRegex(
             Exception, (
-                "Mailgun domain name is not set. Here is the email that "
-                "failed sending: %s" % msg_body)
+                'Mailgun domain name is not set. Here is the email that '
+                'failed sending: %s' % msg_body)
         )
         with self.swap_api_key_secrets_return_secret, mailgun_exception:
             with self.capture_logging() as logs:

@@ -636,7 +636,7 @@ class SignupEmailTests(test_utils.EmailTestBase):
             new_email_body_content: str. The email body.
         """
         platform_parameter_registry.Registry.update_platform_parameter(
-            platform_parameter_list.ParamName.SIGNUP_EMAIL_SUBJECT_CONTENT.name,
+            platform_parameter_list.ParamName.SIGNUP_EMAIL_SUBJECT_CONTENT.value,
             self.admin_id,
             'Updating email subject.',
             [
@@ -815,7 +815,7 @@ class SignupEmailTests(test_utils.EmailTestBase):
             (platform_parameter_list.ParamName.EMAIL_FOOTER, EMAIL_FOOTER),
             (
                 platform_parameter_list.ParamName.SIGNUP_EMAIL_SUBJECT_CONTENT,
-                ''
+                'Signup subject'
             ),
             (
                 platform_parameter_list.ParamName.SIGNUP_EMAIL_BODY_CONTENT,
@@ -899,7 +899,7 @@ class SignupEmailTests(test_utils.EmailTestBase):
             (platform_parameter_list.ParamName.EMAIL_FOOTER, EMAIL_FOOTER),
             (
                 platform_parameter_list.ParamName.SIGNUP_EMAIL_SUBJECT_CONTENT,
-                ''
+                'Signup subject'
             ),
             (
                 platform_parameter_list.ParamName.SIGNUP_EMAIL_BODY_CONTENT,
