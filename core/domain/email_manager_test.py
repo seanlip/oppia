@@ -636,7 +636,10 @@ class SignupEmailTests(test_utils.EmailTestBase):
             new_email_body_content: str. The email body.
         """
         platform_parameter_registry.Registry.update_platform_parameter(
-            platform_parameter_list.ParamName.SIGNUP_EMAIL_SUBJECT_CONTENT.value,
+            (
+                platform_parameter_list.ParamName.
+                SIGNUP_EMAIL_SUBJECT_CONTENT.value
+            ),
             self.admin_id,
             'Updating email subject.',
             [
