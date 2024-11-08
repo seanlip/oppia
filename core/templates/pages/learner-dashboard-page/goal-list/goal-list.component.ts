@@ -104,7 +104,7 @@ export class GoalListComponent implements OnInit {
     const allNodes = story.getAllNodes();
     let earliestCompletedNode = 0;
     if (story.getCompletedNodeTitles().length === 0) {
-      earliestCompletedNode = 0;
+      earliestCompletedNode = -1;
     } else if (story.getCompletedNodeTitles().length === allNodes.length) {
       earliestCompletedNode = allNodes.length - 1;
     } else {
@@ -127,11 +127,11 @@ export class GoalListComponent implements OnInit {
         earliestNode === allNodes.length - 1 &&
         orderedCompletedTitles.length !== allNodes.length
       ) {
-        earliestNode = 0;
+        earliestNode = -1;
       }
       earliestCompletedNode = earliestNode;
     }
-    return earliestCompletedNode;
+    return earliestCompletedNode + 1;
   }
 
   handleToggleState(updateState: boolean): void {

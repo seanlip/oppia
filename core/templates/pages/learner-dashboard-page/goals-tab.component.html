@@ -117,14 +117,15 @@
       </button>
     </div>
     <ng-container *ngIf="currentGoals.length !== 0">
-      <p> {{ 'I18N_LEARNER_DASHBOARD_INCOMPLETE_SECTION' | translate }} </p>
+      <p class="oppia-learner-dash-goals-heading"> {{ 'I18N_LEARNER_DASHBOARD_INCOMPLETE_SECTION' | translate }} </p>
       <hr color="#00645c" class="mt-2 mb-4" size="2" width="100%">
       <ng-container *ngFor="let goal of currentGoals"> 
         <oppia-goal-list [goalTopic]="goal"></oppia-goal-list>
       </ng-container>
     </ng-container>
     <ng-container *ngIf="completedGoals.length !== 0">
-      <p> {{ 'I18N_LEARNER_DASHBOARD_COMPLETE_SECTION' | translate }} </p>
+      <p class="oppia-learner-dash-goals-heading"> {{ 'I18N_LEARNER_DASHBOARD_COMPLETE_SECTION' | translate }} </p>
+      <hr color="#00645c" class="mt-2 mb-4" size="2" width="100%">
       <ng-container *ngFor="let goal of completedGoals"> 
         <oppia-goal-list [goalTopic]="goal"></oppia-goal-list>
       </ng-container>

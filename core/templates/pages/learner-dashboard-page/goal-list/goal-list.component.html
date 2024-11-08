@@ -39,7 +39,7 @@
             <p class="mb-0"> {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_NODE_TITLE' | translate: {number: (j + 1), title: storyNode.getTitle()} }} </p>
             <a *ngIf="!story.isNodeCompleted(storyNode.getTitle())"
                class="oppia-learner-dash-button-sm oppia-learner-dash-button--end text-underline-none"
-               [ngClass]="(allCurrentNodes[i] + 1) === j ? 'oppia-learner-dash-button--default' : 'oppia-learner-dash-button--inverse oppia-learner-dash-button--incomplete-goal'"
+               [ngClass]="allCurrentNodes[i] === j ? 'oppia-learner-dash-button--default' : 'oppia-learner-dash-button--inverse oppia-learner-dash-button--incomplete-goal'"
                [href]="getNodeLessonUrl(story, storyNode)"
             >
               {{ 'I18N_LEARNER_DASHBOARD_CARD_BUTTON_START' | translate }}
@@ -87,7 +87,6 @@
     width: 152px;
   }
 
-  /* Pass style through content-toggle-button, negative margin to align*/
   .goal-list-options {
     display: flex;
     flex-direction: column;

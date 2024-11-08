@@ -270,7 +270,7 @@ describe('GoalListComponent', () => {
     fixture.detectChanges();
 
     expect(getMostRecentCompletedNodeSpy).toHaveBeenCalledTimes(2);
-    expect(component.allCurrentNodes).toEqual([2, 0, 1]);
+    expect(component.allCurrentNodes).toEqual([3, 0, 2]);
   });
 
   it('should return the first node as the earliest if the only completed node is the last and there are remaining nodes', () => {
@@ -316,7 +316,7 @@ describe('GoalListComponent', () => {
       StorySummary.createFromBackendDict(unorderedStorySummary)
     );
 
-    expect(currentNode).toEqual(0);
+    expect(currentNode).toEqual(1);
   });
 
   it('should return the most recent node of multiple nodes', () => {
@@ -339,7 +339,7 @@ describe('GoalListComponent', () => {
       StorySummary.createFromBackendDict(noOrderStorySummary)
     );
 
-    expect(currentNode).toEqual(1);
+    expect(currentNode).toEqual(2);
   });
 
   it('should set displayAllNodes false when handleToggleState', () => {
