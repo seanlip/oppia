@@ -1,14 +1,14 @@
 <ng-container *ngFor="let story of goalTopic.getCanonicalStorySummaryDicts(); let i = index">
   <div class="oppia-learner-dash-section w-100">
-    <div class="goal-list-container">
+    <div class="goal-list-column w-100">
       <img class="goal-list-img" [src]="imgUrl" alt="" />
-      <div class="goal-list-container goal-list-container-grow"> 
-        <div class="goal-list-details flex-grow-1"> 
-          <p [style.font-size.px]="20"> 
+      <div class="goal-list-column flex-grow-1">
+        <div class="goal-list-details flex-grow-1">
+          <p class="goal-list-title">
             {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_STORY_TITLE' | translate: {title: goalTopic.getName()} }}
           </p>
-          <div class="goal-list-container"> 
-            <p [style.font-size.px]="10" class="mb-0"> 
+          <div class="goal-list-row">
+            <p [style.font-size.px]="10" class="mb-0">
               {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_STORY_PROGRESS' | translate: {current: story.getCompletedNodeTitles().length, total: story.getNodeTitles().length} }}
             </p>
             <div class="goal-list-progress-bar">
@@ -16,10 +16,10 @@
             </div>
           </div>
         </div>
-        <div class="goal-list-details goal-list-options"> 
+        <div class="goal-list-options">
           <oppia-content-toggle-button (contentToggleEmitter)="handleToggleState($event)"> </oppia-content-toggle-button>
             <!--TODO(#18384): Resume state, can only check if node is completed or not.-->
-          <a *ngIf="story.getAllNodes().length !== story.getCompletedNodeTitles().length"
+          <a *ngIf="story.getAllNodes().length !== story.getCompletedNodeTitles().length && !displayAllNodes"
              class="oppia-learner-dash-button-sm oppia-learner-dash-button--default text-underline-none"
              [href]="getNodeLessonUrl(story, story.getAllNodes()[allCurrentNodes[i]])"
           > 
@@ -31,21 +31,21 @@
     <div *ngIf="displayAllNodes" class="goal-list-story-nodes">
       <ng-container *ngFor="let storyNode of story.getAllNodes(); let j = index">
         <div class="d-flex flex-column">
-          <div [style.width.px]="36" class="d-flex justify-content-center"> 
+          <div [style.width.px]="36" class="d-flex justify-content-center">
             <div *ngIf="j !== 0" class="goal-list-story-node-line"></div>
           </div>
-          <div [style.position]="relative" class="goal-list-container">
+          <div [style.position]="'relative'" class="goal-list-row">
             <circle-progress [percent]="story.isNodeCompleted(storyNode.getTitle()) ? 100 : 0"> </circle-progress>
             <p class="mb-0"> {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_NODE_TITLE' | translate: {number: (j + 1), title: storyNode.getTitle()} }} </p>
             <a *ngIf="!story.isNodeCompleted(storyNode.getTitle())"
                class="oppia-learner-dash-button-sm oppia-learner-dash-button--end text-underline-none"
                [ngClass]="(allCurrentNodes[i] + 1) === j ? 'oppia-learner-dash-button--default' : 'oppia-learner-dash-button--inverse oppia-learner-dash-button--incomplete-goal'"
                [href]="getNodeLessonUrl(story, storyNode)"
-            > 
+            >
               {{ 'I18N_LEARNER_DASHBOARD_CARD_BUTTON_START' | translate }}
             </a>
           </div>
-          <div [style.width.px]="36" class="d-flex justify-content-center">  
+          <div [style.width.px]="36" class="d-flex justify-content-center">
             <div *ngIf="j !== story.getAllNodes().length - 1" class="goal-list-story-node-line"></div>
           </div>
         </div>
@@ -55,16 +55,17 @@
 </ng-container>
 
 <style>
-  .goal-list-container {
-    align-items: center;
+
+  .goal-list-column {
+    align-items: stretch;
     display: flex;
     gap: 0 12px;
   }
 
-  .goal-list-container-grow {
-    flex-grow: 1;
-    height: 96px;
-    justify-content: space-between;
+  .goal-list-row {
+    align-items: center;
+    display: flex;
+    gap: 0 12px;
   }
 
   .goal-list-details {
@@ -86,10 +87,20 @@
     width: 152px;
   }
 
+  /* Pass style through content-toggle-button, negative margin to align*/
+  .goal-list-options {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+    position: relative;
+  }
+
   .goal-list-progress-bar {
     background-color: rgb(0, 100, 92, .24);
     height: 4px;
-    width: 185px;
+    max-width: 185px;
+    width: 100%;
   }
 
   .goal-list-progress-bar>div{
@@ -111,6 +122,10 @@
     height: 12px;
   }
 
+  .goal-list-title {
+    font-size: 20px;
+  }
+
   .oppia-learner-dash-button--end {
     position: absolute;
     right: 0;
@@ -125,17 +140,30 @@
   }
 
   @media screen and (max-width: 500px) {
-    .goal-list-container-grow {
-      align-items: start;
+    .goal-list-column {
       flex-direction: column;
+      width: 100%;
+    }
+
+    .goal-list-details {
+      width: 100%;
+    }
+
+    .goal-list-img {
+      height: 187px;
+      width: 100%;
     }
 
     .goal-list-options {
       align-items: center;
-      flex-direction: row;
-      flex-grow: 1;
-      max-width: 100%;
-      padding-top: 0;
+      flex-direction: row-reverse;
+      padding-top: 8px;
+      width: 100%;
+    }
+
+    .goal-list-title {
+      font-size: 18px;
+      margin-bottom: 8px;
     }
   }
 </style>
