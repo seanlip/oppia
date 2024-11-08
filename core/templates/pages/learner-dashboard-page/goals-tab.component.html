@@ -109,7 +109,7 @@
     <div class="oppia-learner-dash-section d-flex justify-content-between">
       <p class="oppia-learner-dash-goals-text mb-0"> {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_INSTRUCTIONS' | translate }} </p>
       <!--TODO(#18384): Check to see if text is part of button (text changes when hover too)-->
-      <button class="oppia-learner-dash-button--add-goals align-items-center flex-grow-1 d-flex justify-content-center bg-white border-0" (click)="openModal()">
+      <button class="oppia-learner-dash-button-sm oppia-learner-dash-button--add-goals flex-grow-1 bg-white border-0" (click)="openModal()">
         <span class="oppia-learner-dash-goals-add-circle">
           <span class="fas fa-plus"></span>
         </span>
@@ -119,14 +119,14 @@
     <ng-container *ngIf="currentGoals.length !== 0">
       <p class="oppia-learner-dash-goals-heading"> {{ 'I18N_LEARNER_DASHBOARD_INCOMPLETE_SECTION' | translate }} </p>
       <hr color="#00645c" class="mt-2 mb-4" size="2" width="100%">
-      <ng-container *ngFor="let goal of currentGoals"> 
+      <ng-container *ngFor="let goal of currentGoals">
         <oppia-goal-list [goalTopic]="goal"></oppia-goal-list>
       </ng-container>
     </ng-container>
     <ng-container *ngIf="completedGoals.length !== 0">
       <p class="oppia-learner-dash-goals-heading"> {{ 'I18N_LEARNER_DASHBOARD_COMPLETE_SECTION' | translate }} </p>
       <hr color="#00645c" class="mt-2 mb-4" size="2" width="100%">
-      <ng-container *ngFor="let goal of completedGoals"> 
+      <ng-container *ngFor="let goal of completedGoals">
         <oppia-goal-list [goalTopic]="goal"></oppia-goal-list>
       </ng-container>
     </ng-container>

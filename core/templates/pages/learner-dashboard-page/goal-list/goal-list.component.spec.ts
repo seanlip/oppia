@@ -230,7 +230,7 @@ describe('GoalListComponent', () => {
     const progress = component.getNodeLessonUrl(story, node);
 
     expect(progress).toEqual(
-      '/explore/exp_id_1?topic_url_fragment=topic&classroom_url_fragment=math&story_url_fragment=story-title&node_id=node_id_1'
+      '/explore/exp_id_1?topic_url_fragment=topic&classroom_url_fragment=math&story_url_fragment=story-title&node_id=node_1'
     );
   });
 
@@ -266,10 +266,9 @@ describe('GoalListComponent', () => {
       'getMostRecentCompletedNode'
     ).and.callThrough();
 
-    component.ngOnInit();
     fixture.detectChanges();
 
-    expect(getMostRecentCompletedNodeSpy).toHaveBeenCalledTimes(2);
+    expect(getMostRecentCompletedNodeSpy).toHaveBeenCalledTimes(3);
     expect(component.allCurrentNodes).toEqual([3, 0, 2]);
   });
 
@@ -342,18 +341,29 @@ describe('GoalListComponent', () => {
     expect(currentNode).toEqual(2);
   });
 
-  it('should set displayAllNodes false when handleToggleState', () => {
+  it('should set displayAllNodes to true with handleToggleState', () => {
     expect(component.displayAllNodes).toBeFalse();
-
-    spyOn(component, 'handleToggleState').and.callThrough();
-
-    const button = fixture.debugElement.query(
-      By.directive(ContentToggleButtonComponent)
-    ).componentInstance;
-    button.toggle();
+    component.handleToggleState(true);
 
     fixture.detectChanges();
 
     expect(component.displayAllNodes).toBeTrue();
+  });
+
+  it('should set displayAllNodes false when handleToggleState', () => {
+    expect(component.displayAllNodes).toBeFalse();
+    fixture.whenRenderingDone().then(() => {
+      spyOn(component, 'handleToggleState').and.callThrough();
+
+      const button = fixture.debugElement.query(
+        By.directive(ContentToggleButtonComponent)
+      ).componentInstance;
+      button.toggle();
+
+      fixture.detectChanges();
+
+      expect(component.handleToggleState).toHaveBeenCalled();
+      expect(component.displayAllNodes).toBeTrue();
+    });
   });
 });

@@ -1,8 +1,8 @@
 <ng-container *ngFor="let story of goalTopic.getCanonicalStorySummaryDicts(); let i = index">
   <div class="oppia-learner-dash-section w-100">
-    <div class="goal-list-fill w-100">
+    <div class="goal-list-stretch w-100">
       <img class="goal-list-img" [src]="imgUrl" alt="" />
-      <div class="goal-list-fill flex-grow-1">
+      <div class="goal-list-stretch flex-grow-1">
         <div class="goal-list-details flex-grow-1">
           <p class="goal-list-title">
             {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_STORY_TITLE' | translate: {title: goalTopic.getName()} }}
@@ -22,7 +22,7 @@
           <a *ngIf="story.getAllNodes().length !== story.getCompletedNodeTitles().length && !displayAllNodes"
              class="oppia-learner-dash-button-sm oppia-learner-dash-button--default text-underline-none"
              [href]="getNodeLessonUrl(story, story.getAllNodes()[allCurrentNodes[i]])"
-          > 
+          >
             {{ 'I18N_LEARNER_DASHBOARD_CARD_BUTTON_START' | translate }}
           </a>
         </div>
@@ -34,7 +34,7 @@
           <div [style.width.px]="36" class="d-flex justify-content-center">
             <div *ngIf="j !== 0" class="goal-list-story-node-line"></div>
           </div>
-          <div [ngStyle]="{'position': 'relative', 'align-items': 'center' }" class="goal-list-center">
+          <div class="goal-list-center">
             <circle-progress [percent]="story.isNodeCompleted(storyNode.getTitle()) ? 100 : 0"> </circle-progress>
             <p class="mb-0"> {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_NODE_TITLE' | translate: {number: (j + 1), title: storyNode.getTitle()} }} </p>
             <a *ngIf="!story.isNodeCompleted(storyNode.getTitle())"
@@ -55,16 +55,11 @@
 </ng-container>
 
 <style>
-  .goal-list-fill {
-    align-items: stretch;
-    display: flex;
-    gap: 0 12px;
-  }
-
   .goal-list-center {
     align-items: center;
     display: flex;
     gap: 0 12px;
+    position: relative;
   }
 
   .goal-list-details {
@@ -77,7 +72,7 @@
   }
 
   .goal-list-details p {
-    font-family: "Roboto";
+    font-family: 'Roboto', Arial, sans-serif;
     font-weight: 500;
   }
 
@@ -101,7 +96,7 @@
     width: 100%;
   }
 
-  .goal-list-progress-bar>div{
+  .goal-list-progress-bar>div {
     background-color: rgb(0, 100, 92, 1);
     height: 4px;
   }
@@ -118,6 +113,12 @@
   .goal-list-story-node-line {
     border-left: 1px solid;
     height: 12px;
+  }
+
+  .goal-list-stretch {
+    align-items: stretch;
+    display: flex;
+    gap: 0 12px;
   }
 
   .goal-list-title {
@@ -138,11 +139,6 @@
   }
 
   @media screen and (max-width: 500px) {
-    .goal-list-fill {
-      flex-direction: column;
-      width: 100%;
-    }
-
     .goal-list-details {
       width: 100%;
     }
@@ -156,6 +152,11 @@
       align-items: center;
       flex-direction: row-reverse;
       padding-top: 8px;
+      width: 100%;
+    }
+
+    .goal-list-stretch {
+      flex-direction: column;
       width: 100%;
     }
 
