@@ -142,6 +142,6 @@ export class GoalListComponent implements OnInit {
 angular
   .module('oppia')
   .directive(
-    'GoalListComponent',
+    'goalListComponent',
     downgradeComponent({component: GoalListComponent})
   );
