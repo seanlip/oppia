@@ -2,11 +2,11 @@
   <div class="align-items-center d-flex justify-content-center lesson-card-img relative rounded-top w-100" [ngStyle]="{'background-color': imgColor}">
     <img alt="" class="h-100" [src]="imgUrl">
     <div class="d-flex flex-column lesson-card-tags w-100">
-     <!--TODO(#18384): Learner group tags-->
+      <!--TODO(#18384): Learner group tags-->
       <!--TODO(#18384): Should goal tags display if completed?-->
-     <div *ngIf="isGoal" class="lesson-card-tags-container">
-      <span class="fas fa-bullseye lesson-card-tags-icon"></span>
-      <p class="lesson-card-tags-text"> {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION' | translate }} </p>
+      <div *ngIf="isGoal" class="lesson-card-tags-container">
+        <span class="fas fa-bullseye lesson-card-tags-icon"></span>
+        <p class="lesson-card-tags-text"> {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION' | translate }} </p>
      </div>
     </div>
   </div>
@@ -79,7 +79,7 @@
 
   .lesson-card-tags-container {
     align-items: center;
-    background-color: #ffffff99;
+    background-color: #fff9;
     border-radius: 4px;
     display: flex;
     gap: 0 4px;
