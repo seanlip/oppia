@@ -3,6 +3,7 @@
     <img alt="" class="h-100" [src]="imgUrl">
     <div class="d-flex flex-column lesson-card-tags w-100">
      <!--TODO(#18384): Learner group tags-->
+      <!--TODO(#18384): Should goal tags display if completed?-->
      <div *ngIf="isGoal" class="lesson-card-tags-container">
       <span class="fas fa-bullseye lesson-card-tags-icon"></span>
       <p class="lesson-card-tags-text"> {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION' | translate }} </p>
@@ -73,6 +74,7 @@
     left: 0;
     padding: 8px;
     position: absolute;
+    top: 0;
   }
 
   .lesson-card-tags-container {
@@ -81,14 +83,13 @@
     border-radius: 4px;
     display: flex;
     gap: 0 4px;
-    padding: 2px 4px;
+    padding: 4px;
+    width: fit-content;
   }
 
   .lesson-card-tags-icon {
     color: #00645c;
     font-size: 16px;
-    height: 20px;
-    width: 20px;
   }
 
   .lesson-card-tags-text {
