@@ -23,7 +23,8 @@ import heapq
 import logging
 import re
 
-from core import feconf, utils
+from core import feconf
+from core import utils
 from core.constants import constants
 from core.domain import contribution_stats_services
 from core.domain import email_manager
@@ -44,7 +45,8 @@ from core.platform import models
 
 from typing import (
     Callable, Dict, Final, List, Literal, Mapping, Match,
-    Optional, Sequence, Set, Tuple, Union, cast, overload)
+    Optional, Sequence, Set, Tuple, Union, cast, overload
+)
 
 MYPY = False
 if MYPY:  # pragma: no cover
@@ -98,6 +100,8 @@ SUGGESTION_EMPHASIZED_TEXT_GETTER_FUNCTIONS: Dict[str, Callable[..., str]] = {
 }
 
 RECENT_REVIEW_OUTCOMES_LIMIT: Final = 100
+
+IMAGE_TAG_REGEX = r'<oppia-noninteractive-image\b[^>]*>'
 
 
 @overload
@@ -2141,9 +2145,20 @@ def _update_suggestion_counts_in_community_contribution_stats(
     _update_suggestion_counts_in_community_contribution_stats_transactional(
         suggestions, amount)
 
-IMAGE_TAG_REGEX = r'<oppia-noninteractive-image\b[^>]*>'
 
 def contains_image(html_content: str) -> bool:
+    """Checks if the provided HTML content contains an image tag.
+
+    This function uses a regular expression to search for an
+    <oppia-noninteractive-image> tag within the HTML content, indicating
+    the presence of an image.
+
+    Args:
+        html_content: str. The HTML content to check for an image tag.
+
+    Returns:
+        bool. True if an image tag is found, False otherwise.
+    """
     match = re.search(IMAGE_TAG_REGEX, html_content)
     return match is not None
 
