@@ -56,9 +56,7 @@ interface FeatureFlagViewModel extends FeatureFlag {
   templateUrl: './features-tab.component.html',
 })
 export class FeaturesTabComponent implements OnInit {
-  @ViewChildren('userGroupInput') userGroupInputs!: QueryList<
-    ElementRef<HTMLInputElement>
-  >;
+  @ViewChildren('userGroupInput') userGroupInputs!: QueryList<ElementRef>;
   @Output() setStatusMessage = new EventEmitter<string>();
 
   DEV_SERVER_STAGE = 'dev';
@@ -86,7 +84,7 @@ export class FeaturesTabComponent implements OnInit {
     private loaderService: LoaderService
   ) {}
 
-  async reloadFeatureFlagsAsync(): Promise<void> {
+  async reloadFeatureFlagViewModelsAsync(): Promise<void> {
     const data = await this.apiService.getFeatureFlags();
     this.serverStage = data.serverStage;
     this.featureFlagsAreFetched = true;
@@ -118,7 +116,7 @@ export class FeaturesTabComponent implements OnInit {
     }
   }
 
-  addUserGroupToFeatureFlag(
+  addUserGroupToFeatureFlagViewModel(
     event: {value: string},
     featureFlagVM: FeatureFlagViewModel
   ): void {
@@ -142,7 +140,7 @@ export class FeaturesTabComponent implements OnInit {
     this.resetUserGroupSearch(featureFlagVM);
   }
 
-  removeUserGroupFromFeatureFlag(
+  removeUserGroupFromFeatureFlagViewModel(
     userGroupId: string,
     featureFlagVM: FeatureFlagViewModel
   ): void {
@@ -169,12 +167,12 @@ export class FeaturesTabComponent implements OnInit {
     if (
       featureFlagVM.userGroupIds.indexOf(selectedUserGroup.userGroupId) > -1
     ) {
-      this.removeUserGroupFromFeatureFlag(
+      this.removeUserGroupFromFeatureFlagViewModel(
         selectedUserGroup.userGroupId,
         featureFlagVM
       );
     } else {
-      this.addUserGroupToFeatureFlag(
+      this.addUserGroupToFeatureFlagViewModel(
         {
           value: selectedUserGroup.name,
         },
@@ -194,13 +192,14 @@ export class FeaturesTabComponent implements OnInit {
   resetUserGroupSearch(featureFlagVM: FeatureFlagViewModel): void {
     const inputElement = this.userGroupInputs.find(
       input =>
-        input.nativeElement.getAttribute('name') ===
-        `userGroupInput-${featureFlagVM.name}`
+        input.nativeElement.getAttribute('data-feature-flag-id') ===
+        featureFlagVM.name
     );
     if (inputElement) {
       inputElement.nativeElement.value = '';
     }
     featureFlagVM.filteredUserGroups = this.allUserGroups.slice();
+    featureFlagVM.searchQuery = '';
   }
 
   getUserGroupName(userGroupId: string): string {
@@ -285,7 +284,9 @@ export class FeaturesTabComponent implements OnInit {
     return false;
   }
 
-  async updateFeatureFlag(featureFlagVM: FeatureFlagViewModel): Promise<void> {
+  async updateFeatureFlagViewModel(
+    featureFlagVM: FeatureFlagViewModel
+  ): Promise<void> {
     if (
       !this.windowRef.nativeWindow.confirm(
         'This action is irreversible. Are you sure?'
@@ -293,7 +294,7 @@ export class FeaturesTabComponent implements OnInit {
     ) {
       return;
     }
-    const issues = this.validateFeatureFlag(featureFlagVM);
+    const issues = this.validateFeatureFlagViewModel(featureFlagVM);
     if (issues.length > 0) {
       this.windowRef.nativeWindow.alert(issues.join('\n'));
       return;
@@ -346,7 +347,7 @@ export class FeaturesTabComponent implements OnInit {
     }
   }
 
-  isFeatureFlagChanged(featureFlagVM: FeatureFlagViewModel): boolean {
+  isFeatureFlagViewModelChanged(featureFlagVM: FeatureFlagViewModel): boolean {
     const original = this.featureFlagNameToBackupMap.get(featureFlagVM.name);
     if (original === undefined) {
       throw new Error(
@@ -370,7 +371,7 @@ export class FeaturesTabComponent implements OnInit {
    *
    * @returns {string[]} - Array of issue messages, if any.
    */
-  validateFeatureFlag(featureFlagVM: FeatureFlagViewModel): string[] {
+  validateFeatureFlagViewModel(featureFlagVM: FeatureFlagViewModel): string[] {
     const issues = [];
 
     if (
@@ -399,7 +400,7 @@ export class FeaturesTabComponent implements OnInit {
       })
     );
     this.loaderService.showLoadingScreen('Loading');
-    this.reloadFeatureFlagsAsync();
+    this.reloadFeatureFlagViewModelsAsync();
     this.reloadDummyHandlerStatusAsync();
   }
 

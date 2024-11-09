@@ -168,6 +168,25 @@ describe('Release coordinator page feature tab', function () {
     expect(component.getUserGroupName('userGroupId1')).toEqual('UserGroup1');
   }));
 
+  it('should do nothing when reset usergroup search is not found', fakeAsync(() => {
+    component.ngOnInit();
+    tick();
+    component.userGroupInputs = new QueryList<ElementRef>();
+    component.userGroupInputs.reset([
+      {
+        nativeElement: {value: 'group1', getAttribute: () => 'UserGroup'},
+      } as ElementRef,
+    ]);
+
+    let featureFlagVM = component.featureFlagViewModels[0];
+    component.resetUserGroupSearch(featureFlagVM);
+
+    expect(component.userGroupInputs._results[0].nativeElement.value).toEqual(
+      'group1'
+    );
+    expect(featureFlagVM.filteredUserGroups).toEqual(component.allUserGroups);
+  }));
+
   describe('adding user group to feature flag', () => {
     it('should add user group to feature flag', fakeAsync(() => {
       component.ngOnInit();
@@ -185,7 +204,10 @@ describe('Release coordinator page feature tab', function () {
       let featureFlagVM = component.featureFlagViewModels[0];
       spyOn(component, 'resetUserGroupSearch').and.callThrough();
 
-      component.addUserGroupToFeatureFlag({value: 'UserGroup1'}, featureFlagVM);
+      component.addUserGroupToFeatureFlagViewModel(
+        {value: 'UserGroup1'},
+        featureFlagVM
+      );
 
       expect(featureFlagVM.userGroupIds).toContain('userGroupId1');
       expect(featureFlagVM.userGroupIds.length).toBe(1);
@@ -210,7 +232,7 @@ describe('Release coordinator page feature tab', function () {
       let featureFlagVM = component.featureFlagViewModels[0];
       spyOn(component, 'resetUserGroupSearch');
 
-      component.addUserGroupToFeatureFlag({value: ''}, featureFlagVM);
+      component.addUserGroupToFeatureFlagViewModel({value: ''}, featureFlagVM);
 
       expect(featureFlagVM.userGroupIds.length).toBe(0);
       expect(component.resetUserGroupSearch).not.toHaveBeenCalled();
@@ -232,7 +254,10 @@ describe('Release coordinator page feature tab', function () {
       let featureFlagVM = component.featureFlagViewModels[0];
       spyOn(component, 'resetUserGroupSearch').and.callThrough();
 
-      component.addUserGroupToFeatureFlag({value: 'UserGroup1'}, featureFlagVM);
+      component.addUserGroupToFeatureFlagViewModel(
+        {value: 'UserGroup1'},
+        featureFlagVM
+      );
 
       expect(featureFlagVM.userGroupIds.length).toBe(1);
       expect(component.resetUserGroupSearch).toHaveBeenCalledWith(
@@ -248,7 +273,7 @@ describe('Release coordinator page feature tab', function () {
 
       let featureFlagVM = component.featureFlagViewModels[0];
 
-      component.addUserGroupToFeatureFlag(
+      component.addUserGroupToFeatureFlagViewModel(
         {value: 'Nonexistent Group'},
         featureFlagVM
       );
@@ -273,7 +298,10 @@ describe('Release coordinator page feature tab', function () {
       spyOn(component, 'validUserGroupInput').and.returnValue(false);
       spyOn(component, 'resetUserGroupSearch').and.callThrough();
 
-      component.addUserGroupToFeatureFlag({value: 'UserGroup1'}, featureFlagVM);
+      component.addUserGroupToFeatureFlagViewModel(
+        {value: 'UserGroup1'},
+        featureFlagVM
+      );
 
       expect(featureFlagVM.userGroupIds.length).toBe(0);
       expect(component.resetUserGroupSearch).toHaveBeenCalledWith(
@@ -294,7 +322,10 @@ describe('Release coordinator page feature tab', function () {
         'userGroupId2',
       ]);
 
-      component.removeUserGroupFromFeatureFlag('userGroupId2', featureFlagVM);
+      component.removeUserGroupFromFeatureFlagViewModel(
+        'userGroupId2',
+        featureFlagVM
+      );
       expect(featureFlagVM.userGroupIds).toEqual(['userGroupId1']);
     }));
 
@@ -309,7 +340,10 @@ describe('Release coordinator page feature tab', function () {
         'userGroupId2',
       ]);
 
-      component.removeUserGroupFromFeatureFlag('userGroupId3', featureFlagVM);
+      component.removeUserGroupFromFeatureFlagViewModel(
+        'userGroupId3',
+        featureFlagVM
+      );
       expect(featureFlagVM.userGroupIds).toEqual([
         'userGroupId1',
         'userGroupId2',
@@ -333,6 +367,26 @@ describe('Release coordinator page feature tab', function () {
       component.selectUserGroup({option: {value: 'UserGroup1'}}, featureFlagVM);
 
       expect(featureFlagVM.userGroupIds).toEqual(['userGroupId1']);
+    }));
+
+    it('should not do anything when user group is not found', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+      component.userGroupInputs = new QueryList<ElementRef>();
+      component.userGroupInputs.reset([
+        {
+          nativeElement: {value: 'group1', getAttribute: () => 'UserGroup1'},
+        } as ElementRef,
+      ]);
+      let setStatusSpy = spyOn(component.setStatusMessage, 'emit');
+
+      let featureFlagVM = component.featureFlagViewModels[0];
+      component.selectUserGroup(
+        {option: {value: 'UserGroupRandom'}},
+        featureFlagVM
+      );
+
+      expect(setStatusSpy).toHaveBeenCalled();
     }));
 
     it('should deselect user group', fakeAsync(() => {
@@ -577,7 +631,7 @@ describe('Release coordinator page feature tab', function () {
     });
   });
 
-  describe('.updateFeatureFlag', () => {
+  describe('.updateFeatureFlagViewModel', () => {
     let setStatusSpy: jasmine.Spy;
 
     beforeEach(() => {
@@ -591,7 +645,7 @@ describe('Release coordinator page feature tab', function () {
       const featureFlag = component.featureFlagViewModels[0];
 
       featureFlag.userGroupIds = ['user_group_1'];
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
@@ -610,7 +664,7 @@ describe('Release coordinator page feature tab', function () {
       const featureFlag = component.featureFlagViewModels[0];
 
       featureFlag.userGroupIds = ['user_group_1'];
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
@@ -632,7 +686,7 @@ describe('Release coordinator page feature tab', function () {
       const originalFeatureFlag = cloneDeep(featureFlag);
 
       featureFlag.userGroupIds = ['user_group_1'];
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
@@ -647,7 +701,7 @@ describe('Release coordinator page feature tab', function () {
       const featureFlag = component.featureFlagViewModels[0];
 
       featureFlag.userGroupIds = ['user_group_1'];
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
@@ -661,7 +715,7 @@ describe('Release coordinator page feature tab', function () {
       const featureFlag = component.featureFlagViewModels[0];
 
       featureFlag.rolloutPercentage = 110;
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
@@ -681,7 +735,7 @@ describe('Release coordinator page feature tab', function () {
       const featureFlag = component.featureFlagViewModels[0];
 
       featureFlag.userGroupIds = ['user_group_1'];
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
@@ -703,7 +757,7 @@ describe('Release coordinator page feature tab', function () {
       const featureFlag = component.featureFlagViewModels[0];
 
       featureFlag.userGroupIds = ['user_group_1'];
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
@@ -720,17 +774,17 @@ describe('Release coordinator page feature tab', function () {
       const featureFlag = component.featureFlagViewModels[0];
 
       expect(() => {
-        component.updateFeatureFlag(featureFlag);
+        component.updateFeatureFlagViewModel(featureFlag);
         tick();
       }).toThrowError();
     }));
   });
 
-  describe('.isFeatureFlagChanged', () => {
+  describe('.isFeatureFlagViewModelChanged', () => {
     it('should return false if the feature is the same as the backup instance', () => {
       const featureFlag = component.featureFlagViewModels[0];
 
-      expect(component.isFeatureFlagChanged(featureFlag)).toBeFalse();
+      expect(component.isFeatureFlagViewModelChanged(featureFlag)).toBeFalse();
     });
 
     it('should return true if the feature is different from the backup instance', () => {
@@ -738,7 +792,7 @@ describe('Release coordinator page feature tab', function () {
 
       featureFlag.userGroupIds = ['user_group_1'];
 
-      expect(component.isFeatureFlagChanged(featureFlag)).toBeTrue();
+      expect(component.isFeatureFlagViewModelChanged(featureFlag)).toBeTrue();
     });
 
     it('should throw error if the feature name is not found', () => {
@@ -753,14 +807,14 @@ describe('Release coordinator page feature tab', function () {
       });
 
       expect(() => {
-        component.isFeatureFlagChanged(featureFlag);
+        component.isFeatureFlagViewModelChanged(featureFlag);
       }).toThrowError();
     });
   });
 
-  describe('.validateFeatureFlag', () => {
+  describe('.validateFeatureFlagViewModel', () => {
     it('should return empty array if no issue', () => {
-      const issues = component.validateFeatureFlag(
+      const issues = component.validateFeatureFlagViewModel(
         FeatureFlag.createFromBackendDict({
           description: 'This is a dummy feature flag.',
           feature_stage: FeatureStage.DEV,
@@ -776,7 +830,7 @@ describe('Release coordinator page feature tab', function () {
     });
 
     it('should return issues if rollout percentage is not between 10 and 100', () => {
-      const issues = component.validateFeatureFlag(
+      const issues = component.validateFeatureFlagViewModel(
         FeatureFlag.createFromBackendDict({
           description: 'This is a dummy feature flag.',
           feature_stage: FeatureStage.DEV,
