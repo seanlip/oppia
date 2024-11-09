@@ -23,7 +23,7 @@ import heapq
 import logging
 import re
 
-from core import feconf
+from core import feconf, utils
 from core.constants import constants
 from core.domain import contribution_stats_services
 from core.domain import email_manager
@@ -2141,6 +2141,12 @@ def _update_suggestion_counts_in_community_contribution_stats(
     _update_suggestion_counts_in_community_contribution_stats_transactional(
         suggestions, amount)
 
+IMAGE_TAG_REGEX = r'<oppia-noninteractive-image\b[^>]*>'
+
+def contains_image(html_content: str) -> bool:
+    match = re.search(IMAGE_TAG_REGEX, html_content)
+    return match is not None
+
 
 def update_translation_suggestion(
     suggestion_id: str, translation_html: str
@@ -2163,6 +2169,14 @@ def update_translation_suggestion(
         raise Exception(
             'Expected SuggestionTranslateContent suggestion but found: %s.'
             % type(suggestion).__name__
+        )
+    original_html = suggestion.change_cmd.translation_html
+    original_has_image = contains_image(original_html)
+    updated_has_image = contains_image(translation_html)
+
+    if original_has_image and not updated_has_image:
+        raise utils.InvalidInputException(
+            'Removing images from the translation is not allowed.'
         )
     suggestion.change_cmd.translation_html = (
         html_cleaner.clean(translation_html)

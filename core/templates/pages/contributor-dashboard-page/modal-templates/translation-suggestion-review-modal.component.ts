@@ -163,6 +163,7 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   hasQueuedSuggestion: boolean = false;
   currentSnackbarRef?: MatSnackBarRef<UndoSnackbarComponent>;
   isUndoFeatureEnabled: boolean = false;
+  initialHasImage: boolean = false;
   @Input() altTextIsDisplayed: boolean = false;
 
   @ViewChild('contentPanel')
@@ -245,8 +246,14 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     this.isLastItem = this.remainingContributionIds.length === 0;
     this.allContributions = this.suggestionIdToContribution;
     this.allContributions[this.activeSuggestionId] = this.activeContribution;
-
     this.refreshActiveContributionState();
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = this.translationHtml || '';
+
+    // Check if there's any <oppia-noninteractive-image> tag within the parsed HTML.
+    this.initialHasImage =
+      tempDiv.querySelector('oppia-noninteractive-image') !== null;
+
     // The 'html' value is passed as an object as it is required for
     // schema-based-editor. Otherwise the corrrectly updated value for
     // the translation is not received from the editor when the translation
@@ -367,9 +374,29 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     }
   }
 
+  isImageRemoved(): boolean {
+    // Re-check if the current content contains <oppia-noninteractive-image>.
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = this.editedContent.html;
+    return tempDiv.querySelector('oppia-noninteractive-image') === null;
+  }
+
+  get isUpdateDisabled(): boolean {
+    // Disable update if editing has started and the image was removed.
+    return this.startedEditing && this.isImageRemoved();
+  }
   updateSuggestion(): void {
     const updatedTranslation = this.editedContent.html;
     const suggestionId = this.activeSuggestion.suggestion_id;
+    // Check if image is removed
+    if (this.isImageRemoved()) {
+      // Show error and prevent save if image is removed
+      this.errorMessage =
+        'Removing images from the translation is not allowed.';
+      this.errorFound = true;
+      return;
+    }
+
     this.preEditTranslationHtml = this.translationHtml;
     this.translationHtml = updatedTranslation;
     this.contributionAndReviewService.updateTranslationSuggestionAsync(

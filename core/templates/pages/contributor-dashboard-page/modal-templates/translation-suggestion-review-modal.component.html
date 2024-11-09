@@ -25,6 +25,11 @@
     </h4>
   </div>
 </div>
+<div *ngIf="initialHasImage && isUpdateDisabled"
+    tabindex="0"
+    class="alert alert-danger oppia-units-input-error">
+  <strong>Warning:</strong> The image in the translation has been removed. Restoring the image is required to proceed with the update.
+  </div>
 
 <div class="modal-body">
   <div *ngIf="status == 'rejected'" class="translation-suggestion-review-message alert alert-danger">
@@ -105,7 +110,8 @@
         </button>
         <button class="btn btn-success ml-2"
                 *ngIf="startedEditing"
-                (click)="updateSuggestion()">
+                (click)="updateSuggestion()"
+                [disabled]="initialHasImage && isUpdateDisabled">
           Update
         </button>
       </div>
