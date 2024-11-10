@@ -23,6 +23,7 @@ import {
   ViewChild,
   ElementRef,
   Input,
+  Renderer2,
 } from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {AlertsService} from 'services/alerts.service';
@@ -45,7 +46,6 @@ import {RteOutputDisplayComponent} from 'rich_text_components/rte-output-display
 import {UndoSnackbarComponent} from 'components/custom-snackbar/undo-snackbar.component';
 import {MatSnackBar, MatSnackBarRef} from '@angular/material/snack-bar';
 import {PlatformFeatureService} from 'services/platform-feature.service';
-import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 
 interface HTMLSchema {
   type: string;
@@ -165,8 +165,6 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   currentSnackbarRef?: MatSnackBarRef<UndoSnackbarComponent>;
   isUndoFeatureEnabled: boolean = false;
   initialHasImage: boolean = false;
-  sanitizedTranslationHtml!: SafeHtml;
-  sanitizedEditedContentHtml!: SafeHtml;
   @Input() altTextIsDisplayed: boolean = false;
 
   @ViewChild('contentPanel')
@@ -211,7 +209,7 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     private validatorsService: ValidatorsService,
     private snackBar: MatSnackBar,
     private platformFeatureService: PlatformFeatureService,
-    private sanitizer: DomSanitizer
+    private renderer: Renderer2
   ) {}
 
   ngOnInit(): void {
@@ -251,14 +249,10 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     this.allContributions = this.suggestionIdToContribution;
     this.allContributions[this.activeSuggestionId] = this.activeContribution;
     this.refreshActiveContributionState();
-    this.sanitizedTranslationHtml = this.sanitizeHtml(
-      this.translationHtml || ''
-    );
-    this.initialHasImage = this.containsImage(this.sanitizedTranslationHtml);
-
-    // Check if there's any <oppia-noninteractive-image> tag within the parsed HTML.
-    this.editedContent = {html: this.translationHtml};
-    this.sanitizedEditedContentHtml = this.sanitizeHtml(this.translationHtml);
+    const tempDiv = this.renderer.createElement('div');
+    this.renderer.setProperty(tempDiv, 'innerHTML', this.translationHtml || '');
+    this.initialHasImage =
+      tempDiv.querySelector('oppia-noninteractive-image') !== null;
 
     // The 'html' value is passed as an object as it is required for
     // schema-based-editor. Otherwise the corrrectly updated value for
@@ -267,16 +261,6 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     this.editedContent = {
       html: this.translationHtml,
     };
-  }
-
-  sanitizeHtml(html: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(html);
-  }
-
-  containsImage(sanitizedHtml: SafeHtml): boolean {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = sanitizedHtml as string;
-    return tempDiv.querySelector('oppia-noninteractive-image') !== null;
   }
 
   refreshActiveContributionState(): void {
@@ -391,20 +375,19 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   }
 
   isImageRemoved(): boolean {
-    this.sanitizedEditedContentHtml = this.sanitizeHtml(
-      this.editedContent.html
-    );
-    return !this.containsImage(this.sanitizedEditedContentHtml);
+    const tempDiv = this.renderer.createElement('div');
+    this.renderer.setProperty(tempDiv, 'innerHTML', this.editedContent.html);
+    return tempDiv.querySelector('oppia-noninteractive-image') === null;
   }
 
   get isUpdateDisabled(): boolean {
-    return this.initialHasImage && this.isImageRemoved();
+    return this.startedEditing && this.isImageRemoved();
   }
 
   updateSuggestion(): void {
     const updatedTranslation = this.editedContent.html;
     const suggestionId = this.activeSuggestion.suggestion_id;
-    if (this.isImageRemoved()) {
+    if (this.initialHasImage && this.isImageRemoved()) {
       this.errorMessage =
         'Removing images from the translation is not allowed.';
       this.errorFound = true;
