@@ -105,8 +105,10 @@
         <button class="btn btn-secondary mr-2" *ngIf="startedEditing" (click)="cancelEdit()">
           Cancel
         </button>
-        <button class="btn btn-success ml-2" *ngIf="startedEditing" (click)="updateSuggestion()"
-          [disabled]="initialHasImage && isUpdateDisabled">
+        <button class="btn btn-success ml-2"
+                *ngIf="startedEditing"
+                (click)="updateSuggestion()"
+                [disabled]="initialHasImage && isUpdateDisabled">
           Update
         </button>
       </div>
@@ -161,8 +163,9 @@
   </section>
   <div [hidden]="!reviewable" class="oppia-suggestion-review-message">
     <label for="reviewMessage">Review message (required if rejecting):</label>
-    <textarea id="reviewMessage" class="e2e-test-suggestion-review-message w-100" rows="3" [(ngModel)]="reviewMessage"
-      [attr.maxlength]="MAX_REVIEW_MESSAGE_LENGTH">
+    <textarea id="reviewMessage" class="e2e-test-suggestion-review-message w-100" 
+              rows="3" [(ngModel)]="reviewMessage"
+              [attr.maxlength]="MAX_REVIEW_MESSAGE_LENGTH">
     </textarea>
     <div class="alert alert-danger" [hidden]="!(reviewMessage.length > MAX_REVIEW_MESSAGE_LENGTH)">
       Review message should be at most
