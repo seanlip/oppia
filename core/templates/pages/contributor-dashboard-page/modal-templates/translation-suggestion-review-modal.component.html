@@ -1,18 +1,26 @@
 <div class="modal-header">
   <div class="oppia-modal-info" tabindex="0">
-    <h1 title="{{ heading }}" class="oppia-modal-info-header">
+    <h1 title="{{ heading }}"
+        class="oppia-modal-info-header">
       {{ heading }}
     </h1>
+    <h4 class="oppia-translation-modal-author-header">
+      Submitted by {{ authorName }} in {{ languageDescription }} language
+    </h4>
     <span title="{{ subheading }}"
-      class="oppia-translation-modal-subheading e2e-translation-suggestion-review-subheading" aria-hidden="false">
+          class="oppia-translation-modal-subheading e2e-translation-suggestion-review-subheading"
+          aria-hidden="false">
       {{ subheading }}
     </span>
     <span title="{{ activeContribution.details.chapter_title }}"
-      class="oppia-translation-modal-subheading-lesson protractor-translation-suggestion-review-subheading"
-      aria-hidden="false">
+          class="oppia-translation-modal-subheading-lesson protractor-translation-suggestion-review-subheading-lesson"
+          aria-hidden="false">
       {{ activeContribution.details.chapter_title }}
     </span>
-    <button type="button" class="close oppia-close-button-position" (click)="cancel()" aria-label="Close">
+    <button type="button"
+            class="close oppia-close-button-position"
+            (click)="cancel()"
+            aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
     <h4 class="oppia-translation-modal-author-header">
@@ -20,6 +28,7 @@
     </h4>
   </div>
 </div>
+
 
 <div *ngIf="initialHasImage && isUpdateDisabled" tabindex="0" class="alert alert-danger oppia-units-input-error">
   <strong>Warning:</strong> The image in the translation has been removed.
