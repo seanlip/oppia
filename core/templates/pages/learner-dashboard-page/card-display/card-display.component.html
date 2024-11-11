@@ -3,10 +3,10 @@
     <p class="card-display-heading"> {{ headingI18n | translate }} </p>
     <div class="card-display-arrow-button-container" *ngIf="arrowButtonVisibility">
       <button [attr.aria-label]="'Shift cards to the ' + (isLanguageRTL ? 'right' : 'left')" [disabled]="currentShift === 0" class="px-0 card-display-arrow-button" (click)="moveCard(currentShift - 1)">
-        <span [ngClass]="'fas fa-chevron-' + (isLanguageRTL ? 'right' : 'left')"></span>
+        <span aria-hidden="true" [ngClass]="'fas fa-chevron-' + (isLanguageRTL ? 'right' : 'left')"></span>
       </button>
       <button [attr.aria-label]="'Shift cards to the ' + (isLanguageRTL ? 'left' : 'right')" [disabled]="currentShift === getMaxShifts(cards.offsetWidth)" class="px-0 card-display-arrow-button" (click)="moveCard(currentShift + 1)">
-        <span [ngClass]="'fas fa-chevron-' + (isLanguageRTL ? 'left' : 'right')"></span>
+        <span aria-hidden="true" [ngClass]="'fas fa-chevron-' + (isLanguageRTL ? 'left' : 'right')"></span>
       </button>
     </div>
   </div>
