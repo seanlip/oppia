@@ -149,8 +149,9 @@
           "options": {
             "allowedCommonJsDependencies": ["path", "stream", "zlib"],
             "outputPath": "dist/oppia-maintenance",
-            "index": "src/maintenance.html",
+            "index": "src/maintenance-index.html",
             "main": "src/maintenance-main.ts",
+            "polyfills": "core/templates/Polyfills.ts",
             "tsConfig": "tsconfig.json",
             "assets": [
               "src/favicon.ico",
@@ -188,7 +189,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "2mb"
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",

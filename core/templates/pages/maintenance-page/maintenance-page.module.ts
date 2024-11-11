@@ -21,8 +21,6 @@ import {RouterModule} from '@angular/router';
 
 import {SharedComponentsModule} from 'components/shared-component.module';
 import {MaintenancePageComponent} from 'pages/maintenance-page/maintenance-page.component';
-import {ToastrModule} from 'ngx-toastr';
-import {toastrConfig} from 'pages/oppia-root/app.module';
 import {MaintenancePageRootComponent} from './maintenance-page-root.component';
 import {CommonModule} from '@angular/common';
 
@@ -33,7 +31,6 @@ import {CommonModule} from '@angular/common';
     // TODO(#13443): Remove smart router module provider once all pages are
     // migrated to angular router.
     SharedComponentsModule,
-    ToastrModule.forRoot(toastrConfig),
     RouterModule.forChild([
       {
         path: '',

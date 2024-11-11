@@ -16,16 +16,16 @@
  * @fileoverview Maintenance page root component.
  */
 
-import {Component} from '@angular/core';
-import {AppConstants} from 'app.constants';
-import {BaseRootComponent, MetaTagData} from 'pages/base-root.component';
+import {Component, AfterViewInit, Output, EventEmitter} from '@angular/core';
 
 @Component({
   selector: 'oppia-maintenance-page-root',
   templateUrl: './maintenance-page-root.component.html',
 })
-export class MaintenancePageRootComponent extends BaseRootComponent {
-  title: string = AppConstants.PAGES_REGISTERED_WITH_FRONTEND.MAINTENANCE.TITLE;
-  meta: MetaTagData[] = AppConstants.PAGES_REGISTERED_WITH_FRONTEND.MAINTENANCE
-    .META as unknown as Readonly<MetaTagData>[];
+export class MaintenancePageRootComponent implements AfterViewInit {
+  @Output() public initialized: EventEmitter<void> = new EventEmitter();
+
+  ngAfterViewInit(): void {
+    this.initialized.emit();
+  }
 }

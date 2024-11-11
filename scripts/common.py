@@ -917,13 +917,13 @@ def setup_chrome_bin_env_variable() -> None:
         raise Exception('Chrome not found.')
 
 
-def run_ng_compilation() -> None:
+def run_ng_compilation(project_name: str = 'oppia-angular') -> None:
     """Runs angular compilation."""
     max_tries = 2
-    ng_bundles_dir_name = 'dist/oppia-angular'
+    ng_bundles_dir_name = 'dist/oppia-angular' if project_name == 'oppia-angular' else 'dist/oppia-maintenance'
     for _ in range(max_tries):
         try:
-            with servers.managed_ng_build() as proc:
+            with servers.managed_ng_build(project_name=project_name) as proc:
                 proc.wait()
         except subprocess.CalledProcessError as error:
             print(error.output)

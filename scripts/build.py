@@ -219,7 +219,10 @@ def run_webpack_compilation(source_maps: bool = False) -> None:
         sys.exit(1)
 
 
-def build_js_files(dev_mode: bool, source_maps: bool = False) -> None:
+def build_js_files(
+        dev_mode: bool,
+        source_maps: bool = False,
+        project_name: str = 'oppia-angular') -> None:
     """Build the javascript files.
 
     Args:
@@ -227,6 +230,7 @@ def build_js_files(dev_mode: bool, source_maps: bool = False) -> None:
             mode.
         source_maps: bool. Represents whether to use source maps while
             building webpack.
+        project_name: str. Name of the project to be built.
     """
     if not dev_mode:
         print('Generating files for production mode...')
@@ -238,7 +242,7 @@ def build_js_files(dev_mode: bool, source_maps: bool = False) -> None:
 
     else:
         main(args=[])
-        common.run_ng_compilation()
+        common.run_ng_compilation(project_name=project_name)
         if not feconf.OPPIA_IS_DOCKERIZED:
             run_webpack_compilation(source_maps=source_maps)
 
@@ -689,18 +693,27 @@ def build_third_party_libs(third_party_directory_path: str) -> None:
             dependency_filepaths['fonts'], webfonts_dir))
 
 
-def build_using_ng() -> None:
+def build_using_ng(project_name: str) -> None:
     """Execute angular build process. This runs the angular compiler and
     generates an ahead of time compiled bundle. This bundle can be found in the
-    dist/oppia-angular-prod folder.
+    dist/oppia-angular-prod or dist/oppia-maintenance folder depending on the
+    project to be built.
+
+    Args:
+        project_name: str. Name of the project to be built.
     """
     print('Building using angular cli')
+    assert project_name in ['oppia-angular', 'oppia-maintenance']
     managed_ng_build_process = servers.managed_ng_build(
-        use_prod_env=True, watch_mode=False)
+        use_prod_env=True, watch_mode=False, project_name=project_name)
     with managed_ng_build_process as p:
         p.wait()
-    assert get_file_count('dist/oppia-angular-prod') > 0, (
-        'angular generated bundle should be non-empty')
+    if(project_name == 'oppia-angular'):
+        assert get_file_count('dist/oppia-angular-prod') > 0, (
+            'angular generated bundle should be non-empty')
+    else:
+        assert get_file_count('dist/oppia-maintenance') > 0, (
+            'angular generated bundle should be non-empty')
 
 
 def build_using_webpack(config_path: str) -> None:
@@ -1428,7 +1441,10 @@ def main(args: Optional[Sequence[str]] = None) -> None:
     """The main method of this script."""
     options = _PARSER.parse_args(args=args)
 
-    if options.maintenance_mode and not options.prod_env:
+    project_name='oppia-angular'
+    if options.maintenance_mode and options.prod_env:
+        project_name = 'oppia-maintenance'
+    elif options.maintenance_mode and not options.prod_env:
         raise Exception(
             'maintenance_mode should only be enabled in prod build.')
 
@@ -1464,7 +1480,7 @@ def main(args: Optional[Sequence[str]] = None) -> None:
                 build_using_webpack(WEBPACK_PROD_SOURCE_MAPS_CONFIG)
             else:
                 build_using_webpack(WEBPACK_PROD_CONFIG)
-            build_using_ng()
+            build_using_ng(project_name=project_name)
         generate_app_yaml(
             deploy_mode=options.deploy_mode)
         generate_build_directory(hashes)

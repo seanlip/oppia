@@ -402,7 +402,10 @@ def create_managed_web_browser(
 
 @contextlib.contextmanager
 def managed_ng_build(
-    *, use_prod_env: bool = False, watch_mode: bool = False
+    *,
+    project_name: str = 'oppia-angular',
+    use_prod_env: bool = False,
+    watch_mode: bool = False
 ) -> Iterator[psutil.Process]:
     """Returns context manager to start/stop the ng compiler gracefully.
 
@@ -417,7 +420,7 @@ def managed_ng_build(
     Raises:
         OSError. First build never completed.
     """
-    compiler_args = [common.NG_BIN_PATH, 'build']
+    compiler_args = [common.NG_BIN_PATH, 'build', project_name]
     if use_prod_env:
         compiler_args.append('--prod')
     if watch_mode:
