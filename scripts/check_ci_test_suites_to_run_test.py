@@ -88,7 +88,7 @@ LIGHTHOUSE_PAGES_CONFIG = {
         'url': 'http://localhost:8181/thanks',
         'page_module': 'thanks-page.module.ts'
     },
-    'volunteer': {
+    'Volunteer': {
         'url': 'http://localhost:8181/volunteer',
         'page_module': 'volunteer-page.module.ts'
     },
