@@ -94,27 +94,29 @@ export class ContentLanguageSelectorComponent implements OnInit {
       }
     }
 
-    this.voiceoverBackendApiService
-      .fetchVoiceoverAdminDataAsync()
-      .then(response => {
-        this.voiceoverPlayerService.languageAccentMasterList =
-          response.languageAccentMasterList;
-        this.voiceoverPlayerService.languageCodesMapping =
-          response.languageCodesMapping;
+    if (this.audioPreloaderService.exploration !== undefined) {
+      this.voiceoverBackendApiService
+        .fetchVoiceoverAdminDataAsync()
+        .then(response => {
+          this.voiceoverPlayerService.languageAccentMasterList =
+            response.languageAccentMasterList;
+          this.voiceoverPlayerService.languageCodesMapping =
+            response.languageCodesMapping;
 
-        this.audioTranslationLanguageService.setCurrentAudioLanguageCode(
-          this.selectedLanguageCode
-        );
+          this.audioTranslationLanguageService.setCurrentAudioLanguageCode(
+            this.selectedLanguageCode
+          );
 
-        this.voiceoverPlayerService.setLanguageAccentCodesDescriptions(
-          this.selectedLanguageCode,
-          this.entityVoiceoversService.getLanguageAccentCodes()
-        );
+          this.voiceoverPlayerService.setLanguageAccentCodesDescriptions(
+            this.selectedLanguageCode,
+            this.entityVoiceoversService.getLanguageAccentCodes()
+          );
 
-        this.audioPreloaderService.kickOffAudioPreloader(
-          this.playerPositionService.getCurrentStateName()
-        );
-      });
+          this.audioPreloaderService.kickOffAudioPreloader(
+            this.playerPositionService.getCurrentStateName()
+          );
+        });
+    }
   }
 
   onSelectLanguage(newLanguageCode: string): void {
