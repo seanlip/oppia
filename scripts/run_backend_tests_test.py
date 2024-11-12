@@ -134,6 +134,12 @@ class RunBackendTestsTests(test_utils.GenericTestBase):
             def communicate(self) -> tuple[bytes, bytes]:   # pylint: disable=missing-docstring
                 return (b'LOG_INFO_TEST: This is task output.\n', b'')
 
+            def __enter__(self) -> 'MockProcess':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
+
         def mock_popen(
             cmd_tokens: list[str], **unsued_kwargs: str  # pylint: disable=unused-argument
         ) -> MockProcess:
@@ -158,6 +164,12 @@ class RunBackendTestsTests(test_utils.GenericTestBase):
             returncode = 1
             def communicate(self) -> Tuple[bytes, bytes]:   # pylint: disable=missing-docstring
                 return (b'', b'Error XYZ occured.')
+
+            def __enter__(self) -> 'MockProcess':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
 
         def mock_popen(
             cmd_tokens: List[str], **unsued_kwargs: str  # pylint: disable=unused-argument

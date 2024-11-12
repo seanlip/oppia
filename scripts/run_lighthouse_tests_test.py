@@ -171,6 +171,12 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                     b'https://oppia.org/skill_editor/4\n',
                     b'Task output.')
 
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
+
         def mock_popen(*unused_args: str, **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             return MockTask()
 
@@ -194,6 +200,12 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                     b'https://oppia.org/story_editor/4\n' +
                     b'https://oppia.org/skill_editor/4\n',
                     b'ABC error.')
+
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
 
         def mock_popen(*unused_args: str, **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             return MockTask()
@@ -220,6 +232,12 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                     b'https://oppia.org/story_editor/4\n' +
                     b'https://oppia.org/skill_editor/4\n',
                     b'Task output.')
+
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
 
         def mock_popen(*unused_args: str, **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             return MockTask()
@@ -250,6 +268,12 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                     b'https://oppia.org/story_editor/4\n' +
                     b'https://oppia.org/skill_editor/4\n',
                     b'ABC error.')
+
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
 
         def mock_popen(*unused_args: str, **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             return MockTask()
@@ -334,6 +358,12 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                     b'Task output',
                     b'No error.')
 
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
+
         def mock_popen(*unused_args: str, **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             return MockTask()
         swap_popen = self.swap_with_checks(
@@ -370,6 +400,12 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                     b'Task failed.',
                     b'ABC error.')
 
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
+
         def mock_popen(*unused_args: str, **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             return MockTask()
         swap_popen = self.swap_with_checks(
@@ -393,6 +429,13 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                 return (
                     b'Task output',
                     b'No error.')
+
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
+
         def mock_popen(*unused_args: str, **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             return MockTask()
 
@@ -436,6 +479,12 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                     b'Task output',
                     b'No error.')
 
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
+
         swap_run_lighthouse_tests = self.swap_with_checks(
             run_lighthouse_tests, 'run_lighthouse_checks',
             lambda *unused_args: None, expected_args=[('performance',)])
@@ -478,6 +527,12 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                 return (
                     b'Task output',
                     b'No error.')
+
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
 
         swap_run_lighthouse_tests = self.swap_with_checks(
             run_lighthouse_tests, 'run_lighthouse_checks',
@@ -530,6 +585,13 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                 return (
                     b'Task output',
                     b'No error.')
+
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
+
         swap_run_lighthouse_tests = self.swap_with_checks(
             run_lighthouse_tests, 'run_lighthouse_checks',
             lambda *unused_args: None,
@@ -568,6 +630,13 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                 return (
                     b'Task output',
                     b'No error.')
+
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
+
         def mock_run_puppeteer_script(*unused_args: str) -> dict[str, str]:
             return {
                 'exploration_id': '4',

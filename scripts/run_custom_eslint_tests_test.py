@@ -57,6 +57,12 @@ class RunCustomEslintTestsTests(test_utils.GenericTestBase):
                     b'All files | 100 | 100 | 100 | 100 | ',
                     b'Path not found.')
 
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
+
         def mock_popen(
             cmd_tokens: list[str], **unused_kwargs: str
         ) -> MockTask:  # pylint: disable=unused-argument
@@ -77,6 +83,12 @@ class RunCustomEslintTestsTests(test_utils.GenericTestBase):
                 return (
                     b'1 in 125 tests failing.\n' +
                     b'All files | 100 | 100 | 100 | 100 | ', b'')
+
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
 
         def mock_popen(
             cmd_tokens: list[str], **unused_kwargs: str
@@ -99,6 +111,12 @@ class RunCustomEslintTestsTests(test_utils.GenericTestBase):
                     b'All tests passed\n' +
                     b'All files | 100 | 100 | 100 | 100 | ', b'')
 
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
+
         def mock_popen(
             cmd_tokens: list[str], **unused_kwargs: str
         ) -> MockTask:  # pylint: disable=unused-argument
@@ -119,6 +137,12 @@ class RunCustomEslintTestsTests(test_utils.GenericTestBase):
                 return (
                     b'All tests passed\n' +
                     b'All files | 100 | 98 | 100 | 100 | ', b'')
+
+            def __enter__(self) -> 'MockTask':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
 
         def mock_popen(
             cmd_tokens: list[str], **unused_kwargs: str
