@@ -20,6 +20,7 @@ import json
 import os
 import subprocess
 import tempfile
+from contextlib import ContextDecorator
 
 from core.tests import test_utils
 from scripts import check_ci_test_suites_to_run
@@ -436,7 +437,7 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
             return test_suites
 
     def test_get_git_diff_name_status_files_without_error(self) -> None:
-        class MockSubprocessPopen:
+        class MockSubprocessPopen(ContextDecorator):
             """Mocks the subprocess.Popen class."""
 
             returncode = 0
@@ -449,6 +450,12 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                     b'R core/templates/pages/Base.ts\n',
                     b''
                 )
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
 
         def mock_popen(
             cmd_tokens: List[str], stdout: int, stderr: int # pylint: disable=unused-argument
@@ -474,7 +481,7 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
             )
 
     def test_get_git_diff_name_status_files_with_error(self) -> None:
-        class MockSubprocessPopen:
+        class MockSubprocessPopen(ContextDecorator):
             """Mocks an error in the subprocess.Popen class."""
 
             returncode = 1
@@ -484,6 +491,12 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                     b'',
                     b'fatal: not a valid git branch\n'
                 )
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
 
         def mock_popen(
             cmd_tokens: List[str], stdout: int, stderr: int # pylint: disable=unused-argument
