@@ -21,6 +21,7 @@ from __future__ import annotations
 import os
 import site
 import subprocess
+from contextlib import ContextDecorator
 
 from core import feconf
 from core.tests import test_utils
@@ -38,7 +39,7 @@ def mock_install_third_party_libs_main() -> None:
     return
 
 
-class Ret:
+class Ret(ContextDecorator):
     """Return object that gives user-prefix error."""
 
     def __init__(self, cmd_tokens: List[str]) -> None:
@@ -51,6 +52,11 @@ class Ret:
         """Return user-prefix error as stderr."""
         return b'', b'can\'t combine user with prefix'
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
 
 class MypyScriptChecks(test_utils.GenericTestBase):
     """Tests for MyPy type check runner script."""
