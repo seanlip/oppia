@@ -479,11 +479,9 @@ export class QuestionsListComponent implements OnInit, OnDestroy {
 
   goToNextPage(): void {
     this.questionsListService.incrementPageNumber();
-    this.questionsListService.getQuestionSummariesAsync(
-      this.selectedSkillId,
-      true,
-      false
-    ).then(() => this.getQuestionSummariesForOneSkill());
+    this.questionsListService
+      .getQuestionSummariesAsync(this.selectedSkillId, true, false)
+      .then(() => this.getQuestionSummariesForOneSkill());
   }
 
   goToPreviousPage(): void {
