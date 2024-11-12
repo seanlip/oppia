@@ -208,7 +208,8 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
             temp_file.write(actual_text)
             temp_file.flush()
             self.assertEqual(
-                install_dependencies_json_packages.get_file_contents(temp_file),
+                install_dependencies_json_packages.get_file_contents(
+                    temp_file.read()),
                 actual_text)
 
     def test_return_json(self) -> None:
@@ -216,7 +217,8 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
             actual_text = '{"Testing": "install_dependencies_json_packages"}'
             temp_file.write(actual_text)
             self.assertEqual(
-                install_dependencies_json_packages.return_json(temp_file),
+                install_dependencies_json_packages.return_json(
+                    temp_file.read()),
                 {'Testing': 'install_dependencies_json_packages'})
 
     def test_dependencies_syntax_testing_with_valid_syntax(self) -> None:

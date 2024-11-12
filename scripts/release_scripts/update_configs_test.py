@@ -177,7 +177,7 @@ class UpdateConfigsTests(test_utils.GenericTestBase):
                 update_configs.update_app_yaml(
                     temp_app_yaml.name, temp_feconf_config.name)
                 
-                app_yaml_text = temp_app_yaml.read().decode()
+                app_yaml_text = temp_app_yaml.read()
                 self.assertIn(
                     'Access-Control-Allow-Origin: https://oppia.org',
                     app_yaml_text
