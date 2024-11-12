@@ -4214,14 +4214,9 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             'Exploration is not properly cachable'
         )
 
-        default_exploration_dict = (
-            exp_domain.Exploration.create_default_exploration('exp_cache_test')
-            .to_dict()
-        )
-
         new_exploration_dict_retrive_from_cache = (
-          new_exploration_retrive_from_cache.to_dict()
-          if new_exploration_retrive_from_cache else default_exploration_dict)
+          new_exploration_retrive_from_cache.to_dict() # type: ignore
+        )
         self.assertEqual(
             new_exploration.to_dict(),
             new_exploration_dict_retrive_from_cache,
@@ -4254,7 +4249,7 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
 
         new_exploration = exp_domain.Exploration(
               exploration_id, title, category, objective, language_code, [], '',
-              '', 55,
+              '', feconf.CURRENT_STATE_SCHEMA_VERSION - 1,
               init_state_name, states_dict, {}, [], 0,
               feconf.DEFAULT_AUTO_TTS_ENABLED,
               content_id_generator.next_content_id_index, True)
@@ -4264,11 +4259,6 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
             sub_namespace=sub_namespace,
             id_value_mapping={exploration_id: new_exploration})
-        new_exploration_retrive_from_cache = caching_services.get_multi(
-            namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
-            sub_namespace=sub_namespace,
-            obj_ids=[exploration_id]
-        ).get(exploration_id)
 
         self.assertTrue(
             is_properly_cachable,
@@ -4281,20 +4271,35 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             obj_ids=[exploration_id]
         ).get(exploration_id)
 
-        default_exploration_dict = (
-            exp_domain.Exploration.create_default_exploration('exp_cache_test')
-            .to_dict()
-        )
-
         exploration_data = (
-            new_exploration_retrive_from_cache.to_dict()
-            if new_exploration_retrive_from_cache else default_exploration_dict)
+            new_exploration_retrive_from_cache.to_dict() # type: ignore
+        )
         updated_exploration = exp_domain.Exploration.migrate_state_schema(
             exploration_data
         )
+
+        new_exploration_dict = new_exploration.to_dict()
+
+        versioned_states = exp_domain.VersionedExplorationStatesDict(
+                states_schema_version=feconf.CURRENT_STATE_SCHEMA_VERSION - 1,
+                states=new_exploration_dict['states'])
+
+        conversion_fn = getattr(
+            exp_domain.Exploration, '_convert_states_v%s_dict_to_v%s_dict' % (
+            feconf.CURRENT_STATE_SCHEMA_VERSION - 1,
+            feconf.CURRENT_STATE_SCHEMA_VERSION))
+        migrated_exploration_dict = conversion_fn(
+                versioned_states['states'])
+
         self.assertEqual(
             updated_exploration['states_schema_version'],
             feconf.CURRENT_STATE_SCHEMA_VERSION,
+            'Exploration state schema version is failed to updated'
+        )
+
+        self.assertEqual(
+            updated_exploration['states'],
+            migrated_exploration_dict,
             'Exploration state schema version is failed to updated'
         )
 
