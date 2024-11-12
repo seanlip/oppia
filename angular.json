@@ -226,5 +226,5 @@
       }
     }
   },
-  "defaultProject": "oppia-maintenance"
+  "defaultProject": "oppia-angular"
 }
