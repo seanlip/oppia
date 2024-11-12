@@ -38,7 +38,7 @@ class Copier(value_generators_domain.BaseValueGenerator):
     # So, due to this conflict in arguments definitions, a conflict in
     # signatures occurred which causes MyPy to throw an error. Thus, to
     # avoid the error, we used ignore here.
-    def generate_value(  # type: ignore[override]
+    def generate_value(
         self,
         unused_context_params: Optional[Dict[str, str]],
         value: str,
@@ -72,7 +72,7 @@ class RandomSelector(value_generators_domain.BaseValueGenerator):
     # So, due to this conflict in arguments definitions, a conflict in
     # signatures occurred which causes MyPy to throw an error. Thus, to
     # avoid the error, we used ignore here.
-    def generate_value(  # type: ignore[override]
+    def generate_value(
         self,
         unused_context_params: Dict[str, str],
         list_of_values: List[str]

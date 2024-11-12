@@ -2,3 +2,7 @@
 # These packages are python3 packages to be used by MyPy.
 mypy==1.10.1
 typed-ast==1.5.5
+types-PyYAML
+types-bleach
+types-protobuf
+types-requests

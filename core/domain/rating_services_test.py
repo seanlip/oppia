@@ -113,6 +113,8 @@ class RatingServicesTests(test_utils.GenericTestBase):
         self.assertLess(
             datetime.datetime.utcnow(),
             first_rating_time + time_allowed_for_computation)
+        # Ruling out the possibility of None for mypy type checking.
+        assert second_rating_time is not None
         self.assertLess(first_rating_time, second_rating_time)
         self.assertLess(second_rating_time, datetime.datetime.utcnow())
 

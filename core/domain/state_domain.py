@@ -4710,11 +4710,11 @@ class State(translation_domain.BaseTranslatableObject):
                 # Here we use MyPy ignore because the content Id key for the
                 # contents in the rule inputs is contentId instead of
                 # content_id.
-                old_content_id = content[content_id_key]  # type: ignore[misc]
+                old_content_id = content[content_id_key]  # type: ignore[literal-required]
                 # Here we use MyPy ignore because the content Id key for the
                 # contents in the rule inputs is contentId instead of
                 # content_id.
-                content[content_id_key] = new_content_id  # type: ignore[index]
+                content[content_id_key] = new_content_id  # type: ignore[literal-required]
 
                 assert isinstance(old_content_id, str)
                 old_to_new_content_id[old_content_id] = new_content_id
@@ -4815,7 +4815,7 @@ class State(translation_domain.BaseTranslatableObject):
                     # Here we use MyPy ignore because the content Id key for the
                     # contents in the rule inputs is contentId instead of
                     # content_id.
-                    content_id = content['contentId']  # type: ignore[misc]
+                    content_id = content['contentId']  # type: ignore[typeddict-item]
                 else:
                     content_id = content['content_id']
 

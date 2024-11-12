@@ -4,14 +4,20 @@ FROM --platform=linux/amd64 python:3.10.15-slim-bookworm AS backend
 ENV OPPIA_IS_DOCKERIZED="true"
 
 WORKDIR /
+RUN apt update -y
+RUN apt install wget -y
+RUN wget https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz
+RUN tar zxvf openjdk-*_linux-x64_bin.tar.gz
+RUN mv jdk-11* /usr/local/
+RUN export JAVA_HOME=/usr/local/jdk-11
+RUN export PATH=$PATH:$JAVA_HOME/bin
 
 # Installing the pre-requisites libs and dependencies
 RUN apt-get update -y && apt-get upgrade -y \
     curl \
     git \
     npm \
-    openjdk-11-jre \
-    python2 \
+    dh-python \
     python3-matplotlib \
     unzip \
     wget \
@@ -29,7 +35,7 @@ RUN pip install pip-tools==7.1.0 setuptools==70.0.0 cmake
 WORKDIR /app/vm_deps
 
 # Installing google cloud sdk
-RUN wget -O /app/vm_deps/gcloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-364.0.0-linux-x86_64.tar.gz && \
+RUN wget -O /app/vm_deps/gcloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-404.0.0-linux-x86_64.tar.gz && \
     tar -xzf gcloud-sdk.tar.gz && \
     ./google-cloud-sdk/install.sh --quiet && \
     ./google-cloud-sdk/bin/gcloud components install beta cloud-datastore-emulator app-engine-python app-engine-python-extras && \
