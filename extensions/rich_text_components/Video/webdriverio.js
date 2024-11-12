@@ -50,14 +50,19 @@ var expectComponentDetailsToMatch = async function (
 ) {
   var youtubePlayer = await elem.$('.e2e-test-youtube-player');
   var videoInfo = await elem.$('<iframe>').getAttribute('src');
+  // Github CI sometimes triggers Youtbe's CAPTCHA protection, causing the message below
+  // to be displayed. This prevents us from getting attributes from the Youtube player.
+  // So, we skip these checks if the message is seen.
+  const botCheckMessage = await youtubePlayer.getText();
+  if (botCheckMessage.includes('Sign in to confirm you\'re not a bot')) {
+    console.warn('Skipping flaky test parts due to bot check message in YouTube player.');
+    return;
+  }
   expect(videoInfo).toMatch(youtubeId);
   const startSeconds = await youtubePlayer.getAttribute(
     'ng-reflect-start-seconds'
   );
   const endSeconds = await youtubePlayer.getAttribute('ng-reflect-end-seconds');
-  console.log('startSeconds: ', +startSeconds);
-  console.log('endSeconds: ', +endSeconds);
-  browser.debug();
   expect(startTime).toBe(+startSeconds);
   expect(endTime).toBe(+endSeconds);
   expect(videoInfo).toMatch('autoplay=' + (ifAutoplay ? 1 : 0));
