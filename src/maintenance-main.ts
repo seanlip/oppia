@@ -19,7 +19,7 @@
 import 'pages/common-imports';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {enableProdMode} from '@angular/core';
-import {MaintenancePageModule} from '../core/templates/pages/maintenance-page/maintenance-page.module';
+import { MaintenancePageModule } from 'pages/maintenance-page/app.module';
 
 enableProdMode();
 
