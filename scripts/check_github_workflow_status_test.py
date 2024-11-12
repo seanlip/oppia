@@ -27,7 +27,7 @@ from . import check_github_workflow_status
 class CheckGithubWorkflowStatusTests(test_utils.GenericTestBase):
     def setUp(self) -> None:
         super().setUp()
-        self.temp_dir = tempfile.TemporaryDirectory()
+        self.temp_dir = tempfile.TemporaryDirectory() # pylint: disable=consider-using-with
         self.github_output_file_path = os.path.join(
             self.temp_dir.name, 'github_output.json')
         os.environ['GITHUB_OUTPUT'] = self.github_output_file_path

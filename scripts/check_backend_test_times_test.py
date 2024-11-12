@@ -193,20 +193,19 @@ class CheckBackendTestTimesTests(test_utils.GenericTestBase):
     def test_get_sorted_backend_test_times_from_reports_no_reports(
         self
     ) -> None:
-        backend_test_time_reports_directory = tempfile.TemporaryDirectory()
-        backend_test_time_reports_swap = self.swap(
-            check_backend_test_times, 'BACKEND_TEST_TIME_REPORTS_DIRECTORY',
-            backend_test_time_reports_directory.name
-        )
-        with backend_test_time_reports_swap:
-            with self.assertRaisesRegex(
-                RuntimeError,
-                'No backend test time reports found in %s. Please run '
-                'the backend tests before running this script.'
-                % backend_test_time_reports_directory.name
-            ):
-                check_backend_test_times.get_sorted_backend_test_times_from_reports() # pylint: disable=line-too-long
-        backend_test_time_reports_directory.cleanup()
+        with tempfile.TemporaryDirectory() as backend_test_time_reports_directory:
+            backend_test_time_reports_swap = self.swap(
+                check_backend_test_times, 'BACKEND_TEST_TIME_REPORTS_DIRECTORY',
+                backend_test_time_reports_directory
+            )
+            with backend_test_time_reports_swap:
+                with self.assertRaisesRegex(
+                    RuntimeError,
+                    'No backend test time reports found in %s. Please run '
+                    'the backend tests before running this script.'
+                    % backend_test_time_reports_directory
+                ):
+                    check_backend_test_times.get_sorted_backend_test_times_from_reports() # pylint: disable=line-too-long
 
     def test_get_sorted_backend_test_times_from_reports(self) -> None:
         with self.backend_test_time_reports_swap:
@@ -223,51 +222,50 @@ class CheckBackendTestTimesTests(test_utils.GenericTestBase):
         )
 
     def test_check_backend_test_times_creates_correct_file(self) -> None:
-        backend_test_times_temp_file = tempfile.NamedTemporaryFile('w+')
-        backend_test_times_file_swap = self.swap(
-            check_backend_test_times, 'BACKEND_TEST_TIMES_FILE',
-            backend_test_times_temp_file.name
-        )
-        with self.backend_test_time_reports_swap, backend_test_times_file_swap:
-            with self.print_swap:
-                check_backend_test_times.main()
-        sorted_backend_test_times_from_file = []
-        for line in backend_test_times_temp_file.readlines():
-            test_name, test_time, test_time_by_average_test_case = (
-                line.strip().split(':'))
-            sorted_backend_test_times_from_file.append(
-                {
-                    'test_name': test_name,
-                    'test_time': float(test_time),
-                    'test_time_by_average_test_case': float(
-                        test_time_by_average_test_case)
-                }
+        with  tempfile.NamedTemporaryFile('w+') as backend_test_times_temp_file:
+            backend_test_times_file_swap = self.swap(
+                check_backend_test_times, 'BACKEND_TEST_TIMES_FILE',
+                backend_test_times_temp_file.name
             )
-        self.assertEqual(
-            sorted_backend_test_times_from_file,
-            self.sorted_backend_test_times
-        )
-        sorted_backend_test_times_message = [
-            '\033[1mBACKEND TEST TIMES SORTED BY TIME:\033[0m',
-            'test_six: 1.1 SECONDS.',
-            'test_five: 1.2 SECONDS.',
-            'test_seven: 1.3 SECONDS.',
-            'test_ten: 1.4 SECONDS.',
-            'test_two: 1.4 SECONDS.',
-            'test_eight: 1.5 SECONDS.',
-            'test_nine: 1.6 SECONDS.',
-            'test_three: 1.7 SECONDS.',
-            'test_one: 1.8 SECONDS.',
-            'test_four: 2.3 SECONDS.',
-            'test_eleven: 164.4 SECONDS.',
-            '\033[1mBACKEND TEST TIMES OVER 150.0 SECONDS:\033[0m',
-            'test_eleven: 164.4 SECONDS.',
-            '\033[1mBACKEND TEST TIMES WITH AVERAGE TEST CASE TIME '
-            'OVER 150.0 SECONDS:\033[0m',
-            'test_three: 160.0 SECONDS BY AVERAGE TEST CASE TIME.',
-            'test_nine: 170.0 SECONDS BY AVERAGE TEST CASE TIME.',
-            'test_eleven: 200.0 SECONDS BY AVERAGE TEST CASE TIME.'
-        ]
-        self.assertEqual(
-            sorted_backend_test_times_message, self.print_arr)
-        backend_test_times_temp_file.close()
+            with self.backend_test_time_reports_swap, backend_test_times_file_swap:
+                with self.print_swap:
+                    check_backend_test_times.main()
+            sorted_backend_test_times_from_file = []
+            for line in backend_test_times_temp_file.readlines():
+                test_name, test_time, test_time_by_average_test_case = (
+                    line.strip().split(':'))
+                sorted_backend_test_times_from_file.append(
+                    {
+                        'test_name': test_name,
+                        'test_time': float(test_time),
+                        'test_time_by_average_test_case': float(
+                            test_time_by_average_test_case)
+                    }
+                )
+            self.assertEqual(
+                sorted_backend_test_times_from_file,
+                self.sorted_backend_test_times
+            )
+            sorted_backend_test_times_message = [
+                '\033[1mBACKEND TEST TIMES SORTED BY TIME:\033[0m',
+                'test_six: 1.1 SECONDS.',
+                'test_five: 1.2 SECONDS.',
+                'test_seven: 1.3 SECONDS.',
+                'test_ten: 1.4 SECONDS.',
+                'test_two: 1.4 SECONDS.',
+                'test_eight: 1.5 SECONDS.',
+                'test_nine: 1.6 SECONDS.',
+                'test_three: 1.7 SECONDS.',
+                'test_one: 1.8 SECONDS.',
+                'test_four: 2.3 SECONDS.',
+                'test_eleven: 164.4 SECONDS.',
+                '\033[1mBACKEND TEST TIMES OVER 150.0 SECONDS:\033[0m',
+                'test_eleven: 164.4 SECONDS.',
+                '\033[1mBACKEND TEST TIMES WITH AVERAGE TEST CASE TIME '
+                'OVER 150.0 SECONDS:\033[0m',
+                'test_three: 160.0 SECONDS BY AVERAGE TEST CASE TIME.',
+                'test_nine: 170.0 SECONDS BY AVERAGE TEST CASE TIME.',
+                'test_eleven: 200.0 SECONDS BY AVERAGE TEST CASE TIME.'
+            ]
+            self.assertEqual(
+                sorted_backend_test_times_message, self.print_arr)

@@ -180,16 +180,17 @@ def get_git_diff_name_status_files(
     git_cmd.extend([left, right])
     git_cmd.append('--')
 
-    task = subprocess.Popen(
-        git_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = task.communicate()
-    if not err:
-        file_list = []
-        for line in out.splitlines():
-            file_list.append(line[1:].decode('utf-8').strip())
-        return file_list
-    else:
-        raise ValueError(err)
+    with subprocess.Popen(
+        git_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    ) as task:
+        out, err = task.communicate()
+        if not err:
+            file_list = []
+            for line in out.splitlines():
+                file_list.append(line[1:].decode('utf-8').strip())
+            return file_list
+        else:
+            raise ValueError(err)
 
 
 def does_files_include_python(files: List[str]) -> bool:

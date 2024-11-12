@@ -42,14 +42,15 @@ def get_git_remotes() -> List[str]:
     Raises:
         ValueError. Subprocess failed to start.
     """
-    task = subprocess.Popen(
-        ['git', 'remote'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = task.communicate()
-    if not err:
-        remotes = out[:-1].decode('utf-8').split('\n')
-        return remotes
-    else:
-        raise ValueError(err)
+    with subprocess.Popen(
+        ['git', 'remote'], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    ) as task:
+        out, err = task.communicate()
+        if not err:
+            remotes = out[:-1].decode('utf-8').split('\n')
+            return remotes
+        else:
+            raise ValueError(err)
 
 
 def get_remote_url(remote_name: str) -> str:
@@ -64,15 +65,15 @@ def get_remote_url(remote_name: str) -> str:
     Raises:
         ValueError. Subprocess failed to start.
     """
-    task = subprocess.Popen(
+    with subprocess.Popen(
         ['git', 'config', '--get', 'remote.%s.url' % remote_name],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
-    remote_url, err = task.communicate()
-    if not err:
-        return remote_url.decode('utf-8')
-    else:
-        raise ValueError(err)
+    ) as task:
+        remote_url, err = task.communicate()
+        if not err:
+            return remote_url.decode('utf-8')
+        else:
+            raise ValueError(err)
 
 
 def get_upstream_git_repository_remote_name() -> str:

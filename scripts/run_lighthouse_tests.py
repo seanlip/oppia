@@ -97,43 +97,45 @@ def run_lighthouse_puppeteer_script(record: bool = False) -> dict[str, str]:
         print('Starting LHCI Puppeteer script with recording.')
         print('Video Path:' + video_path)
 
-    process = subprocess.Popen(
-        bash_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
-    if process.returncode == 0:
-        print(stdout)
-        # The entities are collected from the standard output of the
-        # puppeteer script. Each entity is a dictionary with the entity
-        # name as the key and the entity ID as the value. An entity
-        # represents a database object like an exploration, topic, story,
-        # or skill. The entity ID is the unique identifier for the entity
-        # that will be used to inject into the URLs for the Lighthouse checks.
-        entities: dict[str, str] = {}
-        for line in stdout.split(b'\n'):
+    with subprocess.Popen(
+        bash_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    ) as process:
+        stdout, stderr = process.communicate()
+        if process.returncode == 0:
+            print(stdout)
+            # The entities are collected from the standard output of the
+            # puppeteer script. Each entity is a dictionary with the entity
+            # name as the key and the entity ID as the value. An entity
+            # represents a database object like an exploration, topic, story,
+            # or skill. The entity ID is the unique identifier for the entity
+            # that will be used to inject into the URLs for the Lighthouse
+            # checks.
+            entities: dict[str, str] = {}
+            for line in stdout.split(b'\n'):
+                # Standard output is in bytes, we need to decode the line to
+                # print it.
+                entity = get_entity(line.decode('utf-8'))
+                if entity is not None:
+                    entity_name, entity_id = entity
+                    entities[entity_name] = entity_id
+            print('Puppeteer script completed successfully.')
+            if record:
+                print('Resulting puppeteer video saved at %s' % video_path)
+            return entities
+        else:
+            print('Return code: %s' % process.returncode)
+            print('OUTPUT:')
             # Standard output is in bytes, we need to decode the line to
             # print it.
-            entity = get_entity(line.decode('utf-8'))
-            if entity is not None:
-                entity_name, entity_id = entity
-                entities[entity_name] = entity_id
-        print('Puppeteer script completed successfully.')
-        if record:
-            print('Resulting puppeteer video saved at %s' % video_path)
-        return entities
-    else:
-        print('Return code: %s' % process.returncode)
-        print('OUTPUT:')
-        # Standard output is in bytes, we need to decode the line to
-        # print it.
-        print(stdout.decode('utf-8'))
-        print('ERROR:')
-        # Error output is in bytes, we need to decode the line to
-        # print it.
-        print(stderr.decode('utf-8'))
-        print('Puppeteer script failed. More details can be found above.')
-        if record:
-            print('Resulting puppeteer video saved at %s' % video_path)
-        sys.exit(1)
+            print(stdout.decode('utf-8'))
+            print('ERROR:')
+            # Error output is in bytes, we need to decode the line to
+            # print it.
+            print(stderr.decode('utf-8'))
+            print('Puppeteer script failed. More details can be found above.')
+            if record:
+                print('Resulting puppeteer video saved at %s' % video_path)
+            sys.exit(1)
 
 
 def run_webpack_compilation() -> None:
@@ -194,31 +196,32 @@ def run_lighthouse_checks(lighthouse_mode: str) -> None:
         '--max-old-space-size=4096'
     ]
 
-    process = subprocess.Popen(
-        bash_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
+    with subprocess.Popen(
+        bash_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    ) as process:
+        stdout, stderr = process.communicate()
 
-    print('OUTPUT:')
-    # Standard output is in bytes, we need to decode the line to
-    # print it.
-    print(stdout.decode('utf-8'))
-    if process.returncode == 0:
-        pages_count = len(os.environ['LIGHTHOUSE_URLS_TO_RUN'].split(','))
-        all_pages_count = len(os.environ['ALL_LIGHTHOUSE_URLS'].split(','))
-        print(
-            '\033[1m%s out of %s lighthouse checks run, see '
-            'https://github.com/oppia/oppia/wiki/Partial-CI-Tests-Structure '
-            'for more information.\033[0m' % (pages_count, all_pages_count)
-        )
-        print('Lighthouse checks completed successfully.')
-    else:
-        print('Return code: %s' % process.returncode)
-        print('ERROR:')
-        # Error output is in bytes, we need to decode the line to
+        print('OUTPUT:')
+        # Standard output is in bytes, we need to decode the line to
         # print it.
-        print(stderr.decode('utf-8'))
-        print('Lighthouse checks failed. More details can be found above.')
-        sys.exit(1)
+        print(stdout.decode('utf-8'))
+        if process.returncode == 0:
+            pages_count = len(os.environ['LIGHTHOUSE_URLS_TO_RUN'].split(','))
+            all_pages_count = len(os.environ['ALL_LIGHTHOUSE_URLS'].split(','))
+            print(
+                '\033[1m%s out of %s lighthouse checks run, see '
+                'https://github.com/oppia/oppia/wiki/Partial-CI-Tests-Structure '
+                'for more information.\033[0m' % (pages_count, all_pages_count)
+            )
+            print('Lighthouse checks completed successfully.')
+        else:
+            print('Return code: %s' % process.returncode)
+            print('ERROR:')
+            # Error output is in bytes, we need to decode the line to
+            # print it.
+            print(stderr.decode('utf-8'))
+            print('Lighthouse checks failed. More details can be found above.')
+            sys.exit(1)
 
 
 def get_lighthouse_pages_config() -> dict[str, str]:

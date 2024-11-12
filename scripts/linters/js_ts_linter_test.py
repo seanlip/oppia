@@ -192,21 +192,21 @@ class JsTsLintTests(test_utils.LinterTestBase):
         self.validate(lint_task_report, expected_messages, 1)
 
     def test_third_party_linter_with_stderr(self) -> None:
-        process = subprocess.Popen(['test'], stdout=subprocess.PIPE)
-        def mock_popen(
-            unused_cmd: str, stdout: int, stderr: int  # pylint: disable=unused-argument
-        ) -> subprocess.Popen[bytes]:  # pylint: disable=unsubscriptable-object
-            return process
-        def mock_communicate(unused_self: str) -> Tuple[bytes, bytes]:
-            return (b'Output', b'Invalid')
-        popen_swap = self.swap(subprocess, 'Popen', mock_popen)
-        communicate_swap = self.swap(
-            subprocess.Popen, 'communicate', mock_communicate)
-        with popen_swap, communicate_swap:
-            with self.assertRaisesRegex(Exception, 'Invalid'):
-                js_ts_linter.ThirdPartyJsTsLintChecksManager(
-                    [INVALID_SORTED_DEPENDENCIES_FILEPATH]
-                ).perform_all_lint_checks()
+        with subprocess.Popen(['test'], stdout=subprocess.PIPE) as process:
+            def mock_popen(
+                unused_cmd: str, stdout: int, stderr: int  # pylint: disable=unused-argument
+            ) -> subprocess.Popen[bytes]:  # pylint: disable=unsubscriptable-object
+                return process
+            def mock_communicate(unused_self: str) -> Tuple[bytes, bytes]:
+                return (b'Output', b'Invalid')
+            popen_swap = self.swap(subprocess, 'Popen', mock_popen)
+            communicate_swap = self.swap(
+                subprocess.Popen, 'communicate', mock_communicate)
+            with popen_swap, communicate_swap:
+                with self.assertRaisesRegex(Exception, 'Invalid'):
+                    js_ts_linter.ThirdPartyJsTsLintChecksManager(
+                        [INVALID_SORTED_DEPENDENCIES_FILEPATH]
+                    ).perform_all_lint_checks()
 
     def test_third_party_linter_with_invalid_eslint_path(self) -> None:
         def mock_exists(unused_path: str) -> bool:

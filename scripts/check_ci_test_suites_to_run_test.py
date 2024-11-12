@@ -146,7 +146,7 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
         super().setUp()
 
         self.maxDiff = None
-        self.tempdir = tempfile.TemporaryDirectory()
+        self.tempdir = tempfile.TemporaryDirectory() # pylint: disable=consider-using-with
         root_files_mapping_file = os.path.join(
             self.tempdir.name, 'root-files-mapping.json')
         with open(root_files_mapping_file, 'w', encoding='utf-8') as f:

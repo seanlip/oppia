@@ -674,39 +674,40 @@ class CommonTests(test_utils.GenericTestBase):
     def test_permissions_of_file(self) -> None:
         root_temp_dir = tempfile.mkdtemp()
         temp_dirpath = tempfile.mkdtemp(dir=root_temp_dir)
-        temp_file = tempfile.NamedTemporaryFile(dir=temp_dirpath)
-        # Here MyPy assumes that the 'name' attribute is read-only. In order to
-        # silence the MyPy complaints `setattr` is used to set the attribute.
-        setattr(temp_file, 'name', 'temp_file')
-        temp_file_path = os.path.join(temp_dirpath, 'temp_file')
-        with utils.open_file(temp_file_path, 'w') as f:
-            f.write('content')
+        with tempfile.NamedTemporaryFile(
+            mode='w+t', dir=temp_dirpath
+        ) as temp_file:
+            temp_file.write('content')
+            temp_file.flush()
 
-        common.recursive_chown(root_temp_dir, os.getuid(), -1)
-        common.recursive_chmod(root_temp_dir, 0o744)
+            common.recursive_chown(root_temp_dir, os.getuid(), -1)
+            common.recursive_chmod(root_temp_dir, 0o744)
 
-        for root, directories, filenames in os.walk(root_temp_dir):
-            for directory in directories:
-                self.assertEqual(
-                    oct(stat.S_IMODE(
-                        os.stat(os.path.join(root, directory)).st_mode)),
-                    '0o744')
-                self.assertEqual(
-                    os.stat(os.path.join(root, directory)).st_uid, os.getuid())
+            for root, directories, filenames in os.walk(root_temp_dir):
+                for directory in directories:
+                    self.assertEqual(
+                        oct(stat.S_IMODE(
+                            os.stat(os.path.join(root, directory)).st_mode)),
+                        '0o744')
+                    self.assertEqual(
+                        os.stat(os.path.join(root, directory)).st_uid,
+                        os.getuid()
+                    )
 
-            for filename in filenames:
-                self.assertEqual(
-                    oct(
-                        stat.S_IMODE(
-                            os.stat(os.path.join(root, filename)).st_mode
-                        )
-                    ),
-                    '0o744'
-                )
-                self.assertEqual(
-                    os.stat(os.path.join(root, filename)).st_uid, os.getuid())
+                for filename in filenames:
+                    self.assertEqual(
+                        oct(
+                            stat.S_IMODE(
+                                os.stat(os.path.join(root, filename)).st_mode
+                            )
+                        ),
+                        '0o744'
+                    )
+                    self.assertEqual(
+                        os.stat(os.path.join(root, filename)).st_uid,
+                        os.getuid()
+                    )
 
-        temp_file.close()
         shutil.rmtree(root_temp_dir)
 
     def test_print_each_string_after_two_new_lines(self) -> None:
@@ -743,19 +744,9 @@ class CommonTests(test_utils.GenericTestBase):
             """Mocks subprocess.check_call() to create a temporary file instead
             of the actual npm library.
             """
-            temp_file = tempfile.NamedTemporaryFile()
-            # Here MyPy assumes that the 'name' attribute is read-only.
-            # In order to silence the MyPy complaints `setattr` is used to set
-            # the attribute.
-            setattr(temp_file, 'name', 'temp_file')
             with utils.open_file('temp_file', 'w') as f:
                 f.write('content')
-
-            self.assertTrue(os.path.exists('temp_file'))
-            temp_file.close()
-            if os.path.isfile('temp_file'):
-                # Occasionally this temp file is not deleted.
-                os.remove('temp_file')
+            os.remove('temp_file')
 
         self.assertFalse(os.path.exists('temp_file'))
 

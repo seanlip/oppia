@@ -203,24 +203,21 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
         self.assertEqual(exists_arr, [False])
 
     def test_get_file_contents(self) -> None:
-        temp_file = tempfile.NamedTemporaryFile().name
-        actual_text = 'Testing install third party file.'
-        with install_dependencies_json_packages.open_file(
-            temp_file, 'w') as f:
-            f.write(actual_text)
-        self.assertEqual(
-            install_dependencies_json_packages.get_file_contents(temp_file),
-            actual_text)
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
+            actual_text = 'Testing install third party file.'
+            temp_file.write(actual_text)
+            temp_file.flush()
+            self.assertEqual(
+                install_dependencies_json_packages.get_file_contents(temp_file),
+                actual_text)
 
     def test_return_json(self) -> None:
-        temp_file = tempfile.NamedTemporaryFile().name
-        actual_text = '{"Testing": "install_dependencies_json_packages"}'
-        with install_dependencies_json_packages.open_file(
-            temp_file, 'w') as f:
-            f.write(actual_text)
-        self.assertEqual(
-            install_dependencies_json_packages.return_json(temp_file),
-            {'Testing': 'install_dependencies_json_packages'})
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
+            actual_text = '{"Testing": "install_dependencies_json_packages"}'
+            temp_file.write(actual_text)
+            self.assertEqual(
+                install_dependencies_json_packages.return_json(temp_file),
+                {'Testing': 'install_dependencies_json_packages'})
 
     def test_dependencies_syntax_testing_with_valid_syntax(self) -> None:
         install_dependencies_json_packages.test_dependencies_syntax(

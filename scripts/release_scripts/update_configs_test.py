@@ -47,163 +47,166 @@ class UpdateConfigsTests(test_utils.GenericTestBase):
     def test_feconf_verification_with_correct_config(self) -> None:
         mailgun_api_key = ('key-%s' % ('').join(['1'] * 32))
         mailchimp_api_key = ('%s-us18' % ('').join(['1'] * 32))
-        temp_feconf_path = tempfile.NamedTemporaryFile().name
-        temp_app_yaml = tempfile.NamedTemporaryFile()
-        temp_app_yaml.write(b'')
-        feconf_text = (
-            'MAILGUN_API_KEY = \'%s\'\n'
-            'MAILCHIMP_API_KEY = \'%s\'\n'
-            'REDISHOST = \'192.13.2.1\'\n'
-            '# When the site terms were last updated, in UTC.\n'
-            'TERMS_PAGE_LAST_UPDATED_UTC = '
-            'datetime.datetime(2015, 10, 14, 2, 40, 0)\n'
-            '# Format of string for dashboard statistics logs.\n'
-            '# NOTE TO DEVELOPERS: This format should not be changed, '
-            'since it is used in\n'
-            '# the existing storage models for UserStatsModel.\n'
-            'DASHBOARD_STATS_DATETIME_STRING_FORMAT = \'YY-mm-dd\'\n' % (
-                mailgun_api_key, mailchimp_api_key))
-        with utils.open_file(temp_feconf_path, 'w') as f:
-            f.write(feconf_text)
-        update_configs.verify_config_files(
-            temp_feconf_path, temp_app_yaml.name)
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_feconf:
+            feconf_text = (
+                'MAILGUN_API_KEY = \'%s\'\n'
+                'MAILCHIMP_API_KEY = \'%s\'\n'
+                'REDISHOST = \'192.13.2.1\'\n'
+                '# When the site terms were last updated, in UTC.\n'
+                'TERMS_PAGE_LAST_UPDATED_UTC = '
+                'datetime.datetime(2015, 10, 14, 2, 40, 0)\n'
+                '# Format of string for dashboard statistics logs.\n'
+                '# NOTE TO DEVELOPERS: This format should not be changed, '
+                'since it is used in\n'
+                '# the existing storage models for UserStatsModel.\n'
+                'DASHBOARD_STATS_DATETIME_STRING_FORMAT = \'YY-mm-dd\'\n' % (
+                    mailgun_api_key, mailchimp_api_key))
+            temp_feconf.write(feconf_text)
+            temp_feconf.flush()
+            with tempfile.NamedTemporaryFile(mode='w+t') as temp_app_yaml:
+                temp_app_yaml.write('')
+                temp_app_yaml.flush()
+                update_configs.verify_config_files(
+                    temp_feconf.name, temp_app_yaml.name)
 
     def test_feconf_verification_with_key_absent_and_verification_disabled(
         self
     ) -> None:
-        temp_feconf_path = tempfile.NamedTemporaryFile().name
-        temp_app_yaml = tempfile.NamedTemporaryFile()
-        temp_app_yaml.write(b'')
-        feconf_text = (
-            'REDISHOST = \'192.13.2.1\'\n'
-            '# When the site terms were last updated, in UTC.\n'
-            'TERMS_PAGE_LAST_UPDATED_UTC = '
-            'datetime.datetime(2015, 10, 14, 2, 40, 0)\n'
-            '# Format of string for dashboard statistics logs.\n'
-            '# NOTE TO DEVELOPERS: This format should not be changed, '
-            'since it is used in\n'
-            '# the existing storage models for UserStatsModel.\n'
-            'DASHBOARD_STATS_DATETIME_STRING_FORMAT = \'YY-mm-dd\'\n')
-        with utils.open_file(temp_feconf_path, 'w') as f:
-            f.write(feconf_text)
-        update_configs.verify_config_files(
-            temp_feconf_path, temp_app_yaml.name)
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_feconf:
+            feconf_text = (
+                'REDISHOST = \'192.13.2.1\'\n'
+                '# When the site terms were last updated, in UTC.\n'
+                'TERMS_PAGE_LAST_UPDATED_UTC = '
+                'datetime.datetime(2015, 10, 14, 2, 40, 0)\n'
+                '# Format of string for dashboard statistics logs.\n'
+                '# NOTE TO DEVELOPERS: This format should not be changed, '
+                'since it is used in\n'
+                '# the existing storage models for UserStatsModel.\n'
+                'DASHBOARD_STATS_DATETIME_STRING_FORMAT = \'YY-mm-dd\'\n')
+            temp_feconf.write(feconf_text)
+            temp_feconf.flush()
+            with tempfile.NamedTemporaryFile(mode='w+t') as temp_app_yaml:
+                temp_app_yaml.write('')
+                temp_app_yaml.flush()
+                update_configs.verify_config_files(
+                    temp_feconf.name, temp_app_yaml.name)
 
     def test_feconf_verification_with_redishost_absent(self) -> None:
         mailgun_api_key = ('key-%s' % ('').join(['1'] * 32))
         mailchimp_api_key = ('%s-us18' % ('').join(['1'] * 32))
-        temp_feconf_path = tempfile.NamedTemporaryFile().name
-        temp_app_yaml = tempfile.NamedTemporaryFile()
-        temp_app_yaml.write(b'')
-        feconf_text = (
-            'MAILGUN_API_KEY = \'%s\'\n'
-            'MAILCHIMP_API_KEY = \'%s\'\n'
-            '# When the site terms were last updated, in UTC.\n'
-            'TERMS_PAGE_LAST_UPDATED_UTC = '
-            'datetime.datetime(2015, 10, 14, 2, 40, 0)\n'
-            '# Format of string for dashboard statistics logs.\n'
-            '# NOTE TO DEVELOPERS: This format should not be changed, '
-            'since it is used in\n'
-            '# the existing storage models for UserStatsModel.\n'
-            'DASHBOARD_STATS_DATETIME_STRING_FORMAT = \'YY-mm-dd\'\n' % (
-                mailgun_api_key, mailchimp_api_key))
-        with utils.open_file(temp_feconf_path, 'w') as f:
-            f.write(feconf_text)
-        with self.assertRaisesRegex(
-            Exception, 'REDISHOST must be updated before deployment.'
-        ):
-            update_configs.verify_config_files(
-                temp_feconf_path, temp_app_yaml.name)
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_feconf:
+            feconf_text = (
+                'MAILGUN_API_KEY = \'%s\'\n'
+                'MAILCHIMP_API_KEY = \'%s\'\n'
+                '# When the site terms were last updated, in UTC.\n'
+                'TERMS_PAGE_LAST_UPDATED_UTC = '
+                'datetime.datetime(2015, 10, 14, 2, 40, 0)\n'
+                '# Format of string for dashboard statistics logs.\n'
+                '# NOTE TO DEVELOPERS: This format should not be changed, '
+                'since it is used in\n'
+                '# the existing storage models for UserStatsModel.\n'
+                'DASHBOARD_STATS_DATETIME_STRING_FORMAT = \'YY-mm-dd\'\n' % (
+                    mailgun_api_key, mailchimp_api_key))
+            temp_feconf.write(feconf_text)
+            temp_feconf.flush()
+            with tempfile.NamedTemporaryFile(mode='w+t') as temp_app_yaml:
+                temp_app_yaml.write('')
+                temp_app_yaml.flush()
+                with self.assertRaisesRegex(
+                    Exception, 'REDISHOST must be updated before deployment.'
+                ):
+                    update_configs.verify_config_files(
+                        temp_feconf.name, temp_app_yaml.name)
 
     def test_app_yaml_verification_with_wildcard_header_present(self) -> None:
         mailgun_api_key = ('key-%s' % ('').join(['1'] * 32))
         mailchimp_api_key = ('%s-us18' % ('').join(['1'] * 32))
-        temp_feconf_path = tempfile.NamedTemporaryFile().name
-        temp_app_yaml_path = tempfile.NamedTemporaryFile().name
-        feconf_text = (
-            'MAILGUN_API_KEY = \'%s\'\n'
-            'MAILCHIMP_API_KEY = \'%s\'\n'
-            'REDISHOST = \'192.13.2.1\'\n'
-            '# When the site terms were last updated, in UTC.\n'
-            'TERMS_PAGE_LAST_UPDATED_UTC = '
-            'datetime.datetime(2015, 10, 14, 2, 40, 0)\n'
-            '# Format of string for dashboard statistics logs.\n'
-            '# NOTE TO DEVELOPERS: This format should not be changed, '
-            'since it is used in\n'
-            '# the existing storage models for UserStatsModel.\n'
-            'DASHBOARD_STATS_DATETIME_STRING_FORMAT = \'YY-mm-dd\'\n' % (
-                mailgun_api_key, mailchimp_api_key))
-        with utils.open_file(temp_feconf_path, 'w') as f:
-            f.write(feconf_text)
-        app_yaml_text = (
-            '- url: /assets\n'
-            '  static_dir: assets\n'
-            '  secure: always\n'
-            '  http_headers:\n'
-            '    Access-Control-Allow-Origin: "*"\n'
-            '  expiration: "0"'
-        )
-        with utils.open_file(temp_app_yaml_path, 'w') as f:
-            f.write(app_yaml_text)
-        with self.assertRaisesRegex(
-            Exception,
-            r'\'Access-Control-Allow-Origin: "\*"\' must be updated to '
-            r'a specific origin before deployment.'
-        ):
-            update_configs.verify_config_files(
-                temp_feconf_path, temp_app_yaml_path)
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_feconf:
+            feconf_text = (
+                'MAILGUN_API_KEY = \'%s\'\n'
+                'MAILCHIMP_API_KEY = \'%s\'\n'
+                'REDISHOST = \'192.13.2.1\'\n'
+                '# When the site terms were last updated, in UTC.\n'
+                'TERMS_PAGE_LAST_UPDATED_UTC = '
+                'datetime.datetime(2015, 10, 14, 2, 40, 0)\n'
+                '# Format of string for dashboard statistics logs.\n'
+                '# NOTE TO DEVELOPERS: This format should not be changed, '
+                'since it is used in\n'
+                '# the existing storage models for UserStatsModel.\n'
+                'DASHBOARD_STATS_DATETIME_STRING_FORMAT = \'YY-mm-dd\'\n' % (
+                    mailgun_api_key, mailchimp_api_key))
+            temp_feconf.write(feconf_text)
+            temp_feconf.flush()
+            with tempfile.NamedTemporaryFile(mode='w+t') as temp_app_yaml:
+                app_yaml_text = (
+                    '- url: /assets\n'
+                    '  static_dir: assets\n'
+                    '  secure: always\n'
+                    '  http_headers:\n'
+                    '    Access-Control-Allow-Origin: "*"\n'
+                    '  expiration: "0"'
+                )
+                temp_app_yaml.write(app_yaml_text)
+                temp_app_yaml.flush()
+                with self.assertRaisesRegex(
+                    Exception,
+                    r'\'Access-Control-Allow-Origin: "\*"\' must be updated to '
+                    r'a specific origin before deployment.'
+                ):
+                    update_configs.verify_config_files(
+                        temp_feconf.name, temp_app_yaml.name)
 
     def test_update_app_yaml_correctly_updates(self) -> None:
-        temp_feconf_config_path = tempfile.NamedTemporaryFile().name
-        temp_app_yaml_path = tempfile.NamedTemporaryFile().name
-        feconf_config_text = 'OPPIA_SITE_URL = \'https://oppia.org\'\n'
-        with utils.open_file(temp_feconf_config_path, 'w') as f:
-            f.write(feconf_config_text)
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_feconf_config:
+            feconf_config_text = 'OPPIA_SITE_URL = \'https://oppia.org\'\n'
+            temp_feconf_config.write(feconf_config_text)
+            temp_feconf_config.flush()
 
-        app_yaml_text = (
-            '- url: /assets\n'
-            '  static_dir: assets\n'
-            '  secure: always\n'
-            '  http_headers:\n'
-            '    Access-Control-Allow-Origin: "*"\n'
-            '  expiration: "0"'
-        )
-        with utils.open_file(temp_app_yaml_path, 'w') as f:
-            f.write(app_yaml_text)
+            with tempfile.NamedTemporaryFile(mode='w+t') as temp_app_yaml:
+                app_yaml_text = (
+                    '- url: /assets\n'
+                    '  static_dir: assets\n'
+                    '  secure: always\n'
+                    '  http_headers:\n'
+                    '    Access-Control-Allow-Origin: "*"\n'
+                    '  expiration: "0"'
+                )
+                temp_app_yaml.write(app_yaml_text)
+                temp_app_yaml.flush()
 
-        update_configs.update_app_yaml(
-            temp_app_yaml_path, temp_feconf_config_path)
-
-        with utils.open_file(temp_app_yaml_path, 'r') as f:
-            app_yaml_text = f.read()
-            self.assertIn(
-                'Access-Control-Allow-Origin: https://oppia.org', app_yaml_text)
+                update_configs.update_app_yaml(
+                    temp_app_yaml.name, temp_feconf_config.name)
+                
+                app_yaml_text = temp_app_yaml.read().decode()
+                self.assertIn(
+                    'Access-Control-Allow-Origin: https://oppia.org',
+                    app_yaml_text
+                )
 
     def test_update_app_yaml_raises_error_for_invalid_oppia_site_url_key(
         self
     ) -> None:
-        temp_feconf_config_path = tempfile.NamedTemporaryFile().name
-        temp_app_yaml_path = tempfile.NamedTemporaryFile().name
-        feconf_config_text = 'OPPIA_SiTe_URL = \'https://oppia.org\'\n'
-        with utils.open_file(temp_feconf_config_path, 'w') as f:
-            f.write(feconf_config_text)
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_feconf_config:
+            feconf_config_text = 'OPPIA_SiTe_URL = \'https://oppia.org\'\n'
+            temp_feconf_config.write(feconf_config_text)
+            temp_feconf_config.flush()
 
-        app_yaml_text = (
-            '- url: /assets\n'
-            '  static_dir: assets\n'
-            '  secure: always\n'
-            '  http_headers:\n'
-            '    Access-Control-Allow-Origin: "*"\n'
-            '  expiration: "0"'
-        )
-        with utils.open_file(temp_app_yaml_path, 'w') as f:
-            f.write(app_yaml_text)
+            with tempfile.NamedTemporaryFile(mode='w+t') as temp_app_yaml:
+                app_yaml_text = (
+                    '- url: /assets\n'
+                    '  static_dir: assets\n'
+                    '  secure: always\n'
+                    '  http_headers:\n'
+                    '    Access-Control-Allow-Origin: "*"\n'
+                    '  expiration: "0"'
+                )
+                temp_app_yaml.write(app_yaml_text)
 
-        with self.assertRaisesRegex(
-            Exception, 'Error: No OPPIA_SITE_URL key found.'
-        ):
-            update_configs.update_app_yaml(
-                temp_app_yaml_path, temp_feconf_config_path)
+                with self.assertRaisesRegex(
+                    Exception, 'Error: No OPPIA_SITE_URL key found.'
+                ):
+                    update_configs.update_app_yaml(
+                        temp_app_yaml.name, temp_feconf_config.name)
 
     def test_invalid_config(self) -> None:
         with self.assertRaisesRegex(

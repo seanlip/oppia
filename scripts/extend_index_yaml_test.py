@@ -173,8 +173,12 @@ class ExtendIndexYamlTests(test_utils.GenericTestBase):
 
     def setUp(self) -> None:
         super().setUp()
-        self.index_yaml_file = tempfile.NamedTemporaryFile()
-        self.web_inf_index_xml_file = tempfile.NamedTemporaryFile()
+        # Disable pylint check for `with` usage because this method is the
+        # setUp for the tests. That is, those files are used in the test cases
+        # afterwards, not in this method directly. We can't delete or close
+        # those files here.
+        self.index_yaml_file = tempfile.NamedTemporaryFile() # pylint: disable=consider-using-with
+        self.web_inf_index_xml_file = tempfile.NamedTemporaryFile() # pylint: disable=consider-using-with
         self.index_yaml_file_name = self.index_yaml_file.name
         self.web_inf_index_xml_file_name = self.web_inf_index_xml_file.name
         self.index_yaml_swap = self.swap(
@@ -183,11 +187,11 @@ class ExtendIndexYamlTests(test_utils.GenericTestBase):
         self.web_inf_index_xml_swap = self.swap(
             extend_index_yaml, 'WEB_INF_INDEX_XML_PATH',
             self.web_inf_index_xml_file.name)
-        self.open_index_yaml_r = open(
+        self.open_index_yaml_r = open( # pylint: disable=consider-using-with
             self.index_yaml_file.name, 'r', encoding='utf-8')
-        self.open_index_yaml_w = open(
+        self.open_index_yaml_w = open( # pylint: disable=consider-using-with
             self.index_yaml_file.name, 'w', encoding='utf-8')
-        self.open_web_inf_index_xml = open(
+        self.open_web_inf_index_xml = open( # pylint: disable=consider-using-with
             self.web_inf_index_xml_file.name, 'a', encoding='utf-8')
 
     def _run_test_for_extend_index_yaml(
