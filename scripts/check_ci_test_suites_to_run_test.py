@@ -399,16 +399,16 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
 
     def test_extend_test_suites_without_duplicates(self) -> None:
         test_suites: List[check_ci_test_suites_to_run.GenericTestSuiteDict] = [
-            {'name': 'suite1', 'module': 'module1'},
-            {'name': 'suite2', 'module': 'module2'},
-            {'name': 'suite3', 'module': 'module3'}
+            {'name': 'suite1', 'module': 'module1', 'environment': 'python'},
+            {'name': 'suite2', 'module': 'module2', 'environment': 'python'},
+            {'name': 'suite3', 'module': 'module3', 'environment': 'python'}
         ]
         test_suites_to_add: List[
             check_ci_test_suites_to_run.GenericTestSuiteDict
         ] = [
-            {'name': 'suite2', 'module': 'module2'},
-            {'name': 'suite3', 'module': 'module3'},
-            {'name': 'suite4', 'module': 'module4'}
+            {'name': 'suite2', 'module': 'module2', 'environment': 'python'},
+            {'name': 'suite3', 'module': 'module3', 'environment': 'python'},
+            {'name': 'suite4', 'module': 'module4', 'environment': 'python'}
         ]
         extended_test_suites = (
             check_ci_test_suites_to_run.extend_test_suites_without_duplicates(

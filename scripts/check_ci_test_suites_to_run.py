@@ -57,6 +57,7 @@ class GenericTestSuiteDict(TypedDict):
 
     name: str
     module: str
+    environment: str
 
 
 class LighthouseTestSuiteDict(GenericTestSuiteDict):
@@ -252,6 +253,7 @@ def split_tests_by_docker(
     docker_test_suites = []
     python_test_suites = []
     for test_suite in test_suites.get('suites', []):
+        print(test_suite)
         if test_suite.get('environment', 'python') == 'docker':
             docker_test_suites.append(test_suite)
         else:
@@ -356,6 +358,7 @@ def partition_lighthouse_pages_into_test_suites(
                     str(i // LIGHTHOUSE_PAGES_PER_SHARD + 1)
                 ),
                 'module': lighthouse_module,
+                'environment': 'python',
                 'pages_to_run': []
             }
         assert current_lighthouse_test_suite is not None
