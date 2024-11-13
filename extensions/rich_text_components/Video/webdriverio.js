@@ -54,8 +54,10 @@ var expectComponentDetailsToMatch = async function (
   // to be displayed. This prevents us from getting attributes from the Youtube player.
   // So, we skip these checks if the message is seen.
   const botCheckMessage = await youtubePlayer.getText();
-  if (botCheckMessage.includes('Sign in to confirm you\'re not a bot')) {
-    console.warn('Skipping flaky test parts due to bot check message in YouTube player.');
+  if (botCheckMessage.includes("Sign in to confirm you're not a bot")) {
+    console.warn(
+      'Skipping flaky test parts due to bot check message in YouTube player.'
+    );
     return;
   }
   expect(videoInfo).toMatch(youtubeId);
