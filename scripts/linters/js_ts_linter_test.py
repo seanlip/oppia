@@ -75,6 +75,12 @@ class Ret:
         """Return some error."""
         return '', 'Some error'.encode('utf-8')
 
+    def __enter__(self) -> 'Ret':
+        return self
+
+    def __exit__(self, *unused_args: str) -> None:
+        pass
+
 
 class JsTsLintTests(test_utils.LinterTestBase):
     """Tests for js_ts_linter file."""

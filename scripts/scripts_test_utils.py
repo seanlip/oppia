@@ -267,3 +267,9 @@ class PopenStub:
         self.alive = False
         if return_code is not None:
             self._return_code = return_code
+
+    def __enter__(self) -> 'PopenStub':
+        return self
+
+    def __exit__(self, *unused_args: str) -> None:
+        pass
