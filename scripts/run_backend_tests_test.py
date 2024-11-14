@@ -462,7 +462,6 @@ class RunBackendTestsTests(test_utils.GenericTestBase):
             loaded_time_report = json.loads(time_report_temp_file.read())
             self.assertEqual(loaded_time_report, expected_time_report)
 
-
     def test_test_failed_due_to_error_in_parsing_coverage_report(self) -> None:
         with self.swap_install_third_party_libs:
             from scripts import run_backend_tests

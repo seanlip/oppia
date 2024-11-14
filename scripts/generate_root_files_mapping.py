@@ -35,10 +35,11 @@ def main() -> None:
 
     print('Generating root files mapping...')
     cmd = [common.NODE_BIN_PATH, ROOT_FILES_MAPPING_GENERATOR_FILEPATH]
-    proc = subprocess.Popen(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    with subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    ) as proc:
+        encoded_stdout, encoded_stderr = proc.communicate()
 
-    encoded_stdout, encoded_stderr = proc.communicate()
     stderr = encoded_stderr.decode('utf-8')
 
     if stderr:

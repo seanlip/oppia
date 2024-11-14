@@ -45,22 +45,23 @@ class CheckBackendAssociatedTestFileTests(test_utils.GenericTestBase):
 
     def test_checks_fail_when_a_backend_file_lacks_associated_test_file(
             self) -> None:
-        tempdir = tempfile.TemporaryDirectory(prefix=os.getcwd() + '/core/')
-        backend_file = os.path.join(tempdir.name, 'backend_file.py')
-        frontend_file = os.path.join(tempdir.name, 'frontend_file.ts')
-        topmost_level_path_swap = self.swap(
-            check_backend_associated_test_file, 'TOPMOST_LEVEL_PATH',
-            tempdir.name)
-        with open(backend_file, 'w', encoding='utf8') as f:
-            f.write('Example code')
-        with open(frontend_file, 'w', encoding='utf8') as f:
-            f.write('Example code')
+        with tempfile.TemporaryDirectory(
+            prefix=os.getcwd() + '/core/'
+        ) as tempdir:
+            backend_file = os.path.join(tempdir.name, 'backend_file.py')
+            frontend_file = os.path.join(tempdir.name, 'frontend_file.ts')
+            topmost_level_path_swap = self.swap(
+                check_backend_associated_test_file, 'TOPMOST_LEVEL_PATH',
+                tempdir.name)
+            with open(backend_file, 'w', encoding='utf8') as f:
+                f.write('Example code')
+            with open(frontend_file, 'w', encoding='utf8') as f:
+                f.write('Example code')
 
-        with self.print_swap, self.swap_logging, self.swap_exit:
-            with topmost_level_path_swap:
-                check_backend_associated_test_file.main()
+            with self.print_swap, self.swap_logging, self.swap_exit:
+                with topmost_level_path_swap:
+                    check_backend_associated_test_file.main()
 
-        tempdir.cleanup()
         self.assertIn(
             'Backend associated test file checks failed.', self.print_arr)
         self.assertIn(
@@ -76,22 +77,23 @@ class CheckBackendAssociatedTestFileTests(test_utils.GenericTestBase):
 
     def test_pass_when_file_in_exclusion_list_lacks_associated_test(
             self) -> None:
-        tempdir = tempfile.TemporaryDirectory(prefix=os.getcwd() + '/core/')
-        backend_file = os.path.join(tempdir.name, 'backend_file.py')
-        topmost_level_path_swap = self.swap(
-            check_backend_associated_test_file, 'TOPMOST_LEVEL_PATH',
-            tempdir.name)
-        with open(backend_file, 'w', encoding='utf8') as f:
-            f.write('Example code')
-        (
-            check_backend_associated_test_file.
-                FILES_WITHOUT_ASSOCIATED_TEST_FILES.append(
-                    os.path.relpath(backend_file, tempdir.name)))
-        with self.print_swap, self.swap_logging, self.swap_exit:
-            with topmost_level_path_swap:
-                check_backend_associated_test_file.main()
+        with tempfile.TemporaryDirectory(
+            prefix=os.getcwd() + '/core/'
+        ) as tempdir:
+            backend_file = os.path.join(tempdir.name, 'backend_file.py')
+            topmost_level_path_swap = self.swap(
+                check_backend_associated_test_file, 'TOPMOST_LEVEL_PATH',
+                tempdir.name)
+            with open(backend_file, 'w', encoding='utf8') as f:
+                f.write('Example code')
+            (
+                check_backend_associated_test_file.
+                    FILES_WITHOUT_ASSOCIATED_TEST_FILES.append(
+                        os.path.relpath(backend_file, tempdir.name)))
+            with self.print_swap, self.swap_logging, self.swap_exit:
+                with topmost_level_path_swap:
+                    check_backend_associated_test_file.main()
 
-        tempdir.cleanup()
         self.assertIn(
             'Backend associated test file checks passed.', self.print_arr)
         self.assertNotIn(
@@ -102,24 +104,24 @@ class CheckBackendAssociatedTestFileTests(test_utils.GenericTestBase):
 
     def test_checks_pass_when_all_backend_files_have_an_associated_test_file(
             self) -> None:
-        tempdir = tempfile.TemporaryDirectory(
-            prefix=os.path.join(os.getcwd(), feconf.TESTS_DATA_DIR, ''))
-        backend_file = os.path.join(tempdir.name, 'backend_file.py')
-        backend_test_file = os.path.join(
-            tempdir.name, 'backend_file_test.py')
-        topmost_level_path_swap = self.swap(
-            check_backend_associated_test_file, 'TOPMOST_LEVEL_PATH',
-            tempdir.name)
+        with tempfile.TemporaryDirectory(
+            prefix=os.path.join(os.getcwd(), feconf.TESTS_DATA_DIR, '')
+        ) as tempdir:
+            backend_file = os.path.join(tempdir.name, 'backend_file.py')
+            backend_test_file = os.path.join(
+                tempdir.name, 'backend_file_test.py')
+            topmost_level_path_swap = self.swap(
+                check_backend_associated_test_file, 'TOPMOST_LEVEL_PATH',
+                tempdir.name)
 
-        with open(backend_file, 'w', encoding='utf8') as f:
-            f.write('Example code')
-        with open(backend_test_file, 'w', encoding='utf8') as f:
-            f.write('Example code')
-        with self.print_swap, self.swap_logging, self.swap_exit:
-            with topmost_level_path_swap:
-                check_backend_associated_test_file.main()
+            with open(backend_file, 'w', encoding='utf8') as f:
+                f.write('Example code')
+            with open(backend_test_file, 'w', encoding='utf8') as f:
+                f.write('Example code')
+            with self.print_swap, self.swap_logging, self.swap_exit:
+                with topmost_level_path_swap:
+                    check_backend_associated_test_file.main()
 
-        tempdir.cleanup()
         self.assertIn(
             'Backend associated test file checks passed.', self.print_arr)
         self.assertEqual(self.error_arr, [])

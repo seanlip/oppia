@@ -66,7 +66,7 @@ class CheckTestsAreCapturedInCiTest(test_utils.GenericTestBase):
 
     def setUp(self) -> None:
         super().setUp()
-        self.temp_directory = tempfile.TemporaryDirectory()
+        self.temp_directory = tempfile.TemporaryDirectory() # pylint: disable=consider-using-with
         self.dummy_e2e_directory = os.path.join(
             self.temp_directory.name, 'webdriverio')
         os.mkdir(self.dummy_e2e_directory)

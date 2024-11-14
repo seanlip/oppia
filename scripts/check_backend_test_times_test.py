@@ -31,7 +31,7 @@ class CheckBackendTestTimesTests(test_utils.GenericTestBase):
     def setUp(self) -> None:
         super().setUp()
         self.backend_test_time_reports_directory = (
-            tempfile.TemporaryDirectory())
+            tempfile.TemporaryDirectory()) # pylint: disable=consider-using-with
         backend_test_time_report_one = os.path.join(
             self.backend_test_time_reports_directory.name, 'report_one.json')
         backend_test_time_report_two = os.path.join(
@@ -193,17 +193,17 @@ class CheckBackendTestTimesTests(test_utils.GenericTestBase):
     def test_get_sorted_backend_test_times_from_reports_no_reports(
         self
     ) -> None:
-        with tempfile.TemporaryDirectory() as backend_test_time_reports_directory:
+        with tempfile.TemporaryDirectory() as backend_test_time_reports_dir:
             backend_test_time_reports_swap = self.swap(
                 check_backend_test_times, 'BACKEND_TEST_TIME_REPORTS_DIRECTORY',
-                backend_test_time_reports_directory
+                backend_test_time_reports_dir
             )
             with backend_test_time_reports_swap:
                 with self.assertRaisesRegex(
                     RuntimeError,
                     'No backend test time reports found in %s. Please run '
                     'the backend tests before running this script.'
-                    % backend_test_time_reports_directory
+                    % backend_test_time_reports_dir
                 ):
                     check_backend_test_times.get_sorted_backend_test_times_from_reports() # pylint: disable=line-too-long
 
@@ -222,12 +222,12 @@ class CheckBackendTestTimesTests(test_utils.GenericTestBase):
         )
 
     def test_check_backend_test_times_creates_correct_file(self) -> None:
-        with  tempfile.NamedTemporaryFile('w+') as backend_test_times_temp_file:
+        with tempfile.NamedTemporaryFile('w+') as backend_test_times_temp_file:
             backend_test_times_file_swap = self.swap(
                 check_backend_test_times, 'BACKEND_TEST_TIMES_FILE',
                 backend_test_times_temp_file.name
             )
-            with self.backend_test_time_reports_swap, backend_test_times_file_swap:
+            with self.backend_test_time_reports_swap, backend_test_times_file_swap: # pylint: disable=line-too-long
                 with self.print_swap:
                     check_backend_test_times.main()
             sorted_backend_test_times_from_file = []

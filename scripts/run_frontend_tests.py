@@ -103,23 +103,24 @@ def run_dtslint_type_tests() -> None:
            DTSLINT_TYPE_TESTS_DIR_RELATIVE_PATH,
            '--localTs',
            TYPESCRIPT_DIR_RELATIVE_PATH]
-    task = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    output_lines = []
-    # The value of `process.stdout` should not be None since we passed
-    # the `stdout=subprocess.PIPE` argument to `Popen`.
-    assert task.stdout is not None
-    # Reads and prints realtime output from the subprocess until it terminates.
-    while True:
-        line = task.stdout.readline()
-        # No more output from the subprocess, and the subprocess has ended.
-        if len(line) == 0 and task.poll() is not None:
-            break
-        if line:
-            print(line, end='')
-            output_lines.append(line)
-    print('Done!')
-    if task.returncode:
-        sys.exit('The dtslint (type tests) failed.')
+    with subprocess.Popen(cmd, stdout=subprocess.PIPE) as task:
+        output_lines = []
+        # The value of `process.stdout` should not be None since we passed
+        # the `stdout=subprocess.PIPE` argument to `Popen`.
+        assert task.stdout is not None
+        # Reads and prints realtime output from the subprocess until it
+        # terminates.
+        while True:
+            line = task.stdout.readline()
+            # No more output from the subprocess, and the subprocess has ended.
+            if len(line) == 0 and task.poll() is not None:
+                break
+            if line:
+                print(line, end='')
+                output_lines.append(line)
+        print('Done!')
+        if task.returncode:
+            sys.exit('The dtslint (type tests) failed.')
 
 
 def get_file_spec(file_path: str) -> str | None:
@@ -238,77 +239,86 @@ def main(args: Optional[Sequence[str]] = None) -> None:
     if parsed_args.verbose:
         cmd.append('--terminalEnabled')
 
+    task_returncode = None
     for attempt in range(MAX_ATTEMPTS):
         print(f'Attempt {attempt + 1} of {MAX_ATTEMPTS}')
-        task = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        output_lines = []
-        # The value of `process.stdout` should not be None since we passed
-        # the `stdout=subprocess.PIPE` argument to `Popen`.
-        assert task.stdout is not None
-        # Prevents the wget command from running multiple times.
-        combined_spec_file_started_downloading = False
-        # This variable will be used to define the wget command to download
-        # the combined-test.spec.js file.
-        download_task = None
-        # Reads and prints realtime output from the subprocess until it
-        # terminates.
-        while True:
-            line = task.stdout.readline()
-            # No more output from the subprocess, and the subprocess has ended.
-            if len(line) == 0 and task.poll() is not None:
-                break
-            # Suppressing the karma web-server logs.
-            if line and not '[web-server]:' in line.decode('utf-8'):
-                # Standard output is in bytes, we need to decode
-                # the line to print it.
-                print(line.decode('utf-8'), end='')
-                output_lines.append(line)
-            # Download the combined-tests.js file from the web-server.
-            if ('Executed' in line.decode('utf-8') and
-                not combined_spec_file_started_downloading and
-                parsed_args.download_combined_frontend_spec_file):
-                download_task = subprocess.Popen(
-                    ['wget',
-                    (
-                        'http://localhost:9876/base/core/templates/'
-                        'combined-tests.spec.js'
-                    ),
-                    '-P',
-                    os.path.join('../karma_coverage_reports')])
-                # Wait for the wget command to download the
-                # combined-tests.spec.js file to complete.
-                download_task.wait()
-                combined_spec_file_started_downloading = True
-        # Standard output is in bytes, we need to decode the line to print it.
-        concatenated_output = ''.join(
-            line.decode('utf-8') for line in output_lines)
-        if download_task:
-            # The result of the download is printed at the end for
-            # easy access to it.
-            if download_task.returncode:
-                print('Failed to download the combined-tests.spec.js file.')
-            else:
+        with subprocess.Popen(cmd, stdout=subprocess.PIPE) as task:
+            output_lines = []
+            # The value of `process.stdout` should not be None since we passed
+            # the `stdout=subprocess.PIPE` argument to `Popen`.
+            assert task.stdout is not None
+            # Prevents the wget command from running multiple times.
+            combined_spec_file_started_downloading = False
+            # This variable will be used check if the wget command to download
+            # the combined-test.spec.js file worked.
+            download_task_returncode = None
+            download_task_run = False
+            # Reads and prints realtime output from the subprocess until it
+            # terminates.
+            while True:
+                line = task.stdout.readline()
+                # No more output from the subprocess, and the subprocess has
+                # ended.
+                if len(line) == 0 and task.poll() is not None:
+                    break
+                # Suppressing the karma web-server logs.
+                if line and not '[web-server]:' in line.decode('utf-8'):
+                    # Standard output is in bytes, we need to decode
+                    # the line to print it.
+                    print(line.decode('utf-8'), end='')
+                    output_lines.append(line)
+                # Download the combined-tests.js file from the web-server.
+                if ('Executed' in line.decode('utf-8') and
+                    not combined_spec_file_started_downloading and
+                    parsed_args.download_combined_frontend_spec_file):
+                    with subprocess.Popen(
+                        ['wget',
+                        (
+                            'http://localhost:9876/base/core/templates/'
+                            'combined-tests.spec.js'
+                        ),
+                        '-P',
+                        os.path.join('../karma_coverage_reports')]
+                    ) as download_task:
+                        # Wait for the wget command to download the
+                        # combined-tests.spec.js file to complete.
+                        download_task.wait()
+                        combined_spec_file_started_downloading = True
+                        download_task_run = True
+                        download_task_returncode = download_task.returncode
+            # Standard output is in bytes, we need to decode the line to print
+            # it.
+            concatenated_output = ''.join(
+                line.decode('utf-8') for line in output_lines)
+            if download_task_run:
+                # The result of the download is printed at the end for
+                # easy access to it.
+                if download_task_returncode:
+                    print('Failed to download the combined-tests.spec.js file.')
+                else:
+                    print(
+                        'Downloaded the combined-tests.spec.js file and stored'
+                        'in ../karma_coverage_reports')
+            print('Done!')
+            # Update task returncode
+            task_returncode = task.returncode
+
+            if 'Trying to get the Angular injector' in concatenated_output:
                 print(
-                    'Downloaded the combined-tests.spec.js file and stored'
-                    'in ../karma_coverage_reports')
-        print('Done!')
+                    'If you run into the error "Trying to get the Angular '
+                    'injector", please see https://github.com/oppia/oppia/wiki/'
+                    'Frontend-unit-tests-guide#how-to-handle-common-errors'
+                    ' for details on how to fix it.')
 
-        if 'Trying to get the Angular injector' in concatenated_output:
-            print(
-                'If you run into the error "Trying to get the Angular '
-                'injector", please see https://github.com/oppia/oppia/wiki/'
-                'Frontend-unit-tests-guide#how-to-handle-common-errors'
-                ' for details on how to fix it.')
-
-        if 'Disconnected , because no message' in concatenated_output:
-            print(
-                'Detected chrome disconnected flake (#16607), so rerunning '
-                'if attempts allow.')
-        else:
-            break
+            if 'Disconnected , because no message' in concatenated_output:
+                print(
+                    'Detected chrome disconnected flake (#16607), so rerunning '
+                    'if attempts allow.')
+            else:
+                break
 
     if parsed_args.check_coverage:
-        if task.returncode:
+        if task_returncode:
             sys.exit(
                 'The frontend tests failed. Please fix it before running the'
                 ' test coverage check.')
@@ -321,8 +331,8 @@ def main(args: Optional[Sequence[str]] = None) -> None:
             check_frontend_test_coverage.main(
                 check_frontend_test_coverage_args
             )
-    elif task.returncode:
-        sys.exit(task.returncode)
+    elif task_returncode:
+        sys.exit(task_returncode)
 
 
 if __name__ == '__main__':  # pragma: no cover
