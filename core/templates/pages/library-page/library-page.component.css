@@ -493,6 +493,10 @@ oppia-library-page .community-library-breadcrumbs-container {
   oppia-library-page .classroom-cards-wrapper {
     height: 454px;
   }
+  
+  oppia-library-page .oppia-library-container {
+    min-height: auto;
+  }
 
   oppia-library-page .classroom-cards-wrapper .classroom-cards-inner-container .classroom-cards-text-container {
     width: 348px;
