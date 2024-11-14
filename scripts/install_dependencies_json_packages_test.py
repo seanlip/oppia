@@ -216,6 +216,7 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
         with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             actual_text = '{"Testing": "install_dependencies_json_packages"}'
             temp_file.write(actual_text)
+            temp_file.flush()
             self.assertEqual(
                 install_dependencies_json_packages.return_json(
                     temp_file.name),
