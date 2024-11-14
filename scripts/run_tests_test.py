@@ -45,8 +45,13 @@ class RunTestsTests(test_utils.GenericTestBase):
         }
 
         class MockPopenSubprocess:
+            def __init__(self, cmd: str, shell: bool):
+                self.cmd = cmd
+                self.shell = shell
+
             def __enter__(self) -> None:
-                scripts_called['run_e2e_tests'] = True
+                if self.cmd == 'bash scripts/run_e2e_tests.sh' and self.shell:
+                    scripts_called['run_e2e_tests'] = True
 
             def __exit__(self, *unused_args: str) -> None:
                 pass
@@ -59,9 +64,8 @@ class RunTestsTests(test_utils.GenericTestBase):
             scripts_called['run_frontend_tests'] = True
         def mock_backend_tests(args: list[str]) -> None:  # pylint: disable=unused-argument
             scripts_called['run_backend_tests'] = True
-        def mock_popen(cmd: str, shell: bool) -> None:
-            if cmd == 'bash scripts/run_e2e_tests.sh' and shell:
-                return MockPopenSubprocess()
+        def mock_popen(cmd: str, shell: bool) -> MockPopenSubprocess:
+            return MockPopenSubprocess(cmd, shell)
         def mock_install_third_party_libs() -> None:
             pass
 
