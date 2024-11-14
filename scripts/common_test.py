@@ -1353,9 +1353,10 @@ class CommonTests(test_utils.GenericTestBase):
                 cmd_tokens: List[str], stdout: int, stderr: int
             ) -> subprocess.Popen[bytes]:
                 return process
-        popen_swap = self.swap(subprocess, 'Popen', mock_popen)
 
-        with popen_swap:
-            self.assertEqual(
-                common.start_subprocess_for_result(['cmd']),
-                (b'test\n', b''))
+            popen_swap = self.swap(subprocess, 'Popen', mock_popen)
+
+            with popen_swap:
+                self.assertEqual(
+                    common.start_subprocess_for_result(['cmd']),
+                    (b'test\n', b''))
