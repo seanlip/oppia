@@ -418,10 +418,10 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
         self.assertEqual(
             extended_test_suites,
             [
-                {'name': 'suite1', 'module': 'module1'},
-                {'name': 'suite2', 'module': 'module2'},
-                {'name': 'suite3', 'module': 'module3'},
-                {'name': 'suite4', 'module': 'module4'}
+                {'name': 'suite1', 'module': 'module1', 'environment': 'python'},
+                {'name': 'suite2', 'module': 'module2', 'environment': 'python'},
+                {'name': 'suite3', 'module': 'module3', 'environment': 'python'},
+                {'name': 'suite4', 'module': 'module4', 'environment': 'python'}
             ]
         )
 
@@ -434,6 +434,7 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
             test_suites: Sequence[
                 check_ci_test_suites_to_run.GenericTestSuiteDict
             ] = json.loads(test_suites_json)
+            print(test_suites)
             return test_suites
 
     def test_get_git_diff_name_status_files_without_error(self) -> None:
@@ -567,6 +568,7 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                 {
                     'name': '1',
                     'module': 'performance.js',
+                    'environment': 'python',
                     'pages_to_run': [
                         'splash',
                         'about',
@@ -591,11 +593,13 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                 {
                     'name': '1',
                     'module': 'performance.js',
+                    'environment': 'python',
                     'pages_to_run': LIGHTHOUSE_PAGES_FOR_SUITES['1']
                 },
                 {
                     'name': '2',
                     'module': 'performance.js',
+                    'environment': 'python',
                     'pages_to_run': LIGHTHOUSE_PAGES_FOR_SUITES['2']
                 }
             ]
@@ -845,8 +849,11 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                             {
                                 'e2e': self.all_test_suites['e2e'],
                                 'acceptance': {
-                                    'suites': [],
-                                    'count': 0
+                                    'docker': {
+                                        'suites': [],
+                                        'count': 0
+                                    },
+                                    
                                 },
                                 'lighthouse_accessibility': {
                                     'suites': [],
