@@ -17,6 +17,7 @@
  */
 
 var waitFor = require('./waitFor.js');
+var waitFor = require('./waitFor');
 
 // Waits for the invisibility of the autosave message.
 var waitForAutosave = async function () {
@@ -33,26 +34,32 @@ var clear = async function (inputName, inputElement) {
 };
 
 var click = async function (elementName, clickableElement, elementIsMasked) {
+  // First ensure visibility
   await waitFor.visibilityOf(
     clickableElement,
     `${elementName} is not visible.`
   );
+
+  // Ensure clickability
   await waitFor.elementToBeClickable(
     clickableElement,
     `${elementName} is not clickable.`
   );
-  // In some cases, we expect the element to be masked by a dummy element. In
-  // these cases, the regular click will throw an error of the form
-  // Failed: element click intercepted: Element A is not clickable at point
-  // (x, y). Other element would receive the click: B.
-  // It is expected that the masked element receives the click. Therefore, a
-  // Javascript click action is used here to avoid the error.
+
+  // Scroll into view for better reliability
+  await clickableElement.scrollIntoView();
+  
+  // Add stability pause
+  await browser.pause(500);
+
+  // Keep the existing masked element handling logic
   if (elementIsMasked) {
     await browser.execute('$(arguments[0]).click()', clickableElement);
   } else {
     await clickableElement.click();
   }
 };
+
 
 var getText = async function (elementName, element) {
   await waitFor.visibilityOf(
@@ -131,7 +138,7 @@ var addValue = async function (
   await inputElement.addValue(keys);
 };
 
-exports.clear = clear;
+eports.clear = clear;
 exports.click = click;
 exports.getText = getText;
 exports.getAttribute = getAttribute;

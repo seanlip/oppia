@@ -57,11 +57,27 @@ var elementToBeClickable = async function (element, errorMessage) {
     timeout: DEFAULT_WAIT_TIME_MSECS,
     timeoutMsg: errorMessage + '\n' + new Error().stack + '\n',
   });
-  var enabled = await element.isEnabled();
-  if (!enabled) {
+
+  const isDisplayed = await element.isDisplayed();
+  const isEnabled = await element.isEnabled();
+  const isClickable = await element.isClickable();
+
+  if (!isEnabled) {
     throw new Error('Element ' + element + ' is not enabled.');
   }
+
+  if (!isDisplayed) {
+    throw new Error('Element ' + element + ' is not displayed.');
+  }
+
+  if (!isClickable) {
+    throw new Error('Element ' + element + ' is not clickable.');
+  }
+
+  await element.scrollIntoView();
+  await browser.pause(500); // Ensures element is properly in view
 };
+
 
 /**
  * @param {Object} element - Element expected to disappear from DOM and does not
@@ -318,6 +334,7 @@ var nonEmptyText = async function (elementName, element) {
   );
 };
 
+exports.elementToBeClickable = elementToBeClickable;
 exports.DEFAULT_WAIT_TIME_MSECS = DEFAULT_WAIT_TIME_MSECS;
 exports.alertToBePresent = alertToBePresent;
 exports.urlToBe = urlToBe;
