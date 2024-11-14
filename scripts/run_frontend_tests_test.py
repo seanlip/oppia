@@ -69,6 +69,10 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
                 return 1
             def wait(self) -> None: # pylint: disable=missing-docstring
                 return None
+            def __enter__(self) -> 'MockTask':
+                return self
+            def __exit__(self, *unused_args: str) -> None:
+                pass
 
         class MockFlakyTask:
             def __init__(self) -> None:
@@ -78,6 +82,10 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
                 return 1
             def wait(self) -> None: # pylint: disable=missing-docstring
                 return None
+            def __enter__(self) -> 'MockFlakyTask':
+                return self
+            def __exit__(self, *unused_args: str) -> None:
+                pass
 
         class MockVeryFlakyTask:
             def __init__(self) -> None:
@@ -87,6 +95,10 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
                 return 1
             def wait(self) -> None: # pylint: disable=missing-docstring
                 return None
+            def __enter__(self) -> 'MockVeryFlakyTask':
+                return self
+            def __exit__(self, *unused_args: str) -> None:
+                pass
 
         class MockFailedTask:
             def __init__(self) -> None:
@@ -96,6 +108,10 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
                 return 1
             def wait(self) -> None: # pylint: disable=missing-docstring
                 return None
+            def __enter__(self) -> 'MockFailedTask':
+                return self
+            def __exit__(self, *unused_args: str) -> None:
+                pass
 
         self.cmd_token_list: list[list[str]] = []
         def mock_success_check_call(

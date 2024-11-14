@@ -236,7 +236,7 @@ class GitChangesUtilsTests(test_utils.GenericTestBase):
                         'https://github.com/oppia/oppia.git except for '
                         'the main \'upstream\' remote.\n'
                     ):
-                        git_changes_utils.get_upstream_git_repository_remote_name()
+                        git_changes_utils.get_upstream_git_repository_remote_name() # pylint: disable=line-too-long
 
     def test_get_local_remote_name_without_errors(self) -> None:
         with subprocess.Popen(

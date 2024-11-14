@@ -344,7 +344,7 @@ class UpdateConfigsTests(test_utils.GenericTestBase):
                 )
                 # We need to reopen the file here because the update method
                 # called above actually creates a new file in the same path
-                # instead of writing in the same file
+                # instead of writing in the same file.
                 with utils.open_file(
                     temp_analytics_constants_config.name, 'r'
                 ) as f:
