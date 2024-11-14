@@ -341,7 +341,8 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                         },
                         {
                             'name': 'exploration-player/view-exploration',
-                            'module': 'exploration-player/view-exploration.spec.ts'
+                            'module': 
+                                'exploration-player/view-exploration.spec.ts'
                         }
                     ],
                 }
