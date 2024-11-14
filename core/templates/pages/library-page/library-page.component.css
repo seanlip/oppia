@@ -219,9 +219,9 @@ oppia-library-page .button-alignment-div {
   overflow: hidden;
   position: relative;
 }
-.oppia-library-container {
+.oppia-library-wrapper {
   background-color: #afd2eb;
-  min-height: calc(100vh - 400px);
+  min-height: calc(100vh - 56px);
 }
 .oppia-library-container-inner {
   position: relative;
@@ -492,10 +492,6 @@ oppia-library-page .community-library-breadcrumbs-container {
 
   oppia-library-page .classroom-cards-wrapper {
     height: 454px;
-  }
-  
-  oppia-library-page .oppia-library-container {
-    min-height: auto;
   }
 
   oppia-library-page .classroom-cards-wrapper .classroom-cards-inner-container .classroom-cards-text-container {
