@@ -49,9 +49,13 @@ export class MusicNotesInputValidationService {
     answerGroups: AnswerGroup[],
     defaultOutcome: Outcome
   ): Warning[] {
-    var partialWarningsList = []
+    var partialWarningsList: Warning[] = [];
 
-    for (var ansGroupIdx = 0; ansGroupIdx < answerGroups.length; ansGroupIdx++) {
+    for (
+      var ansGroupIdx = 0;
+      ansGroupIdx < answerGroups.length;
+      ansGroupIdx++
+    ) {
       const answerGroup = answerGroups[ansGroupIdx];
       const groupId = String(ansGroupIdx + 1);
       // Specific edge case for when HasLengthInclusivelyBetween is used.
@@ -70,15 +74,15 @@ export class MusicNotesInputValidationService {
       }
     }
 
-    var warnings = this.getCustomizationArgsWarnings(customizationArgs).concat(
-      this.baseInteractionValidationServiceInstance.getAllOutcomeWarnings(
-        answerGroups,
-        defaultOutcome,
-        stateName
+    return partialWarningsList.concat(
+      this.getCustomizationArgsWarnings(customizationArgs).concat(
+        this.baseInteractionValidationServiceInstance.getAllOutcomeWarnings(
+          answerGroups,
+          defaultOutcome,
+          stateName
+        )
       )
     );
-
-    return partialWarningsList.concat(warnings);
   }
 }
 

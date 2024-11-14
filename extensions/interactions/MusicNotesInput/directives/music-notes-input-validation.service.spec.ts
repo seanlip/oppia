@@ -33,13 +33,14 @@ import {Rule} from 'domain/exploration/rule.model';
 import {MusicNotesInputCustomizationArgs} from 'extensions/interactions/customization-args-defs';
 import cloneDeep from 'lodash/cloneDeep';
 
-
 describe('MusicNotesInputValidationService', () => {
   let validatorService: MusicNotesInputValidationService;
   let customizationArgs: MusicNotesInputCustomizationArgs;
 
   let currentState: string;
-  let answerGroups: AnswerGroup[], goodAnswerGroups: AnswerGroup[], goodDefaultOutcome: Outcome;
+  let answerGroups: AnswerGroup[],
+    goodAnswerGroups: AnswerGroup[],
+    goodDefaultOutcome: Outcome;
   let oof: OutcomeObjectFactory, agof: AnswerGroupObjectFactory;
 
   beforeEach(() => {
@@ -92,11 +93,11 @@ describe('MusicNotesInputValidationService', () => {
           'HasLengthInclusivelyBetween',
           {
             a: 5,
-            b: 0
+            b: 0,
           },
           {
-            a: 'NonnegativeInt', 
-            b: 'NonnegativeInt'
+            a: 'NonnegativeInt',
+            b: 'NonnegativeInt',
           }
         ),
       ],
@@ -117,12 +118,12 @@ describe('MusicNotesInputValidationService', () => {
     expect(warnings).toEqual([
       {
         type: AppConstants.WARNING_TYPES.ERROR,
-        message: 'The rule in response group 1 is invalid. 5 is more than 0'
+        message: 'The rule in response group 1 is invalid. 5 is more than 0',
       },
       {
         type: AppConstants.WARNING_TYPES.ERROR,
-        message: 'The rule in response group 2 is invalid. 5 is more than 0'
-      }
+        message: 'The rule in response group 2 is invalid. 5 is more than 0',
+      },
     ]);
   });
 });
