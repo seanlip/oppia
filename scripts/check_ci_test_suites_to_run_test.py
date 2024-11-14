@@ -328,21 +328,23 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
         self.all_test_suites = {
             'acceptance': {
                 'docker': {'count': 0, 'suites': []},
-                'python': [
-                    {
-                        'name': 'blog-admin/assign-roles',
-                        'module': 'blog-admin/assign-roles.spec.ts'
-                    },
-                    {
-                        'name': 'blog-editor/publish',
-                        'module': 'blog-editor/publish.spec.ts'
-                    },
-                    {
-                        'name': 'exploration-player/view-exploration',
-                        'module': 'exploration-player/view-exploration.spec.ts'
-                    }
-                ],
-                'count': 3
+                'python': {
+                    'count': 3,
+                    'suites': [
+                        {
+                            'name': 'blog-admin/assign-roles',
+                            'module': 'blog-admin/assign-roles.spec.ts'
+                        },
+                        {
+                            'name': 'blog-editor/publish',
+                            'module': 'blog-editor/publish.spec.ts'
+                        },
+                        {
+                            'name': 'exploration-player/view-exploration',
+                            'module': 'exploration-player/view-exploration.spec.ts'
+                        }
+                    ],
+                }
             },
             'e2e': {
                 'suites': [
@@ -366,11 +368,13 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                     {
                         'name': '1',
                         'module': '.lighthouserc-accessibility.js',
+                        'environment': 'python',
                         'pages_to_run': LIGHTHOUSE_PAGES_FOR_SUITES['1']
                     },
                     {
                         'name': '2',
                         'module': '.lighthouserc-accessibility.js',
+                        'environment': 'python',
                         'pages_to_run': LIGHTHOUSE_PAGES_FOR_SUITES['2']
                     }
                 ],
@@ -381,11 +385,13 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                     {
                         'name': '1',
                         'module': '.lighthouserc-performance.js',
+                        'environment': 'python',
                         'pages_to_run': LIGHTHOUSE_PAGES_FOR_SUITES['1']
                     },
                     {
                         'name': '2',
                         'module': '.lighthouserc-performance.js',
+                        'environment': 'python',
                         'pages_to_run': LIGHTHOUSE_PAGES_FOR_SUITES['2']
                     }
                 ],
@@ -418,10 +424,26 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
         self.assertEqual(
             extended_test_suites,
             [
-                {'name': 'suite1', 'module': 'module1', 'environment': 'python'},
-                {'name': 'suite2', 'module': 'module2', 'environment': 'python'},
-                {'name': 'suite3', 'module': 'module3', 'environment': 'python'},
-                {'name': 'suite4', 'module': 'module4', 'environment': 'python'}
+                {
+                    'name': 'suite1', 
+                    'module': 'module1', 
+                    'environment': 'python'
+                },
+                {
+                    'name': 'suite2', 
+                    'module': 'module2', 
+                    'environment': 'python'
+                },
+                {
+                    'name': 'suite3', 
+                    'module': 'module3', 
+                    'environment': 'python'
+                },
+                {
+                    'name': 'suite4', 
+                    'module': 'module4', 
+                    'environment': 'python'
+                }
             ]
         )
 
@@ -685,8 +707,8 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                             {
                                 'e2e': self.all_test_suites['e2e'],
                                 'acceptance': {
-                                    'suites': [],
-                                    'count': 0
+                                    'docker': {'count': 0, 'suites': []},
+                                    'python': {'count': 0, 'suites': []}
                                 },
                                 'lighthouse_accessibility': {
                                     'suites': [],
@@ -745,19 +767,23 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                             {
                                 'e2e': self.all_test_suites['e2e'],
                                 'acceptance': {
-                                    'suites': [
-                                        {
-                                            'name': 'exploration-player/view-exploration', # pylint: disable=line-too-long
-                                            'module': 'exploration-player/view-exploration.spec.ts' # pylint: disable=line-too-long
-                                        }
-                                    ],
-                                    'count': 1
+                                    'docker': {'count': 0, 'suites': []},
+                                    'python': {
+                                        'count': 1,
+                                        'suites': [
+                                            {
+                                                'name': 'exploration-player/view-exploration', # pylint: disable=line-too-long
+                                                'module': 'exploration-player/view-exploration.spec.ts' # pylint: disable=line-too-long
+                                            }
+                                        ]
+                                    },
                                 },
                                 'lighthouse_performance': {
                                     'suites': [
                                         {
                                             'name': '1',
                                             'module': '.lighthouserc-performance.js', # pylint: disable=line-too-long
+                                            'environment': 'python',
                                             'pages_to_run': [
                                                 'about',
                                                 'exploration-player',
@@ -773,6 +799,7 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                                         {
                                             'name': '1',
                                             'module': '.lighthouserc-accessibility.js', # pylint: disable=line-too-long
+                                            'environment': 'python',
                                             'pages_to_run': [
                                                 'about',
                                                 'exploration-player',
@@ -808,13 +835,16 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                             {
                                 'e2e': self.all_test_suites['e2e'],
                                 'acceptance': {
-                                    'suites': [
-                                        {
-                                            'name': 'exploration-player/view-exploration', # pylint: disable=line-too-long
-                                            'module': 'exploration-player/view-exploration.spec.ts' # pylint: disable=line-too-long
-                                        }
-                                    ],
-                                    'count': 1
+                                    'docker': {'count': 0, 'suites': []},
+                                    'python': {
+                                        'suites': [
+                                            {
+                                                'name': 'exploration-player/view-exploration', # pylint: disable=line-too-long
+                                                'module': 'exploration-player/view-exploration.spec.ts' # pylint: disable=line-too-long
+                                            }
+                                        ],
+                                        'count': 1
+                                    }
                                 },
                                 'lighthouse_accessibility': {
                                     'suites': [],
@@ -853,7 +883,10 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                                         'suites': [],
                                         'count': 0
                                     },
-                                    
+                                    'python': {
+                                        'suites': [],
+                                        'count': 0
+                                    }
                                 },
                                 'lighthouse_accessibility': {
                                     'suites': [],
@@ -865,6 +898,7 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                                             'name': '1',
                                             'module':
                                                 '.lighthouserc-performance.js',
+                                            'environment': 'python',
                                             'pages_to_run':
                                                 LIGHTHOUSE_PAGES_FOR_SUITES['1']
                                         },
@@ -872,6 +906,7 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                                             'name': '2',
                                             'module':
                                                 '.lighthouserc-performance.js',
+                                            'environment': 'python',
                                             'pages_to_run':
                                                 LIGHTHOUSE_PAGES_FOR_SUITES['2']
                                         }
@@ -926,13 +961,16 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                             {
                                 'e2e': self.all_test_suites['e2e'],
                                 'acceptance': {
-                                    'suites': [
-                                        {
-                                            'name': 'blog-admin/create-blog-post', # pylint: disable=line-too-long
-                                            'module': 'blog-admin/create-blog-post.spec.ts' # pylint: disable=line-too-long
-                                        }
-                                    ],
-                                    'count': 1
+                                    'docker': {'count': 0, 'suites': []},
+                                    'python': {
+                                        'suites': [
+                                            {
+                                                'name': 'blog-admin/create-blog-post', # pylint: disable=line-too-long
+                                                'module': 'blog-admin/create-blog-post.spec.ts' # pylint: disable=line-too-long
+                                            }
+                                        ],
+                                        'count': 1
+                                    }
                                 },
                                 'lighthouse_accessibility': {
                                     'suites': [],
