@@ -342,11 +342,16 @@ class UpdateConfigsTests(test_utils.GenericTestBase):
                     temp_analytics_constants_config.name,
                     temp_constants.name
                 )
-                temp_analytics_constants_config.seek(0)
-                self.assertEqual(
-                    temp_analytics_constants_config.read(),
-                    expected_analytics_constants_config_text
-                )
+                # We need to reopen the file here because the update method
+                # called above actually creates a new file in the same path
+                # instead of writing in the same file
+                with utils.open_file(
+                    temp_analytics_constants_config.name, 'r'
+                ) as f:
+                    self.assertEqual(
+                        f.read(),
+                        expected_analytics_constants_config_text
+                    )
 
     def test_raises_error_with_invalid_ga_analytics_id(self) -> None:
         with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants:
