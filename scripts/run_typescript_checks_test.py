@@ -36,7 +36,7 @@ class TypescriptChecksTests(test_utils.GenericTestBase):
 
     def setUp(self) -> None:
         super().setUp()
-        process = subprocess.Popen(
+        process = subprocess.Popen( # pylint: disable=consider-using-with
             ['test'], stdout=subprocess.PIPE, encoding='utf-8')
         def mock_popen(
             unused_cmd: str, stdout: str, encoding: str  # pylint: disable=unused-argument
@@ -125,41 +125,44 @@ class TypescriptChecksTests(test_utils.GenericTestBase):
 
     def test_error_is_raised_for_invalid_compilation_of_tsconfig(self) -> None:
         """Test that error is produced if stdout is not empty."""
-        process = subprocess.Popen(
-            ['echo', 'test'], stdout=subprocess.PIPE, encoding='utf-8')
-        def mock_popen_for_errors(
-            unused_cmd: str, stdout: str, encoding: str  # pylint: disable=unused-argument
-        ) -> subprocess.Popen[str]:  # pylint: disable=unsubscriptable-object
-            return process
+        with subprocess.Popen(
+            ['echo', 'test'], stdout=subprocess.PIPE, encoding='utf-8'
+        ) as process:
+            def mock_popen_for_errors(
+                unused_cmd: str, stdout: str, encoding: str  # pylint: disable=unused-argument
+            ) -> subprocess.Popen[str]:  # pylint: disable=unsubscriptable-object
+                return process
 
-        with self.swap(subprocess, 'Popen', mock_popen_for_errors):
-            with self.assertRaisesRegex(SystemExit, '1'):
-                run_typescript_checks.compile_and_check_typescript(
-                    run_typescript_checks.TSCONFIG_FILEPATH)
+            with self.swap(subprocess, 'Popen', mock_popen_for_errors):
+                with self.assertRaisesRegex(SystemExit, '1'):
+                    run_typescript_checks.compile_and_check_typescript(
+                        run_typescript_checks.TSCONFIG_FILEPATH)
 
     def test_error_is_raised_for_invalid_compilation_of_strict_tsconfig(
             self) -> None:
         """Test that error is produced if stdout is not empty."""
-        empty_process = subprocess.Popen(
-            ['echo', ''], stdout=subprocess.PIPE, encoding='utf-8')
-        non_empty_process = subprocess.Popen(
-            ['echo', 'test'], stdout=subprocess.PIPE, encoding='utf-8')
-        def mock_popen_for_errors(
-            cmd_tokens: List[str], stdout: str, encoding: str  # pylint: disable=unused-argument
-        ) -> subprocess.Popen[str]:
-            if (
-                cmd_tokens == [
-                    './node_modules/typescript/bin/tsc', '--project',
-                    run_typescript_checks.STRICT_TSCONFIG_FILEPATH
-                ]
-            ):
-                return non_empty_process
-            return empty_process
+        with subprocess.Popen(
+            ['echo', ''], stdout=subprocess.PIPE, encoding='utf-8'
+        ) as empty_process:
+            with subprocess.Popen(
+                ['echo', 'test'], stdout=subprocess.PIPE, encoding='utf-8'
+            ) as non_empty_process:
+                def mock_popen_for_errors(
+                    cmd_tokens: List[str], stdout: str, encoding: str  # pylint: disable=unused-argument
+                ) -> subprocess.Popen[str]:
+                    if (
+                        cmd_tokens == [
+                            './node_modules/typescript/bin/tsc', '--project',
+                            run_typescript_checks.STRICT_TSCONFIG_FILEPATH
+                        ]
+                    ):
+                        return non_empty_process
+                    return empty_process
 
-        with self.swap(subprocess, 'Popen', mock_popen_for_errors):
-            with self.assertRaisesRegex(SystemExit, '1'):
-                run_typescript_checks.compile_and_check_typescript(
-                    run_typescript_checks.STRICT_TSCONFIG_FILEPATH)
+                with self.swap(subprocess, 'Popen', mock_popen_for_errors):
+                    with self.assertRaisesRegex(SystemExit, '1'):
+                        run_typescript_checks.compile_and_check_typescript(
+                            run_typescript_checks.STRICT_TSCONFIG_FILEPATH)
 
     def test_error_is_raised_for_invalid_compilation_of_temp_strict_tsconfig(
             self) -> None:
@@ -187,6 +190,13 @@ class TypescriptChecksTests(test_utils.GenericTestBase):
 
         class MockProcess:
             stdout = MockOutput()
+
+            def __enter__(self) -> 'MockProcess':
+                return self
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
+
         def mock_popen_for_errors(
             unused_cmd: str, stdout: str, encoding: str  # pylint: disable=unused-argument
         ) -> MockProcess:  # pylint: disable=unsubscriptable-object

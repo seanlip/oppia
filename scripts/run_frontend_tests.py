@@ -300,7 +300,7 @@ def main(args: Optional[Sequence[str]] = None) -> None:
                         'Downloaded the combined-tests.spec.js file and stored'
                         'in ../karma_coverage_reports')
             print('Done!')
-            # Update task returncode
+            # Update task returncode.
             task_returncode = task.returncode
 
             if 'Trying to get the Angular injector' in concatenated_output:
