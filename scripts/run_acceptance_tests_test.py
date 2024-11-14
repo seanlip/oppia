@@ -120,8 +120,13 @@ class RunAcceptanceTestsTests(test_utils.GenericTestBase):
     def test_compile_test_ts_files_success(
         self
     ) -> None:
-        process = subprocess.Popen(
-            ['test'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        with subprocess.Popen(
+            ['test'], stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        ) as process:
+            def mock_popen_call(
+                cmd_tokens: List[str], *args: str, **kwargs: str # pylint: disable=unused-argument
+            ) -> subprocess.Popen[bytes]:
+                return process
 
         def mock_os_path_exists(unused_path: str) -> bool:
             return True
@@ -133,11 +138,6 @@ class RunAcceptanceTestsTests(test_utils.GenericTestBase):
             src: str, dst: str, *args: str, **kwargs: str # pylint: disable=unused-argument
         ) -> None:
             pass
-
-        def mock_popen_call(
-            cmd_tokens: List[str], *args: str, **kwargs: str # pylint: disable=unused-argument
-        ) -> subprocess.Popen[bytes]:
-            return process
 
         def mock_communicate(unused_self: str) -> Tuple[bytes, bytes]:
             return (b'', b'')

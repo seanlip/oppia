@@ -313,7 +313,7 @@ class UpdateConfigsTests(test_utils.GenericTestBase):
         self.assertEqual(check_function_calls, expected_check_function_calls)
 
     def test_update_analytics_ids(self) -> None:
-        with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants_path:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants:
             with tempfile.NamedTemporaryFile(
                 mode='w+t'
             ) as temp_analytics_constants_config:
@@ -332,15 +332,15 @@ class UpdateConfigsTests(test_utils.GenericTestBase):
                     '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
                     '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
                 )
-                temp_constants_path.write(constants_text)
-                temp_constants_path.flush()
+                temp_constants.write(constants_text)
+                temp_constants.flush()
                 temp_analytics_constants_config.write(
                     analytics_constants_config_text)
                 temp_analytics_constants_config.flush()
 
                 update_configs.update_analytics_constants_based_on_config(
                     temp_analytics_constants_config.name,
-                    temp_constants_path
+                    temp_constants.name
                 )
                 temp_analytics_constants_config.seek(0)
                 self.assertEqual(
@@ -348,63 +348,90 @@ class UpdateConfigsTests(test_utils.GenericTestBase):
                     expected_analytics_constants_config_text
                 )
 
-    def test_raises_error_with_invalid_update_analytics_ids(self) -> None:
-        temp_constants_path = tempfile.NamedTemporaryFile().name
-        temp_analytics_constants_config_path = (
-            tempfile.NamedTemporaryFile().name
-        )
-        analytics_constants_config_text = (
-            '  "GA_ANALYTICS_ID": ""\n'
-            '  "SITE_NAME_FOR_ANALYTICS": ""\n'
-            '  "CAN_SEND_ANALYTICS_EVENTS": false\n'
-        )
-        with utils.open_file(temp_analytics_constants_config_path, 'w') as f:
-            f.write(analytics_constants_config_text)
+    def test_raises_error_with_invalid_ga_analytics_id(self) -> None:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants:
+            with tempfile.NamedTemporaryFile(
+                mode='w+t'
+            ) as temp_analytics_constants_config:
+                analytics_constants_config_text = (
+                    '  "GA_ANALYTICS_ID": ""\n'
+                    '  "SITE_NAME_FOR_ANALYTICS": ""\n'
+                    '  "CAN_SEND_ANALYTICS_EVENTS": false\n'
+                )
+                temp_analytics_constants_config.write(
+                    analytics_constants_config_text)
+                temp_analytics_constants_config.flush()
 
-        # Testing invalid GA_ANALYTICS_ID key.
-        constants_text = (
-            '  "GA_analytics_ID": "123"\n'
-            '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
-            '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
-        )
-        with utils.open_file(temp_constants_path, 'w') as f:
-            f.write(constants_text)
-        with self.assertRaisesRegex(
-            Exception, 'Error: No GA_ANALYTICS_ID key found.'
-        ):
-            update_configs.update_analytics_constants_based_on_config(
-                temp_analytics_constants_config_path,
-                temp_constants_path
-            )
+                constants_text = (
+                    '  "GA_analytics_ID": "123"\n'
+                    '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
+                    '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
+                )
+                temp_constants.write(constants_text)
+                temp_constants.flush()
+                with self.assertRaisesRegex(
+                    Exception, 'Error: No GA_ANALYTICS_ID key found.'
+                ):
+                    update_configs.update_analytics_constants_based_on_config(
+                        temp_analytics_constants_config.name,
+                        temp_constants.name
+                    )
 
-        # Testing invalid SITE_NAME_FOR_ANALYTICS key.
-        constants_text = (
-            '  "GA_ANALYTICS_ID": "123"\n'
-            '  "SITE_name_for_ANALYTICS": "site-name"\n'
-            '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
-        )
-        with utils.open_file(temp_constants_path, 'w') as f:
-            f.write(constants_text)
-        with self.assertRaisesRegex(
-            Exception, 'Error: No SITE_NAME_FOR_ANALYTICS key found.'
-        ):
-            update_configs.update_analytics_constants_based_on_config(
-                temp_analytics_constants_config_path,
-                temp_constants_path
-            )
+    def test_raises_error_with_invalid_site_name(self) -> None:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants:
+            with tempfile.NamedTemporaryFile(
+                mode='w+t'
+            ) as temp_analytics_constants_config:
+                analytics_constants_config_text = (
+                    '  "GA_ANALYTICS_ID": ""\n'
+                    '  "SITE_NAME_FOR_ANALYTICS": ""\n'
+                    '  "CAN_SEND_ANALYTICS_EVENTS": false\n'
+                )
+                temp_analytics_constants_config.write(
+                    analytics_constants_config_text)
+                temp_analytics_constants_config.flush()
 
-        # Testing invalid CAN_SEND_ANALYTICS_EVENTS key.
-        constants_text = (
-            '  "GA_ANALYTICS_ID": "123"\n'
-            '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
-            '  "can_SEND_analytics_EVENTS": true\n'
-        )
-        with utils.open_file(temp_constants_path, 'w') as f:
-            f.write(constants_text)
-        with self.assertRaisesRegex(
-            Exception, 'Error: No CAN_SEND_ANALYTICS_EVENTS key found.'
-        ):
-            update_configs.update_analytics_constants_based_on_config(
-                temp_analytics_constants_config_path,
-                temp_constants_path
-            )
+                constants_text = (
+                    '  "GA_ANALYTICS_ID": "123"\n'
+                    '  "SITE_name_for_ANALYTICS": "site-name"\n'
+                    '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
+                )
+                temp_constants.write(constants_text)
+                temp_constants.flush()
+                with self.assertRaisesRegex(
+                    Exception, 'Error: No SITE_NAME_FOR_ANALYTICS key found.'
+                ):
+                    update_configs.update_analytics_constants_based_on_config(
+                        temp_analytics_constants_config.name,
+                        temp_constants.name
+                    )
+
+    def test_raises_error_with_invalid_can_sned_analytics_key(self) -> None:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants:
+            with tempfile.NamedTemporaryFile(
+                mode='w+t'
+            ) as temp_analytics_constants_config:
+                analytics_constants_config_text = (
+                    '  "GA_ANALYTICS_ID": ""\n'
+                    '  "SITE_NAME_FOR_ANALYTICS": ""\n'
+                    '  "CAN_SEND_ANALYTICS_EVENTS": false\n'
+                )
+                temp_analytics_constants_config.write(
+                    analytics_constants_config_text)
+                temp_analytics_constants_config.flush()
+
+                # Testing invalid CAN_SEND_ANALYTICS_EVENTS key.
+                constants_text = (
+                    '  "GA_ANALYTICS_ID": "123"\n'
+                    '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
+                    '  "can_SEND_analytics_EVENTS": true\n'
+                )
+                temp_constants.write(constants_text)
+                temp_constants.flush()
+                with self.assertRaisesRegex(
+                    Exception, 'Error: No CAN_SEND_ANALYTICS_EVENTS key found.'
+                ):
+                    update_configs.update_analytics_constants_based_on_config(
+                        temp_analytics_constants_config.name,
+                        temp_constants.name
+                    )

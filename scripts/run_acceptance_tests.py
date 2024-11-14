@@ -89,11 +89,11 @@ def compile_test_ts_files() -> None:
     cmd = (
         './node_modules/typescript/bin/tsc -p %s' %
         './tsconfig.puppeteer-acceptance-tests.json')
-    proc = subprocess.Popen(
-        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-
-    _, encoded_stderr = proc.communicate()
-    stderr = encoded_stderr.decode('utf-8')
+    with subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+    ) as proc:
+        _, encoded_stderr = proc.communicate()
+        stderr = encoded_stderr.decode('utf-8')
 
     if stderr:
         raise Exception(stderr)
