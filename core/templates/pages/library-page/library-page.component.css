@@ -221,7 +221,7 @@ oppia-library-page .button-alignment-div {
 }
 .oppia-library-container {
   background-color: #afd2eb;
-  min-height: 100vh;
+  min-height: calc(100vh - 400px);
 }
 .oppia-library-container-inner {
   position: relative;
