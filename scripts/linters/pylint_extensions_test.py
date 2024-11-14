@@ -47,14 +47,15 @@ class HangingIndentCheckerTests(unittest.TestCase):
         node_break_after_hanging_indent = astroid.scoped_nodes.Module(
             name='test',
             doc='Custom test')
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
             temp_file.write(
                 """self.post_json('/ml/\\trainedclassifierhandler',
                 self.payload, expect_errors=True, expected_status_int=401)
                 if (a > 1 and
                         b > 2):
-                """.encode())
+                """)
+            temp_file.flush()
             node_break_after_hanging_indent.file = filename
             node_break_after_hanging_indent.path = filename
 
@@ -70,7 +71,7 @@ class HangingIndentCheckerTests(unittest.TestCase):
         node_break_after_hanging_indent = astroid.scoped_nodes.Module(
             name='test',
             doc='Custom test')
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
             temp_file.write(
                 """self.post_json('/ml/\\trainedclassifierhandler',
@@ -78,7 +79,8 @@ class HangingIndentCheckerTests(unittest.TestCase):
 
                 if (a > 1 and
                         b > 2):  # pylint: disable=invalid-name
-                """.encode())
+                """)
+            temp_file.flush()
             node_break_after_hanging_indent.file = filename
             node_break_after_hanging_indent.path = filename
 
@@ -95,7 +97,7 @@ class HangingIndentCheckerTests(unittest.TestCase):
             name='test',
             doc='Custom test')
 
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
             temp_file.write(
                 """\"\"\"Some multiline
@@ -105,7 +107,8 @@ class HangingIndentCheckerTests(unittest.TestCase):
                 master_translation_dict = json.loads(
             pylint_utils.get_file_contents(os.path.join(
                 os.getcwd(), 'assets', 'i18n', 'en.json')))
-                """.encode())
+                """)
+            temp_file.flush()
             node_with_no_error_message.file = filename
             node_with_no_error_message.path = filename
 
@@ -119,12 +122,13 @@ class HangingIndentCheckerTests(unittest.TestCase):
             name='test',
             doc='Custom test')
 
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
             temp_file.write(
                 """self.post_json(  # Random comment
                 '(',
-                self.payload, expect_errors=True, expected_status_int=401)""".encode())
+                self.payload, expect_errors=True, expected_status_int=401)""")
+            temp_file.flush()
             node_with_no_error_message.file = filename
             node_with_no_error_message.path = filename
 
@@ -140,12 +144,13 @@ class HangingIndentCheckerTests(unittest.TestCase):
             name='test',
             doc='Custom test')
 
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
             temp_file.write(
                 """self.post_json(func(  # Random comment
                 '(',
-                self.payload, expect_errors=True, expected_status_int=401))""".encode())
+                self.payload, expect_errors=True, expected_status_int=401))""")
+            temp_file.flush()
             node_with_no_error_message.file = filename
             node_with_no_error_message.path = filename
 
@@ -161,12 +166,13 @@ class HangingIndentCheckerTests(unittest.TestCase):
             name='test',
             doc='Custom test')
 
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
             temp_file.write(
                 """self.post_json([  # Random comment
                 '(',
-                '', '', ''])""".encode())
+                '', '', ''])""")
+            temp_file.flush()
             node_with_no_error_message.file = filename
             node_with_no_error_message.path = filename
 
@@ -180,7 +186,7 @@ class HangingIndentCheckerTests(unittest.TestCase):
             name='test',
             doc='Custom test')
 
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
             temp_file.write(
                     u"""
@@ -191,7 +197,8 @@ class HangingIndentCheckerTests(unittest.TestCase):
 
                     def func(arg1,
                         arg2, arg3):
-                        a = 2 / 2""".encode())
+                        a = 2 / 2""")
+            temp_file.flush()
             node_with_no_error_message.file = filename
             node_with_no_error_message.path = filename
 
@@ -218,14 +225,15 @@ class DocstringParameterCheckerTests(unittest.TestCase):
         node_no_newline_below_class_docstring = astroid.scoped_nodes.Module(
             name='test',
             doc='Custom test')
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
             temp_file.write(
                 """
                     class ClassName(dummy_class):
                         \"\"\"This is a docstring.\"\"\"
                         a = 1 + 2
-                """.encode())
+                """)
+            temp_file.flush()
             node_no_newline_below_class_docstring.file = filename
             node_no_newline_below_class_docstring.path = filename
 
@@ -245,8 +253,7 @@ class DocstringParameterCheckerTests(unittest.TestCase):
             astroid.scoped_nodes.Module(
                 name='test',
                 doc='Custom test'))
-        temp_file = tempfile.NamedTemporaryFile()
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
             temp_file.write(
                 """
@@ -255,7 +262,8 @@ class DocstringParameterCheckerTests(unittest.TestCase):
 
 
                         a = 1 + 2
-                """.encode())
+                """)
+            temp_file.flush()
             node_excessive_newline_below_class_docstring.file = filename
             node_excessive_newline_below_class_docstring.path = filename
 
@@ -275,7 +283,7 @@ class DocstringParameterCheckerTests(unittest.TestCase):
             astroid.scoped_nodes.Module(
                 name='test',
                 doc='Custom test'))
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
 
             temp_file.write(
@@ -285,7 +293,8 @@ class DocstringParameterCheckerTests(unittest.TestCase):
                         # This is a comment.
                         def func():
                             a = 1 + 2
-                """.encode())
+                """)
+            temp_file.flush()
             node_inline_comment_after_class_docstring.file = filename
             node_inline_comment_after_class_docstring.path = filename
 
@@ -305,7 +314,7 @@ class DocstringParameterCheckerTests(unittest.TestCase):
             astroid.scoped_nodes.Module(
                 name='test',
                 doc='Custom test'))
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
 
             temp_file.write(
@@ -314,7 +323,8 @@ class DocstringParameterCheckerTests(unittest.TestCase):
                             dummy_class):
                         \"\"\"This is a docstring.\"\"\"
                         a = 1 + 2
-                """.encode())
+                """)
+            temp_file.flush()
             node_multiline_class_argument_with_incorrect_style.file = filename
             node_multiline_class_argument_with_incorrect_style.path = filename
 
@@ -334,7 +344,7 @@ class DocstringParameterCheckerTests(unittest.TestCase):
             astroid.scoped_nodes.Module(
                 name='test',
                 doc='Custom test'))
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
 
             temp_file.write(
@@ -344,7 +354,8 @@ class DocstringParameterCheckerTests(unittest.TestCase):
                         \"\"\"This is a docstring.\"\"\"
 
                         a = 1 + 2
-                """.encode())
+                """)
+            temp_file.flush()
             node_multiline_class_argument_with_correct_style.file = filename
             node_multiline_class_argument_with_correct_style.path = filename
 
@@ -357,7 +368,7 @@ class DocstringParameterCheckerTests(unittest.TestCase):
         node_with_no_error_message = astroid.scoped_nodes.Module(
             name='test',
             doc='Custom test')
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
 
             temp_file.write(
@@ -366,7 +377,8 @@ class DocstringParameterCheckerTests(unittest.TestCase):
                         \"\"\"This is a multiline docstring.\"\"\"
 
                         a = 1 + 2
-                """.encode())
+                """)
+            temp_file.flush()
             node_with_no_error_message.file = filename
             node_with_no_error_message.path = filename
 
@@ -379,14 +391,15 @@ class DocstringParameterCheckerTests(unittest.TestCase):
         node_class_with_no_docstring = astroid.scoped_nodes.Module(
             name='test',
             doc=None)
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
 
             temp_file.write(
                 """
                     class ClassName(dummy_class):
                         a = 1 + 2
-                """.encode())
+                """)
+            temp_file.flush()
             node_class_with_no_docstring.file = filename
             node_class_with_no_docstring.path = filename
 
@@ -400,7 +413,7 @@ class DocstringParameterCheckerTests(unittest.TestCase):
             astroid.scoped_nodes.Module(
                 name='test',
                 doc='Custom test'))
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
 
             temp_file.write(
@@ -410,7 +423,8 @@ class DocstringParameterCheckerTests(unittest.TestCase):
                         \"\"\"This is a multiline docstring.\"\"\"
 
                         a = 1 + 2
-                """.encode())
+                """)
+            temp_file.flush()
             node_newline_before_docstring_with_correct_style.file = filename
             node_newline_before_docstring_with_correct_style.path = filename
 
@@ -424,7 +438,7 @@ class DocstringParameterCheckerTests(unittest.TestCase):
             astroid.scoped_nodes.Module(
                 name='test',
                 doc='Custom test'))
-        with tempfile.NamedTemporaryFile() as temp_file:
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:
             filename = temp_file.name
 
             temp_file.write(
@@ -433,7 +447,8 @@ class DocstringParameterCheckerTests(unittest.TestCase):
 
                         \"\"\"This is a multiline docstring.\"\"\"
                         a = 1 + 2
-                """.encode())
+                """)
+            temp_file.flush()
             node_newline_before_docstring_with_incorrect_style.file = filename
             node_newline_before_docstring_with_incorrect_style.path = filename
 

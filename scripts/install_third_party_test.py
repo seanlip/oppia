@@ -201,7 +201,8 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
             actual_text = 'Testing install third party file.'
             temp_file.write(actual_text)
             self.assertEqual(
-                install_third_party.get_file_contents(temp_file.read()), actual_text)
+                install_third_party.get_file_contents(temp_file.read()),
+                actual_text)
 
     def test_return_json(self) -> None:
         with tempfile.NamedTemporaryFile(mode='w+t') as temp_file:

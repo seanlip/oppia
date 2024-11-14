@@ -135,9 +135,9 @@ def start_linter(files: List[bytes]) -> int:
     ]
     for file in files:
         cmd_list.append(file.decode('utf-8'))
-    task = subprocess.Popen(cmd_list)
-    task.communicate()
-    return task.returncode
+    with subprocess.Popen(cmd_list) as task:
+        task.communicate()
+        return task.returncode
 
 
 def execute_mypy_checks() -> int:
@@ -146,10 +146,11 @@ def execute_mypy_checks() -> int:
     Returns:
         int. The return code from mypy checks.
     """
-    task = subprocess.Popen(
-        [PYTHON_CMD, '-m', MYPY_TYPE_CHECK_MODULE, '--skip-install'])
-    task.communicate()
-    return task.returncode
+    with subprocess.Popen(
+        [PYTHON_CMD, '-m', MYPY_TYPE_CHECK_MODULE, '--skip-install']
+    ) as task:
+        task.communicate()
+        return task.returncode
 
 
 def run_script_and_get_returncode(cmd_list: List[str]) -> int:
@@ -161,10 +162,10 @@ def run_script_and_get_returncode(cmd_list: List[str]) -> int:
     Returns:
         int. The return code from the task executed.
     """
-    task = subprocess.Popen(cmd_list)
-    task.communicate()
-    task.wait()
-    return task.returncode
+    with subprocess.Popen(cmd_list) as task:
+        task.communicate()
+        task.wait()
+        return task.returncode
 
 
 def has_uncommitted_files() -> bool:

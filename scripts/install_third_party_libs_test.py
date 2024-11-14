@@ -26,7 +26,6 @@ import tempfile
 import zipfile
 
 from core import feconf
-from core import utils
 from core.tests import test_utils
 
 from typing import Final, List, Tuple
@@ -551,7 +550,10 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
                 with check_call_swap, self.Popen_swap:
                     with install_third_party_main_swap, setup_main_swap:
                         with setup_gae_main_swap, pre_commit_hook_main_swap:
-                            with pre_push_hook_main_swap, tweak_yarn_executable_swap:
+                            with (
+                                pre_push_hook_main_swap,
+                                tweak_yarn_executable_swap
+                            ):
                                 with os_name_swap:
                                     install_third_party_libs.main()
         self.assertEqual(check_function_calls, expected_check_function_calls)

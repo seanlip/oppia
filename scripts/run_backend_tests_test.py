@@ -446,22 +446,22 @@ class RunBackendTestsTests(test_utils.GenericTestBase):
             run_backend_tests, 'check_coverage',
             lambda *unused_args, **unused_kwargs: ('Coverage report', 100.00)
         )
-        time_report_temp_file = tempfile.NamedTemporaryFile('w+')
-        time_report_path = time_report_temp_file.name
-        swap_time_report_path = self.swap(
-            run_backend_tests, 'TIME_REPORT_PATH', time_report_path)
+        with tempfile.NamedTemporaryFile('w+') as time_report_temp_file:
+            time_report_path = time_report_temp_file.name
+            swap_time_report_path = self.swap(
+                run_backend_tests, 'TIME_REPORT_PATH', time_report_path)
 
-        with self.swap_execute_task, swap_check_coverage:
-            with self.swap_cloud_datastore_emulator, swap_check_results:
-                with swap_time_report_path, self.swap_redis_server:
-                    with self.swap(
-                        run_backend_tests, 'AVERAGE_TEST_CASE_TIME', 1
-                    ), self.print_swap:
-                        run_backend_tests.main(
-                            args=['--generate_time_report'])
-        loaded_time_report = json.loads(time_report_temp_file.read())
-        self.assertEqual(loaded_time_report, expected_time_report)
-        time_report_temp_file.close()
+            with self.swap_execute_task, swap_check_coverage:
+                with self.swap_cloud_datastore_emulator, swap_check_results:
+                    with swap_time_report_path, self.swap_redis_server:
+                        with self.swap(
+                            run_backend_tests, 'AVERAGE_TEST_CASE_TIME', 1
+                        ), self.print_swap:
+                            run_backend_tests.main(
+                                args=['--generate_time_report'])
+            loaded_time_report = json.loads(time_report_temp_file.read())
+            self.assertEqual(loaded_time_report, expected_time_report)
+
 
     def test_test_failed_due_to_error_in_parsing_coverage_report(self) -> None:
         with self.swap_install_third_party_libs:

@@ -85,26 +85,26 @@ class ThirdPartyCSSLintChecksManager(linter_utils.BaseLinter):
         stylelint_cmd_args = [
             node_path, stylelint_path, '--config=' + STYLELINT_CONFIG]
         proc_args = stylelint_cmd_args + self.all_filepaths
-        proc = subprocess.Popen(
-            proc_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        with subprocess.Popen(
+            proc_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        ) as proc:
+            encoded_linter_stdout, encoded_linter_stderr = proc.communicate()
+            # Standard and error output is in bytes, we need to decode the line
+            # to print it.
+            linter_stdout = encoded_linter_stdout.decode('utf-8')
+            linter_stderr = encoded_linter_stderr.decode('utf-8')
 
-        encoded_linter_stdout, encoded_linter_stderr = proc.communicate()
-        # Standard and error output is in bytes, we need to decode the line to
-        # print it.
-        linter_stdout = encoded_linter_stdout.decode('utf-8')
-        linter_stderr = encoded_linter_stderr.decode('utf-8')
+            if linter_stderr:
+                raise Exception(linter_stderr)
 
-        if linter_stderr:
-            raise Exception(linter_stderr)
+            if linter_stdout:
+                full_error_messages.append(linter_stdout)
+                stripped_error_messages.append(
+                    self._get_trimmed_error_output(linter_stdout))
+                failed = True
 
-        if linter_stdout:
-            full_error_messages.append(linter_stdout)
-            stripped_error_messages.append(
-                self._get_trimmed_error_output(linter_stdout))
-            failed = True
-
-        return concurrent_task_utils.TaskResult(
-            name, failed, stripped_error_messages, full_error_messages)
+            return concurrent_task_utils.TaskResult(
+                name, failed, stripped_error_messages, full_error_messages)
 
     def perform_all_lint_checks(self) -> List[concurrent_task_utils.TaskResult]:
         """Perform all the lint checks and returns the messages returned by all

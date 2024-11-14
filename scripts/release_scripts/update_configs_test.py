@@ -313,36 +313,40 @@ class UpdateConfigsTests(test_utils.GenericTestBase):
         self.assertEqual(check_function_calls, expected_check_function_calls)
 
     def test_update_analytics_ids(self) -> None:
-        temp_constants_path = tempfile.NamedTemporaryFile().name
-        temp_analytics_constants_config_path = (
-            tempfile.NamedTemporaryFile().name
-        )
-        constants_text = (
-            '  "GA_ANALYTICS_ID": "123"\n'
-            '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
-            '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
-        )
-        analytics_constants_config_text = (
-            '  "GA_ANALYTICS_ID": ""\n'
-            '  "SITE_NAME_FOR_ANALYTICS": ""\n'
-            '  "CAN_SEND_ANALYTICS_EVENTS": false\n'
-        )
-        expected_analytics_constants_config_text = (
-            '  "GA_ANALYTICS_ID": "123"\n'
-            '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
-            '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
-        )
-        with utils.open_file(temp_constants_path, 'w') as f:
-            f.write(constants_text)
-        with utils.open_file(temp_analytics_constants_config_path, 'w') as f:
-            f.write(analytics_constants_config_text)
+        with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants_path:
+            with tempfile.NamedTemporaryFile(
+                mode='w+t'
+            ) as temp_analytics_constants_config:
+                constants_text = (
+                    '  "GA_ANALYTICS_ID": "123"\n'
+                    '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
+                    '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
+                )
+                analytics_constants_config_text = (
+                    '  "GA_ANALYTICS_ID": ""\n'
+                    '  "SITE_NAME_FOR_ANALYTICS": ""\n'
+                    '  "CAN_SEND_ANALYTICS_EVENTS": false\n'
+                )
+                expected_analytics_constants_config_text = (
+                    '  "GA_ANALYTICS_ID": "123"\n'
+                    '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
+                    '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
+                )
+                temp_constants_path.write(constants_text)
+                temp_constants_path.flush()
+                temp_analytics_constants_config.write(
+                    analytics_constants_config_text)
+                temp_analytics_constants_config.flush()
 
-        update_configs.update_analytics_constants_based_on_config(
-            temp_analytics_constants_config_path,
-            temp_constants_path
-        )
-        with utils.open_file(temp_analytics_constants_config_path, 'r') as f:
-            self.assertEqual(f.read(), expected_analytics_constants_config_text)
+                update_configs.update_analytics_constants_based_on_config(
+                    temp_analytics_constants_config.name,
+                    temp_constants_path
+                )
+                temp_analytics_constants_config.seek(0)
+                self.assertEqual(
+                    temp_analytics_constants_config.read(),
+                    expected_analytics_constants_config_text
+                )
 
     def test_raises_error_with_invalid_update_analytics_ids(self) -> None:
         temp_constants_path = tempfile.NamedTemporaryFile().name

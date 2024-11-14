@@ -39,7 +39,7 @@ class PrePushHookTests(test_utils.GenericTestBase):
 
     def setUp(self) -> None:
         super().setUp()
-        process = subprocess.Popen(
+        process = subprocess.Popen( # pylint: disable=consider-using-with
             ['echo', 'test'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         def mock_popen(  # pylint: disable=unused-argument
             cmd_tokens: List[str],

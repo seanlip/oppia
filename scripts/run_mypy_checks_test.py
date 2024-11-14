@@ -57,6 +57,7 @@ class Ret:
     def __exit__(self, *unused_args: str) -> None:
         pass
 
+
 class MypyScriptChecks(test_utils.GenericTestBase):
     """Tests for MyPy type check runner script."""
 
