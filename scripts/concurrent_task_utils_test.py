@@ -93,7 +93,7 @@ class TaskThreadTests(ConcurrentTaskUtilsTests):
         task = concurrent_task_utils.TaskThread(
             test_function('unused_arg'), False, self.semaphore, name='test',
             report_enabled=True)
-        with self.semaphore.acquire():
+        with self.semaphore:
             task.start_time = time.time()
             with self.print_swap:
                 task.start()
@@ -105,7 +105,7 @@ class TaskThreadTests(ConcurrentTaskUtilsTests):
         task = concurrent_task_utils.TaskThread(
             test_function, True, self.semaphore, name='test',
             report_enabled=True)
-        with self.semaphore.acquire():
+        with self.semaphore:
             task.start_time = time.time()
             with self.print_swap:
                 task.start()
@@ -131,7 +131,7 @@ class TaskThreadTests(ConcurrentTaskUtilsTests):
         task = concurrent_task_utils.TaskThread(
             test_func().test_perform_all_check, True,
             self.semaphore, name='test', report_enabled=True)
-        with self.semaphore.acquire():
+        with self.semaphore:
             task.start_time = time.time()
             with self.print_swap:
                 task.start()
@@ -157,7 +157,7 @@ class TaskThreadTests(ConcurrentTaskUtilsTests):
         task = concurrent_task_utils.TaskThread(
             test_func().test_perform_all_check, True,
             self.semaphore, name='test', report_enabled=False)
-        with self.semaphore.acquire():
+        with self.semaphore:
             task.start_time = time.time()
             with self.print_swap:
                 task.start()
