@@ -560,18 +560,9 @@ class StoryNode:
         self.outline_is_finalized = outline_is_finalized
         self.exploration_id = exploration_id
         self.status = status
-        self.planned_publication_date_msecs = (
-            planned_publication_date_msecs
-            if planned_publication_date_msecs is not None else None
-        )
-        self.last_modified_msecs = (
-            last_modified_msecs
-            if last_modified_msecs is not None else None
-        )
-        self.first_publication_date_msecs = (
-            first_publication_date_msecs
-            if first_publication_date_msecs is not None else None
-        )
+        self.planned_publication_date_msecs = planned_publication_date_msecs
+        self.last_modified_msecs = last_modified_msecs
+        self.first_publication_date_msecs = first_publication_date_msecs
         self.unpublishing_reason = unpublishing_reason
 
     @classmethod
@@ -688,12 +679,9 @@ class StoryNode:
             'exploration_id': self.exploration_id,
             'status': self.status,
             'planned_publication_date_msecs': 
-            self.planned_publication_date_msecs
-                if self.planned_publication_date_msecs else None,
-            'last_modified_msecs': self.last_modified_msecs
-                if self.last_modified_msecs else None,
-            'first_publication_date_msecs': self.first_publication_date_msecs
-                if self.first_publication_date_msecs else None,
+            self.planned_publication_date_msecs,
+            'last_modified_msecs': self.last_modified_msecs,
+            'first_publication_date_msecs': self.first_publication_date_msecs,
             'unpublishing_reason': self.unpublishing_reason
         }
 
@@ -926,10 +914,7 @@ class StoryNode:
             bool. True if the chapter is upcoming else false.
         """
         current_time_msecs = utils.get_current_time_in_millisecs()
-        planned_publication_date_msecs = (
-            self.planned_publication_date_msecs if
-            self.planned_publication_date_msecs else None
-        )
+        planned_publication_date_msecs = self.planned_publication_date_msecs
         if (
             self.status != constants.STORY_NODE_STATUS_PUBLISHED and
             planned_publication_date_msecs is not None and
@@ -949,10 +934,7 @@ class StoryNode:
             bool. True if the chapter is behind-schedule else false.
         """
         current_time_msecs = utils.get_current_time_in_millisecs()
-        planned_publication_date_msecs = (
-            self.planned_publication_date_msecs if
-            self.planned_publication_date_msecs else None
-        )
+        planned_publication_date_msecs = self.planned_publication_date_msecs
         if (
             self.status != constants.STORY_NODE_STATUS_PUBLISHED and
             planned_publication_date_msecs is not None and
@@ -2096,9 +2078,7 @@ class Story:
         """
         node_index = self.story_contents.get_node_index(node_id)
         self.story_contents.nodes[node_index].planned_publication_date_msecs = (
-            new_planned_publication_date_msecs if
-            new_planned_publication_date_msecs else None
-        )
+            new_planned_publication_date_msecs)
 
     def update_node_last_modified(
             self, node_id: str, new_last_modified_msecs: float) -> None:
@@ -2124,9 +2104,7 @@ class Story:
         """
         node_index = self.story_contents.get_node_index(node_id)
         self.story_contents.nodes[node_index].first_publication_date_msecs = (
-            new_publication_date_msecs if
-            new_publication_date_msecs else None
-        )
+            new_publication_date_msecs)
 
     def update_node_unpublishing_reason(
             self, node_id: str, new_unpublishing_reason: str) -> None:
