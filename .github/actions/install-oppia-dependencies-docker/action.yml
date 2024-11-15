@@ -14,6 +14,7 @@ runs:
         max_attempts: 3
         retry_on: error
         shell: bash
+        timeout_minutes: 30
         command: |
           make build
           sudo make run-devserver
