@@ -19,16 +19,9 @@ jobs:
       matrix:
         os: [ubuntu-22.04]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Setup Python 3.9.20
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9.20'
-          architecture: 'x64'
-      - name: Merge develop branch into the current branch
-        uses: ./.github/actions/merge
-      - name: Initialize Containers
+      - name: Checkout repository, merge develop, and set up Python
+        uses: ./.github/actions/checkout-repo-and-setup-python
+      - name: Initialize Docker containers
         run: |
           make build
           make stop

@@ -20,6 +20,14 @@ body:
     validations:
       required: true
   - type: textarea
+    id: step
+    attributes:
+      label: Which CI step failed?
+      description: |
+        Add the name of the specific CI step which failed. (Example: "Checkout repository" or "Run backend associated test file check")
+    validations:
+      required: true
+  - type: textarea
     id: logs
     attributes:
       label: Stacktrace

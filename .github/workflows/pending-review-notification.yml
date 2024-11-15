@@ -18,7 +18,7 @@ jobs:
         os: [ubuntu-22.04]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Python 3.9.20
         uses: actions/setup-python@v4
         with:
