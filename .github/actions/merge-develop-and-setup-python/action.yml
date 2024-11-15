@@ -1,16 +1,16 @@
 name: Merge develop and set up Python
 description: 'Merge develop into current branch, and set up Python'
-outputs:
-  WORKFLOW_STATUS:
-    description: 'The status of the workflow. Can be "success" or "failure".'
-    value: ${{ steps.merge_develop_and_setup_python.outputs.WORKFLOW_STATUS }}
-
+inputs:
+  use_cache:
+    description: 'Whether to use the cache.'
+    required: true
 runs:
   using: composite
   steps:
     - name: Merge develop branch into the current branch
       uses: ./.github/actions/merge
-    - name: Setup Python 3.9.20 with pip cache
+    - name: Setup Python 3.9.20 (with pip cache)
+      if: ${{ inputs.use_cache }}
       uses: actions/setup-python@v5
       with:
         python-version: '3.9.20'
@@ -21,3 +21,9 @@ runs:
           requirements.txt
           requirements_dev.in
           requirements_dev.txt
+    - name: Setup Python 3.9.20 (without pip cache)
+      if: ${{ !inputs.use_cache }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9.20'
+        architecture: 'x64'

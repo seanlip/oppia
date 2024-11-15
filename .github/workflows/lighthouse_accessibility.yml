@@ -28,6 +28,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
+        with:
+          use_cache: false
       # Caching is disabled to avoid poisoning our cache with the
       # changed lighthouse file.
       #
@@ -88,6 +90,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
+        with:
+          use_cache: false
       - name: Check workflow status
         uses: ./.github/actions/check-workflow-status
         id: check_workflow_status
