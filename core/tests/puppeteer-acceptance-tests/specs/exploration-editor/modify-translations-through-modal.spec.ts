@@ -274,6 +274,7 @@ describe('Exploration Editor', function () {
         CARD_NAME.MULTIPLE_CHOICE_QUESTION
       );
       await explorationEditor.navigateToTranslationsTab();
+      await explorationEditor.closeEditorNavigationDropdown();
       await explorationEditor.editTranslationOfContent(
         'de',
         'Hint',
