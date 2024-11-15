@@ -32,7 +32,7 @@ jobs:
         uses: ./.github/actions/install-oppia-dependencies-docker
       - name: Run backend test shard
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        run: make run_tests.backend PYTHON_ARGS="--generate_coverage_report --generate_time_report --ignore_coverage --exclude_load_tests --test_shard ${{ matrix.shard }}"
+        run: make run_tests.backend PYTHON_ARGS="--generate_coverage_report --generate_time_report --ignore_coverage --exclude_load_tests --run_on_changed_files_in_branch --test_shard ${{ matrix.shard }}"
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
         uses: ./.github/actions/send-webhook-notification
