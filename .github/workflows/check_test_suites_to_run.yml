@@ -16,8 +16,12 @@ jobs:
     env:
       SHOULD_OUTPUT_ALL_TESTS: ${{ github.event_name != 'pull_request' || vars.RUN_SUITES_ON_CHANGED_FILES == 'false' }}
     steps:
-      - name: Checkout repository, merge develop, and set up Python
-        uses: ./.github/actions/checkout-repo-and-setup-python
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
       - name: Install Oppia dependencies
         uses: ./.github/actions/install-oppia-dependencies
       - name: Check test suites to run

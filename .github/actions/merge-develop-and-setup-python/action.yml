@@ -1,17 +1,13 @@
-name: Checkout repo and set up Python
-description: 'Check out the Oppia repo, set up Python, and merge develop into current branch'
+name: Merge develop and set up Python
+description: 'Merge develop into current branch, and set up Python'
 outputs:
   WORKFLOW_STATUS:
     description: 'The status of the workflow. Can be "success" or "failure".'
-    value: ${{ steps.checkout_repo_and_setup_python.outputs.WORKFLOW_STATUS }}
+    value: ${{ steps.merge_develop_and_setup_python.outputs.WORKFLOW_STATUS }}
 
 runs:
   using: composite
   steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
     - name: Merge develop branch into the current branch
       uses: ./.github/actions/merge
     - name: Setup Python 3.9.20 with pip cache

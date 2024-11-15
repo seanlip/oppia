@@ -24,8 +24,10 @@ jobs:
       matrix:
         os: [ubuntu-22.04]
     steps:
-      - name: Checkout repository, merge develop, and set up Python
-        uses: ./.github/actions/checkout-repo-and-setup-python
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
       - name: Cache node modules and third_party/static
         uses: actions/cache@v3
         env:
@@ -69,8 +71,10 @@ jobs:
         suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).e2e.suites }}
     name: e2e_test (${{ matrix.os }}, ${{ matrix.suite.name }})
     steps:
-      - name: Checkout repository, merge develop, and set up Python
-        uses: ./.github/actions/checkout-repo-and-setup-python
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
       - name: Cache node modules
         uses: actions/cache@v3
         env:

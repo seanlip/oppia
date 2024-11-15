@@ -19,17 +19,12 @@ jobs:
         os: [ubuntu-22.04]
         shard: ['other']
     steps:
-      - name: Free disk space
-        run: |
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY" 
-      - name: Checkout repository, merge develop, and set up Python
-        uses: ./.github/actions/checkout-repo-and-setup-python
-      - name: Initialze Containers
-        run: |
-          make build
-          sudo make run-devserver
-          make stop
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
+      - name: Initialize Docker containers
+        uses: ./.github/actions/install-oppia-dependencies-docker
       - name: Third Party Size Check
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         run: make run_tests.third_party_size_check

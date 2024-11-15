@@ -24,8 +24,10 @@ jobs:
         suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_accessibility.suites }}
     name: lighthouse_accessibility (${{ matrix.os }}, ${{ matrix.suite.name }})
     steps:
-      - name: Checkout repository, merge develop, and set up Python
-        uses: ./.github/actions/checkout-repo-and-setup-python
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
       # Caching is disabled to avoid poisoning our cache with the
       # changed lighthouse file.
       #
@@ -82,8 +84,10 @@ jobs:
       matrix:
         os: [ubuntu-22.04]
     steps:
-      - name: Checkout repository, merge develop, and set up Python
-        uses: ./.github/actions/checkout-repo-and-setup-python
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
       - name: Check workflow status
         uses: ./.github/actions/check-workflow-status
         id: check_workflow_status
