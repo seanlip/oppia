@@ -176,8 +176,10 @@ jobs:
         suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_performance.suites }}
     name: lighthouse (${{ matrix.os }}, ${{ matrix.suite.name }})
     steps:
-      - name: Checkout repository, merge develop, and set up Python
-        uses: ./.github/actions/checkout-repo-and-setup-python
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
       - name: Cache node modules
         uses: actions/cache@v3
         env:
@@ -259,8 +261,10 @@ jobs:
           suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.suites }}
       name: acceptance_test (${{ matrix.os }}, ${{ matrix.suite.name }})
       steps:
-        - name: Checkout repository, merge develop, and set up Python
-          uses: ./.github/actions/checkout-repo-and-setup-python
+        - name: Checkout repository
+          uses: actions/checkout@v4
+        - name: Merge develop and set up Python
+          uses: ./.github/actions/merge-develop-and-setup-python
         - name: Cache node modules
           uses: actions/cache@v3
           env:
@@ -349,8 +353,10 @@ jobs:
       matrix:
         os: [ubuntu-22.04]
     steps:
-      - name: Checkout repository, merge develop, and set up Python
-        uses: ./.github/actions/checkout-repo-and-setup-python
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
       - name: Check workflow status
         uses: ./.github/actions/check-workflow-status
         id: check_workflow_status
