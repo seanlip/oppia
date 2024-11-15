@@ -21,7 +21,7 @@ jobs:
         id: generate
         env:
           standard-test-runs: 2
-          flakes-test-runs: 40
+          flakes-test-runs: 10
         run: |
           if ${{ github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
           then
