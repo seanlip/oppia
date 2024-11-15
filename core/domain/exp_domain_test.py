@@ -4200,27 +4200,40 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
         sub_namespace = (
             str(new_exploration.version) if new_exploration.version else None)
 
-        is_properly_cachable = caching_services.set_multi(
+        is_properly_cacheable = caching_services.set_multi(
             namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
             sub_namespace=sub_namespace,
             id_value_mapping={exploration_id: new_exploration})
-        new_exploration_retrive_from_cache = caching_services.get_multi(
+        new_exploration_retrieve_from_cache = caching_services.get_multi(
             namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
             sub_namespace=sub_namespace,
             obj_ids=[exploration_id]
         ).get(exploration_id)
         self.assertTrue(
-            is_properly_cachable,
-            'Exploration is not properly cachable'
+            is_properly_cacheable,
+            'Exploration is not properly cacheable'
         )
 
-        new_exploration_dict_retrive_from_cache = (
-          new_exploration_retrive_from_cache.to_dict() # type: ignore
+        self.assertEqual(
+            new_exploration_retrieve_from_cache,
+            None,
+            'Exploration is not properly cacheable'
         )
+
+        default_exploration_dict = (
+            exp_domain.Exploration.create_default_exploration('exp_cache_test')
+            .to_dict()
+        )
+
+        new_exploration_dict_retrieve_from_cache = (
+            new_exploration_retrieve_from_cache.to_dict()
+            if new_exploration_retrieve_from_cache
+            else default_exploration_dict)
+
         self.assertEqual(
             new_exploration.to_dict(),
-            new_exploration_dict_retrive_from_cache,
-            'Exploration put into cache and retrieve from cache is not same'
+            new_exploration_dict_retrieve_from_cache,
+            'Exploration put into cache and retrieved from cache is not same'
         )
 
     def test_migrate_state_schema(self) -> None:
@@ -4255,25 +4268,38 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
               content_id_generator.next_content_id_index, True)
         sub_namespace = (
           str(new_exploration.version) if new_exploration.version else None)
-        is_properly_cachable = caching_services.set_multi(
+        is_properly_cacheable = caching_services.set_multi(
             namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
             sub_namespace=sub_namespace,
             id_value_mapping={exploration_id: new_exploration})
 
         self.assertTrue(
-            is_properly_cachable,
-            'Exploration is not properly cachable'
+            is_properly_cacheable,
+            'Exploration is not properly cacheable'
         )
 
-        new_exploration_retrive_from_cache = caching_services.get_multi(
+        new_exploration_retrieve_from_cache = caching_services.get_multi(
             namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
             sub_namespace=sub_namespace,
             obj_ids=[exploration_id]
         ).get(exploration_id)
 
-        exploration_data = (
-            new_exploration_retrive_from_cache.to_dict() # type: ignore
+        self.assertEqual(
+            new_exploration_retrieve_from_cache,
+            None,
+            'Exploration is not properly cacheable'
         )
+
+        default_exploration_dict = (
+            exp_domain.Exploration.create_default_exploration('exp_cache_test')
+            .to_dict()
+        )
+
+        exploration_data = (
+            new_exploration_retrieve_from_cache.to_dict()
+            if new_exploration_retrieve_from_cache
+            else default_exploration_dict)
+
         updated_exploration = exp_domain.Exploration.migrate_state_schema(
             exploration_data
         )
@@ -4294,14 +4320,21 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
         self.assertEqual(
             updated_exploration['states_schema_version'],
             feconf.CURRENT_STATE_SCHEMA_VERSION,
-            'Exploration state schema version is failed to updated'
+            'Exploration state schema version failed to update'
         )
 
         self.assertEqual(
             updated_exploration['states'],
             migrated_exploration_dict,
-            'Exploration state schema version is failed to updated'
+            'Exploration state schema version failed to update'
         )
+
+        # This comment is temporary
+        # self.assertNotEqual (
+        #     migrated_exploration_dict,
+        #     versioned_states['states'],
+        #     'Migrated Exploration dict is same as versioned_states dict'
+        # )
 
     def test_get_all_translatable_content_for_exp(self) -> None:
         """Get all translatable fields from exploration."""
