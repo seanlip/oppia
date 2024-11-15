@@ -18,7 +18,6 @@
 
 from __future__ import annotations
 
-import textwrap
 import urllib
 
 from core import feconf
@@ -203,29 +202,8 @@ class EmailTests(test_utils.GenericTestBase):
         unset.
         """
         # Testing no mailgun api key.
-        msg_body = textwrap.dedent(
-            """
-            EmailService.SendMail
-            From: a@a.com
-            To: b@b.com c@c.com d@d.com
-            Subject: Hola 😂 - invitation to collaborate
-            Body:
-                Content-type: text/plain
-                Data length: 16
-            Body:
-                Content-type: text/html
-                Data length: 13
-
-            Bcc: None
-            Reply_to: None
-            Recipient Variables:
-                Length: 0
-            """)
         mailgun_exception = self.assertRaisesRegex(
-            Exception, (
-                'Mailgun API key is not available. Here is the email that '
-                'failed sending: %s' % msg_body)
-        )
+            Exception, 'Mailgun API key is not available.')
         with self.swap_api_key_secrets_return_none, mailgun_exception:
             with self.capture_logging() as logs:
                 mailgun_email_services.send_email_to_recipients(
@@ -241,29 +219,8 @@ class EmailTests(test_utils.GenericTestBase):
 
     def test_mailgun_domain_name_not_set_raises_exception(self) -> None:
         # Testing no mailgun domain name.
-        msg_body = textwrap.dedent(
-            """
-            EmailService.SendMail
-            From: a@a.com
-            To: b@b.com c@c.com d@d.com
-            Subject: Hola 😂 - invitation to collaborate
-            Body:
-                Content-type: text/plain
-                Data length: 16
-            Body:
-                Content-type: text/html
-                Data length: 13
-
-            Bcc: None
-            Reply_to: None
-            Recipient Variables:
-                Length: 0
-            """)
         mailgun_exception = self.assertRaisesRegex(
-            Exception, (
-                'Mailgun domain name is not set. Here is the email that '
-                'failed sending: %s' % msg_body)
-        )
+            Exception, 'Mailgun domain name is not set.')
         with self.swap_api_key_secrets_return_secret, mailgun_exception:
             with self.capture_logging() as logs:
                 mailgun_email_services.send_email_to_recipients(

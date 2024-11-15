@@ -23,7 +23,6 @@ import urllib
 
 from core import feconf
 from core import utils
-from core.domain import email_services
 from core.platform import models
 
 from typing import Dict, List, Optional, Union
@@ -88,22 +87,10 @@ def send_email_to_recipients(
     mailgun_api_key: Optional[str] = secrets_services.get_secret(
         'MAILGUN_API_KEY')
     if mailgun_api_key is None:
-        email_msg = email_services.convert_email_to_loggable_string(
-            sender_email, recipient_emails, subject, plaintext_body, html_body,
-            bcc, reply_to, recipient_variables
-        )
-        raise Exception(
-            'Mailgun API key is not available. '
-            'Here is the email that failed sending: %s' % email_msg)
+        raise Exception('Mailgun API key is not available.')
 
     if not feconf.MAILGUN_DOMAIN_NAME:
-        email_msg = email_services.convert_email_to_loggable_string(
-            sender_email, recipient_emails, subject, plaintext_body, html_body,
-            bcc, reply_to, recipient_variables
-        )
-        raise Exception(
-            'Mailgun domain name is not set. '
-            'Here is the email that failed sending: %s' % email_msg)
+        raise Exception('Mailgun domain name is not set.')
 
     # To send bulk emails we pass list of recipients in 'to' paarameter of
     # post data. Maximum limit of recipients per request is 1000.
