@@ -4214,7 +4214,7 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             'Exploration is not properly cacheable'
         )
 
-        self.assertEqual(
+        self.assertNotEqual(
             new_exploration_retrieve_from_cache,
             None,
             'Exploration is not properly cacheable'
@@ -4284,7 +4284,7 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             obj_ids=[exploration_id]
         ).get(exploration_id)
 
-        self.assertEqual(
+        self.assertNotEqual(
             new_exploration_retrieve_from_cache,
             None,
             'Exploration is not properly cacheable'
