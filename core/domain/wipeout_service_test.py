@@ -736,7 +736,6 @@ class WipeoutServiceRunFunctionsTests(test_utils.GenericTestBase):
                 'system@example.com'
             )
         ]
-        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
     )
     def test_run_user_deletion_completion_user_wrongly_deleted_emails_enabled(
         self
@@ -5693,7 +5692,6 @@ class PendingUserDeletionTaskServiceTests(test_utils.GenericTestBase):
                 'system@example.com'
             )
         ]
-        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
     )
     def test_repeated_deletion_is_successful_when_emails_enabled(
         self
@@ -5838,7 +5836,6 @@ class CheckCompletionOfUserDeletionTaskServiceTests(
         with send_mail_to_admin_swap:
             wipeout_service.check_completion_of_user_deletion()
         self.assertEqual(len(self.email_bodies), 0)
-
 
     @test_utils.set_platform_parameters(
         [
