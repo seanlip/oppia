@@ -164,7 +164,7 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   hasQueuedSuggestion: boolean = false;
   currentSnackbarRef?: MatSnackBarRef<UndoSnackbarComponent>;
   isUndoFeatureEnabled: boolean = false;
-  initialHasImage: boolean = false;
+  initialImageCount: number = 0;
   @Input() altTextIsDisplayed: boolean = false;
 
   @ViewChild('contentPanel')
@@ -251,8 +251,9 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     this.refreshActiveContributionState();
     const tempDiv = this.renderer.createElement('div');
     this.renderer.setProperty(tempDiv, 'innerHTML', this.translationHtml || '');
-    this.initialHasImage =
-      tempDiv.querySelector('oppia-noninteractive-image') !== null;
+    this.initialImageCount = tempDiv.querySelectorAll(
+      'oppia-noninteractive-image'
+    ).length;
 
     // The 'html' value is passed as an object as it is required for
     // schema-based-editor. Otherwise the corrrectly updated value for
@@ -377,7 +378,10 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   isImageRemoved(): boolean {
     const tempDiv = this.renderer.createElement('div');
     this.renderer.setProperty(tempDiv, 'innerHTML', this.editedContent.html);
-    return tempDiv.querySelector('oppia-noninteractive-image') === null;
+    const currentImageCount = tempDiv.querySelectorAll(
+      'oppia-noninteractive-image'
+    ).length;
+    return currentImageCount < this.initialImageCount;
   }
 
   get isUpdateDisabled(): boolean {
@@ -387,7 +391,7 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   updateSuggestion(): void {
     const updatedTranslation = this.editedContent.html;
     const suggestionId = this.activeSuggestion.suggestion_id;
-    if (this.initialHasImage && this.isImageRemoved()) {
+    if (this.initialImageCount > 0 && this.isImageRemoved()) {
       this.errorMessage =
         'Removing images from the translation is not allowed.';
       this.errorFound = true;

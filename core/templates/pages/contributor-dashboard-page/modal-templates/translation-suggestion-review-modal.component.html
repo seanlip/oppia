@@ -30,7 +30,7 @@
 </div>
 
 
-<div *ngIf="initialHasImage && isUpdateDisabled" tabindex="0" class="alert alert-danger oppia-units-input-error">
+<div *ngIf="initialImageCount > 0 && isUpdateDisabled" tabindex="0" class="alert alert-danger oppia-units-input-error">
   <strong>Warning:</strong> The image in the translation has been removed.
   Restoring the image is required to proceed with the update.
 </div>
@@ -108,7 +108,7 @@
         <button class="btn btn-success ml-2"
                 *ngIf="startedEditing"
                 (click)="updateSuggestion()"
-                [disabled]="initialHasImage && isUpdateDisabled">
+                [disabled]="initialImageCount > 0 && isUpdateDisabled">
           Update
         </button>
       </div>

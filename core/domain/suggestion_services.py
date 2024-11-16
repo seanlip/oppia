@@ -2146,21 +2146,19 @@ def _update_suggestion_counts_in_community_contribution_stats(
         suggestions, amount)
 
 
-def contains_image(html_content: str) -> bool:
-    """Checks if the provided HTML content contains an image tag.
+def count_images(html_content: str) -> int:
+    """Counts the number of image tags in the provided HTML content.
 
-    This function uses a regular expression to search for an
-    <oppia-noninteractive-image> tag within the HTML content, indicating
-    the presence of an image.
+    This function uses a regular expression to count the number of
+    <oppia-noninteractive-image> tags within the HTML content.
 
     Args:
-        html_content: str. The HTML content to check for an image tag.
+        html_content: str. The HTML content to count image tags.
 
     Returns:
-        bool. True if an image tag is found, False otherwise.
+        int. The count of image tags found.
     """
-    match = re.search(IMAGE_TAG_REGEX, html_content)
-    return match is not None
+    return len(re.findall(IMAGE_TAG_REGEX, html_content))
 
 
 def update_translation_suggestion(
@@ -2186,10 +2184,10 @@ def update_translation_suggestion(
             % type(suggestion).__name__
         )
     original_html = suggestion.change_cmd.translation_html
-    original_has_image = contains_image(original_html)
-    updated_has_image = contains_image(translation_html)
+    original_image_count = count_images(original_html)
+    updated_image_count = count_images(translation_html)
 
-    if original_has_image and not updated_has_image:
+    if updated_image_count < original_image_count:
         raise utils.InvalidInputException(
             'Removing images from the translation is not allowed.'
         )
