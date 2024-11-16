@@ -49,8 +49,10 @@ export function initializeGoogleAnalytics() {
 
     if (analyticsConstants.GTM_ANALYTICS_ID) {
       // The following is for Google Tag Manager (gtm.js).
-      gtag('gtm.start', new Date().getTime());
-      gtag('event', 'gtm.js');
+      window.dataLayer.push({
+        'gtm.start': new Date().getTime(),
+        event: 'gtm.js'
+      });
     }
   }
 }
