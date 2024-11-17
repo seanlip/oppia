@@ -293,6 +293,8 @@ class WipeoutServicePreDeleteTests(test_utils.GenericTestBase):
         self.process_and_flush_pending_tasks()
 
         email_preferences = user_services.get_email_preferences(self.user_1_id)
+        # TODO(release-scripts#137): Update once project ID is verified on
+        # all servers.
         self.assertItemsEqual(
             observed_log_messages,
             ['Email ID %s permanently deleted from bulk email provider\'s db. '
