@@ -1033,6 +1033,71 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             suggestion_services.update_translation_suggestion(
                 suggestion.suggestion_id, 'test_translation'
             )
+    def test_update_translation_suggestion_rejects_image_removal(
+        self
+    ) -> None:
+        exploration = (
+            self.save_new_linear_exp_with_state_names_and_interactions(
+                'exploration1', self.author_id, ['state 1'], ['TextInput'],
+                category='Algebra'))
+        old_content = state_domain.SubtitledHtml(
+            'content', '<p>old content html</p>').to_dict()
+        exploration.states['state 1'].update_content(
+            state_domain.SubtitledHtml.from_dict(old_content))
+        change_list = [exp_domain.ExplorationChange({
+            'cmd': exp_domain.CMD_EDIT_STATE_PROPERTY,
+            'property_name': exp_domain.STATE_PROPERTY_CONTENT,
+            'state_name': 'state 1',
+            'new_value': {
+                'content_id': 'content_0',
+                'html': '<p>old content html</p>'
+            }
+        })]
+        exp_services.update_exploration(
+            self.author_id, exploration.id, change_list, '')
+        add_translation_change_dict = {
+            'cmd': exp_domain.CMD_ADD_WRITTEN_TRANSLATION,
+            'state_name': 'state 1',
+            'content_id': 'content_0',
+            'language_code': 'hi',
+            'content_html': '<p>old content html</p>',
+            'translation_html': (
+                '<p>Translation for original content.</p>'
+                '<oppia-noninteractive-image alt-with-value="Image description" '
+                'caption-with-value="Sample caption" '
+                'filepath-with-value="img.svg"></oppia-noninteractive-image>'
+            ),
+            'data_format': 'html'
+        }
+        suggestion = suggestion_services.create_suggestion(
+            feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT,
+            feconf.ENTITY_TYPE_EXPLORATION,
+            'exploration1', self.target_version_at_submission,
+            self.author_id, add_translation_change_dict, 'test description')
+
+        with self.assertRaisesRegex(
+            utils.InvalidInputException,
+            'Removing images from the translation is not allowed.'
+        ):
+            suggestion_services.update_translation_suggestion(
+                suggestion.suggestion_id, '<p>Updated translation without image</p>'
+            )
+
+        suggestion_services.update_translation_suggestion(
+            suggestion.suggestion_id,
+            '<p><oppia-noninteractive-image alt-with-value="Another description" '
+            'caption-with-value="Another caption" filepath-with-value="another_img.svg">'
+            '</oppia-noninteractive-image> Updated translation with image</p>'
+        )
+        updated_suggestion = suggestion_services.get_suggestion_by_id(
+            suggestion.suggestion_id
+        )
+        self.assertEqual(
+            updated_suggestion.change_cmd.translation_html,
+            '<p><oppia-noninteractive-image alt-with-value="Another description" '
+            'caption-with-value="Another caption" filepath-with-value="another_img.svg">'
+            '</oppia-noninteractive-image> Updated translation with image</p>'
+        )
 
     def test_wrong_suggestion_raise_error_when_updating_add_question_suggestion(
         self

@@ -138,6 +138,7 @@ describe('Translation Suggestion Review Modal Component', function () {
       new MockMatSnackBarRef() as unknown as MatSnackBarRef<unknown>
     );
 
+    component.initialImageCount = 1;
     component.contentContainer = new ElementRef({offsetHeight: 150});
     component.translationContainer = new ElementRef({offsetHeight: 150});
     component.contentPanel = new RteOutputDisplayComponent(
@@ -152,6 +153,7 @@ describe('Translation Suggestion Review Modal Component', function () {
       new ElementRef({offsetHeight: 200}),
       null
     );
+    component.initialImageCount = 1;
   });
 
   describe('when initializing the modal ', () => {
@@ -274,6 +276,72 @@ describe('Translation Suggestion Review Modal Component', function () {
         expect(component.remainingContributionIds).toEqual(['suggestion_3']);
       }
     );
+
+    it('should set the initial image count based on the translation HTML', () => {
+      component.translationHtml = `
+          <p>Content with image</p>
+          <oppia-noninteractive-image alt-with-value="&amp;quot;Image description&amp;quot;" filepath-with-value="&amp;quot;img_20241109_030945_oc195e5356_height_350_width_450.svg&amp;quot;"></oppia-noninteractive-image>
+        `;
+      component.ngOnInit();
+
+      expect(component.initialImageCount).toBe(1);
+    });
+
+    it('should correctly detect when an image is removed', () => {
+      component.translationHtml = `
+          <p>Content with image</p>
+          <oppia-noninteractive-image alt-with-value="&amp;quot;Image description&amp;quot;" filepath-with-value="&amp;quot;img_20241109_030945_oc195e5356_height_350_width_450.svg&amp;quot;"></oppia-noninteractive-image>
+        `;
+      component.ngOnInit();
+
+      component.editedContent = {
+        html: `<p>Updated content without an image</p>`,
+      };
+
+      expect(component.isImageRemoved()).toBeTrue();
+    });
+
+    it('should disable the update button if an image is removed', () => {
+      component.translationHtml = `
+          <p>Content with image</p>
+          <oppia-noninteractive-image alt-with-value="&amp;quot;Image description&amp;quot;" filepath-with-value="&amp;quot;img_20241109_030945_oc195e5356_height_350_width_450.svg&amp;quot;"></oppia-noninteractive-image>
+        `;
+      component.ngOnInit();
+
+      component.startedEditing = true;
+      component.editedContent = {
+        html: `<p>Updated content without an image</p>`,
+      };
+
+      expect(component.isUpdateDisabled).toBeTrue();
+    });
+
+    it('should allow the update button if no image was initially present', () => {
+      component.translationHtml = `<p>Content without an image</p>`;
+      component.ngOnInit();
+
+      component.startedEditing = true;
+      component.editedContent = {
+        html: `<p>Updated content without an image</p>`,
+      };
+
+      expect(component.isUpdateDisabled).toBeFalse();
+    });
+
+    it('should allow the update button if images are added instead of being removed', () => {
+      component.translationHtml = `<p>Content without an image</p>`;
+      component.ngOnInit();
+
+      component.startedEditing = true;
+      component.editedContent = {
+        html: `
+            <p>Updated content with an image</p>
+            <oppia-noninteractive-image alt-with-value="&amp;quot;Image description&amp;quot;" filepath-with-value="&amp;quot;img_20241109_030945_oc195e5356_height_350_width_450.svg&amp;quot;"></oppia-noninteractive-image>
+          `,
+      };
+
+      expect(component.isUpdateDisabled).toBeFalse();
+    });
 
     it(
       'should be able to navigate to only previous suggestion ' +
