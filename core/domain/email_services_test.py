@@ -16,8 +16,6 @@
 
 from __future__ import annotations
 
-import textwrap
-
 from core import feconf
 from core.constants import constants
 from core.domain import email_services
