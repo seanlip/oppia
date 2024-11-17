@@ -461,6 +461,7 @@ h3 {
 a {
   color: #0844aa;
   cursor: pointer;
+  text-decoration: underline;
 }
 
 a:hover {
