@@ -73,12 +73,10 @@ COPY requirements.txt .
 COPY requirements_dev.txt .
 COPY mypy_requirements.txt .
 
-RUN pip install --require-hashes --no-deps -r requirements.txt -t /app/oppia/third_party/python_libs
-RUN pip install --require-hashes --no-deps -r requirements_dev.txt
-RUN pip install -r mypy_requirements.txt -t /app/oppia/third_party/python3_libs
-RUN pip download --no-deps -r requirements.txt -d /root/.cache
-RUN pip download --no-deps -r requirements_dev.txt -d /root/.cache
-RUN pip download -r mypy_requirements.txt -d /root/.cache
+RUN pip install --no-cache-dir --require-hashes --no-deps -r requirements.txt -t /app/oppia/third_party/python_libs \
+    && pip install --no-cache-dir --require-hashes --no-deps -r requirements_dev.txt \
+    && pip install --no-cache-dir -r mypy_requirements.txt -t /app/oppia/third_party/python3_libs
+
 
 # Installing buf and proto for Linux -- this docker container is based on Linux
 COPY buf.gen.yaml .
