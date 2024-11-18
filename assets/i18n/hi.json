@@ -543,6 +543,7 @@
 	"I18N_LEARNER_DASHBOARD_NO_ACTIVITY_IN_COLLECTION": "ऐसा लगता है कि आपके पास प्रगति में कोई संग्रह नहीं है। एक नया रोमांचक संग्रह शुरू करने के लिए पुस्तकालय में जाएं!",
 	"I18N_LEARNER_DASHBOARD_NO_ACTIVITY_IN_EXPLORATION": "ऐसा लगता है कि आपके पास प्रगति में कोई अन्वेषण नहीं है। एक रोमांचक नई अन्वेषण शुरू करने के लिए पुस्तकालय पर जाएं!",
 	"I18N_LEARNER_DASHBOARD_PLAYLIST_SECTION": "बाद में चलाएं",
+	"I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_CLASSROOM": "कक्षा पाठ",
 	"I18N_LEARNER_DASHBOARD_REARRANGE_LEARNER_PLAYLIST_MESSAGE": "गतिविधियों को उस क्रम में खींचें और पुनर्व्यवस्थित करें जिसमें आप उन्हें चलाना चाहते हैं!",
 	"I18N_LEARNER_DASHBOARD_REARRANGE_LEARNER_PLAYLIST_MESSAGE_MOBILE": "गतिविधियों को उस क्रम में खींचें और पुनर्व्यवस्थित करें जिसमें आप उन्हें चलाना चाहते हैं!",
 	"I18N_LEARNER_DASHBOARD_REMOVE_ACTIVITY_MODAL_BODY": "क्या आप वाकई अपने '<[sectionNameI18nId]>' सूची से '<[entityTitle]>' को हटाना चाहते हैं?",

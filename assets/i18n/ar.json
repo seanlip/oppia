@@ -957,6 +957,7 @@
 	"I18N_LEARNER_DASHBOARD_PAGE_TITLE": "لوحة معلومات المتعلم | أوبيا",
 	"I18N_LEARNER_DASHBOARD_PLAYLIST_SECTION": "تشغيل لاحقا",
 	"I18N_LEARNER_DASHBOARD_PROGRESS_SECTION": "التقدم",
+	"I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_CLASSROOM": "دروس في الفصل الدراسي",
 	"I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_EMPTY_DESC": "يبدو أنه ليس لديك أي دروس جارية أو مكتملة. توجه إلى مواد Oppia الدراسية لتبدء درسك الأول!",
 	"I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_HEADING": "مدى تقدم <[username]>",
 	"I18N_LEARNER_DASHBOARD_REARRANGE_LEARNER_PLAYLIST_MESSAGE": "اسحب وأعد ترتيب الأنشطة بالترتيب الذي تريد أن تشغلهم به!",
