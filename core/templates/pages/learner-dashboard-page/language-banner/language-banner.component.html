@@ -1,0 +1,209 @@
+<div class="language-banner">
+    <div class="banner-content-outer">
+        <div class="banner-content-inner">
+            <div class="banner-text">
+                <div class="icon">
+                    <img src="assets/images/learner_dashboard/info.svg" alt="info">
+                </div>
+                <div class="banner-info">
+                    You can now change the language of your lessons in the navigation bar.
+                </div>
+
+            </div>
+            <div class="banner-checkbox">
+                <input type="checkbox" class="checkbox">
+                <span class="checkbox-text">Don't show again</span>
+            </div>
+        </div>
+    </div>
+    <button class="banner-button" (click)="onButtonClick">
+        Got it!
+    </button>
+</div>
+
+
+
+<style>
+    .language-banner {
+        /* Full Banner Web */
+
+        box-sizing: border-box;
+
+        /* Auto layout */
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 8px 24px;
+        gap: 16px;
+
+        position: absolute;
+        width: 100%;
+        height: 64px;
+        left: 0;
+        top: 64px;
+        z-index: 1000;
+
+        background: #FDFBF1;
+        border: 1px solid #000000;
+        /* Banner Shadow
+
+Shadow on language banner
+*/
+        box-shadow: -2px 2px 12px rgba(0, 0, 0, 0.2);
+        border-radius: 0px 0px 8px 8px;
+
+    }
+
+    .banner-content-outer {
+        /* Top Navigation */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+padding: 8px 20px;
+gap: 342px;
+
+width: 1096px;
+height: 48px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 1;
+
+    }
+
+    .banner-content-inner {
+        /* Frame 1 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 16px;
+
+margin: 0 auto;
+width: 1056px;
+height: 32px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 1;
+
+    }
+
+    .banner-text {
+        /* Icon and Description */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
+align-items: center;
+align-content: flex-start;
+padding: 0px;
+gap: 8px;
+
+width: 878px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+    }
+
+    .icon {
+        /* Icons / Medium / info */
+        width: 24px;
+        height: 24px;
+
+        /* Inside auto layout */
+        flex: none;
+        order: 0;
+        flex-grow: 0;
+
+    }
+
+    .banner-info {}
+
+    .banner-checkbox {
+        /* Dont show again w box */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 16px;
+
+width: 162px;
+height: 32px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+    }
+
+    .banner-button {
+        /* Frame 1 */
+
+        /* Auto layout */
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        gap: 10px;
+
+        width: 120px;
+        height: 44px;
+
+        background: #00645C;
+        border-radius: 4px;
+
+        /* Inside auto layout */
+        flex: none;
+        order: 1;
+        flex-grow: 0;
+    }
+
+.checkbox-text {
+        /* Got it! */
+
+        width: 49px;
+        height: 22px;
+
+        /* button */
+        font-family: 'Roboto';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 120%;
+        /* identical to box height, or 22px */
+
+        color: #FFFFFF;
+
+
+        /* Inside auto layout */
+        flex: none;
+        order: 0;
+        flex-grow: 0;
+
+
+    }
+</style>
