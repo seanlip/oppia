@@ -119,7 +119,7 @@ export class ReadOnlyExplorationBackendApiService {
               resolve(response);
             },
             errorResponse => {
-              reject(errorResponse.error.error);
+              reject(errorResponse);
             }
           );
       }

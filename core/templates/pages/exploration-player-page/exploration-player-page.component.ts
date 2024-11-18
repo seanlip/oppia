@@ -17,6 +17,7 @@
  */
 
 import {Component, OnDestroy} from '@angular/core';
+import {Router} from '@angular/router';
 import {downgradeComponent} from '@angular/upgrade/static';
 import {ExplorationPermissionsBackendApiService} from 'domain/exploration/exploration-permissions-backend-api.service';
 import {TranslateService} from '@ngx-translate/core';
@@ -56,7 +57,8 @@ export class ExplorationPlayerPageComponent implements OnDestroy {
     private readOnlyExplorationBackendApiService: ReadOnlyExplorationBackendApiService,
     private entityVoiceoversService: EntityVoiceoversService,
     private urlService: UrlService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -103,6 +105,13 @@ export class ExplorationPlayerPageComponent implements OnDestroy {
             content: response.exploration.objective,
           },
         ]);
+      })
+      .catch((errorResponse: string) => {
+        if (errorResponse.status === 404) {
+          this.router.navigate(['/404'], {skipLocationChange: true});
+        } else {
+          throw new Error(errorResponse);
+        }
       })
       .finally(() => {
         this.isLoadingExploration = false;

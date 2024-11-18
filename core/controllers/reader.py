@@ -233,7 +233,7 @@ class ExplorationPage(
         }
     }
 
-    @acl_decorators.can_play_exploration
+    @acl_decorators.open_access
     def get(self, exploration_id: str) -> None:
         """Handles GET requests.
 
@@ -249,6 +249,8 @@ class ExplorationPage(
                 redirect_url += '?v=%s' % version
             self.redirect(redirect_url)
             return
+
+        ### TODO: Move the logic below to the GET JSON handler instead.
 
         # Note: this is an optional argument and will be None when the
         # exploration is being played outside the context of a collection or if
