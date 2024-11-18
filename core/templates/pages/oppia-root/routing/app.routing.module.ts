@@ -80,6 +80,21 @@ const routes: Route[] = [
     canActivate: [IsLoggedInGuard],
   },
   {
+    path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.CREATOR_DASHBOARD.ROUTE,
+    loadChildren: () =>
+      import('pages/creator-dashboard-page/creator-dashboard-page.module').then(
+        m => m.CreatorDashboardPageModule
+      ),
+    canActivate: [IsLoggedInGuard],
+  },
+  {
+    path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.TOPIC_VIEWER.ROUTE,
+    loadChildren: () =>
+      import('pages/topic-viewer-page/topic-viewer-page.module').then(
+        m => m.TopicViewerPageModule
+      ),
+  },
+  {
     path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.EMAIL_DASHBOARD.ROUTE,
     loadChildren: () =>
       import('pages/email-dashboard-pages/email-dashboard-page.module').then(
@@ -203,6 +218,7 @@ const routes: Route[] = [
   {
     path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.DELETE_ACCOUNT.ROUTE,
     pathMatch: 'full',
+    canActivate: [IsLoggedInGuard],
     loadChildren: () =>
       import('pages/delete-account-page/delete-account-page.module').then(
         m => m.DeleteAccountPageModule
@@ -228,6 +244,7 @@ const routes: Route[] = [
   {
     path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.FEEDBACK_UPDATES.ROUTE,
     pathMatch: 'full',
+    canActivate: [IsLoggedInGuard],
     loadChildren: () =>
       import('pages/feedback-updates-page/feedback-updates-page.module').then(
         m => m.FeedbackUpdatesPageModule
