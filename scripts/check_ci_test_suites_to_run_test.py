@@ -541,6 +541,59 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
             )
         )
 
+    def test_split_tests_by_docker(self) -> None:
+        suites_to_split = {
+            'count': 3,
+            'suites': [
+                {
+                    'name': 'suite1',
+                    'module': 'module1',
+                    'environment': 'python'
+                },
+                {
+                    'name': 'suite2',
+                    'module': 'module2',
+                    'environment': 'python'
+                },
+                {
+                    'name': 'suite3',
+                    'module': 'module3',
+                    'environment': 'docker'
+                }
+            ]
+        }
+
+        self.assertEqual(
+            check_ci_test_suites_to_run.split_tests_by_docker(suites_to_split),
+            {
+                'docker': {
+                    'count': 1,
+                    'suites': [
+                        {
+                            'name': 'suite3',
+                            'module': 'module3',
+                            'environment': 'docker'
+                        }
+                    ]
+                },
+                'python': {
+                    'count': 2,
+                    'suites': [
+                        {
+                            'name': 'suite1',
+                            'module': 'module1',
+                            'environment': 'python'
+                        },
+                        {
+                            'name': 'suite2',
+                            'module': 'module2',
+                            'environment': 'python'
+                        }
+                    ]
+                }
+            }
+        )
+
     def test_get_lighthouse_pages_from_config(self) -> None:
         with self.lighthouse_pages_config_file_path_swap:
             self.assertEqual(
