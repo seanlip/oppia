@@ -1005,6 +1005,7 @@ export class ConversationSkinComponent {
             this.recommendedExplorationSummaries = nextStoryNode;
           });
         if (this.isLoggedIn) {
+          console.log('-----------------record chapter completion start');
           this.storyViewerBackendApiService
             .recordChapterCompletionAsync(
               topicUrlFragment,
@@ -1013,6 +1014,8 @@ export class ConversationSkinComponent {
               nodeId
             )
             .then(returnObject => {
+              console.log('-----------------request succeeded');
+              console.log(returnObject);
               if (returnObject.readyForReviewTest) {
                 (
                   this.windowRef.nativeWindow as {location: string | Location}

@@ -40,6 +40,9 @@ describe('Logged-in User', function () {
       [ROLES.CURRICULUM_ADMIN]
     );
 
+    console.log('FROM ACCEPTANCE TEST');
+    console.log('---------------------');
+
     explorationId1 =
       await curriculumAdmin.createAndPublishAMinimalExplorationWithTitle(
         'Negative Numbers'
@@ -89,6 +92,7 @@ describe('Logged-in User', function () {
   it(
     'should be able to replay a completed or incomplete exploration or collection, learn something new, manage goals, and see completed lesson in the respective sections.',
     async function () {
+      // 8:14
       await loggedInUser.navigateToClassroomPage('math');
       await loggedInUser.selectAndOpenTopic('Algebra I');
       await loggedInUser.selectChapterWithinStoryToLearn(
@@ -116,6 +120,7 @@ describe('Logged-in User', function () {
 
       await loggedInUser.navigateToLearnerDashboard();
       await loggedInUser.navigateToGoalsSection();
+      // THIS IS FAILING
       await loggedInUser.expectCompletedGoalsToInclude(['Algebra I']);
 
       await loggedInUser.navigateToProgressSection();

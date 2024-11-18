@@ -516,6 +516,8 @@ class SignupHandler(
     @acl_decorators.require_user_id_else_redirect_to_homepage
     def get(self) -> None:
         """Handles GET requests."""
+        logging.info('LOG\n-----------------------\nENTERED SIGNUP HANDLER')
+        
         assert self.user_id is not None
         user_settings = user_services.get_user_settings(self.user_id)
         server_can_send_emails = (

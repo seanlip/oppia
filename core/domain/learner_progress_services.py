@@ -2023,6 +2023,8 @@ def get_topics_and_stories_progress(
     """
     activity_ids_in_learner_dashboard = (
         get_learner_dashboard_activities(user_id))
+    print('LOG----------------------------')
+    print(activity_ids_in_learner_dashboard.to_dict())
     completed_story_ids = (
         activity_ids_in_learner_dashboard.completed_story_ids)
     learnt_topic_ids = (

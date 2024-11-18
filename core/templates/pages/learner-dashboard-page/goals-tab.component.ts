@@ -108,6 +108,9 @@ export class GoalsTabComponent implements OnInit {
     this.starImageUrl = this.getStaticImageUrl('/learner_dashboard/star.svg');
     let topic: LearnerTopicSummary;
 
+    console.log('-----------------');
+    console.log(this);
+
     for (topic of this.currentGoals) {
       this.topicIdsInCurrentGoals.push(topic.id);
       this.checkedTopics.add(topic.id);

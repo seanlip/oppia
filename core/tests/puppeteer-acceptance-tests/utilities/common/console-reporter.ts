@@ -129,12 +129,27 @@ export class ConsoleReporter {
       if (!page) {
         return;
       }
+      page.on('pageerror', error => {
+        console.log('ERROR');
+        console.log(error.message);
+      });
+      page.on('response', response => {
+        console.log('RESPONSE');
+        console.log(response.status(), response.url());
+      });
+      page.on('requestfailed', request => {
+        console.log('REQUESTFAILED');
+        console.log(request.failure().errorText, request.url, request.url());
+      });
+
       page.on('console', async (message: PuppeteerConsoleMessage) => {
         // Here we exclude urls that are opened that are not part of the
         // application.
         if (!page.url().includes(HOST_URL)) {
           return;
         }
+
+        console.log('PAGE LOG:', message.text());
 
         let messageText = message.text();
         // Sometimes puppeteer returns a JSHandle error so we have to parse

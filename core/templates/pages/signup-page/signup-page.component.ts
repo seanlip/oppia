@@ -69,6 +69,9 @@ export class SignupPageComponent {
   ) {}
 
   ngOnInit(): void {
+    console.log('SIGNUP PAGE ENTERED');
+    console.log('-------------------');
+
     this.loaderService.showLoadingScreen('I18N_SIGNUP_LOADING');
 
     this.signupPageBackendApiService.fetchSignupPageDataAsync().then(data => {

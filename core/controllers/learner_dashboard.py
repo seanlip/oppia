@@ -72,11 +72,11 @@ class LearnerDashboardTopicsAndStoriesProgressHandler(
                 learner_progress_services.get_topics_and_stories_progress(
                     self.user_id))
 
-        completed_story_sumamries = (
+        completed_story_summaries = (
             learner_progress_in_topics_and_stories.completed_story_summaries)
         completed_story_summary_dicts = (
             learner_progress_services.get_displayable_story_summary_dicts(
-                self.user_id, completed_story_sumamries))
+                self.user_id, completed_story_summaries))
 
         learnt_topic_summary_dicts = (
             learner_progress_services.get_displayable_topic_summary_dicts(
@@ -98,13 +98,13 @@ class LearnerDashboardTopicsAndStoriesProgressHandler(
             learner_progress_services.get_displayable_topic_summary_dicts(
                 self.user_id,
                 learner_progress_in_topics_and_stories.all_topic_summaries))
-        untracked_topic_sumamries = (
+        untracked_topic_summaries = (
             learner_progress_in_topics_and_stories.untracked_topic_summaries
         )
         untracked_topic_summary_dicts = (
             learner_progress_services
             .get_displayable_untracked_topic_summary_dicts(
-                self.user_id, untracked_topic_sumamries))
+                self.user_id, untracked_topic_summaries))
 
         completed_to_incomplete_stories = (
             learner_progress_in_topics_and_stories.completed_to_incomplete_stories # pylint: disable=line-too-long
