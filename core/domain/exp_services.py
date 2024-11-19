@@ -734,7 +734,7 @@ def apply_change_list(
                             )
                     recorded_voiceovers = (
                         state_domain.RecordedVoiceovers.from_dict(
-                            change.new_value)) # type: ignore[arg-type]
+                            change.new_value))
                     state.update_recorded_voiceovers(recorded_voiceovers)
             elif change.cmd == exp_domain.CMD_EDIT_EXPLORATION_PROPERTY:
                 if change.property_name == 'title':
