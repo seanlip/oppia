@@ -1048,4 +1048,4 @@ def start_subprocess_for_result(cmd: List[str]) -> Tuple[bytes, bytes]:
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     ) as task:
         out, err = task.communicate()
-        return out, err
+    return out, err
