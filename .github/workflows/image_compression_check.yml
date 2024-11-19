@@ -1,0 +1,51 @@
+name: Image Compression Check
+
+on:
+  merge_group:
+    types: [checks_requested]
+  push:
+    branches:
+      - develop
+      - release-*
+  pull_request:
+    branches:
+      - develop
+      - release-*
+
+jobs:
+  run_tests:
+    name: Run Image Compression Checks
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python 3.9.20
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9.20'
+          architecture: 'x64'
+
+      - name: Merge develop branch into the current branch
+        uses: ./.github/actions/merge
+
+      - name: Initialize Containers
+        run: |
+          make build
+          make stop
+
+      - name: Run Image Compression Check
+        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
+        run: make run_tests.image_compression_check
+
+      - name: Report failure if image size exceeds limit on oppia/oppia develop branch
+        if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
+        uses: ./.github/actions/send-webhook-notification
+        with:
+          message: "Image compression check failed on the upstream develop branch."
+          webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
+
