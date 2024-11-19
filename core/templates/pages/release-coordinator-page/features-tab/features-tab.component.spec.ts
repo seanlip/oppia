@@ -63,7 +63,7 @@ class MockPlatformFeatureService {
   }
 }
 
-fdescribe('Release coordinator page feature tab', function () {
+describe('Release coordinator page feature tab', function () {
   let component: FeaturesTabComponent;
   let fixture: ComponentFixture<FeaturesTabComponent>;
   let featureApiService: FeatureFlagBackendApiService;
@@ -176,9 +176,9 @@ fdescribe('Release coordinator page feature tab', function () {
       {
         nativeElement: {
           value: 'UserGroup1',
-          getAttribute: (_: string) => 'random_feature_flag'
-        }
-      } as ElementRef
+          getAttribute: (_: string) => 'random_feature_flag',
+        },
+      } as ElementRef,
     ]);
 
     let featureFlagVM = component.featureFlagViewModels[0];
@@ -199,9 +199,9 @@ fdescribe('Release coordinator page feature tab', function () {
         {
           nativeElement: {
             value: 'UserGroup1',
-            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests'
-          }
-        } as ElementRef
+            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests',
+          },
+        } as ElementRef,
       ]);
 
       let featureFlagVM = component.featureFlagViewModels[0];
@@ -227,9 +227,9 @@ fdescribe('Release coordinator page feature tab', function () {
         {
           nativeElement: {
             value: 'UserGroup1',
-            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests'
-          }
-        } as ElementRef
+            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests',
+          },
+        } as ElementRef,
       ]);
 
       let featureFlagVM = component.featureFlagViewModels[0];
@@ -249,9 +249,9 @@ fdescribe('Release coordinator page feature tab', function () {
         {
           nativeElement: {
             value: 'UserGroup1',
-            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests'
-          }
-        } as ElementRef
+            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests',
+          },
+        } as ElementRef,
       ]);
 
       let featureFlagVM = component.featureFlagViewModels[0];
@@ -292,9 +292,9 @@ fdescribe('Release coordinator page feature tab', function () {
         {
           nativeElement: {
             value: 'UserGroup1',
-            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests'
-          }
-        } as ElementRef
+            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests',
+          },
+        } as ElementRef,
       ]);
 
       let featureFlagVM = component.featureFlagViewModels[0];
