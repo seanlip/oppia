@@ -2349,15 +2349,21 @@ class TypeIgnoreCommentCheckerTests(unittest.TestCase):
             'override',
             'return',
             'assignment',
+            'method-assign'
             'list-item',
             'dict-item',
             'typeddict-item',
+            'typeddict-unknown-key',
             'func-returns-value',
             'misc',
             'type-arg',
             'no-untyped-def',
             'no-untyped-call',
-            'no-any-return'
+            'no-any-return',
+            'var-annotated',
+            'valid-type',
+            'literal-required',
+            'redundant-cast'
         ]
 
     def test_type_ignore_used_without_comment_raises_error(self) -> None:
