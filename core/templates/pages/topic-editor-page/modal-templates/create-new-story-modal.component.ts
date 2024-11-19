@@ -63,6 +63,11 @@ export class CreateNewStoryModalComponent extends ConfirmOrCancelModal {
     if (!this.story.urlFragment) {
       return;
     }
+    this.story.urlFragment = this.story.urlFragment
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+
     this.storyEditorStateService.updateExistenceOfStoryUrlFragment(
       this.story.urlFragment,
       () => {

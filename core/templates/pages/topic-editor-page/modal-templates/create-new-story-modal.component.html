@@ -50,10 +50,10 @@
              [(ngModel)]="story.urlFragment"
              [ngModelOptions]="{standalone: true}"
              [maxlength]="MAX_CHARS_IN_STORY_URL_FRAGMENT"
-             [ngClass]="{'is-invalid': storyUrlFragmentExists || !validUrlFragmentRegex.test(story.urlFragment)}"
+             [ngClass]="{'is-invalid': storyUrlFragmentExists || !validUrlFragmentRegex.test(story.urlFragment.trim())}"
              (change)="onStoryUrlFragmentChange()">
       <div>
-        <div class="oppia-input-box-subtitle text-danger" [hidden]="story.urlFragment === '' || validUrlFragmentRegex.test(story.urlFragment)">
+        <div class="oppia-input-box-subtitle text-danger" [hidden]="story.urlFragment === '' || validUrlFragmentRegex.test(story.urlFragment.trim())">
           <b>
             Please use only lowercase letters, optionally separated by hyphen.
           </b>
