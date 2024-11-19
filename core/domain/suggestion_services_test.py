@@ -1033,6 +1033,7 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             suggestion_services.update_translation_suggestion(
                 suggestion.suggestion_id, 'test_translation'
             )
+
     def test_update_translation_suggestion_rejects_image_removal(
         self
     ) -> None:
@@ -1081,7 +1082,7 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             'Removing images from the translation is not allowed.'
         ):
             suggestion_services.update_translation_suggestion(
-                suggestion.suggestion_id, 
+                suggestion.suggestion_id,
                 '<p>Updated translation without image</p>'
             )
 
