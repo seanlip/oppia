@@ -10,22 +10,18 @@ def check_image_sizes(repo_path):
     failed_images = []
     print("Scanning images for compression...")
 
-    # Iterate through all image files
     for file_path in repo_path.glob("**/*.*"):
         if file_path.suffix.lower() in {".png", ".jpg", ".jpeg"}:
             try:
                 with Image.open(file_path) as img:
                     original_size = file_path.stat().st_size
-                    # Convert RGBA to RGB for compatibility
+                    
                     if img.mode == "RGBA":
                         img = img.convert("RGB")
-                    # Save compressed image to temporary file
                     img.save("temp.jpg", optimize=True, quality=85)
                     compressed_size = Path("temp.jpg").stat().st_size
-                    # Remove temporary file
                     Path("temp.jpg").unlink()
 
-                    # Check size difference
                     if compressed_size > original_size * 1.01:
                         failed_images.append(file_path)
                         print(
@@ -49,7 +45,7 @@ def main():
             "\nPlease compress these images using a tool like `trimage` and replace them in your PR. "
             "You can install Trimage using your package manager (e.g., `sudo apt install trimage` on Ubuntu)."
         )
-        exit(1)  # Fail CI
+        exit(1) 
     else:
         print("\nAll images passed the compression check.")
 
