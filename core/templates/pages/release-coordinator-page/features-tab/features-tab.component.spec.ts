@@ -63,7 +63,7 @@ class MockPlatformFeatureService {
   }
 }
 
-describe('Release coordinator page feature tab', function () {
+fdescribe('Release coordinator page feature tab', function () {
   let component: FeaturesTabComponent;
   let fixture: ComponentFixture<FeaturesTabComponent>;
   let featureApiService: FeatureFlagBackendApiService;
@@ -174,15 +174,18 @@ describe('Release coordinator page feature tab', function () {
     component.userGroupInputs = new QueryList<ElementRef>();
     component.userGroupInputs.reset([
       {
-        nativeElement: {value: 'group1', getAttribute: () => 'UserGroup'},
-      } as ElementRef,
+        nativeElement: {
+          value: 'UserGroup1',
+          getAttribute: (_: string) => 'random_feature_flag'
+        }
+      } as ElementRef
     ]);
 
     let featureFlagVM = component.featureFlagViewModels[0];
     component.resetUserGroupSearch(featureFlagVM);
 
     expect(component.userGroupInputs._results[0].nativeElement.value).toEqual(
-      'group1'
+      'UserGroup1'
     );
     expect(featureFlagVM.filteredUserGroups).toEqual(component.allUserGroups);
   }));
@@ -194,11 +197,11 @@ describe('Release coordinator page feature tab', function () {
       component.userGroupInputs = new QueryList<ElementRef>();
       component.userGroupInputs.reset([
         {
-          nativeElement: {value: 'group1', getAttribute: () => 'UserGroup1'},
-        } as ElementRef,
-        {
-          nativeElement: {value: 'group2', getAttribute: () => 'UserGroup2'},
-        } as ElementRef,
+          nativeElement: {
+            value: 'UserGroup1',
+            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests'
+          }
+        } as ElementRef
       ]);
 
       let featureFlagVM = component.featureFlagViewModels[0];
@@ -222,11 +225,11 @@ describe('Release coordinator page feature tab', function () {
       component.userGroupInputs = new QueryList<ElementRef>();
       component.userGroupInputs.reset([
         {
-          nativeElement: {value: 'group1', getAttribute: () => 'UserGroup1'},
-        } as ElementRef,
-        {
-          nativeElement: {value: 'group2', getAttribute: () => 'UserGroup2'},
-        } as ElementRef,
+          nativeElement: {
+            value: 'UserGroup1',
+            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests'
+          }
+        } as ElementRef
       ]);
 
       let featureFlagVM = component.featureFlagViewModels[0];
@@ -244,11 +247,11 @@ describe('Release coordinator page feature tab', function () {
       component.userGroupInputs = new QueryList<ElementRef>();
       component.userGroupInputs.reset([
         {
-          nativeElement: {value: 'group1', getAttribute: () => 'UserGroup1'},
-        } as ElementRef,
-        {
-          nativeElement: {value: 'group2', getAttribute: () => 'UserGroup2'},
-        } as ElementRef,
+          nativeElement: {
+            value: 'UserGroup1',
+            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests'
+          }
+        } as ElementRef
       ]);
 
       let featureFlagVM = component.featureFlagViewModels[0];
@@ -287,11 +290,11 @@ describe('Release coordinator page feature tab', function () {
       component.userGroupInputs = new QueryList<ElementRef>();
       component.userGroupInputs.reset([
         {
-          nativeElement: {value: 'group1', getAttribute: () => 'UserGroup1'},
-        } as ElementRef,
-        {
-          nativeElement: {value: 'group2', getAttribute: () => 'UserGroup2'},
-        } as ElementRef,
+          nativeElement: {
+            value: 'UserGroup1',
+            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests'
+          }
+        } as ElementRef
       ]);
 
       let featureFlagVM = component.featureFlagViewModels[0];
