@@ -319,16 +319,19 @@ class UpdateConfigsTests(test_utils.GenericTestBase):
             ) as temp_analytics_constants_config:
                 constants_text = (
                     '  "GA_ANALYTICS_ID": "123"\n'
+                    '  "GTM_ANALYTICS_ID": "456"\n'
                     '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
                     '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
                 )
                 analytics_constants_config_text = (
                     '  "GA_ANALYTICS_ID": ""\n'
+                    '  "GTM_ANALYTICS_ID": ""\n'
                     '  "SITE_NAME_FOR_ANALYTICS": ""\n'
                     '  "CAN_SEND_ANALYTICS_EVENTS": false\n'
                 )
                 expected_analytics_constants_config_text = (
                     '  "GA_ANALYTICS_ID": "123"\n'
+                    '  "GTM_ANALYTICS_ID": "456"\n'
                     '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
                     '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
                 )
@@ -353,22 +356,25 @@ class UpdateConfigsTests(test_utils.GenericTestBase):
                         expected_analytics_constants_config_text
                     )
 
-    def test_raises_error_with_invalid_ga_analytics_id(self) -> None:
-        with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants:
-            with tempfile.NamedTemporaryFile(
-                mode='w+t'
-            ) as temp_analytics_constants_config:
-                analytics_constants_config_text = (
-                    '  "GA_ANALYTICS_ID": ""\n'
-                    '  "SITE_NAME_FOR_ANALYTICS": ""\n'
-                    '  "CAN_SEND_ANALYTICS_EVENTS": false\n'
-                )
-                temp_analytics_constants_config.write(
-                    analytics_constants_config_text)
-                temp_analytics_constants_config.flush()
+    def test_raises_error_with_invalid_update_analytics_ids(self) -> None:
+        with tempfile.NamedTemporaryFile(
+            mode='w+t'
+        ) as temp_analytics_constants_config:
+            analytics_constants_config_text = (
+                '  "GA_ANALYTICS_ID": ""\n'
+                '  "GTM_ANALYTICS_ID": ""\n'
+                '  "SITE_NAME_FOR_ANALYTICS": ""\n'
+                '  "CAN_SEND_ANALYTICS_EVENTS": false\n'
+            )
+            temp_analytics_constants_config.write(
+                analytics_constants_config_text)
+            temp_analytics_constants_config.flush()
 
+            with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants:
+                # Testing invalid GA_ANALYTICS_ID key.
                 constants_text = (
                     '  "GA_analytics_ID": "123"\n'
+                    '  "GTM_ANALYTICS_ID": "456"\n'
                     '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
                     '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
                 )
@@ -382,22 +388,29 @@ class UpdateConfigsTests(test_utils.GenericTestBase):
                         temp_constants.name
                     )
 
-    def test_raises_error_with_invalid_site_name(self) -> None:
-        with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants:
-            with tempfile.NamedTemporaryFile(
-                mode='w+t'
-            ) as temp_analytics_constants_config:
-                analytics_constants_config_text = (
-                    '  "GA_ANALYTICS_ID": ""\n'
-                    '  "SITE_NAME_FOR_ANALYTICS": ""\n'
-                    '  "CAN_SEND_ANALYTICS_EVENTS": false\n'
-                )
-                temp_analytics_constants_config.write(
-                    analytics_constants_config_text)
-                temp_analytics_constants_config.flush()
-
+            with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants:
+                # Testing invalid GTM_ANALYTICS_ID key.
                 constants_text = (
                     '  "GA_ANALYTICS_ID": "123"\n'
+                    '  "GTM_blablabla_ID": "123"\n'
+                    '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
+                    '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
+                )
+                temp_constants.write(constants_text)
+                temp_constants.flush()
+                with self.assertRaisesRegex(
+                    Exception, 'Error: No GTM_ANALYTICS_ID key found.'
+                ):
+                    update_configs.update_analytics_constants_based_on_config(
+                        temp_analytics_constants_config.name,
+                        temp_constants.name
+                    )
+
+            with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants:
+                # Testing invalid SITE_NAME_FOR_ANALYTICS key.
+                constants_text = (
+                    '  "GA_ANALYTICS_ID": "123"\n'
+                    '  "GTM_ANALYTICS_ID": "456"\n'
                     '  "SITE_name_for_ANALYTICS": "site-name"\n'
                     '  "CAN_SEND_ANALYTICS_EVENTS": true\n'
                 )
@@ -411,23 +424,11 @@ class UpdateConfigsTests(test_utils.GenericTestBase):
                         temp_constants.name
                     )
 
-    def test_raises_error_with_invalid_can_sned_analytics_key(self) -> None:
-        with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants:
-            with tempfile.NamedTemporaryFile(
-                mode='w+t'
-            ) as temp_analytics_constants_config:
-                analytics_constants_config_text = (
-                    '  "GA_ANALYTICS_ID": ""\n'
-                    '  "SITE_NAME_FOR_ANALYTICS": ""\n'
-                    '  "CAN_SEND_ANALYTICS_EVENTS": false\n'
-                )
-                temp_analytics_constants_config.write(
-                    analytics_constants_config_text)
-                temp_analytics_constants_config.flush()
-
+            with tempfile.NamedTemporaryFile(mode='w+t') as temp_constants:
                 # Testing invalid CAN_SEND_ANALYTICS_EVENTS key.
                 constants_text = (
                     '  "GA_ANALYTICS_ID": "123"\n'
+                    '  "GTM_ANALYTICS_ID": "456"\n'
                     '  "SITE_NAME_FOR_ANALYTICS": "site-name"\n'
                     '  "can_SEND_analytics_EVENTS": true\n'
                 )
