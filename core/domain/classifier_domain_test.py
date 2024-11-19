@@ -188,7 +188,7 @@ class ClassifierTrainingJobDomainTests(test_utils.GenericTestBase):
     # codebase we plan to get rid of the tests that intentionally test wrong
     # inputs that we can normally catch by typing.
     def test_validation_with_invalid_training_data(self) -> None:
-        self.training_job_dict['training_data'] = {}  # type: ignore[arg-type]
+        self.training_job_dict['training_data'] = {}  # type: ignore[typeddict-item]
         training_job = self._get_training_job_from_dict(self.training_job_dict)
         with self.assertRaisesRegex(
             utils.ValidationError, 'Expected training_data to be a list'):

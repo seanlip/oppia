@@ -1774,7 +1774,7 @@ class TestBase(unittest.TestCase):
             # "call_num"' error. Thus to avoid the error, we used ignore here.
             self.assertEqual(
                 new_function_with_checks.call_num > 0, called, msg=msg)  # type: ignore[attr-defined]
-            pretty_unused_args = [
+            pretty_unused_args = [ # type: ignore[var-annotated]
                 ', '.join(itertools.chain(
                     (repr(a) for a in args),
                     ('%s=%r' % kwarg for kwarg in kwargs.items())))
@@ -1892,7 +1892,7 @@ class TestBase(unittest.TestCase):
         # accept Dict[Any, Any] type but to allow both Dict and TypedDict type
         # we used Mapping here which causes MyPy to throw `incompatible argument
         # type` error. Thus to avoid the error, we used ignore here.
-        super().assertDictEqual(dict_one, dict_two, msg=msg)  # type: ignore[arg-type]
+        super().assertDictEqual(dict_one, dict_two, msg=msg)
 
     # Here we use type Any because the method 'assertItemsEqual' can accept any
     # kind of iterables to compare them against each other, and these iterables

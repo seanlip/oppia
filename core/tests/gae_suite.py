@@ -126,11 +126,7 @@ def main(args: Optional[List[str]] = None) -> None:
     # correct.
     google_path = os.path.join(THIRD_PARTY_PYTHON_LIBS_DIR, 'google')
     google_module = sys.modules['google']
-    # TODO(#15913): Here we use MyPy ignore because MyPy considering
-    # '__path__' attribute is not defined on Module type and this is
-    # because internally Module type was pointed wrongly, but this can
-    # be fixed once we upgraded our library.
-    google_module.__path__ = [google_path, THIRD_PARTY_PYTHON_LIBS_DIR]  # type: ignore[attr-defined]
+    google_module.__path__ = [google_path, THIRD_PARTY_PYTHON_LIBS_DIR]
     google_module.__file__ = os.path.join(google_path, '__init__.py')
 
     suites = create_test_suites(

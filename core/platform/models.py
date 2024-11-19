@@ -236,7 +236,7 @@ class _Gae(Platform):
             list(class). The corresponding storage-layer model classes.
         """
         model_names = [name for name in Names if name != Names.BASE_MODEL]
-        return cls.get_storage_model_classes(model_names)
+        return cls.get_storage_model_classes(model_names) # type: ignore[arg-type]
 
     @classmethod
     def import_auth_services(cls) -> ModuleType:

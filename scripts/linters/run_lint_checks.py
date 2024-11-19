@@ -644,7 +644,7 @@ def main(args: Optional[List[str]] = None) -> None:
         return
 
     read_files(all_filepaths, namespace=namespace)
-    files: Dict[str, List[str]] = multiprocessing.Manager().dict()
+    files: Dict[str, List[str]] = multiprocessing.Manager().dict() # type: ignore[assignment]
     categorize_files(all_filepaths, files)
 
     # Prepare custom tasks.

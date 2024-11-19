@@ -129,7 +129,7 @@ class InitializeAndroidTestDataTests(test_utils.GenericTestBase):
             new_topic.id, strict=True)
         self.assertTrue(new_topic_rights.topic_is_published)
 
-        self.assertGreater(new_topic.last_updated, old_topic_last_updated)
+        self.assertGreater(new_topic.last_updated, old_topic_last_updated) # type: ignore[misc, arg-type]
 
     def test_reinitialize_topic_is_published_when_exploration_does_not_exist(
         self

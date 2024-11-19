@@ -115,7 +115,7 @@ def clean(user_submitted_html: str) -> str:
     # TODO(sll): Alert the caller if the input was changed due to this call.
     # TODO(sll): Add a log message if bad HTML is detected.
     return bleach.clean(
-        user_submitted_html, tags=tag_names, attributes=core_tags, strip=True)
+        user_submitted_html, tags=tag_names, attributes=core_tags, strip=True) # type: ignore[arg-type]
 
 
 def strip_html_tags(html_string: str) -> str:
@@ -128,7 +128,7 @@ def strip_html_tags(html_string: str) -> str:
         str. The HTML string that results after all the tags and attributes are
         stripped out.
     """
-    return bleach.clean(html_string, tags=[], attributes={}, strip=True)
+    return bleach.clean(html_string, tags=[], attributes={}, strip=True) # type: ignore[arg-type]
 
 
 def get_image_filenames_from_html_strings(html_strings: List[str]) -> List[str]:

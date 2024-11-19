@@ -370,6 +370,30 @@ tomlkit==0.11.8 \
     --hash=sha256:8c726c4c202bdb148667835f68d68780b9a003a9ec34167b6c673b38eff2a171 \
     --hash=sha256:9330fc7faa1db67b541b28e62018c17d20be733177d290a13b24c62d1614e0c3
     # via pylint
+types-bleach==4.1.0 \
+    --hash=sha256:682a70cf1d0158b11d1268e925abd1b45cfd6ac0eab1a7a1d14439b5708edf3d \
+    --hash=sha256:98840e21ea555b8df01779c6daf7963366358550055947cf6e4733b553b4ecae
+    # via -r requirements_dev.in
+types-futures==3.3.8 \
+    --hash=sha256:6fe8ccc2c2af7ef2fdd9bf73eab6d617074f09f30ad7d373510b4043d39c42de \
+    --hash=sha256:d6e97ec51d56b96debfbf1dea32ebec22c1687f16d2547ea0a34b48db45df205
+    # via types-protobuf
+types-protobuf==3.18.3 \
+    --hash=sha256:593596b300d09d8aaa02a3b801bd3658931201eba78bec7426c65bb0c7293336 \
+    --hash=sha256:d3e253ebc1ba5e78932fef703dc4316afb7e5facd0ce8661b3921c9d541e16a7
+    # via -r requirements_dev.in
+types-pyyaml==6.0 \
+    --hash=sha256:3d3591ddfc488fc30be3c506a0c0fe54da968fe98d8b76ab12e59d455330ffca \
+    --hash=sha256:746f23d351245d176d7bc89eef79e2ee94b4e7306f7d23bfefb3dc946c0fb58d
+    # via -r requirements_dev.in
+types-requests==2.31.0 \
+    --hash=sha256:7c5cea7940f8e92ec560bbc468f65bf684aa3dcf0554a6f8c4710f5f708dc598 \
+    --hash=sha256:c1c29d20ab8d84dff468d7febfe8e0cb0b4664543221b386605e14672b44ea25
+    # via -r requirements_dev.in
+types-urllib3==1.26.25.14 \
+    --hash=sha256:229b7f577c951b8c1b92c1bc2b2fdb0b49847bd2af6d1cc2a2e3dd340f3bda8f \
+    --hash=sha256:9683bbb7fb72e32bfe9d2be6e04875fbe1b3eeec3cbb4ea231435aa7fd6b4f0e
+    # via types-requests
 typing-extensions==4.5.0 \
     --hash=sha256:5cb5f4a79139d699607b3ef622a1dedafa84e115ab0024e0d9c044a9479ca7cb \
     --hash=sha256:fb33085c39dd998ac16d1431ebc293a8b3eedd00fd4a32de0ff79002c19511b4

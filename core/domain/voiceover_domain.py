@@ -34,7 +34,7 @@ class EntityVoiceoversDict(TypedDict):
     entity_type: str
     entity_version: int
     language_accent_code: str
-    voiceovers_mapping: Dict[str, Dict[
+    voiceovers_mapping: Dict[str, Dict[ # type: ignore[valid-type]
         feconf.VoiceoverType.value, Optional[state_domain.VoiceoverDict]]]
 
 
@@ -97,7 +97,7 @@ class EntityVoiceovers:
             EntityVoiceoversDict. The dict representation of the
             EntityVoiceovers object.
         """
-        content_id_to_voiceovers_dict: Dict[str, Dict[
+        content_id_to_voiceovers_dict: Dict[str, Dict[ # type: ignore[valid-type]
             feconf.VoiceoverType.value, Optional[state_domain.VoiceoverDict]]
         ] = {}
 

@@ -381,12 +381,12 @@ class RunPortserverTests(test_utils.GenericTestBase):
 
         with swap_socket, swap_hasattr:
             server = run_portserver.Server(dummy_handler, '\08181')
-            run_portserver.Server.handle_connection(MockSocket(), dummy_handler)
+            run_portserver.Server.handle_connection(MockSocket(), dummy_handler) # type: ignore[arg-type]
 
-            self.assertFalse(server.socket.server_closed)
+            self.assertFalse(server.socket.server_closed) # type: ignore[attr-defined]
             server.close()
 
-        self.assertTrue(server.socket.server_closed)
+        self.assertTrue(server.socket.server_closed) # type: ignore[attr-defined]
 
     def test_server_on_close_removes_the_socket_file(self) -> None:
         path = '8181'
@@ -402,10 +402,10 @@ class RunPortserverTests(test_utils.GenericTestBase):
 
         with swap_socket, swap_hasattr, swap_remove:
             server = run_portserver.Server(dummy_handler, path)
-            self.assertFalse(server.socket.server_closed)
+            self.assertFalse(server.socket.server_closed) # type: ignore[attr-defined]
             server.close()
 
-        self.assertTrue(server.socket.server_closed)
+        self.assertTrue(server.socket.server_closed) # type: ignore[attr-defined]
 
     def test_null_port_ranges_while_calling_script_throws_error(self) -> None:
         swap_server = self.swap(

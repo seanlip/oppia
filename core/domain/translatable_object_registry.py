@@ -65,7 +65,7 @@ class Registry:
             # string 'Translatable'. So we need to do verification based on the
             # class's ancestors.
             if 'BaseTranslatableObject' in ancestor_names:
-                cls._translatable_objects_dict[clazz.__name__] = clazz
+                cls._translatable_objects_dict[clazz.__name__] = clazz # type: ignore[index]
 
     @classmethod
     def get_all_class_names(cls) -> List[TranslatableObjectNames]:

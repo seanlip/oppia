@@ -443,7 +443,7 @@ class Server:
         # sys.exit() since it would totally stop the execution rather
         # than simply breaking away from the loop.
         while True: # pragma: no cover
-            connection, _ = self.socket.accept()
+            connection, _ = self.socket.accept() # type: ignore[attr-defined]
             thread = threading.Thread(
                 target=Server.handle_connection,
                 args=(connection, self.handler),
@@ -486,7 +486,7 @@ class Server:
         """
         request = connection.recv(Server.message_size)
         response = handler(request)
-        connection.sendall(response)
+        connection.sendall(response) # type: ignore[arg-type]
         connection.close()
 
     def _start_server(self, path: str) -> socket.SocketType:

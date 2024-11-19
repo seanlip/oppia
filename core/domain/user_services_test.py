@@ -578,11 +578,11 @@ class UserServicesUnitTests(test_utils.GenericTestBase):
         self.assertFalse(admin_settings.banned)
         self.assertEqual(admin_settings.username, 'admin')
         self.assertGreater(
-            admin_settings.last_agreed_to_terms,
+            admin_settings.last_agreed_to_terms, # type: ignore[arg-type]
             less_than_time
         )
         self.assertLess(
-            admin_settings.last_agreed_to_terms,
+            admin_settings.last_agreed_to_terms, # type: ignore[arg-type]
             greater_than_time
         )
 
@@ -2092,8 +2092,8 @@ class UserServicesUnitTests(test_utils.GenericTestBase):
         user_services.record_user_started_state_editor_tutorial(user_id)
         user_settings = user_services.get_user_settings(user_id)
 
-        self.assertGreaterEqual(
-            user_settings.last_started_state_editor_tutorial,
+        self.assertGreaterEqual( # type: ignore[misc]
+            user_settings.last_started_state_editor_tutorial, # type: ignore[arg-type]
             prev_started_state
         )
 
@@ -3245,8 +3245,8 @@ class LastLoginIntegrationTests(test_utils.GenericTestBase):
         # changed.
         self.login(self.VIEWER_EMAIL)
         self.get_html_response(feconf.LIBRARY_INDEX_URL)
-        self.assertLess(
-            last_logged_in,
+        self.assertLess( # type: ignore[misc]
+            last_logged_in, # type: ignore[arg-type]
             user_services.get_user_settings(self.viewer_id).last_logged_in)
         self.logout()
 
@@ -3274,8 +3274,8 @@ class LastLoginIntegrationTests(test_utils.GenericTestBase):
         with self.mock_datetime_utcnow(mocked_datetime_utcnow):
             self.login(self.VIEWER_EMAIL)
             self.get_html_response(feconf.LIBRARY_INDEX_URL)
-            self.assertGreater(
-                user_services.get_user_settings(self.viewer_id).last_logged_in,
+            self.assertGreater( # type: ignore[misc]
+                user_services.get_user_settings(self.viewer_id).last_logged_in, # type: ignore[arg-type]
                 previous_last_logged_in_datetime)
             self.logout()
 
@@ -3351,8 +3351,8 @@ class LastExplorationEditedIntegrationTests(test_utils.GenericTestBase):
 
         # Make sure last exploration edited time gets updated.
         editor_settings = user_services.get_user_settings(self.editor_id)
-        self.assertGreater(
-            (editor_settings.last_edited_an_exploration),
+        self.assertGreater( # type: ignore[misc]
+            (editor_settings.last_edited_an_exploration), # type: ignore[arg-type]
             previous_last_edited_an_exploration)
 
 
@@ -3407,8 +3407,8 @@ class LastExplorationCreatedIntegrationTests(test_utils.GenericTestBase):
 
         # Make sure that last exploration created time gets updated.
         owner_settings = user_services.get_user_settings(self.owner_id)
-        self.assertGreater(
-            (owner_settings.last_created_an_exploration),
+        self.assertGreater( # type: ignore[misc]
+            (owner_settings.last_created_an_exploration), # type: ignore[arg-type]
             previous_last_created_an_exploration)
 
 
