@@ -8,11 +8,11 @@
             {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_STORY_TITLE' | translate: {title: goalTopic.getName()} }}
           </p>
           <div class="goal-list-center">
-            <p [style.font-size.px]="10" class="mb-0">
+            <p class="goal-list-progress-text">
               {{ 'I18N_LEARNER_DASHBOARD_GOALS_SECTION_LIST_STORY_PROGRESS' | translate: {current: story.getCompletedNodeTitles().length, total: story.getNodeTitles().length} }}
             </p>
             <div class="goal-list-progress-bar">
-              <div [style.width.%]="getStoryProgress(story)"> </div>
+              <div [ngStyle]="{'width': getStoryProgress(story) + '%'}"> </div>
             </div>
           </div>
         </div>
@@ -35,7 +35,7 @@
     <div *ngIf="displayAllNodes" class="goal-list-story-nodes">
       <ng-container *ngFor="let storyNode of story.getAllNodes(); let j = index">
         <div class="d-flex flex-column">
-          <div [style.width.px]="36" class="d-flex justify-content-center">
+          <div class="goal-list-story-node-line-container">
             <div *ngIf="j !== 0" class="goal-list-story-node-line"></div>
           </div>
           <div class="goal-list-center" [ngStyle]="{'justify-content' : 'space-between'}">
@@ -52,7 +52,7 @@
               {{ 'I18N_LEARNER_DASHBOARD_CARD_BUTTON_START' | translate }}
             </a>
           </div>
-          <div [style.width.px]="36" class="d-flex justify-content-center">
+          <div class="goal-list-story-node-line-container">
             <div *ngIf="j !== story.getAllNodes().length - 1" class="goal-list-story-node-line"></div>
           </div>
         </div>
@@ -108,6 +108,11 @@
     height: 4px;
   }
 
+  .goal-list-progress-text {
+    font-size: 10px;
+    margin-bottom: 0;
+  }
+
   .goal-list-story-nodes {
     display: flex;
     flex-direction: column;
@@ -120,6 +125,12 @@
   .goal-list-story-node-line {
     border-left: 1px solid;
     height: 12px;
+  }
+
+  .goal-list-story-node-line-container {
+    display: flex;
+    justify-content: center;
+    width: 36px;
   }
 
   .goal-list-stretch {
