@@ -4120,7 +4120,7 @@ class State(translation_domain.BaseTranslatableObject):
                                 param_type,
                                 objects.BaseTranslatableObject
                         ):
-                            new_content_id_list.append(value['contentId']) # type: ignore[index]
+                            new_content_id_list.append(value['contentId'])
 
                         try:
                             normalized_param = param_type.normalize(value)

@@ -128,7 +128,7 @@ def strip_html_tags(html_string: str) -> str:
         str. The HTML string that results after all the tags and attributes are
         stripped out.
     """
-    return bleach.clean(html_string, tags=[], attributes={}, strip=True) # type: ignore[arg-type]
+    return bleach.clean(html_string, tags=[], attributes={}, strip=True)
 
 
 def get_image_filenames_from_html_strings(html_strings: List[str]) -> List[str]:

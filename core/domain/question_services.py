@@ -575,7 +575,7 @@ def get_displayable_question_skill_link_details(
         merged_question_skill_links.append(
             question_domain.MergedQuestionSkillLink(
                 question_ids[ind], skill_ids_list,
-                [skill.description if skill else None for skill in skills],
+                [skill.description if skill else None for skill in skills], # ignore: type[misc]
                 grouped_difficulties[ind]))
 
     question_summaries = get_question_summaries_by_ids(question_ids)
