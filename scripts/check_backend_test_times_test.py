@@ -227,8 +227,8 @@ class CheckBackendTestTimesTests(test_utils.GenericTestBase):
                 check_backend_test_times, 'BACKEND_TEST_TIMES_FILE',
                 backend_test_times_temp_file.name
             )
-            with self.backend_test_time_reports_swap, backend_test_times_file_swap: # pylint: disable=line-too-long
-                with self.print_swap:
+            with self.backend_test_time_reports_swap:
+                with backend_test_times_file_swap, self.print_swap:
                     check_backend_test_times.main()
             sorted_backend_test_times_from_file = []
             for line in backend_test_times_temp_file.readlines():
