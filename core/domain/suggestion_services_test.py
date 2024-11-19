@@ -1063,7 +1063,8 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             'content_html': '<p>old content html</p>',
             'translation_html': (
                 '<p>Translation for original content.</p>'
-                '<oppia-noninteractive-image alt-with-value="Image description" '
+                '<oppia-noninteractive-image'
+                'alt-with-value="Image description" '
                 'caption-with-value="Sample caption" '
                 'filepath-with-value="img.svg"></oppia-noninteractive-image>'
             ),
@@ -1080,23 +1081,30 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             'Removing images from the translation is not allowed.'
         ):
             suggestion_services.update_translation_suggestion(
-                suggestion.suggestion_id, '<p>Updated translation without image</p>'
+                suggestion.suggestion_id, 
+                '<p>Updated translation without image</p>'
             )
 
         suggestion_services.update_translation_suggestion(
             suggestion.suggestion_id,
-            '<p><oppia-noninteractive-image alt-with-value="Another description" '
-            'caption-with-value="Another caption" filepath-with-value="another_img.svg">'
-            '</oppia-noninteractive-image> Updated translation with image</p>'
+            '<p><oppia-noninteractive-image'
+            'alt-with-value="Another description" '
+            'caption-with-value="Another caption" ' 
+            'filepath-with-value="another_img.svg">'
+            '</oppia-noninteractive-image> '
+            'Updated translation with image</p>'
         )
         updated_suggestion = suggestion_services.get_suggestion_by_id(
             suggestion.suggestion_id
         )
         self.assertEqual(
             updated_suggestion.change_cmd.translation_html,
-            '<p><oppia-noninteractive-image alt-with-value="Another description" '
-            'caption-with-value="Another caption" filepath-with-value="another_img.svg">'
-            '</oppia-noninteractive-image> Updated translation with image</p>'
+            '<p><oppia-noninteractive-image '
+            'alt-with-value="Another description" '
+            'caption-with-value="Another caption" '
+            'filepath-with-value="another_img.svg">'
+            '</oppia-noninteractive-image> '
+            'Updated translation with image</p>'
         )
 
     def test_wrong_suggestion_raise_error_when_updating_add_question_suggestion(

@@ -295,7 +295,7 @@ describe('Translation Suggestion Review Modal Component', function () {
       component.ngOnInit();
 
       component.editedContent = {
-        html: `<p>Updated content without an image</p>`,
+        html: '<p>Updated content without an image</p>',
       };
 
       expect(component.isImageRemoved()).toBeTrue();
@@ -310,26 +310,26 @@ describe('Translation Suggestion Review Modal Component', function () {
 
       component.startedEditing = true;
       component.editedContent = {
-        html: `<p>Updated content without an image</p>`,
+        html: '<p>Updated content without an image</p>',
       };
 
       expect(component.isUpdateDisabled).toBeTrue();
     });
 
     it('should allow the update button if no image was initially present', () => {
-      component.translationHtml = `<p>Content without an image</p>`;
+      component.translationHtml = '<p>Content without an image</p>';
       component.ngOnInit();
 
       component.startedEditing = true;
       component.editedContent = {
-        html: `<p>Updated content without an image</p>`,
+        html: '<p>Updated content without an image</p>',
       };
 
       expect(component.isUpdateDisabled).toBeFalse();
     });
 
     it('should allow the update button if images are added instead of being removed', () => {
-      component.translationHtml = `<p>Content without an image</p>`;
+      component.translationHtml = '<p>Content without an image</p>';
       component.ngOnInit();
 
       component.startedEditing = true;
