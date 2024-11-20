@@ -26,7 +26,7 @@ jobs:
           event-type: develop-commit
           client-payload: '{
             "version": "${{ env.VERSION }}",
-            "app_name": "oppiaserver-backup-migration",
+            "app_name": "oppiatestserver",
             "maintenance_mode": "false",
             "sha": "${{ github.sha }}",
             "build_was_manually_triggered": "false",
