@@ -206,11 +206,13 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                     {
                         'name': 'blog-editor/publish',
                         'module': 'blog-editor/publish.spec.ts'
-                    },
+                    }
+                ],
+                'docker_suites': [
                     {
                         'name': 'exploration-player/view-exploration',
                         'module': 'exploration-player/view-exploration.spec.ts'
-                    }
+                    } 
                 ]
             }))
         with open(
@@ -327,9 +329,18 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
 
         self.all_test_suites = {
             'acceptance': {
-                'docker': {'count': 0, 'suites': []},
+                'docker': {
+                    'count': 1, 
+                    'suites': [
+                        {
+                            'name': 'exploration-player/view-exploration',
+                            'module': 
+                                'exploration-player/view-exploration.spec.ts',
+                            'environment': 'docker'
+                        }
+                    ]},
                 'python': {
-                    'count': 3,
+                    'count': 2,
                     'suites': [
                         {
                             'name': 'blog-admin/assign-roles',
@@ -338,11 +349,6 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                         {
                             'name': 'blog-editor/publish',
                             'module': 'blog-editor/publish.spec.ts'
-                        },
-                        {
-                            'name': 'exploration-player/view-exploration',
-                            'module': 
-                                'exploration-player/view-exploration.spec.ts'
                         }
                     ],
                 }
@@ -542,7 +548,7 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
         )
 
     def test_split_tests_by_docker(self) -> None:
-        suites_to_split = {
+        suites_to_split: check_ci_test_suites_to_run.CITestSuitesDict = {
             'count': 3,
             'suites': [
                 {
@@ -821,16 +827,17 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                             {
                                 'e2e': self.all_test_suites['e2e'],
                                 'acceptance': {
-                                    'docker': {'count': 0, 'suites': []},
-                                    'python': {
+                                    'docker': {
                                         'count': 1,
                                         'suites': [
                                             {
                                                 'name': 'exploration-player/view-exploration', # pylint: disable=line-too-long
-                                                'module': 'exploration-player/view-exploration.spec.ts' # pylint: disable=line-too-long
+                                                'module': 'exploration-player/view-exploration.spec.ts', # pylint: disable=line-too-long
+                                                'environment': 'docker'
                                             }
                                         ]
                                     },
+                                    'python': {'count': 0, 'suites': []},
                                 },
                                 'lighthouse_performance': {
                                     'suites': [
@@ -889,16 +896,17 @@ class CheckCITestSuitesToRunTests(test_utils.GenericTestBase):
                             {
                                 'e2e': self.all_test_suites['e2e'],
                                 'acceptance': {
-                                    'docker': {'count': 0, 'suites': []},
-                                    'python': {
+                                    'docker': {
                                         'suites': [
                                             {
                                                 'name': 'exploration-player/view-exploration', # pylint: disable=line-too-long
-                                                'module': 'exploration-player/view-exploration.spec.ts' # pylint: disable=line-too-long
+                                                'module': 'exploration-player/view-exploration.spec.ts', # pylint: disable=line-too-long
+                                                'environment': 'docker'
                                             }
                                         ],
                                         'count': 1
-                                    }
+                                    },
+                                    'python': {'count': 0, 'suites': []}
                                 },
                                 'lighthouse_accessibility': {
                                     'suites': [],
