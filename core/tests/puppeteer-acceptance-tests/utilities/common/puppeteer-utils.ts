@@ -592,8 +592,8 @@ export class BaseUser {
    * This function takes a screenshot of the page.
    * If there's no parameter for newPage, it checks this.page instead of newPage.
    * If there's no image with the given filename, it stores the screenshot with the given filename in the folder:
-   *  prod_desktop_screenshots or prod_mobile_screenshots for screenshots in production mode
-   *  dev_desktop_screenshots or dev_mobile_screenshots for screenshots in development mode
+   *  prod-desktop-screenshots or prod-mobile-screenshots for screenshots in production mode
+   *  dev-desktop-screenshots or dev-mobile-screenshots for screenshots in development mode
    * Otherwise, it compares the screenshot with the image named as the given string to check if they match.
    * If they don't match, it generates an image in the folder __diff_output__ to show the difference.
    * @param {string} imageName - The name for the image
@@ -620,9 +620,9 @@ export class BaseUser {
     var dirName = '';
     if (this.isViewportAtMobileWidth()) {
       if (await this.isInProdMode()) {
-        dirName = '/prod_mobile_screenshots';
+        dirName = '/prod-mobile-screenshots';
       } else {
-        dirName = '/dev_mobile_screenshots';
+        dirName = '/dev-mobile-screenshots';
       }
       failureTrigger += 0.042;
       if (await currentPage.$(backgroundBanner)) {
@@ -632,9 +632,9 @@ export class BaseUser {
       }
     } else {
       if (await this.isInProdMode()) {
-        dirName = '/prod_desktop_screenshots';
+        dirName = '/prod-desktop-screenshots';
       } else {
-        dirName = '/dev_desktop_screenshots';
+        dirName = '/dev-desktop-screenshots';
       }
       failureTrigger += 0.0028;
       if (await currentPage.$(backgroundBanner)) {
