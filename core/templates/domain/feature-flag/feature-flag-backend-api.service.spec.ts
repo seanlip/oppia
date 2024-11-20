@@ -45,11 +45,13 @@ describe('FeatureFlagBackendApiService', () => {
       },
     ],
     server_stage: 'dev',
-    user_group_dicts: [{
-      user_group_id: 'userGroupId1',
-      name: 'UserGroup1',
-      member_usernames: ['User1', 'User2', 'User3'],
-    }],
+    user_group_dicts: [
+      {
+        user_group_id: 'userGroupId1',
+        name: 'UserGroup1',
+        member_usernames: ['User1', 'User2', 'User3'],
+      },
+    ],
   };
 
   beforeEach(() => {
