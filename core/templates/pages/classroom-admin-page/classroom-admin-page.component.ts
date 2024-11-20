@@ -849,7 +849,7 @@ export class ClassroomAdminPageComponent implements OnInit {
   }
 
   getPrerequisiteLength(topicName: string): number {
-    return this.topicNameToPrerequisiteTopicNames[topicName].length;
+    return this.topicNameToPrerequisiteTopicNames[topicName]?.length?? 0;
   }
 
   ngOnDestory(): void {
