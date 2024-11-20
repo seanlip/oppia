@@ -18,14 +18,14 @@ jobs:
           private_key: ${{ secrets.NOTIFICATIONS_TOKEN_GENERATOR_GH_APP_PRIVATE_KEY }}
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@87c5425cae5ba8b5bc7da27674076c78588babf3
-        env:
-          VERSION: ${{ format('auto-{0}', github.sha) }}
+        run: |
+          echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
         with:
           token: ${{ steps.generate_token.outputs.token }}
           repository: oppia/release-scripts
           event-type: develop-commit
           client-payload: '{
-            "version": "${{ env.VERSION }}",
+            "version": "${{ format('auto-{0}', env.SHORT_SHA) }}",
             "app_name": "oppiatestserver",
             "maintenance_mode": "false",
             "sha": "${{ github.sha }}",
