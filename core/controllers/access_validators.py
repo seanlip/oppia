@@ -19,15 +19,15 @@ from __future__ import annotations
 from core import feature_flag_list
 from core import feconf
 from core.constants import constants
-from core.controllers import acl_decorators
+from core.controllers import acl_decorators, editor, reader
 from core.controllers import base
-from core.domain import blog_services
+from core.domain import blog_services, collection_services, exp_fetchers
 from core.domain import classroom_config_services
 from core.domain import feature_flag_services
 from core.domain import learner_group_services
 from core.domain import user_services
 
-from typing import Dict, TypedDict
+from typing import Dict, Optional, TypedDict
 
 
 # TODO(#13605): Refactor access validation handlers to follow a single handler
@@ -342,6 +342,187 @@ class ViewLearnerGroupPageAccessValidationHandler(
 
         if not is_valid_request:
             raise self.NotFoundException
+
+
+class ExplorationEmbedPageNormalizedRequestDict(TypedDict):
+    """Dict representation of ExplorationEmbedPage's
+    normalized_request dictionary.
+    """
+
+    v: Optional[int]
+    collection_id: Optional[str]
+    iframed: bool
+
+
+class ExplorationEmbedPageAccessValidationHandler(
+    base.BaseHandler[
+        Dict[str, str], ExplorationEmbedPageNormalizedRequestDict
+    ]
+):
+    """Page describing a single embedded exploration."""
+
+    URL_PATH_ARGS_SCHEMAS = {
+        'exploration_id': {
+            'schema': editor.SCHEMA_FOR_EXPLORATION_ID
+        }
+    }
+    HANDLER_ARGS_SCHEMAS = {
+        'GET': {
+            'v': {
+                'schema': {
+                    'type': 'int',
+                    'validators': [{
+                        'id': 'is_at_least',
+                        'min_value': 1
+                    }]
+                },
+                'default_value': None
+            },
+            'collection_id': {
+                'schema': {
+                    'type': 'basestring',
+                    'validators': [{
+                        'id': 'is_regex_matched',
+                        'regex_pattern': constants.ENTITY_ID_REGEX
+                    }]
+                },
+                'default_value': None
+            },
+            'iframed': {
+                'schema': {
+                    'type': 'bool'
+                },
+                'default_value': False
+            },
+        }
+    }
+
+    @acl_decorators.can_play_exploration
+    def get(self, exploration_id: str) -> None:
+        """Handles GET requests.
+
+        Args:
+            exploration_id: str. The ID of the exploration.
+        """
+        assert self.normalized_request is not None
+        version = self.normalized_request.get('v')
+
+        # Note: this is an optional argument and will be None when the
+        # exploration is being played outside the context of a collection.
+        collection_id = self.normalized_request.get('collection_id')
+
+        # This check is needed in order to show the correct page when a 404
+        # error is raised. The self.request.get('iframed') part of the check is
+        # needed for backwards compatibility with older versions of the
+        # embedding script.
+        if (feconf.EXPLORATION_URL_EMBED_PREFIX in self.request.uri or
+                self.normalized_request.get('iframed')):
+            self.iframed = True
+
+        if not reader._does_exploration_exist(exploration_id, version, collection_id):
+            raise self.NotFoundException
+
+        self.iframed = True
+
+
+
+class ExplorationPageNormalizedRequestDict(TypedDict):
+    """Dict representation of ExplorationPage's
+    normalized_request dictionary.
+    """
+
+    v: Optional[int]
+    parent: Optional[str]
+    iframed: Optional[bool]
+    collection_id: Optional[str]
+
+
+
+class ExplorationPlayerPageAccessValidationHandler(
+    base.BaseHandler[
+        Dict[str, str], ExplorationPageNormalizedRequestDict
+    ]
+):
+    """Page describing a single exploration."""
+
+    URL_PATH_ARGS_SCHEMAS = {
+        'exploration_id': {
+            'schema': {
+                'type': 'basestring',
+                'validators': [{
+                    'id': 'is_regex_matched',
+                    'regex_pattern': constants.ENTITY_ID_REGEX
+                }]
+            }
+        }
+    }
+    HANDLER_ARGS_SCHEMAS = {
+        'GET': {
+            'v': {
+                'schema': {
+                    'type': 'int',
+                    'validators': [{
+                        'id': 'is_at_least',
+                        # Version must be greater than zero.
+                        'min_value': 1
+                    }]
+                },
+                'default_value': None
+            },
+            'parent': {
+                'schema': {
+                    'type': 'basestring'
+                },
+                'default_value': None
+            },
+            'iframed': {
+                'schema': {
+                    'type': 'bool'
+                },
+                'default_value': None
+            },
+            'collection_id': {
+                'schema': {
+                    'type': 'basestring',
+                    'validators': [{
+                        'id': 'is_regex_matched',
+                        'regex_pattern': constants.ENTITY_ID_REGEX
+                    }]
+                },
+                'default_value': None
+            }
+        }
+    }
+
+    @acl_decorators.can_play_exploration
+    def get(self, exploration_id: str) -> None:
+        """Handles GET requests.
+
+        Args:
+            exploration_id: str. The ID of the exploration.
+        """
+        assert self.normalized_request is not None
+        version = self.normalized_request.get('v')
+
+        if self.normalized_request.get('iframed'):
+            redirect_url = '/embed/exploration/%s' % exploration_id
+            if version:
+                redirect_url += '?v=%s' % version
+            self.redirect(redirect_url)
+            return
+
+        # Note: this is an optional argument and will be None when the
+        # exploration is being played outside the context of a collection or if
+        # the 'parent' parameter is present.
+        if self.normalized_request.get('parent'):
+            collection_id = None
+        else:
+            collection_id = self.normalized_request.get('collection_id')
+
+        if not reader._does_exploration_exist(exploration_id, version, collection_id):
+            raise self.NotFoundException
+
+
 
 
 class CreateLearnerGroupPageAccessValidationHandler(

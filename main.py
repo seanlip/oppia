@@ -716,13 +716,22 @@ URLS = [
     get_redirect_route(
         r'%s' % feconf.USER_GROUPS_HANDLER_URL,
         release_coordinator.UserGroupHandler),
-
     get_redirect_route(
-        r'%s/<exploration_id>' % feconf.EXPLORATION_URL_PREFIX,
-        reader.ExplorationPage),
+        r'%s/can_access_exploration_player/<exploration_id>' %
+        feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
+        access_validators.ExplorationPlayerPageAccessValidationHandler
+    ),
     get_redirect_route(
-        r'%s/<exploration_id>' % feconf.EXPLORATION_URL_EMBED_PREFIX,
-        reader.ExplorationEmbedPage),
+        r'%s/can_access_exploration_player/<exploration_id>' %
+        feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
+        access_validators.ExplorationEmbedPageAccessValidationHandler
+    ),
+    # get_redirect_route(
+    #     r'%s/<exploration_id>' % feconf.EXPLORATION_URL_PREFIX,
+    #     reader.ExplorationPage),
+    # get_redirect_route(
+    #     r'%s/<exploration_id>' % feconf.EXPLORATION_URL_EMBED_PREFIX,
+    #     reader.ExplorationEmbedPage),
     get_redirect_route(
         r'%s/<exploration_id>' % feconf.EXPLORATION_INIT_URL_PREFIX,
         reader.ExplorationHandler),

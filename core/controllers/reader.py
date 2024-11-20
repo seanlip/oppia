@@ -93,77 +93,77 @@ class ExplorationEmbedPageNormalizedRequestDict(TypedDict):
     iframed: bool
 
 
-class ExplorationEmbedPage(
-    base.BaseHandler[
-        Dict[str, str], ExplorationEmbedPageNormalizedRequestDict
-    ]
-):
-    """Page describing a single embedded exploration."""
+# class ExplorationEmbedPage(
+#     base.BaseHandler[
+#         Dict[str, str], ExplorationEmbedPageNormalizedRequestDict
+#     ]
+# ):
+#     """Page describing a single embedded exploration."""
 
-    URL_PATH_ARGS_SCHEMAS = {
-        'exploration_id': {
-            'schema': editor.SCHEMA_FOR_EXPLORATION_ID
-        }
-    }
-    HANDLER_ARGS_SCHEMAS = {
-        'GET': {
-            'v': {
-                'schema': {
-                    'type': 'int',
-                    'validators': [{
-                        'id': 'is_at_least',
-                        'min_value': 1
-                    }]
-                },
-                'default_value': None
-            },
-            'collection_id': {
-                'schema': {
-                    'type': 'basestring',
-                    'validators': [{
-                        'id': 'is_regex_matched',
-                        'regex_pattern': constants.ENTITY_ID_REGEX
-                    }]
-                },
-                'default_value': None
-            },
-            'iframed': {
-                'schema': {
-                    'type': 'bool'
-                },
-                'default_value': False
-            },
-        }
-    }
+#     URL_PATH_ARGS_SCHEMAS = {
+#         'exploration_id': {
+#             'schema': editor.SCHEMA_FOR_EXPLORATION_ID
+#         }
+#     }
+#     HANDLER_ARGS_SCHEMAS = {
+#         'GET': {
+#             'v': {
+#                 'schema': {
+#                     'type': 'int',
+#                     'validators': [{
+#                         'id': 'is_at_least',
+#                         'min_value': 1
+#                     }]
+#                 },
+#                 'default_value': None
+#             },
+#             'collection_id': {
+#                 'schema': {
+#                     'type': 'basestring',
+#                     'validators': [{
+#                         'id': 'is_regex_matched',
+#                         'regex_pattern': constants.ENTITY_ID_REGEX
+#                     }]
+#                 },
+#                 'default_value': None
+#             },
+#             'iframed': {
+#                 'schema': {
+#                     'type': 'bool'
+#                 },
+#                 'default_value': False
+#             },
+#         }
+#     }
 
-    @acl_decorators.can_play_exploration
-    def get(self, exploration_id: str) -> None:
-        """Handles GET requests.
+#     @acl_decorators.can_play_exploration
+#     def get(self, exploration_id: str) -> None:
+#         """Handles GET requests.
 
-        Args:
-            exploration_id: str. The ID of the exploration.
-        """
-        assert self.normalized_request is not None
-        version = self.normalized_request.get('v')
+#         Args:
+#             exploration_id: str. The ID of the exploration.
+#         """
+#         assert self.normalized_request is not None
+#         version = self.normalized_request.get('v')
 
-        # Note: this is an optional argument and will be None when the
-        # exploration is being played outside the context of a collection.
-        collection_id = self.normalized_request.get('collection_id')
+#         # Note: this is an optional argument and will be None when the
+#         # exploration is being played outside the context of a collection.
+#         collection_id = self.normalized_request.get('collection_id')
 
-        # This check is needed in order to show the correct page when a 404
-        # error is raised. The self.request.get('iframed') part of the check is
-        # needed for backwards compatibility with older versions of the
-        # embedding script.
-        if (feconf.EXPLORATION_URL_EMBED_PREFIX in self.request.uri or
-                self.normalized_request.get('iframed')):
-            self.iframed = True
+#         # This check is needed in order to show the correct page when a 404
+#         # error is raised. The self.request.get('iframed') part of the check is
+#         # needed for backwards compatibility with older versions of the
+#         # embedding script.
+#         if (feconf.EXPLORATION_URL_EMBED_PREFIX in self.request.uri or
+#                 self.normalized_request.get('iframed')):
+#             self.iframed = True
 
-        if not _does_exploration_exist(exploration_id, version, collection_id):
-            raise self.NotFoundException
+#         if not _does_exploration_exist(exploration_id, version, collection_id):
+#             raise self.NotFoundException
 
-        self.iframed = True
-        self.render_template(
-            'oppia-root.mainpage.html', iframe_restriction=None)
+#         self.iframed = True
+#         self.render_template(
+#             'oppia-root.mainpage.html', iframe_restriction=None)
 
 
 class ExplorationPageNormalizedRequestDict(TypedDict):
@@ -177,91 +177,91 @@ class ExplorationPageNormalizedRequestDict(TypedDict):
     collection_id: Optional[str]
 
 
-class ExplorationPage(
-    base.BaseHandler[
-        Dict[str, str], ExplorationPageNormalizedRequestDict
-    ]
-):
-    """Page describing a single exploration."""
+# class ExplorationPage(
+#     base.BaseHandler[
+#         Dict[str, str], ExplorationPageNormalizedRequestDict
+#     ]
+# ):
+#     """Page describing a single exploration."""
 
-    URL_PATH_ARGS_SCHEMAS = {
-        'exploration_id': {
-            'schema': {
-                'type': 'basestring',
-                'validators': [{
-                    'id': 'is_regex_matched',
-                    'regex_pattern': constants.ENTITY_ID_REGEX
-                }]
-            }
-        }
-    }
-    HANDLER_ARGS_SCHEMAS = {
-        'GET': {
-            'v': {
-                'schema': {
-                    'type': 'int',
-                    'validators': [{
-                        'id': 'is_at_least',
-                        # Version must be greater than zero.
-                        'min_value': 1
-                    }]
-                },
-                'default_value': None
-            },
-            'parent': {
-                'schema': {
-                    'type': 'basestring'
-                },
-                'default_value': None
-            },
-            'iframed': {
-                'schema': {
-                    'type': 'bool'
-                },
-                'default_value': None
-            },
-            'collection_id': {
-                'schema': {
-                    'type': 'basestring',
-                    'validators': [{
-                        'id': 'is_regex_matched',
-                        'regex_pattern': constants.ENTITY_ID_REGEX
-                    }]
-                },
-                'default_value': None
-            }
-        }
-    }
+#     URL_PATH_ARGS_SCHEMAS = {
+#         'exploration_id': {
+#             'schema': {
+#                 'type': 'basestring',
+#                 'validators': [{
+#                     'id': 'is_regex_matched',
+#                     'regex_pattern': constants.ENTITY_ID_REGEX
+#                 }]
+#             }
+#         }
+#     }
+#     HANDLER_ARGS_SCHEMAS = {
+#         'GET': {
+#             'v': {
+#                 'schema': {
+#                     'type': 'int',
+#                     'validators': [{
+#                         'id': 'is_at_least',
+#                         # Version must be greater than zero.
+#                         'min_value': 1
+#                     }]
+#                 },
+#                 'default_value': None
+#             },
+#             'parent': {
+#                 'schema': {
+#                     'type': 'basestring'
+#                 },
+#                 'default_value': None
+#             },
+#             'iframed': {
+#                 'schema': {
+#                     'type': 'bool'
+#                 },
+#                 'default_value': None
+#             },
+#             'collection_id': {
+#                 'schema': {
+#                     'type': 'basestring',
+#                     'validators': [{
+#                         'id': 'is_regex_matched',
+#                         'regex_pattern': constants.ENTITY_ID_REGEX
+#                     }]
+#                 },
+#                 'default_value': None
+#             }
+#         }
+#     }
 
-    @acl_decorators.can_play_exploration
-    def get(self, exploration_id: str) -> None:
-        """Handles GET requests.
+#     @acl_decorators.can_play_exploration
+#     def get(self, exploration_id: str) -> None:
+#         """Handles GET requests.
 
-        Args:
-            exploration_id: str. The ID of the exploration.
-        """
-        assert self.normalized_request is not None
-        version = self.normalized_request.get('v')
+#         Args:
+#             exploration_id: str. The ID of the exploration.
+#         """
+#         assert self.normalized_request is not None
+#         version = self.normalized_request.get('v')
 
-        if self.normalized_request.get('iframed'):
-            redirect_url = '/embed/exploration/%s' % exploration_id
-            if version:
-                redirect_url += '?v=%s' % version
-            self.redirect(redirect_url)
-            return
+#         if self.normalized_request.get('iframed'):
+#             redirect_url = '/embed/exploration/%s' % exploration_id
+#             if version:
+#                 redirect_url += '?v=%s' % version
+#             self.redirect(redirect_url)
+#             return
 
-        # Note: this is an optional argument and will be None when the
-        # exploration is being played outside the context of a collection or if
-        # the 'parent' parameter is present.
-        if self.normalized_request.get('parent'):
-            collection_id = None
-        else:
-            collection_id = self.normalized_request.get('collection_id')
+#         # Note: this is an optional argument and will be None when the
+#         # exploration is being played outside the context of a collection or if
+#         # the 'parent' parameter is present.
+#         if self.normalized_request.get('parent'):
+#             collection_id = None
+#         else:
+#             collection_id = self.normalized_request.get('collection_id')
 
-        if not _does_exploration_exist(exploration_id, version, collection_id):
-            raise self.NotFoundException
+#         if not _does_exploration_exist(exploration_id, version, collection_id):
+#             raise self.NotFoundException
 
-        self.render_template('oppia-root.mainpage.html')
+#         self.render_template('oppia-root.mainpage.html')
 
 
 class ExplorationHandlerNormalizedRequestDict(TypedDict):

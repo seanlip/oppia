@@ -81,6 +81,9 @@ export class AccessValidationBackendApiService {
   CLASSROOMS_PAGE_ACCESS_VALIDATION =
     '/access_validation_handler/can_access_classrooms_page';
 
+  EXPLORATION_PLAYER_PAGE_ACCESS_VALIDATOR =
+    '/access_validation_handler/can_access_exploration_player/<exploration_id>';
+
   REVIEW_TESTS_PAGE_ACCESS_VALIDATOR =
     '/access_validation_handler/can_access_review_tests_page/<classroom_url_fragment>/<topic_url_fragment>/<story_url_fragment>'; // eslint-disable-line max-len
 
@@ -94,6 +97,16 @@ export class AccessValidationBackendApiService {
       this.STORY_EDITOR_PAGE_ACCESS_VALIDATOR,
       {
         story_id: storyId,
+      }
+    );
+    return this.http.get<void>(url).toPromise();
+  }
+
+  validateAccessToExplorationPlayerPage(explorationId: string): Promise<void> {
+    let url = this.urlInterpolationService.interpolateUrl(
+      this.EXPLORATION_PLAYER_PAGE_ACCESS_VALIDATOR,
+      {
+        exploration_id: explorationId,
       }
     );
     return this.http.get<void>(url).toPromise();

@@ -17,7 +17,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {downgradeComponent} from '@angular/upgrade/static';
+
 import {MobileMenuService} from '../new-lesson-player-services/mobile-menu.service';
 import './player-sidebar.component.css';
 import {ContextService} from 'services/context.service';
@@ -103,10 +103,3 @@ export class PlayerSidebarComponent implements OnInit {
     );
   }
 }
-
-angular.module('oppia').directive(
-  'oppiaPlayerHeader',
-  downgradeComponent({
-    component: PlayerSidebarComponent,
-  }) as angular.IDirectiveFactory
-);

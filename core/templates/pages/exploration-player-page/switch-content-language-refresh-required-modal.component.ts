@@ -18,7 +18,6 @@
  */
 
 import {Component, Input} from '@angular/core';
-import {downgradeComponent} from '@angular/upgrade/static';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {WindowRef} from 'services/contextual/window-ref.service';
@@ -53,10 +52,3 @@ export class SwitchContentLanguageRefreshRequiredModalComponent {
     this.windowRef.nativeWindow.location.href = url.href;
   }
 }
-
-angular.module('oppia').factory(
-  'SwitchContentLanguageRefreshRequiredModalComponent',
-  downgradeComponent({
-    component: SwitchContentLanguageRefreshRequiredModalComponent,
-  })
-);
