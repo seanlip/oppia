@@ -138,7 +138,6 @@ describe('Translation Suggestion Review Modal Component', function () {
       new MockMatSnackBarRef() as unknown as MatSnackBarRef<unknown>
     );
 
-    component.initialImageCount = 1;
     component.contentContainer = new ElementRef({offsetHeight: 150});
     component.translationContainer = new ElementRef({offsetHeight: 150});
     component.contentPanel = new RteOutputDisplayComponent(
@@ -153,6 +152,36 @@ describe('Translation Suggestion Review Modal Component', function () {
       new ElementRef({offsetHeight: 200}),
       null
     );
+    component.initialSuggestionId = 'suggestion_1';
+    component.suggestionIdToContribution = {
+      suggestion_1: {
+        suggestion: {
+          author_name: 'author_name',
+          language_code: 'language_code',
+          last_updated_msecs: 1559074000000,
+          status: 'status',
+          suggestion_id: 'suggestion_1',
+          target_id: '1',
+          target_type: 'target_type',
+          suggestion_type: 'translate_content',
+          change_cmd: {
+            content_id: 'hint_1',
+            content_html: '<p>content</p>',
+            translation_html: 'Translation content',
+            state_name: 'StateName',
+            cmd: 'edit_state_property',
+            data_format: 'html',
+            language_code: 'language_code',
+          },
+          exploration_content_html: '<p>content</p>',
+        },
+        details: {
+          topic_name: 'topic_1',
+          story_title: 'story_1',
+          chapter_title: 'chapter_1',
+        },
+      },
+    };
     component.initialImageCount = 1;
   });
 
