@@ -100,9 +100,11 @@ allowed-type-ignore-error-codes=
     override,
     return,
     assignment,
+    method-assign,
     list-item,
     dict-item,
     typeddict-item,
+    typeddict-unknown-key,
     func-returns-value,
     misc,
     arg-type,
@@ -111,7 +113,11 @@ allowed-type-ignore-error-codes=
     no-untyped-call,
     no-any-return,
     call-arg,
-    index
+    index,
+    var-annotated,
+    valid-type,
+    literal-required,
+    redundant-cast
 
 ignore-imports=yes
 
