@@ -13,8 +13,7 @@ jobs:
       - name: Set environment variables
         id: set_env
         run: |
-          echo "SHORT_SHA=$(echo $GITHUB_SHA | cut -c1-7)"
-          echo "VERSION=auto-${SHORT_SHA}" >> $GITHUB_ENV
+          echo "VERSION=auto-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
       - name: Generate token
         id: generate_token
         uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
