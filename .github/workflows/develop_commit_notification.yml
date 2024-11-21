@@ -1,11 +1,19 @@
 name: Broadcast 'push to develop' event to our release-scripts repo
 on:
+  # Note that status event is triggered when the status of a commit changes
+  # on the develop branch.
+  # See https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#status
   status
 
 jobs:
   send_notification:
     name: Send notification
     runs-on: ubuntu-22.04
+    # Only broadcast this if the status event of a commit on develop branch
+    # is successful and the repository is oppia/oppia.
+    # Further checks to ensure that the relevant commit can be deployed (e.g.
+    # the commit is not an older commit than the latest deployed commit.) is
+    # done in the build_release_candidate script.
     if: ${{ (github.repository == 'oppia/oppia') && (github.event.state == 'success') }}
     steps:
       - name: Set environment variables
