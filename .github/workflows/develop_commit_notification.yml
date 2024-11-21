@@ -1,14 +1,12 @@
 name: Broadcast 'push to develop' event to our release-scripts repo
 on:
-  push:
-    branches:
-      - develop
+  status
 
 jobs:
   send_notification:
     name: Send notification
     runs-on: ubuntu-22.04
-    if: github.repository == 'oppia/oppia'
+    if: ${{ (github.repository == 'oppia/oppia') && (github.event.state == 'success') }}
     steps:
       - name: Set environment variables
         id: set_env
