@@ -415,14 +415,14 @@ class ExplorationEmbedPageAccessValidationHandler(
         # error is raised. The self.request.get('iframed') part of the check is
         # needed for backwards compatibility with older versions of the
         # embedding script.
-        if (feconf.EXPLORATION_URL_EMBED_PREFIX in self.request.uri or
-                self.normalized_request.get('iframed')):
-            self.iframed = True
+        # if (feconf.EXPLORATION_URL_EMBED_PREFIX in self.request.uri or
+        #         self.normalized_request.get('iframed')):
+        #     self.iframed = True
 
         if not reader._does_exploration_exist(exploration_id, version, collection_id):
             raise self.NotFoundException
 
-        self.iframed = True
+        # self.iframed = True
 
 
 

@@ -51,14 +51,27 @@ export class ExplorationPlayerPageAuthGuard implements CanActivate {
           resolve(true);
         })
         .catch(err => {
-          this.router
-            .navigate([
-              `${AppConstants.PAGES_REGISTERED_WITH_FRONTEND.ERROR.ROUTE}/${err.status}`,
-            ])
-            .then(() => {
-              this.location.replaceState(state.url);
-              resolve(false);
-            });
+          let currentUrl = state.url;
+          if (currentUrl.includes('embed')) {
+            this.router
+              .navigate([
+                `${AppConstants.PAGES_REGISTERED_WITH_FRONTEND.ERROR_IFRAMED.ROUTE}`,
+              ])
+              .then(() => {
+                this.location.replaceState(state.url);
+                resolve(false);
+              });
+            return;
+          } else {
+            this.router
+              .navigate([
+                `${AppConstants.PAGES_REGISTERED_WITH_FRONTEND.ERROR.ROUTE}/${err.status}`,
+              ])
+              .then(() => {
+                this.location.replaceState(state.url);
+                resolve(false);
+              });
+          }
         });
     });
   }
