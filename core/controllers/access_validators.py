@@ -559,7 +559,7 @@ class ExplorationEditorAccessValidationHandlerPage(
                 'validators': [{
                     'id': 'is_regex_matched',
                     'regex_pattern': constants.ENTITY_ID_REGEX
-                   }]
+                }]
             }
         }
     }

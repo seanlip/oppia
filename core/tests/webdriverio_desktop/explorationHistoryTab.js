@@ -722,7 +722,6 @@ describe('Exploration history', function () {
     // Revert to version 2.
     await explorationEditorPage.navigateToHistoryTab();
     await explorationEditorHistoryTab.revertToVersion(2);
-    await explorationEditorPage.navigateToHistoryTab();
     await explorationEditorHistoryTab.expectRevertToVersion(2);
 
     // Verify exploration is version 2.

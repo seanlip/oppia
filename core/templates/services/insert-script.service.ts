@@ -29,7 +29,9 @@ export enum KNOWN_SCRIPTS {
   providedIn: 'root',
 })
 export class InsertScriptService {
+  // Set of scripts that have already loaded.
   private loadedScripts: Set<string> = new Set<string>();
+  // Maps scripts that are currently still loading along with their promises.
   private scriptsLoading: Map<string, Promise<void>> = new Map();
   private renderer: Renderer2;
 
@@ -38,11 +40,14 @@ export class InsertScriptService {
   }
 
   loadScript(script: KNOWN_SCRIPTS, onLoadCb?: () => void): boolean {
+    // If the script is already loaded, it does not load again.
     if (this.loadedScripts.has(script)) {
       Promise.resolve().then(onLoadCb);
       return false;
     }
 
+    // The loading method continues only if the script is not in scriptsLoading.
+    // This is to prevent the same script from creating multiple promises to load.
     if (!this.scriptsLoading.has(script)) {
       const scriptElement = this.renderer.createElement('script');
 

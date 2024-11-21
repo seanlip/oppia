@@ -855,7 +855,7 @@ class ExplorationEditorPageAccessValidationHandlerTests(
         self.get_html_response(
             '%s/can_access_exploration_editor_page/%s' % (
                 ACCESS_VALIDATION_HANDLER_PREFIX, self.exp_id
-            ), expected_status_int=200
+                ), expected_status_int=200
         )
         self.logout()
 

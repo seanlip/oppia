@@ -845,12 +845,14 @@ export class CurriculumAdmin extends BaseUser {
    */
   async closeEditorNavigationDropdown(): Promise<void> {
     try {
-      await this.page.waitForSelector(dropdownToggleIcon, {
-        visible: true,
-        timeout: 5000,
-      });
-      await this.clickOn(dropdownToggleIcon);
-      showMessage('Editor navigation closed successfully.');
+      if (this.isViewportAtMobileWidth()) {
+        await this.page.waitForSelector(dropdownToggleIcon, {
+          visible: true,
+          timeout: 5000,
+        });
+        await this.clickOn(dropdownToggleIcon);
+        showMessage('Editor navigation closed successfully.');
+      }
     } catch (error) {
       showMessage(`Dropdown Toggle Icon not found: ${error.message}`);
     }

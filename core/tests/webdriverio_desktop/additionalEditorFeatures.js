@@ -151,7 +151,6 @@ describe('Full exploration editor', function () {
       await explorationEditorMainTab.expectCurrentStateToBe(
         general.FIRST_STATE_DEFAULT_NAME
       );
-      await explorationEditorPage.navigateToMainTab();
       await explorationEditorMainTab.setStateName('first');
       await explorationEditorMainTab.expectCurrentStateToBe('first');
       await explorationEditorMainTab.setContent(
