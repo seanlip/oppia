@@ -109,8 +109,7 @@ export class InteractiveCodeReplComponent
       ) as CodeReplCustomizationArgs;
 
     this.interactionIsActive = true;
-    if(this.lastAnswer)
-    {
+    if (this.lastAnswer) {
       this.interactionIsActive = false;
     }
     this.language = language.value;
