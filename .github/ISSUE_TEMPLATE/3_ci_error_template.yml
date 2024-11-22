@@ -19,7 +19,7 @@ body:
         - Other
     validations:
       required: true
-  - type: textarea
+  - type: input
     id: step
     attributes:
       label: Which CI step failed?
