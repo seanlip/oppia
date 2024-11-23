@@ -364,6 +364,7 @@ class ReleaseCoordinatorAccessValidationHandlerTests(
 class ExplorationPlayerPageAccessValidationHandlerTests(
         test_utils.GenericTestBase):
     """Test for exploration player access validation."""
+
     pass
 
 
