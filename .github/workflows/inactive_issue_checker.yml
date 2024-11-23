@@ -32,7 +32,7 @@ jobs:
 
     - name: Check inactive issues
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.ASHU_GITHUB_TOKEN }}
       run: |
         make inactive_issue_checker
       

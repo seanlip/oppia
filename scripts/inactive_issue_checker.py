@@ -2,7 +2,7 @@ import os
 import datetime
 from github import Github
 
-INACTIVE_DAYS = 7
+INACTIVE_DAYS = 0.01
 
 def check_inactive_issues(github_token, repo_owner, repo_name):
     """
@@ -32,7 +32,7 @@ def check_inactive_issues(github_token, repo_owner, repo_name):
             print(f"Unassigned issue #{issue.number} from {issue.assignee.login} due to inactivity")
 
 if __name__ == "__main__":
-    github_token = os.environ["GITHUB_TOKEN"]
-    repo_owner = "oppia"
+    github_token = os.environ["ASHU_GITHUB_TOKEN"]
+    repo_owner = "Ashu463"
     repo_name = "oppia"
     check_inactive_issues(github_token, repo_owner, repo_name)
