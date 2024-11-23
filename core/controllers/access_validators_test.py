@@ -361,6 +361,12 @@ class ReleaseCoordinatorAccessValidationHandlerTests(
             ACCESS_VALIDATION_HANDLER_PREFIX)
 
 
+class ExplorationPlayerPageAccessValidationHandlerTests(
+        test_utils.GenericTestBase):
+    """Test for exploration player access validation."""
+    pass
+
+
 class DiagnosticTestPlayerPageAccessValidationHandlerTests(
         test_utils.GenericTestBase):
     """Test for diagnostic test player access validation."""
