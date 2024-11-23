@@ -21,18 +21,15 @@ from core import feconf
 from core.constants import constants
 from core.controllers import acl_decorators
 from core.controllers import base
-from core.domain import blog_services
 from core.controllers import editor
 from core.controllers import reader
+from core.domain import blog_services
 from core.domain import classroom_config_services
-from core.domain import collection_services
-from core.domain import exp_fetchers
 from core.domain import feature_flag_services
 from core.domain import learner_group_services
 from core.domain import user_services
 
 from typing import Dict, Optional, TypedDict
-
 
 # TODO(#13605): Refactor access validation handlers to follow a single handler
 # pattern.
