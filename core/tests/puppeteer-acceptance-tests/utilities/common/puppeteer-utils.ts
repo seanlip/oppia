@@ -590,15 +590,16 @@ export class BaseUser {
 
   /**
    * This function takes a screenshot of the page.
-   * If there's no parameter for newPage, it checks this.page instead of newPage.
    * If there's no image with the given filename, it stores the screenshot with the given filename in the folder:
-   *  prod-desktop-screenshots or prod-mobile-screenshots for screenshots in production mode
-   *  dev-desktop-screenshots or dev-mobile-screenshots for screenshots in development mode
-   * Otherwise, it compares the screenshot with the image named as the given string to check if they match.
-   * If they don't match, it generates an image in the folder __diff_output__ to show the difference.
+   *   - prod-desktop-screenshots or prod-mobile-screenshots for screenshots in production mode
+   *   - dev-desktop-screenshots or dev-mobile-screenshots for screenshots in development mode
+   * Otherwise, it compares the screenshot with the image named as the given string
+   * to check if they match. If they don't match, it generates an image in the folder
+   * diff-snapshots to show the difference.
    * @param {string} imageName - The name for the image
    * @param {string} testPath - The path of the file that called this function
-   * @param {Page|undefined} newPage - The page to take screenshot from,
+   * @param {Page|undefined} newPage - The page to take screenshot from, If not
+   *     specified, uses this.page instead.
    */
   async expectScreenshotToMatch(
     imageName: string,
@@ -644,18 +645,16 @@ export class BaseUser {
       }
     }
 
-    /*
-     * Set dumpInlineDiffToConsole as true prints the base64 string of the image that shows the difference when failed in the terminal
-     * The string can be copy-pasted to a browser address string to preview the image
-     * If you are running tests locally, you can set dumpInlineDiffToConsole as false to stop printing the base64 string
-     */
     expect(await currentPage.screenshot()).toMatchImageSnapshot({
       failureThreshold: failureTrigger,
       failureThresholdType: 'percent',
       customSnapshotIdentifier: imageName,
       customSnapshotsDir: path.join(testPath, dirName),
       customDiffDir: path.isAbsolute('/home/runner/work/..')
-        ? '/home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots'
+        ? path.join(
+            '/home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots',
+            path.basename(dirName)
+          )
         : path.join(testPath, dirName, 'diff-snapshots'),
     });
     if (typeof newPage !== 'undefined') {
