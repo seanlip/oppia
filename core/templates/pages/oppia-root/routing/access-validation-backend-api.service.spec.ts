@@ -254,6 +254,25 @@ describe('Access validation backend api service', () => {
     expect(failSpy).not.toHaveBeenCalled();
   }));
 
+  it('should validate access to exploratio-player page', fakeAsync(() => {
+    let explorationId = 'exploration_id';
+
+    avbas
+      .validateAccessToExplorationPlayerPage(explorationId)
+      .then(successSpy, failSpy);
+
+    const req = httpTestingController.expectOne(
+      '/access_validation_handler/can_access_exploration_player' +
+        '/exploration_id'
+    );
+    expect(req.request.method).toEqual('GET');
+    req.flush({});
+
+    flushMicrotasks();
+    expect(successSpy).toHaveBeenCalled();
+    expect(failSpy).not.toHaveBeenCalled();
+  }));
+
   it('should not validate access to blog home page with invalid access', fakeAsync(() => {
     avbas.validateAccessToBlogHomePage().then(successSpy, failSpy);
 

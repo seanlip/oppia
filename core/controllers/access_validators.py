@@ -19,10 +19,14 @@ from __future__ import annotations
 from core import feature_flag_list
 from core import feconf
 from core.constants import constants
-from core.controllers import acl_decorators, editor, reader
+from core.controllers import acl_decorators
 from core.controllers import base
-from core.domain import blog_services, collection_services, exp_fetchers
+from core.domain import blog_services
+from core.controllers import editor
+from core.controllers import reader
 from core.domain import classroom_config_services
+from core.domain import collection_services
+from core.domain import exp_fetchers
 from core.domain import feature_flag_services
 from core.domain import learner_group_services
 from core.domain import user_services
@@ -423,7 +427,8 @@ class ExplorationPlayerPageAccessValidationHandler(
         else:
             collection_id = self.normalized_request.get('collection_id')
 
-        if not reader._does_exploration_exist(exploration_id, version, collection_id):
+        if not reader._does_exploration_exist( # pylint: disable=protected-access
+            exploration_id, version, collection_id):
             raise self.NotFoundException
 
 
