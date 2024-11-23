@@ -17,7 +17,6 @@
  */
 
 import {Component} from '@angular/core';
-
 import {ClassroomDomainConstants} from 'domain/classroom/classroom-domain.constants';
 import {ReadOnlyExplorationBackendApiService} from 'domain/exploration/read-only-exploration-backend-api.service';
 import {StoryPlaythrough} from 'domain/story_viewer/story-playthrough.model';

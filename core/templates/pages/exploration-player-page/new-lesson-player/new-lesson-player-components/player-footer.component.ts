@@ -17,7 +17,6 @@
  */
 
 import {Component} from '@angular/core';
-
 import './player-footer.component.css';
 
 @Component({

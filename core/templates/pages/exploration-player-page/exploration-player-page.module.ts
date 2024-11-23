@@ -30,7 +30,6 @@ import {LearnerViewInfoComponent} from './layout-directives/learner-view-info.co
 import {MaterialModule} from 'modules/material.module';
 import {RefresherExplorationConfirmationModal} from './modals/refresher-exploration-confirmation-modal.component';
 import {ExplorationPlayerPageComponent} from './exploration-player-page.component';
-// import {ExplorationPlayerPageRoutingModule} from './exploration-player-page-routing.module';
 import {ExplorationPlayerPageRootComponent} from './exploration-player-page-root.component';
 import {ProgressReminderModalComponent} from './templates/progress-reminder-modal.component';
 import {HintAndSolutionModalService} from './services/hint-and-solution-modal.service';
@@ -47,7 +46,6 @@ import {ExplorationPlayerPageAuthGuard} from './exploration-player-page-auth.gua
 @NgModule({
   imports: [
     CommonModule,
-    // ExplorationPlayerPageRoutingModule,
     InteractionExtensionsModule,
     MatButtonModule,
     NgbModalModule,

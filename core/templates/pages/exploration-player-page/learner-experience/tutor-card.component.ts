@@ -23,7 +23,6 @@ import {
   ViewChild,
   Renderer2,
 } from '@angular/core';
-
 import {TranslateService} from '@ngx-translate/core';
 import {AppConstants} from 'app.constants';
 import {BindableVoiceovers} from 'domain/exploration/recorded-voiceovers.model';

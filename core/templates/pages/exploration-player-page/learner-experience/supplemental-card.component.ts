@@ -28,7 +28,6 @@ import {
   ChangeDetectorRef,
   SimpleChanges,
 } from '@angular/core';
-
 import {AppConstants} from 'app.constants';
 import {StateCard} from 'domain/state_card/state-card.model';
 import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';

@@ -17,7 +17,6 @@
  */
 
 import {Component} from '@angular/core';
-
 import './new-audio-bar.component.css';
 
 @Component({

@@ -19,7 +19,6 @@
 
 import {Component, Input} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-
 import {WindowRef} from 'services/contextual/window-ref.service';
 
 export const INITIAL_CONTENT_LANGUAGE_CODE_URL_PARAM =

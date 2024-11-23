@@ -18,7 +18,6 @@
  */
 
 import {Component, Input, ViewChild} from '@angular/core';
-
 import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
 import {CollectionSummary} from 'domain/collection/collection-summary.model';
 import {LearnerExplorationSummary} from 'domain/summary/learner-exploration-summary.model';

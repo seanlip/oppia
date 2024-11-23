@@ -17,7 +17,6 @@
  */
 
 import {Component, OnDestroy} from '@angular/core';
-
 import {TranslateService} from '@ngx-translate/core';
 import {Subscription} from 'rxjs';
 

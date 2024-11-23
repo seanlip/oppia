@@ -17,7 +17,6 @@
  */
 
 import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
-
 import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
 import {AppConstants} from 'app.constants';
 import {InputResponsePair} from 'domain/state_card/state-card.model';

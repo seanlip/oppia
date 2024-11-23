@@ -17,7 +17,6 @@
  */
 
 import {Component, EventEmitter, Output} from '@angular/core';
-
 import {Interaction} from 'domain/exploration/InteractionObjectFactory';
 import {ExplorationHtmlFormatterService} from 'services/exploration-html-formatter.service';
 import {InteractionRulesService} from '../services/answer-classification.service';
