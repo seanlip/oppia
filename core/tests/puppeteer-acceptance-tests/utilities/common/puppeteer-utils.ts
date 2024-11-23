@@ -595,7 +595,10 @@ export class BaseUser {
    *   - dev-desktop-screenshots or dev-mobile-screenshots for screenshots in development mode
    * Otherwise, it compares the screenshot with the image named as the given string
    * to check if they match. If they don't match, it generates an image in the folder
-   * diff-snapshots to show the difference.
+   * diff-snapshots to show the difference. To check the folder on CI, download the artifact folder
+   * diff-snapshots from the github workflow.
+   * To replace the screenshot(s), simply delete the screenshot(s) and rerun the acceptance test.
+   * Name the image by describing what the page is, and add 'with..' if there's something notable in the screenshots.
    * @param {string} imageName - The name for the image
    * @param {string} testPath - The path of the file that called this function
    * @param {Page|undefined} newPage - The page to take screenshot from, If not

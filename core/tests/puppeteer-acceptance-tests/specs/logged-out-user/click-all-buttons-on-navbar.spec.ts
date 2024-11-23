@@ -43,7 +43,7 @@ describe('Logged-out User', function () {
     async function () {
       await loggedOutUser.clickPartnershipsButtonInGetInvolvedMenuOnNavbar();
       await loggedOutUser.expectScreenshotToMatch(
-        'clickPartnershipsButtonInGetInvolvedMenuOnNavbar',
+        'PartnershipsPage',
         __dirname
       );
     },
@@ -55,10 +55,7 @@ describe('Logged-out User', function () {
       'on navbar',
     async function () {
       await loggedOutUser.clickVolunteerButtonInGetInvolvedMenuOnNavbar();
-      await loggedOutUser.expectScreenshotToMatch(
-        'clickVolunteerButtonInGetInvolvedMenuOnNavbar',
-        __dirname
-      );
+      await loggedOutUser.expectScreenshotToMatch('VolunteerPage', __dirname);
     },
     DEFAULT_SPEC_TIMEOUT_MSECS
   );
@@ -67,10 +64,7 @@ describe('Logged-out User', function () {
     'should open Donate Url with Donate button in Get Involved menu on navbar',
     async function () {
       await loggedOutUser.clickDonateButtonInGetInvolvedMenuOnNavbar();
-      await loggedOutUser.expectScreenshotToMatch(
-        'clickDonateButtonInGetInvolvedMenuOnNavbar',
-        __dirname
-      );
+      await loggedOutUser.expectScreenshotToMatch('DonatePage', __dirname);
     },
     DEFAULT_SPEC_TIMEOUT_MSECS
   );
@@ -80,10 +74,7 @@ describe('Logged-out User', function () {
       'on navbar',
     async function () {
       await loggedOutUser.clickContactUsButtonInGetInvolvedMenuOnNavbar();
-      await loggedOutUser.expectScreenshotToMatch(
-        'clickContactUsButtonInGetInvolvedMenuOnNavbar',
-        __dirname
-      );
+      await loggedOutUser.expectScreenshotToMatch('ContactUsPage', __dirname);
     },
     DEFAULT_SPEC_TIMEOUT_MSECS
   );
@@ -92,10 +83,7 @@ describe('Logged-out User', function () {
     'should open Donate Url with Donate button on navbar',
     async function () {
       await loggedOutUser.clickDonateButtonOnNavbar();
-      await loggedOutUser.expectScreenshotToMatch(
-        'clickDonateButtonOnNavbar',
-        __dirname
-      );
+      await loggedOutUser.expectScreenshotToMatch('DonatePage', __dirname);
     },
     DEFAULT_SPEC_TIMEOUT_MSECS
   );
@@ -105,10 +93,7 @@ describe('Logged-out User', function () {
       'in About Menu on navbar',
     async function () {
       await loggedOutUser.clickTeachButtonInAboutMenuOnNavbar();
-      await loggedOutUser.expectScreenshotToMatch(
-        'clickTeachButtonInAboutMenuOnNavbar',
-        __dirname
-      );
+      await loggedOutUser.expectScreenshotToMatch('TeachPage', __dirname);
     },
     DEFAULT_SPEC_TIMEOUT_MSECS
   );
