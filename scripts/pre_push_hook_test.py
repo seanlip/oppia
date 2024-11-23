@@ -676,7 +676,7 @@ class PrePushHookTests(test_utils.GenericTestBase):
             cmd_tokens: List[str], encoding: str = 'utf-8'  # pylint: disable=unused-argument
         ) -> str:
             return 'branch1'
-        
+
         def mock_get_changed_files(
             unused_refs: List[git_changes_utils.GitRef],
             unused_remote: str,
