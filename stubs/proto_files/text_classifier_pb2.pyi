@@ -13,14 +13,14 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 class TextClassifierFrozenModel(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
     MODEL_JSON_FIELD_NUMBER: builtins.int
-    model_json: typing.Text
+    model_json: str
     """The parameters of a trained text classifier model which are necessary
     for inference.
     """
 
     def __init__(self,
         *,
-        model_json: typing.Text = ...,
+        model_json: str = ...,
         ) -> None: ...
     def ClearField(
         self,
