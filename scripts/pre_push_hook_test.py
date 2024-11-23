@@ -58,7 +58,8 @@ class PrePushHookTests(test_utils.GenericTestBase):
         ) -> Dict[str, Tuple[List[bytes], List[bytes]]]:
             return {
                 'branch1': ([b'A:file1', b'M:file2'], [b'file1', b'file2']),
-                'branch2': ([], [])}
+                'branch2': ([], []),
+                'branch3': ([b'M:file1'], [])}
         def mock_has_uncommitted_files() -> bool:
             return False
         self.print_arr: List[str] = []
@@ -398,7 +399,7 @@ class PrePushHookTests(test_utils.GenericTestBase):
             'Push failed, please correct the mypy type annotation issues '
             'above.', self.print_arr)
 
-    def test_typescript_check_failiure(self) -> None:
+    def test_typescript_check_failure(self) -> None:
         self.does_diff_include_ts_files = True
         def mock_run_script_and_get_returncode(script: List[str]) -> int:
             if script == pre_push_hook.TYPESCRIPT_CHECKS_CMDS:
@@ -418,7 +419,7 @@ class PrePushHookTests(test_utils.GenericTestBase):
         self.assertTrue(
             'Push aborted due to failing typescript checks.' in self.print_arr)
 
-    def test_strict_typescript_check_failiure(self) -> None:
+    def test_strict_typescript_check_failure(self) -> None:
         self.does_diff_include_ts_files = True
         def mock_run_script_and_get_returncode(script: List[str]) -> int:
             if script == pre_push_hook.STRICT_TYPESCRIPT_CHECKS_CMDS:
@@ -666,3 +667,37 @@ class PrePushHookTests(test_utils.GenericTestBase):
         self.assertEqual(
             self.print_arr,
             ['Python dependencies consistency check succeeded.'])
+
+    def test_main_with_same_branch(self) -> None:
+        def mock_run_script_and_get_returncode(unused_script: List[str]) -> int:
+            return 0
+
+        def mock_check_output(
+            cmd_tokens: List[str], encoding: str = 'utf-8'  # pylint: disable=unused-argument
+        ) -> str:
+            return 'branch1'
+        
+        def mock_get_changed_files(
+            unused_refs: List[git_changes_utils.GitRef],
+            unused_remote: str,
+            unused_remote_branch: Optional[str] = None
+        ) -> Dict[str, Tuple[List[bytes], List[bytes]]]:
+            return {
+                'branch1': ([b'A:file1', b'M:file2'], [b'file1', b'file2'])}
+
+        run_script_and_get_returncode_swap = self.swap(
+            pre_push_hook, 'run_script_and_get_returncode',
+            mock_run_script_and_get_returncode)
+        check_output_swap = self.swap(
+            subprocess, 'check_output', mock_check_output)
+        get_changed_files_swap = self.swap(
+            git_changes_utils, 'get_changed_files',
+            mock_get_changed_files)
+
+        with self.get_remote_name_swap, self.get_refs_swap, self.print_swap:
+            with get_changed_files_swap, self.uncommitted_files_swap:
+                with check_output_swap, self.start_linter_swap:
+                    with run_script_and_get_returncode_swap:
+                        with self.execute_mypy_checks_swap:
+                            with self.swap_check_backend_python_libs:
+                                pre_push_hook.main(args=[])
