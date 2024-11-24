@@ -47,10 +47,8 @@ build: ## Builds the all docker setup.
 	docker compose build
 
 run-devserver: ## Runs the dev-server
-# TODO(#19888): Implement a more efficient method for connecting the folders rather than resorting to copying using docker cp.
 	docker compose up angular-build -d
 	$(MAKE) update.package
-	docker cp oppia-angular-build:/app/oppia/node_modules .
 	docker compose stop angular-build
 	docker compose up dev-server -d --no-deps
 	$(MAKE) update.requirements
