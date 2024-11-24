@@ -1056,7 +1056,7 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
         })]
         exp_services.update_exploration(
             self.author_id, exploration.id, change_list, '')
-        
+
         add_translation_change_dict = {
             'cmd': exp_domain.CMD_ADD_WRITTEN_TRANSLATION,
             'state_name': 'state 1',
