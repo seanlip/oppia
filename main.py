@@ -101,7 +101,7 @@ datastore_services = models.Registry.import_datastore_services()
 # Cloud Logging is disabled in emulator mode, since it is unnecessary and
 # creates a lot of noise.
 if not constants.EMULATOR_MODE:
-    # Instantiates a client and rtrieves a Cloud Logging handler based on the
+    # Instantiates a client and retrieves a Cloud Logging handler based on the
     # environment you're running in and integrates the handler with the Python
     # logging module.
     client = google.cloud.logging.Client()
@@ -322,6 +322,34 @@ URLS = [
         access_validators.DiagnosticTestPlayerAccessValidationHandler
     ),
 
+    get_redirect_route(
+        r'%s/can_access_topic_viewer_page/<classroom_url_fragment>'
+        r'/<topic_url_fragment>' %
+        feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
+        access_validators.TopicViewerPageAccessValidationHandler
+    ),
+
+    get_redirect_route(
+        r'%s/can_access_topic_viewer_page/<classroom_url_fragment>'
+        r'/<topic_url_fragment>/story' % 
+        feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
+        access_validators.TopicViewerPageAccessValidationHandler
+    ),
+
+    get_redirect_route(
+        r'%s/can_access_topic_viewer_page/<classroom_url_fragment>'
+        r'/<topic_url_fragment>/revision' % 
+        feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
+        access_validators.TopicViewerPageAccessValidationHandler
+    ),
+
+    get_redirect_route(
+        r'%s/can_access_topic_viewer_page/<classroom_url_fragment>'
+        r'/<topic_url_fragment>/practice' % 
+        feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
+        access_validators.TopicViewerPageAccessValidationHandler
+    ),
+
     get_redirect_route(r'%s' % feconf.ADMIN_URL, oppia_root.OppiaRootPage),
     get_redirect_route(r'/adminhandler', admin.AdminHandler),
     get_redirect_route(r'/adminrolehandler', admin.AdminRoleHandler),
@@ -380,9 +408,6 @@ URLS = [
     get_redirect_route(
         '/creator_dashboard',
         creator_dashboard.OldCreatorDashboardRedirectPage),
-    get_redirect_route(
-        r'%s' % feconf.CREATOR_DASHBOARD_URL,
-        creator_dashboard.CreatorDashboardPage),
     get_redirect_route(
         r'%s' % feconf.CREATOR_DASHBOARD_DATA_URL,
         creator_dashboard.CreatorDashboardHandler),
@@ -477,9 +502,6 @@ URLS = [
         feconf.TOPIC_ID_TO_DIAGNOSTIC_TEST_SKILL_IDS_HANDLER,
         topics_and_skills_dashboard.TopicIdToDiagnosticTestSkillIdsHandler),
     get_redirect_route(
-        r'%s/story' % feconf.TOPIC_VIEWER_URL_PREFIX,
-        topic_viewer.TopicViewerPage),
-    get_redirect_route(
         r'%s/<topic_id>' % feconf.DIAGNOSTIC_TEST_QUESTIONS_HANDLER_URL,
         diagnostic_test_player.DiagnosticTestQuestionsHandler
     ),
@@ -546,17 +568,8 @@ URLS = [
         r'/<subtopic_url_fragment>' % feconf.SUBTOPIC_DATA_HANDLER,
         subtopic_viewer.SubtopicPageDataHandler),
     get_redirect_route(
-        r'%s/revision' % feconf.TOPIC_VIEWER_URL_PREFIX,
-        topic_viewer.TopicViewerPage),
-    get_redirect_route(
         r'%s/<topic_id>' % feconf.TOPIC_EDITOR_STORY_URL,
         topic_editor.TopicEditorStoryHandler),
-    get_redirect_route(
-        r'%s' % feconf.TOPIC_VIEWER_URL_PREFIX,
-        topic_viewer.TopicViewerPage),
-    get_redirect_route(
-        r'%s/practice' % feconf.TOPIC_VIEWER_URL_PREFIX,
-        topic_viewer.TopicViewerPage),
     get_redirect_route(
         r'%s/<classroom_url_fragment>/<topic_url_fragment>'
         % feconf.TOPIC_DATA_HANDLER,
@@ -1218,6 +1231,22 @@ URLS.extend((
         oppia_root.OppiaRootPage),
     get_redirect_route(
         r'/learn/<classroom_url_fragment>',
+        oppia_root.OppiaRootPage
+    ),
+    get_redirect_route(
+        r'%s/story' % feconf.TOPIC_VIEWER_URL_PREFIX,
+        oppia_root.OppiaRootPage
+    ),
+    get_redirect_route(
+        r'%s/revision' % feconf.TOPIC_VIEWER_URL_PREFIX,
+        oppia_root.OppiaRootPage
+    ),
+    get_redirect_route(
+        r'%s/practice' % feconf.TOPIC_VIEWER_URL_PREFIX,
+        oppia_root.OppiaRootPage
+    ),
+    get_redirect_route(
+        r'%s' % feconf.TOPIC_VIEWER_URL_PREFIX,
         oppia_root.OppiaRootPage
     ),
     get_redirect_route(
