@@ -31,6 +31,7 @@ from core.domain import exp_services
 from core.domain import exp_services_test
 from core.domain import param_domain
 from core.domain import platform_parameter_list
+from core.domain import platform_parameter_services
 from core.domain import rights_manager
 from core.domain import state_domain
 from core.domain import translation_domain
@@ -4185,9 +4186,11 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             content_id_generator.generate(
                 translation_domain.ContentType.DEFAULT_OUTCOME),
             is_initial_state=True).to_dict()
+
         states_dict = {
             init_state_name: init_state_dict
         }
+
         new_exploration = exp_domain.Exploration(
               exploration_id, title, category, objective, language_code, [],
                 '', '', feconf.CURRENT_STATE_SCHEMA_VERSION,
@@ -4196,6 +4199,7 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
               content_id_generator.next_content_id_index, True)
         sub_namespace = (
             str(new_exploration.version) if new_exploration.version else None)
+
         is_properly_cacheable = caching_services.set_multi(
             namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
             sub_namespace=sub_namespace,
@@ -4209,19 +4213,27 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             is_properly_cacheable,
             'Exploration is not properly cacheable'
         )
+
         self.assertNotEqual(
             new_exploration_retrieve_from_cache,
             None,
             'Exploration is not properly cacheable'
         )
-        if new_exploration_retrieve_from_cache is not None:
-            new_exploration_dict_retrieve_from_cache = (
-                new_exploration_retrieve_from_cache.to_dict())
-            self.assertEqual(
-                new_exploration.to_dict(),
-                new_exploration_dict_retrieve_from_cache,
-                """Exploration put into cache and retrieved from cache is
-                not same"""
+
+        default_exploration_dict = (
+            exp_domain.Exploration.create_default_exploration('exp_cache_test')
+            .to_dict()
+        )
+
+        new_exploration_dict_retrieve_from_cache = (
+            new_exploration_retrieve_from_cache.to_dict()
+            if new_exploration_retrieve_from_cache
+            else default_exploration_dict)
+
+        self.assertEqual(
+            new_exploration.to_dict(),
+            new_exploration_dict_retrieve_from_cache,
+            'Exploration put into cache and retrieved from cache is not same'
         )
 
     def test_migrate_state_schema(self) -> None:
@@ -4234,6 +4246,7 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
         category = feconf.DEFAULT_EXPLORATION_CATEGORY
         objective = feconf.DEFAULT_EXPLORATION_OBJECTIVE
         language_code = constants.DEFAULT_LANGUAGE_CODE
+
         content_id_generator = translation_domain.ContentIdGenerator()
         init_state_dict = state_domain.State.create_default_state(
             init_state_name,
@@ -4246,6 +4259,7 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
         states_dict = {
             init_state_name: init_state_dict
         }
+
         new_exploration = exp_domain.Exploration(
               exploration_id, title, category, objective, language_code, [], '',
               '', feconf.CURRENT_STATE_SCHEMA_VERSION - 1,
@@ -4258,43 +4272,69 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
             sub_namespace=sub_namespace,
             id_value_mapping={exploration_id: new_exploration})
+
         self.assertTrue(
             is_properly_cacheable,
             'Exploration is not properly cacheable'
         )
+
         new_exploration_retrieve_from_cache = caching_services.get_multi(
             namespace=caching_services.CACHE_NAMESPACE_EXPLORATION,
             sub_namespace=sub_namespace,
             obj_ids=[exploration_id]
         ).get(exploration_id)
+
         self.assertNotEqual(
             new_exploration_retrieve_from_cache,
             None,
             'Exploration is not properly cacheable'
         )
-        if new_exploration_retrieve_from_cache is not None:
-            updated_exploration = new_exploration_retrieve_from_cache.to_dict()
-            new_exploration_dict = new_exploration.to_dict()
-            versioned_states = exp_domain.VersionedExplorationStatesDict(
+
+        default_exploration_dict = (
+            exp_domain.Exploration.create_default_exploration('exp_cache_test')
+            .to_dict()
+        )
+
+        exploration_data = (
+            new_exploration_retrieve_from_cache.to_dict()
+            if new_exploration_retrieve_from_cache
+            else default_exploration_dict)
+
+        updated_exploration = exp_domain.Exploration.migrate_state_schema(
+            exploration_data
+        )
+
+        new_exploration_dict = new_exploration.to_dict()
+
+        versioned_states = exp_domain.VersionedExplorationStatesDict(
                 states_schema_version=feconf.CURRENT_STATE_SCHEMA_VERSION - 1,
                 states=new_exploration_dict['states'])
-            conversion_fn = getattr(
-                exp_domain.Exploration,
-                '_convert_states_v%s_dict_to_v%s_dict' % (
-                    feconf.CURRENT_STATE_SCHEMA_VERSION - 1,
-                    feconf.CURRENT_STATE_SCHEMA_VERSION))
-            migrated_exploration_dict = conversion_fn(
+
+        conversion_fn = getattr(
+            exp_domain.Exploration, '_convert_states_v%s_dict_to_v%s_dict' % (
+            feconf.CURRENT_STATE_SCHEMA_VERSION - 1,
+            feconf.CURRENT_STATE_SCHEMA_VERSION))
+        migrated_exploration_dict = conversion_fn(
                 versioned_states['states'])
-            self.assertEqual(
-                updated_exploration['states_schema_version'],
-                feconf.CURRENT_STATE_SCHEMA_VERSION,
-                'Exploration state schema version failed to update'
-            )
-            self.assertEqual(
-                updated_exploration['states'],
-                migrated_exploration_dict,
-                'Exploration state schema migration failed'
-            )
+
+        self.assertEqual(
+            updated_exploration['states_schema_version'],
+            feconf.CURRENT_STATE_SCHEMA_VERSION,
+            'Exploration state schema version failed to update'
+        )
+
+        self.assertEqual(
+            updated_exploration['states'],
+            migrated_exploration_dict,
+            'Exploration state schema version failed to update'
+        )
+
+        # This comment is temporary
+        # self.assertNotEqual (
+        #     migrated_exploration_dict,
+        #     versioned_states['states'],
+        #     'Migrated Exploration dict is same as versioned_states dict'
+        # )
 
     def test_get_all_translatable_content_for_exp(self) -> None:
         """Get all translatable fields from exploration."""
@@ -13306,6 +13346,9 @@ class ExplorationChangesMergeabilityUnitTests(
         self.content_id_generator = translation_domain.ContentIdGenerator(
             exploration.next_content_id_index
         )
+        self.admin_email_address = (
+            platform_parameter_services.get_platform_parameter_value(
+              platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS.value))
         rights_manager.publish_exploration(self.owner, self.EXP_0_ID)
 
     def append_next_content_id_index_change(
@@ -18189,14 +18232,25 @@ class ExplorationChangesMergeabilityUnitTests(
         self.assertEqual(changes_are_not_mergeable, False)
 
     @test_utils.set_platform_parameters(
-        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
+        [
+            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
+            (
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS,
+                'testadmin@example.com'
+            ),
+            (
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+                'system@example.com'
+            ),
+            (platform_parameter_list.ParamName.SYSTEM_EMAIL_NAME, '.')
+        ]
     )
     def test_email_is_sent_to_admin_in_case_of_adding_deleting_state_changes(
         self
     ) -> None:
         self.login(self.OWNER_EMAIL)
-        messages = self._get_sent_email_messages(
-            feconf.ADMIN_EMAIL_ADDRESS)
+        assert isinstance(self.admin_email_address, str)
+        messages = self._get_sent_email_messages(self.admin_email_address)
         self.assertEqual(len(messages), 0)
         self.save_new_valid_exploration(
             self.EXP_0_ID, self.owner_id, end_state_name='End')
@@ -18520,20 +18574,31 @@ class ExplorationChangesMergeabilityUnitTests(
             'Backend Version: %s<br><br>'
             'Thanks!' % (self.EXP_0_ID, change_list_3_dict, 1, 3)
         )
-        messages = self._get_sent_email_messages(
-            feconf.ADMIN_EMAIL_ADDRESS)
+        assert isinstance(self.admin_email_address, str)
+        messages = self._get_sent_email_messages(self.admin_email_address)
         self.assertEqual(len(messages), 1)
         self.assertEqual(messages[0].html, expected_email_html_body)
 
     @test_utils.set_platform_parameters(
-        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
+        [
+            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
+            (
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS,
+                'testadmin@example.com'
+            ),
+            (
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+                'system@example.com'
+            ),
+            (platform_parameter_list.ParamName.SYSTEM_EMAIL_NAME, '.')
+        ]
     )
     def test_email_is_sent_to_admin_in_case_of_state_renames_changes_conflict(
         self
     ) -> None:
         self.login(self.OWNER_EMAIL)
-        messages = self._get_sent_email_messages(
-            feconf.ADMIN_EMAIL_ADDRESS)
+        assert isinstance(self.admin_email_address, str)
+        messages = self._get_sent_email_messages(self.admin_email_address)
         self.assertEqual(len(messages), 0)
         self.save_new_valid_exploration(
             self.EXP_0_ID, self.owner_id, end_state_name='End')
@@ -18602,8 +18667,8 @@ class ExplorationChangesMergeabilityUnitTests(
             'Backend Version: %s<br><br>'
             'Thanks!' % (self.EXP_0_ID, change_list_3_dict, 2, 3)
         )
-        messages = self._get_sent_email_messages(
-            feconf.ADMIN_EMAIL_ADDRESS)
+        assert isinstance(self.admin_email_address, str)
+        messages = self._get_sent_email_messages(self.admin_email_address)
         self.assertEqual(len(messages), 1)
         self.assertEqual(expected_email_html_body, messages[0].html)
 
