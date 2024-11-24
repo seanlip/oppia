@@ -17,6 +17,7 @@
  */
 
 import {Component, Input, OnInit, OnDestroy} from '@angular/core';
+import {downgradeComponent} from '@angular/upgrade/static';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {TranslateService} from '@ngx-translate/core';
 import {Subscription} from 'rxjs';
@@ -252,3 +253,10 @@ export class PracticeTabComponent implements OnInit, OnDestroy {
     return 'white';
   }
 }
+
+angular
+  .module('oppia')
+  .directive(
+    'practiceTab',
+    downgradeComponent({component: PracticeTabComponent})
+  );

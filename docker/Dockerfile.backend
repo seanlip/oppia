@@ -1,5 +1,5 @@
 # Added platform flag here because -- https://stackoverflow.com/questions/71040681/qemu-x86-64-could-not-open-lib64-ld-linux-x86-64-so-2-no-such-file-or-direc
-FROM --platform=linux/amd64 python:3.9.20-bullseye AS backend
+FROM --platform=linux/amd64 python:3.8.17-slim-buster AS backend
 
 ENV OPPIA_IS_DOCKERIZED="true"
 
@@ -11,6 +11,7 @@ RUN apt-get update -y && apt-get upgrade -y \
     git \
     npm \
     openjdk-11-jre \
+    python2 \
     python3-matplotlib \
     unzip \
     wget \
@@ -28,7 +29,7 @@ RUN pip install pip-tools==6.6.2 setuptools==58.5.3 cmake
 WORKDIR /app/vm_deps
 
 # Installing google cloud sdk
-RUN wget -O /app/vm_deps/gcloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-500.0.0-linux-x86_64.tar.gz && \
+RUN wget -O /app/vm_deps/gcloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-364.0.0-linux-x86_64.tar.gz && \
     tar -xzf gcloud-sdk.tar.gz && \
     ./google-cloud-sdk/install.sh --quiet && \
     ./google-cloud-sdk/bin/gcloud components install beta cloud-datastore-emulator app-engine-python app-engine-python-extras && \

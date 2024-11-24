@@ -292,11 +292,6 @@ export class BlogHomePageComponent implements OnInit {
 
   onSearchQueryChangeExec(): void {
     this.loaderService.showLoadingScreen('Loading');
-    if (this.searchQuery === '' && this.selectedTags.length === 0) {
-      this.loadInitialBlogHomePageData();
-      this.windowRef.nativeWindow.history.pushState({}, '', '/blog');
-      return;
-    }
     this.blogPostSearchService.executeSearchQuery(
       this.searchQuery,
       this.selectedTags,
@@ -326,7 +321,7 @@ export class BlogHomePageComponent implements OnInit {
       },
       errorResponse => {
         this.alertsService.addWarning(
-          `Unable to fetch search results. Error: ${errorResponse}`
+          `Unable to fetch search results.Error: ${errorResponse}`
         );
       }
     );

@@ -21,8 +21,8 @@ import {
   Input,
   ViewChild,
   HostListener,
-  AfterContentInit,
-  NgZone,
+  AfterViewInit,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {downgradeComponent} from '@angular/upgrade/static';
 import {I18nLanguageCodeService} from 'services/i18n-language-code.service';
@@ -30,11 +30,10 @@ import {I18nLanguageCodeService} from 'services/i18n-language-code.service';
   selector: 'oppia-card-display',
   templateUrl: './card-display.component.html',
 })
-export class CardDisplayComponent implements AfterContentInit {
+export class CardDisplayComponent implements AfterViewInit {
   @Input() headingI18n!: string;
   @Input() numCards!: number;
-  @Input() controlType: string = 'arrow';
-  @Input() displayMaxWidth: string = '100%';
+  @Input() tabType!: string;
   @Input() cardWidth: number = 232;
 
   @ViewChild('cards', {static: false}) cards!: ElementRef;
@@ -45,31 +44,24 @@ export class CardDisplayComponent implements AfterContentInit {
   isLanguageRTL: boolean = false;
   currentToggleState: boolean = false;
   toggleButtonVisibility: boolean = false;
-  arrowButtonVisibility: boolean = false;
 
   constructor(
     private I18nLanguageCodeService: I18nLanguageCodeService,
-    private ngZone: NgZone
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.isLanguageRTL = this.I18nLanguageCodeService.isCurrentLanguageRTL();
   }
 
-  ngAfterContentInit(): void {
-    this.ngZone.onStable.subscribe(() => {
-      this.toggleButtonVisibility = this.isToggleButtonVisible();
-      this.arrowButtonVisibility = this.isArrowButtonVisible();
-    });
+  ngAfterViewInit(): void {
+    this.toggleButtonVisibility = this.isToggleButtonVisible();
+    this.cdr.detectChanges();
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     this.toggleButtonVisibility = this.isToggleButtonVisible();
-    this.arrowButtonVisibility = this.isArrowButtonVisible();
-    if (!this.toggleButtonVisibility) {
-      this.currentToggleState = false;
-    }
   }
 
   getMaxShifts(width: number): number {
@@ -115,7 +107,7 @@ export class CardDisplayComponent implements AfterContentInit {
   }
 
   getVisibility(): string {
-    if (this.controlType === 'arrow') {
+    if (!this.tabType.includes('progress')) {
       return '';
     }
     return this.currentToggleState
@@ -124,7 +116,7 @@ export class CardDisplayComponent implements AfterContentInit {
   }
 
   isToggleButtonVisible(): boolean {
-    if (this.controlType === 'arrow') {
+    if (this.tabType.includes('home')) {
       return false;
     }
 
@@ -132,20 +124,6 @@ export class CardDisplayComponent implements AfterContentInit {
       this.cards &&
       this.cards.nativeElement &&
       this.numCards * this.cardWidth - 16 > this.cards.nativeElement.offsetWidth
-    );
-  }
-
-  isArrowButtonVisible(): boolean {
-    if (this.controlType === 'toggle') {
-      return false;
-    }
-
-    return (
-      this.cards &&
-      this.cards.nativeElement &&
-      this.numCards > 1 &&
-      (this.numCards - 1) * this.cardWidth + (this.cardWidth - 32) >
-        this.cards.nativeElement.offsetWidth
     );
   }
 }

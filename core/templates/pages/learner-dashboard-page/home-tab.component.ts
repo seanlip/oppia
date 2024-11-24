@@ -48,10 +48,6 @@ export class HomeTabComponent {
   @Input() untrackedTopics!: Record<string, LearnerTopicSummary[]>;
   @Input() username!: string;
   @Input() redesignFeatureFlag!: boolean;
-  @Input() totalLessonsInPlaylists!: (
-    | LearnerExplorationSummary
-    | CollectionSummary
-  )[];
   currentGoalsLength!: number;
   classroomUrlFragment!: string;
   goalTopicsLength!: number;
@@ -63,7 +59,6 @@ export class HomeTabComponent {
   continueWhereYouLeftOffList: LearnerTopicSummary[] = [];
   windowIsNarrow: boolean = false;
   directiveSubscriptions = new Subscription();
-  currentGoalIds: Set<string> = new Set();
 
   constructor(
     private i18nLanguageCodeService: I18nLanguageCodeService,
@@ -77,7 +72,6 @@ export class HomeTabComponent {
     var allGoals = [...this.currentGoals, ...this.partiallyLearntTopicsList];
     this.currentGoalsLength = this.currentGoals.length;
     this.goalTopicsLength = this.goalTopics.length;
-    this.currentGoalIds = new Set(this.currentGoals.map(g => g.id));
 
     if (allGoals.length !== 0) {
       var allGoalIds = [];

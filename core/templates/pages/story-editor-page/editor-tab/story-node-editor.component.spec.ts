@@ -309,56 +309,21 @@ describe('Story node editor component', () => {
   it('should fetch the descriptions for prerequisite skills', fakeAsync(() => {
     component.prerequisiteSkillIds = ['1', '2', '3'];
 
-    component.getSkillsDescription(
-      component.prerequisiteSkillIds,
-      component.prerequisiteSkillIdToSummaryMap
-    );
+    component.getPrerequisiteSkillsDescription();
     tick();
 
-    expect(component.prerequisiteSkillIdToSummaryMap).toEqual({
+    expect(component.skillIdToSummaryMap).toEqual({
       1: 'test',
       2: 'test2',
       3: 'test3',
     });
   }));
 
-  it('should fetch the descriptions for acquired skills', fakeAsync(() => {
-    component.acquiredSkillIds = ['1', '2', '3'];
-
-    component.getSkillsDescription(
-      component.acquiredSkillIds,
-      component.acquiredSkillIdToSummaryMap
-    );
-    tick();
-
-    expect(component.acquiredSkillIdToSummaryMap).toEqual({
-      1: 'test',
-      2: 'test2',
-      3: 'test3',
-    });
-  }));
-
-  it('should call Alerts Service if getting acquired skill description fails', fakeAsync(() => {
-    component.acquiredSkillIds = ['2'];
-    let alertsSpy = spyOn(alertsService, 'addWarning').and.callThrough();
-
-    component.getSkillsDescription(
-      component.acquiredSkillIds,
-      component.acquiredSkillIdToSummaryMap
-    );
-    tick();
-
-    expect(alertsSpy).toHaveBeenCalled();
-  }));
-
-  it('should call Alerts Service if getting prerequisite skill description fails', fakeAsync(() => {
+  it('should call Alerts Service if getting skill desc. fails', fakeAsync(() => {
     component.prerequisiteSkillIds = ['2'];
     let alertsSpy = spyOn(alertsService, 'addWarning').and.callThrough();
 
-    component.getSkillsDescription(
-      component.prerequisiteSkillIds,
-      component.prerequisiteSkillIdToSummaryMap
-    );
+    component.getPrerequisiteSkillsDescription();
     tick();
 
     expect(alertsSpy).toHaveBeenCalled();
@@ -411,14 +376,6 @@ describe('Story node editor component', () => {
     component.togglePrerequisiteSkillsList();
 
     expect(component.prerequisiteSkillIsShown).toBeFalse();
-  });
-
-  it('should toggle acquired skill list', () => {
-    component.acquiredSkillIsShown = true;
-
-    component.toggleAcquiredSkillsList();
-
-    expect(component.acquiredSkillIsShown).toBeFalse();
   });
 
   it('should call StoryUpdate service to set story thumbnail filename', () => {

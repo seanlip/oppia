@@ -13,10 +13,10 @@ on:
 
 jobs:
   oppiabot:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
       - name: Merge develop branch into the current branch
         uses: ./.github/actions/merge
       - name: Github Actions from Oppiabot

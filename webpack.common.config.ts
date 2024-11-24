@@ -65,6 +65,10 @@ module.exports = {
     },
   },
   entry: {
+    creator_dashboard:
+      commonPrefix +
+      '/pages/creator-dashboard-page/' +
+      'creator-dashboard-page.import.ts',
     contributor_dashboard:
       commonPrefix +
       '/pages/contributor-dashboard-page/' +
@@ -94,6 +98,8 @@ module.exports = {
       commonPrefix +
       '/pages/topics-and-skills-dashboard-page/' +
       'topics-and-skills-dashboard-page.import.ts',
+    topic_viewer:
+      commonPrefix + '/pages/topic-viewer-page/topic-viewer-page.import.ts',
   },
 
   /**
@@ -122,6 +128,18 @@ module.exports = {
       DIFF_EQUAL: ['diff_match_patch/lib/diff_match_patch', 'DIFF_EQUAL'],
       DIFF_INSERT: ['diff_match_patch/lib/diff_match_patch', 'DIFF_INSERT'],
       DIFF_DELETE: ['diff_match_patch/lib/diff_match_patch', 'DIFF_DELETE'],
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ['creator_dashboard'],
+      filename: 'creator-dashboard-page.mainpage.html',
+      hybrid: true,
+      meta: defaultMeta,
+      template:
+        commonPrefix +
+        '/pages/creator-dashboard-page/' +
+        'creator-dashboard-page.mainpage.html',
+      minify: htmlMinifyConfig,
+      inject: false,
     }),
     new HtmlWebpackPlugin({
       chunks: ['contributor_dashboard'],
@@ -263,6 +281,18 @@ module.exports = {
         commonPrefix +
         '/pages/topics-and-skills-dashboard-page/' +
         'topics-and-skills-dashboard-page.mainpage.html',
+      minify: htmlMinifyConfig,
+      inject: false,
+    }),
+    new HtmlWebpackPlugin({
+      chunks: ['topic_viewer'],
+      filename: 'topic-viewer-page.mainpage.html',
+      hybrid: true,
+      meta: defaultMeta,
+      template:
+        commonPrefix +
+        '/pages/topic-viewer-page/' +
+        'topic-viewer-page.mainpage.html',
       minify: htmlMinifyConfig,
       inject: false,
     }),

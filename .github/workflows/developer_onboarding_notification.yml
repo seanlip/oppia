@@ -9,7 +9,7 @@ permissions: write-all
 jobs:
   comment-on-merge:
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

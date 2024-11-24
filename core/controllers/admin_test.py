@@ -35,6 +35,7 @@ from core.domain import opportunity_services
 from core.domain import platform_parameter_domain
 from core.domain import platform_parameter_list
 from core.domain import platform_parameter_registry
+from core.domain import platform_parameter_services
 from core.domain import question_fetchers
 from core.domain import recommendations_services
 from core.domain import rights_manager
@@ -88,6 +89,11 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
         """Complete the signup process for self.CURRICULUM_ADMIN_EMAIL."""
         super().setUp()
 
+        self.admin_email_address = (
+            platform_parameter_services.get_platform_parameter_value(
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS.value))
+        assert isinstance(self.admin_email_address, str)
+
         self.original_parameter_registry = (
             platform_parameter_registry.Registry.parameter_registry.copy())
         platform_parameter_registry.Registry.parameter_registry.clear()
@@ -95,7 +101,7 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
             caching_services.CACHE_NAMESPACE_PLATFORM_PARAMETER, None,
             ['test_param_1'])
 
-        self.signup(feconf.ADMIN_EMAIL_ADDRESS, 'testsuper')
+        self.signup(self.admin_email_address, 'testsuper')
         self.signup(self.CURRICULUM_ADMIN_EMAIL, self.CURRICULUM_ADMIN_USERNAME)
         self.signup(self.EDITOR_EMAIL, self.EDITOR_USERNAME)
         self.admin_id = self.get_user_id_from_email(self.CURRICULUM_ADMIN_EMAIL)
@@ -828,6 +834,12 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
 
         self.logout()
 
+    @test_utils.set_platform_parameters(
+        [(
+            platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+            'system@example.com'
+        )]
+    )
     def test_get_handler_includes_all_platform_params(self) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         param = self._create_dummy_param()
@@ -845,6 +857,12 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
             param.name)
         self.logout()
 
+    @test_utils.set_platform_parameters(
+        [(
+            platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+            'system@example.com'
+        )]
+    )
     def test_post_with_rules_changes_updates_platform_params(self) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         csrf_token = self.get_new_csrf_token()
@@ -887,13 +905,18 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
             param.name)
         self.logout()
 
+    @test_utils.set_platform_parameters(
+        [(
+            platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+            'system@example.com'
+        )]
+    )
     def test_post_rules_changes_correctly_updates_params_returned_by_getter(
         self
     ) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         csrf_token = self.get_new_csrf_token()
 
-        platform_parameter_registry.Registry.parameter_registry.clear()
         param = self._create_dummy_param()
         new_rule_dicts = [
             {
@@ -933,6 +956,12 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
             param.name)
         self.logout()
 
+    @test_utils.set_platform_parameters(
+        [(
+            platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+            'system@example.com'
+        )]
+    )
     def test_update_parameter_rules_with_unknown_param_name_raises_error(
         self
     ) -> None:
@@ -979,7 +1008,6 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         csrf_token = self.get_new_csrf_token()
 
-        platform_parameter_registry.Registry.parameter_registry.clear()
         param = self._create_dummy_param()
         new_rule_dicts = [
             {
@@ -1151,7 +1179,8 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
         self.logout()
 
     def test_grant_super_admin_privileges(self) -> None:
-        self.login(feconf.ADMIN_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.admin_email_address, str)
+        self.login(self.admin_email_address, is_super_admin=True)
 
         grant_super_admin_privileges_stub = self.swap_with_call_counter(
             firebase_auth_services, 'grant_super_admin_privileges')
@@ -1187,7 +1216,8 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
             'Only the default system admin can manage super admins')
 
     def test_grant_super_admin_privileges_fails_without_username(self) -> None:
-        self.login(feconf.ADMIN_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.admin_email_address, str)
+        self.login(self.admin_email_address, is_super_admin=True)
 
         response = self.put_json(
             '/adminsuperadminhandler', {}, csrf_token=self.get_new_csrf_token(),
@@ -1203,14 +1233,17 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
     def test_grant_super_admin_privileges_fails_with_invalid_username(
         self
     ) -> None:
-        self.login(feconf.ADMIN_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.admin_email_address, str)
+        self.login(self.admin_email_address, is_super_admin=True)
 
         self.put_json(
             '/adminsuperadminhandler', {'username': 'fakeusername'},
             csrf_token=self.get_new_csrf_token(), expected_status_int=404)
 
     def test_revoke_super_admin_privileges(self) -> None:
-        self.login(feconf.ADMIN_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.admin_email_address, str)
+
+        self.login(self.admin_email_address, is_super_admin=True)
 
         revoke_super_admin_privileges_stub = self.swap_with_call_counter(
             firebase_auth_services, 'revoke_super_admin_privileges')
@@ -1244,7 +1277,8 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
             'Only the default system admin can manage super admins')
 
     def test_revoke_super_admin_privileges_fails_without_username(self) -> None:
-        self.login(feconf.ADMIN_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.admin_email_address, str)
+        self.login(self.admin_email_address, is_super_admin=True)
 
         response = self.delete_json(
             '/adminsuperadminhandler', params={}, expected_status_int=400)
@@ -1259,7 +1293,8 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
     def test_revoke_super_admin_privileges_fails_with_invalid_username(
         self
     ) -> None:
-        self.login(feconf.ADMIN_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.admin_email_address, str)
+        self.login(self.admin_email_address, is_super_admin=True)
 
         self.delete_json(
             '/adminsuperadminhandler',
@@ -1268,7 +1303,8 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
     def test_revoke_super_admin_privileges_fails_for_default_admin(
         self
     ) -> None:
-        self.login(feconf.ADMIN_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.admin_email_address, str)
+        self.login(self.admin_email_address, is_super_admin=True)
 
         response = self.delete_json(
             '/adminsuperadminhandler', params={'username': 'testsuper'},
@@ -2688,6 +2724,171 @@ class DataExtractionQueryHandlerTests(test_utils.GenericTestBase):
             expected_status_int=404)
 
 
+class PublishChaptersOfLengthAndMeasurementTopicTest(
+    test_utils.GenericTestBase):
+    """Tests that publish chapters of Length and Measurement topic."""
+
+    topic_id_1 = 'bdO7c687WBBW'
+    story_id_1 = 'OVJ4RdjxbcAf'
+    story_url_fragment = 'title-one'
+    node_id_1 = 'node_1'
+    node_id_2 = 'node_2'
+    node_id_3 = 'node_3'
+    exp_id_0 = '0'
+    exp_id_1 = '1'
+    exp_id_7 = '7'
+
+    def setUp(self) -> None:
+        """Completes the sign-up process for the various users."""
+        super().setUp()
+        self.signup(self.CURRICULUM_ADMIN_EMAIL, self.CURRICULUM_ADMIN_USERNAME)
+        self.signup(self.NEW_USER_EMAIL, self.NEW_USER_USERNAME)
+        self.admin_id = self.get_user_id_from_email(self.CURRICULUM_ADMIN_EMAIL)
+        self.new_user_id = self.get_user_id_from_email(self.NEW_USER_EMAIL)
+        self.set_curriculum_admins([self.CURRICULUM_ADMIN_USERNAME])
+        self.admin = user_services.get_user_actions_info(self.admin_id)
+
+    def test_publish_chapters_of_length_and_measurement_topic(self) -> None:
+        self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
+        self.save_new_valid_exploration(
+            self.exp_id_0, self.admin_id, title='Title 1',
+            end_state_name='End')
+        self.save_new_valid_exploration(
+            self.exp_id_1, self.admin_id, title='Title 2',
+            end_state_name='End')
+        self.save_new_valid_exploration(
+            self.exp_id_7, self.admin_id, title='Title 3',
+            end_state_name='End')
+        self.publish_exploration(self.admin_id, self.exp_id_0)
+        self.publish_exploration(self.admin_id, self.exp_id_1)
+        self.publish_exploration(self.admin_id, self.exp_id_7)
+
+        story = story_domain.Story.create_default_story(
+            self.story_id_1, 'Title', 'Description', self.topic_id_1,
+            self.story_url_fragment)
+        story.meta_tag_content = 'story meta content'
+
+        node_1: story_domain.StoryNodeDict = {
+            'id': self.node_id_1,
+            'title': 'Title 1',
+            'description': 'Description 1',
+            'thumbnail_filename': 'image_1.svg',
+            'thumbnail_bg_color': constants.ALLOWED_THUMBNAIL_BG_COLORS[
+                'chapter'][0],
+            'thumbnail_size_in_bytes': 21131,
+            'destination_node_ids': ['node_3'],
+            'acquired_skill_ids': [],
+            'prerequisite_skill_ids': [],
+            'outline': '',
+            'outline_is_finalized': False,
+            'exploration_id': self.exp_id_1,
+            'status': 'Draft',
+            'planned_publication_date_msecs': 100,
+            'last_modified_msecs': 100,
+            'first_publication_date_msecs': 200,
+            'unpublishing_reason': None
+        }
+        node_2: story_domain.StoryNodeDict = {
+            'id': self.node_id_2,
+            'title': 'Title 2',
+            'description': 'Description 2',
+            'thumbnail_filename': 'image_2.svg',
+            'thumbnail_bg_color': constants.ALLOWED_THUMBNAIL_BG_COLORS[
+                'chapter'][0],
+            'thumbnail_size_in_bytes': 21131,
+            'destination_node_ids': ['node_1'],
+            'acquired_skill_ids': [],
+            'prerequisite_skill_ids': [],
+            'outline': '',
+            'outline_is_finalized': False,
+            'exploration_id': self.exp_id_0,
+            'status': 'Draft',
+            'planned_publication_date_msecs': 100,
+            'last_modified_msecs': 100,
+            'first_publication_date_msecs': 200,
+            'unpublishing_reason': None
+        }
+        node_3: story_domain.StoryNodeDict = {
+            'id': self.node_id_3,
+            'title': 'Title 3',
+            'description': 'Description 3',
+            'thumbnail_filename': 'image_3.svg',
+            'thumbnail_bg_color': constants.ALLOWED_THUMBNAIL_BG_COLORS[
+                'chapter'][0],
+            'thumbnail_size_in_bytes': 21131,
+            'destination_node_ids': [],
+            'acquired_skill_ids': [],
+            'prerequisite_skill_ids': [],
+            'outline': '',
+            'outline_is_finalized': False,
+            'exploration_id': self.exp_id_7,
+            'status': 'Draft',
+            'planned_publication_date_msecs': 100,
+            'last_modified_msecs': 100,
+            'first_publication_date_msecs': 200,
+            'unpublishing_reason': None
+        }
+        story.story_contents.nodes = [
+            story_domain.StoryNode.from_dict(node_1),
+            story_domain.StoryNode.from_dict(node_2),
+            story_domain.StoryNode.from_dict(node_3)
+        ]
+        story.story_contents.initial_node_id = 'node_2'
+        story.story_contents.next_node_id = 'node_4'
+        story_services.save_new_story(self.admin_id, story)
+        subtopic_1 = topic_domain.Subtopic.create_default_subtopic(
+            1, 'Subtopic Title 1', 'sub-one-frag')
+        subtopic_2 = topic_domain.Subtopic.create_default_subtopic(
+            2, 'Subtopic Title 2', 'sub-two-frag')
+        skill_id_1 = skill_services.get_new_skill_id()
+        skill_id_2 = skill_services.get_new_skill_id()
+        subtopic_1.skill_ids = [skill_id_1]
+        subtopic_2.skill_ids = [skill_id_2]
+        self.save_new_topic(
+            self.topic_id_1, 'user', name='Topic',
+            description='A new topic', canonical_story_ids=[story.id],
+            additional_story_ids=[], uncategorized_skill_ids=[],
+            subtopics=[subtopic_1, subtopic_2], next_subtopic_id=3)
+        topic_services.publish_topic(self.topic_id_1, self.admin_id)
+        topic_services.publish_story(
+            self.topic_id_1, self.story_id_1, self.admin_id)
+        story_fetcher_1 = story_fetchers.get_story_by_id(
+            self.story_id_1, strict=False)
+        chapters_change_list = []
+        if story_fetcher_1:
+            for node in story_fetcher_1.story_contents.nodes:
+                chapters_change_list.append(story_domain.StoryChange({
+                    'cmd': story_domain.CMD_UPDATE_STORY_NODE_PROPERTY,
+                    'node_id': node.id,
+                    'property_name': (
+                        story_domain.STORY_NODE_PROPERTY_STATUS),
+                    'old_value': node.status,
+                    'new_value': constants.STORY_NODE_STATUS_DRAFT
+                }))
+        topic_services.update_story_and_topic_summary(
+            self.admin_id, self.story_id_1, chapters_change_list,
+                'Changes chapter status to draft', self.topic_id_1)
+        story_fetcher_2 = story_fetchers.get_story_by_id(
+            self.story_id_1, strict=False)
+        if story_fetcher_2:
+            for node in story_fetcher_2.story_contents.nodes:
+                self.assertEqual(node.status, constants.STORY_NODE_STATUS_DRAFT)
+
+        csrf_token = self.get_new_csrf_token()
+        self.post_json(
+            '/adminhandler', {
+                'action': 'publish_chapters_of_length_and_measurement_topic'
+            },
+            csrf_token=csrf_token)
+
+        story_fetcher_3 = story_fetchers.get_story_by_id(
+            self.story_id_1, strict=False)
+        if story_fetcher_3:
+            for node in story_fetcher_3.story_contents.nodes:
+                self.assertEqual(
+                    node.status, constants.STORY_NODE_STATUS_PUBLISHED)
+
+
 class ClearSearchIndexTest(test_utils.GenericTestBase):
     """Tests that search index gets cleared."""
 
@@ -2742,7 +2943,18 @@ class SendDummyMailTest(test_utils.GenericTestBase):
         self.signup(self.CURRICULUM_ADMIN_EMAIL, self.CURRICULUM_ADMIN_USERNAME)
 
     @test_utils.set_platform_parameters(
-        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
+        [
+            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
+            (
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS,
+                'testadmin@example.com'
+            ),
+            (
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+                'system@example.com'
+            ),
+            (platform_parameter_list.ParamName.SYSTEM_EMAIL_NAME, '.')
+        ]
     )
     def test_can_send_dummy_mail(self) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
@@ -3026,10 +3238,14 @@ class DeleteUserHandlerTest(test_utils.GenericTestBase):
         super().setUp()
         self.signup(self.NEW_USER_EMAIL, self.NEW_USER_USERNAME)
         self.new_user_id = self.get_user_id_from_email(self.NEW_USER_EMAIL)
-        self.signup(feconf.SYSTEM_EMAIL_ADDRESS, self.CURRICULUM_ADMIN_USERNAME)
-        self.login(feconf.SYSTEM_EMAIL_ADDRESS, is_super_admin=True)
+        system_email_address = (
+            platform_parameter_services.get_platform_parameter_value(
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS.value))
+        assert isinstance(system_email_address, str)
+        self.signup(system_email_address, self.CURRICULUM_ADMIN_USERNAME)
+        self.login(system_email_address, is_super_admin=True)
         self.admin_user_id = self.get_user_id_from_email(
-            feconf.SYSTEM_EMAIL_ADDRESS)
+            system_email_address)
 
     def test_delete_without_user_id_raises_error(self) -> None:
         self.delete_json(
@@ -3084,9 +3300,13 @@ class UpdateBlogPostHandlerTest(test_utils.GenericTestBase):
         super().setUp()
         self.signup(self.NEW_USER_EMAIL, self.NEW_USER_USERNAME)
         self.new_user_id = self.get_user_id_from_email(self.NEW_USER_EMAIL)
-        self.signup(feconf.SYSTEM_EMAIL_ADDRESS, self.CURRICULUM_ADMIN_USERNAME)
+        self.system_email_address = (
+            platform_parameter_services.get_platform_parameter_value(
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS.value))
+        assert isinstance(self.system_email_address, str)
+        self.signup(self.system_email_address, self.CURRICULUM_ADMIN_USERNAME)
         self.admin_user_id = self.get_user_id_from_email(
-            feconf.SYSTEM_EMAIL_ADDRESS)
+            self.system_email_address)
         self.signup(
             self.BLOG_ADMIN_EMAIL, self.BLOG_ADMIN_USERNAME)
         self.add_user_role(
@@ -3106,7 +3326,7 @@ class UpdateBlogPostHandlerTest(test_utils.GenericTestBase):
         model.update_timestamps()
         model.put()
 
-        self.login(feconf.SYSTEM_EMAIL_ADDRESS, is_super_admin=True)
+        self.login(self.system_email_address, is_super_admin=True)
 
     def test_update_blog_post_without_blog_post_id_raises_error(self) -> None:
         csrf_token = self.get_new_csrf_token()
@@ -3166,7 +3386,8 @@ class UpdateBlogPostHandlerTest(test_utils.GenericTestBase):
         self.signup(self.BLOG_EDITOR_EMAIL, self.BLOG_EDITOR_USERNAME)
         self.add_user_role(
             self.BLOG_EDITOR_USERNAME, feconf.ROLE_ID_BLOG_POST_EDITOR)
-        self.login(feconf.SYSTEM_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.system_email_address, str)
+        self.login(self.system_email_address, is_super_admin=True)
 
         self.put_json(
             '/updateblogpostdatahandler',
@@ -3199,7 +3420,8 @@ class UpdateBlogPostHandlerTest(test_utils.GenericTestBase):
         self.signup(self.BLOG_EDITOR_EMAIL, self.BLOG_EDITOR_USERNAME)
         self.add_user_role(
             self.BLOG_EDITOR_USERNAME, feconf.ROLE_ID_BLOG_POST_EDITOR)
-        self.login(feconf.SYSTEM_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.system_email_address, str)
+        self.login(self.system_email_address, is_super_admin=True)
 
         response = self.put_json(
             '/updateblogpostdatahandler',
@@ -3221,7 +3443,8 @@ class UpdateBlogPostHandlerTest(test_utils.GenericTestBase):
         self.signup(self.BLOG_EDITOR_EMAIL, self.BLOG_EDITOR_USERNAME)
         self.add_user_role(
             self.BLOG_EDITOR_USERNAME, feconf.ROLE_ID_BLOG_POST_EDITOR)
-        self.login(feconf.SYSTEM_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.system_email_address, str)
+        self.login(self.system_email_address, is_super_admin=True)
 
         self.put_json(
             '/updateblogpostdatahandler',
@@ -3327,14 +3550,19 @@ class IntereactionByExplorationIdHandlerTests(test_utils.GenericTestBase):
     def setUp(self) -> None:
         """Complete the signup process for self.ADMIN_EMAIL."""
         super().setUp()
-        self.signup(feconf.ADMIN_EMAIL_ADDRESS, 'testsuper')
+        self.admin_email_address = (
+            platform_parameter_services.get_platform_parameter_value(
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS.value))
+        assert isinstance(self.admin_email_address, str)
+        self.signup(self.admin_email_address, 'testsuper')
         self.signup(self.EDITOR_EMAIL, self.EDITOR_USERNAME)
         self.editor_id = self.get_user_id_from_email(self.EDITOR_EMAIL)
         self.exploration1 = self.save_new_valid_exploration(
             self.EXP_ID_1, self.editor_id, end_state_name='End')
 
     def test_interactions_by_exploration_id_handler(self) -> None:
-        self.login(feconf.ADMIN_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.admin_email_address, str)
+        self.login(self.admin_email_address, is_super_admin=True)
 
         payload = {
             'exp_id': self.EXP_ID_1
@@ -3347,7 +3575,8 @@ class IntereactionByExplorationIdHandlerTests(test_utils.GenericTestBase):
             sorted(interaction_ids), ['EndExploration', 'TextInput'])
 
     def test_handler_with_invalid_exploration_id_raise_error(self) -> None:
-        self.login(feconf.ADMIN_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.admin_email_address, str)
+        self.login(self.admin_email_address, is_super_admin=True)
 
         payload = {
             'exp_id': 'invalid'
@@ -3358,7 +3587,8 @@ class IntereactionByExplorationIdHandlerTests(test_utils.GenericTestBase):
             expected_status_int=404)
 
     def test_handler_with_without_exploration_id_in_payload_raise_error(self) -> None: # pylint: disable=line-too-long
-        self.login(feconf.ADMIN_EMAIL_ADDRESS, is_super_admin=True)
+        assert isinstance(self.admin_email_address, str)
+        self.login(self.admin_email_address, is_super_admin=True)
         response = self.get_json(
             '/interactions', params={},
             expected_status_int=400)

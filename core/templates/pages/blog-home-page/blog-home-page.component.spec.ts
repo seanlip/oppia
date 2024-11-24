@@ -176,38 +176,7 @@ describe('Blog home page component', () => {
     expect(component.isSmallScreenViewActive()).toBe(false);
   });
 
-  it('should handle search query change with language param in URL with empty search query and tag list', () => {
-    spyOn(component, 'loadInitialBlogHomePageData');
-    spyOn(windowRef.nativeWindow.history, 'pushState');
-    windowRef.nativeWindow.location = new URL(
-      'http://localhost/blog/search/find?lang=en'
-    );
-
-    component.onSearchQueryChangeExec();
-
-    expect(loaderService.showLoadingScreen).toHaveBeenCalled();
-    expect(component.loadInitialBlogHomePageData).toHaveBeenCalled();
-
-    windowRef.nativeWindow.location = new URL(
-      'http://localhost/blog/not/search/find?lang=en'
-    );
-    expect(windowRef.nativeWindow.history.pushState).toHaveBeenCalled();
-    component.onSearchQueryChangeExec();
-    component.searchQuery = '';
-    component.selectedTags = [];
-
-    expect(loaderService.showLoadingScreen).toHaveBeenCalled();
-    expect(component.loadInitialBlogHomePageData).toHaveBeenCalled();
-    expect(windowRef.nativeWindow.history.pushState).toHaveBeenCalledWith(
-      {},
-      '',
-      '/blog'
-    );
-  });
-
-  it('should handle search query change with language param in URL with non empty search query', () => {
-    component.searchQuery = 'search_query';
-    component.selectedTags = [];
+  it('should handle search query change with language param in URL', () => {
     spyOn(searchService, 'executeSearchQuery').and.callFake(
       (searchQuery: string, tags: object, callb: () => void) => {
         callb();
@@ -222,6 +191,7 @@ describe('Blog home page component', () => {
     );
 
     component.onSearchQueryChangeExec();
+
     expect(loaderService.showLoadingScreen).toHaveBeenCalled();
     expect(windowRef.nativeWindow.history.pushState).toHaveBeenCalled();
     windowRef.nativeWindow.location = new URL(
@@ -233,36 +203,7 @@ describe('Blog home page component', () => {
     );
   });
 
-  it('should handle search query change without language param in URL with empty search query and tag list', () => {
-    spyOn(component, 'loadInitialBlogHomePageData');
-    spyOn(windowRef.nativeWindow.history, 'pushState');
-    windowRef.nativeWindow.location = new URL(
-      'http://localhost/blog/search/find'
-    );
-
-    component.onSearchQueryChangeExec();
-
-    expect(loaderService.showLoadingScreen).toHaveBeenCalled();
-    expect(component.loadInitialBlogHomePageData).toHaveBeenCalled();
-
-    windowRef.nativeWindow.location = new URL(
-      'http://localhost/blog/not/search/find'
-    );
-    expect(windowRef.nativeWindow.history.pushState).toHaveBeenCalled();
-    component.onSearchQueryChangeExec();
-    component.searchQuery = '';
-    component.selectedTags = [];
-
-    expect(loaderService.showLoadingScreen).toHaveBeenCalled();
-    expect(component.loadInitialBlogHomePageData).toHaveBeenCalled();
-    expect(windowRef.nativeWindow.history.pushState).toHaveBeenCalledWith(
-      {},
-      '',
-      '/blog'
-    );
-  });
-
-  it('should handle search query change without language param in URL with non empty search query', () => {
+  it('should handle search query change without language param in URL', () => {
     spyOn(searchService, 'executeSearchQuery').and.callFake(
       (searchQuery: string, tags: object, callb: () => void) => {
         callb();
@@ -277,8 +218,7 @@ describe('Blog home page component', () => {
     );
 
     component.onSearchQueryChangeExec();
-    component.searchQuery = 'search_query';
-    component.selectedTags = [];
+
     expect(loaderService.showLoadingScreen).toHaveBeenCalled();
     expect(windowRef.nativeWindow.history.pushState).toHaveBeenCalled();
     windowRef.nativeWindow.location = new URL(
@@ -296,8 +236,6 @@ describe('Blog home page component', () => {
     'should display alert when fetching search results fail during search' +
       'query execution',
     () => {
-      component.searchQuery = 'search_query';
-      component.selectedTags = ['tag1', 'tag2'];
       spyOn(searchService, 'executeSearchQuery').and.callFake(
         (
           searchQuery: string,
@@ -314,7 +252,7 @@ describe('Blog home page component', () => {
 
       expect(loaderService.showLoadingScreen).toHaveBeenCalled();
       expect(alertsService.addWarning).toHaveBeenCalledWith(
-        'Unable to fetch search results. Error: Internal Server Error'
+        'Unable to fetch search results.Error: Internal Server Error'
       );
     }
   );

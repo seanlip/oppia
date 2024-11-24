@@ -28,31 +28,23 @@ export function initializeGoogleAnalytics() {
     return;
   }
 
-  if (analyticsConstants.SITE_NAME_FOR_ANALYTICS) {
+  if (
+    analyticsConstants.GA_ANALYTICS_ID &&
+    analyticsConstants.SITE_NAME_FOR_ANALYTICS
+  ) {
+    // Reference doc:
+    // https://developers.google.com/analytics/devguides/collection/gtagjs
     window.dataLayer = window.dataLayer || [];
     window.gtag = function(): void {
       window.dataLayer.push(arguments);
     }
-
-    if (analyticsConstants.GA_ANALYTICS_ID) {
-      // The following is for gtag.js. Reference doc:
-      // https://developers.google.com/analytics/devguides/collection/gtagjs
-      gtag('set', 'linker', {
-        'domains': [analyticsConstants.SITE_NAME_FOR_ANALYTICS]
-      });
-      gtag('js', new Date());
-      gtag('config', analyticsConstants.GA_ANALYTICS_ID, {
-        'anonymize_ip': true,
-        'forceSSL': true,
-      });
-    }
-
-    if (analyticsConstants.GTM_ANALYTICS_ID) {
-      // The following is for Google Tag Manager (gtm.js).
-      window.dataLayer.push({
-        'gtm.start': new Date().getTime(),
-        event: 'gtm.js'
-      });
-    }
+    gtag('set', 'linker', {
+      'domains': [analyticsConstants.SITE_NAME_FOR_ANALYTICS]
+    });
+    gtag('js', new Date());
+    gtag('config', analyticsConstants.GA_ANALYTICS_ID, {
+      'anonymize_ip': true,
+      'forceSSL': true,
+    });
   }
 }

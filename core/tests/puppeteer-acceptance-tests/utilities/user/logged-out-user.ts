@@ -1279,7 +1279,7 @@ export class LoggedOutUser extends BaseUser {
    */
   async clickLinkAboutCookiesOnPrivacyPolicyPage(): Promise<void> {
     await this.clickButtonToNavigateToNewPage(
-      'https://allaboutcookies.org/how-to-manage-cookies',
+      'http://www.allaboutcookies.org/manage-cookies/index.html',
       'link to learn about cookies on the Privacy Policy page',
       allAboutCookiesUrl,
       'All About Cookies'

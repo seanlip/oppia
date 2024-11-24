@@ -29,19 +29,15 @@ import {
   FeatureFlag,
   FeatureFlagBackendDict,
 } from 'domain/feature-flag/feature-flag.model';
-import {UserGroupBackendDict} from 'domain/release_coordinator/user-group.model';
-import {UserGroup} from 'domain/release_coordinator/user-group.model';
 
 export interface FeatureFlagsDicts {
   feature_flags: FeatureFlagBackendDict[];
   server_stage: string;
-  user_group_dicts: UserGroupBackendDict[];
 }
 
 export interface FeatureFlagsResponse {
   featureFlags: FeatureFlag[];
   serverStage: string;
-  userGroups: UserGroup[];
 }
 
 @Injectable({
@@ -84,9 +80,6 @@ export class FeatureFlagBackendApiService {
                 FeatureFlag.createFromBackendDict(dict)
               ),
               serverStage: response.server_stage,
-              userGroups: response.user_group_dicts.map(dict =>
-                UserGroup.createFromBackendDict(dict)
-              ),
             });
           },
           errorResponse => {

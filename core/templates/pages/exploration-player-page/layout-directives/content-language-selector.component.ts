@@ -94,10 +94,7 @@ export class ContentLanguageSelectorComponent implements OnInit {
       }
     }
 
-    if (
-      this.isVoiceoverContributionWithAccentEnabled() &&
-      this.audioPreloaderService.exploration !== undefined
-    ) {
+    if (this.isVoiceoverContributionWithAccentEnabled()) {
       this.voiceoverBackendApiService
         .fetchVoiceoverAdminDataAsync()
         .then(response => {
