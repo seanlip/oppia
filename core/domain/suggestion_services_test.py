@@ -1056,6 +1056,7 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
         })]
         exp_services.update_exploration(
             self.author_id, exploration.id, change_list, '')
+        
         add_translation_change_dict = {
             'cmd': exp_domain.CMD_ADD_WRITTEN_TRANSLATION,
             'state_name': 'state 1',
@@ -1064,7 +1065,7 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             'content_html': '<p>old content html</p>',
             'translation_html': (
                 '<p>Translation for original content.</p>'
-                '<oppia-noninteractive-image'
+                '<oppia-noninteractive-image '
                 'alt-with-value="Image description" '
                 'caption-with-value="Sample caption" '
                 'filepath-with-value="img.svg"></oppia-noninteractive-image>'
@@ -1088,13 +1089,14 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
 
         suggestion_services.update_translation_suggestion(
             suggestion.suggestion_id,
-            '<p><oppia-noninteractive-image'
+            '<p><oppia-noninteractive-image '
             'alt-with-value="Another description" '
             'caption-with-value="Another caption" ' 
             'filepath-with-value="another_img.svg">'
             '</oppia-noninteractive-image> '
             'Updated translation with image</p>'
         )
+
         updated_suggestion = suggestion_services.get_suggestion_by_id(
             suggestion.suggestion_id
         )
