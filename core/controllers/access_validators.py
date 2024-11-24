@@ -357,7 +357,7 @@ class ExplorationPageNormalizedRequestDict(TypedDict):
     collection_id: Optional[str]
 
 
-class ExplorationPlayerPageAccessValidationHandler(
+class ExplorationPlayerAccessValidationPage(
     base.BaseHandler[
         Dict[str, str], ExplorationPageNormalizedRequestDict
     ]

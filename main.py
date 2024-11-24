@@ -719,7 +719,7 @@ URLS = [
     get_redirect_route(
         r'%s/can_access_exploration_player/<exploration_id>' %
         feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
-        access_validators.ExplorationPlayerPageAccessValidationHandler
+        access_validators.ExplorationPlayerAccessValidationPage
     ),
     get_redirect_route(
         r'%s/<exploration_id>' % feconf.EXPLORATION_INIT_URL_PREFIX,

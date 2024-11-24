@@ -361,7 +361,7 @@ class ReleaseCoordinatorAccessValidationHandlerTests(
             ACCESS_VALIDATION_HANDLER_PREFIX)
 
 
-class ExplorationPlayerPageAccessValidationHandlerTests(
+class ExplorationPlayerAccessValidationPageTests(
         test_utils.GenericTestBase):
     """Test for exploration player access validation."""
 
