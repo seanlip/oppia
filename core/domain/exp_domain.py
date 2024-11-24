@@ -5162,7 +5162,7 @@ class Exploration(translation_domain.BaseTranslatableObject):
     def _convert_states_v56_dict_to_v57_dict(
         cls, states_dict: Dict[str, state_domain.StateDict]
     ) -> Dict[str, state_domain.StateDict]:
-        """Converts from v55 to v56. Version 56 removes and RecordedVoiceovers
+        """Converts from v56 to v57. Version 57 removes and RecordedVoiceovers
         from State.
 
         Args:
@@ -5615,7 +5615,7 @@ class Exploration(translation_domain.BaseTranslatableObject):
     def _convert_v61_dict_to_v62_dict(
         cls, exploration_dict: VersionedExplorationDict
     ) -> VersionedExplorationDict:
-        """Converts a v60 exploration dict into a v61 exploration dict.
+        """Converts a v61 exploration dict into a v62 exploration dict.
         Removes recorded_voiceovers field from state property.
 
         Args:

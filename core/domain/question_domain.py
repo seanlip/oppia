@@ -1857,7 +1857,7 @@ class Question(translation_domain.BaseTranslatableObject):
     def _convert_state_v56_dict_to_v57_dict(
         cls, question_state_dict: state_domain.StateDict
     ) -> state_domain.StateDict:
-        """Converts from v55 to v56. Version 56 removes and RecordedVoiceovers
+        """Converts from v56 to v57. Version 57 removes and RecordedVoiceovers
         from State.
 
         Args:
