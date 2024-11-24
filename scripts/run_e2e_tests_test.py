@@ -361,7 +361,9 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
         with self.swap_mock_set_constants_to_default:
             run_e2e_tests.main(args=['--debug_mode'])
 
-    def test_skip_firebase_and_datastore_emulator_when_not_emulator_mode(self) -> None:
+    def test_skip_firebase_and_datastore_emulator_when_not_emulator_mode(
+        self
+    ) -> None:
         self.exit_stack.enter_context(self.swap_with_checks(
             common, 'is_oppia_server_already_running', lambda *_: False))
         self.exit_stack.enter_context(self.swap_with_checks(
@@ -395,7 +397,7 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
         self.exit_stack.enter_context(self.swap_with_checks(
             sys, 'exit', lambda _: None, expected_args=[(0,)]))
 
-        emulator_mode_swap = self.swap(constants, "EMULATOR_MODE", False)
+        emulator_mode_swap = self.swap(constants, 'EMULATOR_MODE', False)
 
         with self.swap_mock_set_constants_to_default:
             with emulator_mode_swap:
