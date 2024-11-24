@@ -44,7 +44,7 @@ describe('Blog Editor', function () {
         'This is a test blog post'
       );
       await blogPostEditor.expectScreenshotToMatch(
-        'expectPublishedBlogPostWithTitleToBePresent',
+        'blogEditorPageWithPublishedBlogPostTitle',
         __dirname
       );
 
@@ -52,7 +52,7 @@ describe('Blog Editor', function () {
         'This is a test blog post'
       );
       await blogPostEditor.expectScreenshotToMatch(
-        'deletePublishedBlogPostWithTitle',
+        'blogEditorPageWithBlogPostDeletedMessage',
         __dirname
       );
       await blogPostEditor.expectNumberOfBlogPostsToBe(0);
