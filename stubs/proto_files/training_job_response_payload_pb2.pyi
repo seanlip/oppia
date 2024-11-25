@@ -24,14 +24,14 @@ class TrainingJobResponsePayload(google.protobuf.message.Message):
         DESCRIPTOR: google.protobuf.descriptor.Descriptor
         JOB_ID_FIELD_NUMBER: builtins.int
         TEXT_CLASSIFIER_FIELD_NUMBER: builtins.int
-        job_id: typing.Text
+        job_id: str
         """Id of the training job whose data is being stored."""
 
         @property
         def text_classifier(self) -> text_classifier_pb2.TextClassifierFrozenModel: ...
         def __init__(self,
             *,
-            job_id: typing.Text = ...,
+            job_id: str = ...,
             text_classifier: typing.Optional[text_classifier_pb2.TextClassifierFrozenModel] = ...,
             ) -> None: ...
         def HasField(self, field_name: typing_extensions.Literal["classifier_frozen_model",b"classifier_frozen_model","text_classifier",b"text_classifier"]) -> builtins.bool: ...
@@ -43,17 +43,17 @@ class TrainingJobResponsePayload(google.protobuf.message.Message):
     SIGNATURE_FIELD_NUMBER: builtins.int
     @property
     def job_result(self) -> global___TrainingJobResponsePayload.JobResult: ...
-    vm_id: typing.Text
+    vm_id: str
     """Id of the VM instance that trained the job."""
 
-    signature: typing.Text
+    signature: str
     """Signature of the job data for authenticated communication."""
 
     def __init__(self,
         *,
         job_result: typing.Optional[global___TrainingJobResponsePayload.JobResult] = ...,
-        vm_id: typing.Text = ...,
-        signature: typing.Text = ...,
+        vm_id: str = ...,
+        signature: str = ...,
         ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal["job_result",b"job_result"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal["job_result",b"job_result","signature",b"signature","vm_id",b"vm_id"]) -> None: ...
