@@ -361,7 +361,7 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
         with self.swap_mock_set_constants_to_default:
             run_e2e_tests.main(args=['--debug_mode'])
 
-    def test_skip_firebase_and_datastore_emulator_when_not_emulator_mode(
+    def test_skip_firebase_and_datastore_emulator_when_not_in_emulator_mode(
         self
     ) -> None:
         self.exit_stack.enter_context(self.swap_with_checks(
@@ -401,6 +401,67 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
 
         with self.swap_mock_set_constants_to_default:
             with emulator_mode_swap:
+                run_e2e_tests.main(args=[])
+
+    def test_loop_invocation_continues_while_poll_is_None(
+        self
+    ) -> None:
+        self.firstRun = True
+        null_ctx = contextlib.nullcontext(
+            enter_result=scripts_test_utils.PopenStub(alive=False))
+
+        def mock_managed_webdriverio_server(
+            **unused_kwargs: str
+        ) -> ContextManager[scripts_test_utils.PopenStub]:  # pylint: disable=unused-argument
+            return null_ctx
+
+        def poll_mock():
+            null_ctx.enter_result.returncode = None if self.firstRun else 1
+            self.firstRun = False
+            return null_ctx.enter_result.returncode
+
+        poll_swap = self.swap(null_ctx.enter_result, "poll", poll_mock)
+
+        self.exit_stack.enter_context(self.swap_with_checks(
+            common, 'is_oppia_server_already_running', lambda *_: False))
+        self.exit_stack.enter_context(self.swap_with_checks(
+            run_e2e_tests, 'install_third_party_libraries', lambda _: None,
+            expected_args=[(False,)]))
+        self.exit_stack.enter_context(self.swap_with_checks(
+            build, 'build_js_files', lambda *_, **__: None,
+            expected_args=[(True,)]))
+        self.exit_stack.enter_context(self.swap_with_checks(
+            servers, 'managed_elasticsearch_dev_server', mock_managed_process))
+        self.exit_stack.enter_context(self.swap_with_checks(
+            servers, 'managed_firebase_auth_emulator', mock_managed_process))
+        self.exit_stack.enter_context(self.swap_with_checks(
+            servers, 'managed_dev_appserver', mock_managed_process))
+        self.exit_stack.enter_context(self.swap_with_checks(
+            servers, 'managed_redis_server', mock_managed_process))
+        self.exit_stack.enter_context(self.swap_with_checks(
+            servers, 'managed_portserver', mock_managed_process))
+        self.exit_stack.enter_context(self.swap_with_checks(
+            servers, 'managed_cloud_datastore_emulator', mock_managed_process))
+        self.exit_stack.enter_context(self.swap_with_checks(
+            servers,
+            'managed_webdriverio_server',
+            mock_managed_webdriverio_server,
+            expected_kwargs=[
+                {
+                    'suite_name': 'full',
+                    'chrome_version': None,
+                    'dev_mode': True,
+                    'mobile': False,
+                    'sharding_instances': 3,
+                    'debug_mode': False,
+                    'stdout': subprocess.PIPE,
+                },
+            ]))
+        self.exit_stack.enter_context(self.swap_with_checks(
+            sys, 'exit', lambda _: None, expected_args=[(1,)]))
+
+        with self.swap_mock_set_constants_to_default:
+            with poll_swap:
                 run_e2e_tests.main(args=[])
 
     def test_start_tests_in_with_chromedriver_flag(self) -> None:
