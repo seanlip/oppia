@@ -54,6 +54,7 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
 
     def setUp(self) -> None:
         super().setUp()
+        self.first_run = True
         self.exit_stack = contextlib.ExitStack()
 
         def mock_constants() -> None:
@@ -403,10 +404,9 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
             with emulator_mode_swap:
                 run_e2e_tests.main(args=[])
 
-    def test_loop_invocation_continues_while_poll_is_None(
+    def test_loop_invocation_continues_while_poll_is_none(
         self
     ) -> None:
-        self.firstRun = True
         null_ctx = contextlib.nullcontext(
             enter_result=scripts_test_utils.PopenStub(alive=False))
 
@@ -416,11 +416,11 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
             return null_ctx
 
         def poll_mock():
-            null_ctx.enter_result.returncode = None if self.firstRun else 1
-            self.firstRun = False
+            null_ctx.enter_result.returncode = None if self.first_run else 1
+            self.first_run = False
             return null_ctx.enter_result.returncode
 
-        poll_swap = self.swap(null_ctx.enter_result, "poll", poll_mock)
+        poll_swap = self.swap(null_ctx.enter_result, 'poll', poll_mock)
 
         self.exit_stack.enter_context(self.swap_with_checks(
             common, 'is_oppia_server_already_running', lambda *_: False))
