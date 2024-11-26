@@ -670,6 +670,7 @@ class ExplorationSummaryQueriesUnitTests(ExplorationServicesUnitTests):
         """Test that updating the title or category of 
         an exploration updates the ExpSummaryModel.
         """
+
         self.save_new_default_exploration(
             self.EXP_0_ID,
             self.owner_id,
@@ -695,6 +696,7 @@ class ExplorationSummaryQueriesUnitTests(ExplorationServicesUnitTests):
         """Test that reverting an exploration
           also restores the ExpSummaryModel.
         """
+
         self.save_new_default_exploration(
             self.EXP_1_ID,
             self.owner_id,
@@ -730,15 +732,20 @@ class ExplorationSummaryQueriesUnitTests(ExplorationServicesUnitTests):
         """Test that changing the access rights of an exploration
           updates its visibility in ExpSummaryModel.
         """
+
         self.save_new_default_exploration(self.EXP_2_ID, self.owner_id)
         rights_manager.publish_exploration(self.owner, self.EXP_2_ID)
         summary = exp_fetchers.get_exploration_summary_by_id(self.EXP_2_ID)
         self.assertTrue(summary.status == rights_domain.ACTIVITY_STATUS_PUBLIC)
         rights_manager.unpublish_exploration(self.user_moderator, self.EXP_2_ID)
-        updated_summary = exp_fetchers.get_exploration_summary_by_id(self.EXP_2_ID)
+        updated_summary = exp_fetchers.get_exploration_summary_by_id(
+            self.EXP_2_ID
+        )
         self.assertTrue(
             updated_summary.status == rights_domain.ACTIVITY_STATUS_PRIVATE
         )
+
+        
 class ExplorationCreateAndDeleteUnitTests(ExplorationServicesUnitTests):
     """Test creation and deletion methods."""
 
