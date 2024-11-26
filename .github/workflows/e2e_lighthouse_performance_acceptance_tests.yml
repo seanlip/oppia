@@ -18,27 +18,19 @@ jobs:
     needs: check_test_suites_to_run
     if: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).e2e.count > 0 ||
             fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_performance.count > 0 ||
-            fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.count > 0 }}
+            fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.docker.count > 0 ||
+            fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.python.count > 0 }}
     runs-on:  ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-22.04]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Setup Python 3.9.20 with pip cache
-        uses: actions/setup-python@v4
+        uses: actions/checkout@v4
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
         with:
-          python-version: '3.9.20'
-          architecture: 'x64'
-          cache: 'pip'
-          cache-dependency-path: |
-            requirements.in
-            requirements.txt
-            requirements_dev.in
-            requirements_dev.txt
-      - name: Merge develop branch into the current branch
-        uses: ./.github/actions/merge
+          use_cache: true
       - name: Cache node modules and third_party/static
         uses: actions/cache@v3
         env:
@@ -83,20 +75,11 @@ jobs:
     name: e2e_test (${{ matrix.os }}, ${{ matrix.suite.name }})
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Setup Python 3.9.20 with pip cache
-        uses: actions/setup-python@v4
+        uses: actions/checkout@v4
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
         with:
-          python-version: '3.9.20'
-          architecture: 'x64'
-          cache: 'pip'
-          cache-dependency-path: |
-            requirements.in
-            requirements.txt
-            requirements_dev.in
-            requirements_dev.txt
-      - name: Merge develop branch into the current branch
-        uses: ./.github/actions/merge
+          use_cache: true
       - name: Cache node modules
         uses: actions/cache@v3
         env:
@@ -199,14 +182,11 @@ jobs:
     name: lighthouse (${{ matrix.os }}, ${{ matrix.suite.name }})
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Setup Python 3.9.20
-        uses: actions/setup-python@v4
+        uses: actions/checkout@v4
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
         with:
-          python-version: '3.9.20'
-          architecture: 'x64'
-      - name: Merge develop branch into the current branch
-        uses: ./.github/actions/merge
+          use_cache: false
       - name: Cache node modules
         uses: actions/cache@v3
         env:
@@ -280,29 +260,20 @@ jobs:
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   acceptance_test:
       needs: [check_test_suites_to_run, build]
-      if: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.count > 0 }}
+      if: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.python.count > 0 }}
       runs-on:  ${{ matrix.os }}
       strategy:
         matrix:
           os: [ubuntu-22.04]
-          suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.suites }}
+          suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.python.suites }}
       name: acceptance_test (${{ matrix.os }}, ${{ matrix.suite.name }})
       steps:
         - name: Checkout repository
-          uses: actions/checkout@v3
-        - name: Setup Python 3.9.20 with pip cache
-          uses: actions/setup-python@v4
+          uses: actions/checkout@v4
+        - name: Merge develop and set up Python
+          uses: ./.github/actions/merge-develop-and-setup-python
           with:
-            python-version: '3.9.20'
-            architecture: 'x64'
-            cache: 'pip'
-            cache-dependency-path: |
-              requirements.in
-              requirements.txt
-              requirements_dev.in
-              requirements_dev.txt
-        - name: Merge develop branch into the current branch
-          uses: ./.github/actions/merge
+            use_cache: true
         - name: Cache node modules
           uses: actions/cache@v3
           env:
@@ -383,6 +354,58 @@ jobs:
           with:
             message: "An acceptance test failed on the upstream develop branch."
             webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
+  acceptance_test_with_docker:
+      needs: [check_test_suites_to_run]
+      if: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.docker.count > 0 }}
+      runs-on:  ${{ matrix.os }}
+      strategy:
+        matrix:
+          os: [ubuntu-22.04]
+          suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.docker.suites }}
+      name: acceptance_test (${{ matrix.os }}, ${{ matrix.suite.name }})
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+        - name: Setup Python 3.8
+          uses: actions/setup-python@v3
+          with:
+            python-version: '3.8.15'
+            architecture: 'x64'
+        - name: Free disk space
+          run: |
+            sudo rm -rf /usr/share/dotnet
+            sudo rm -rf "$AGENT_TOOLSDIRECTORY" 
+        - name: Merge develop branch into the current branch
+          uses: ./.github/actions/merge
+        - name: Install Chrome
+          uses: ./.github/actions/install-chrome
+        - name: Initializing Containers
+          run: |
+            make build
+            docker compose up angular-build -d
+            # This is required as lighthouse tests are run on the host machine and not in the docker container.
+            sudo docker cp oppia-angular-build:/app/oppia/node_modules .
+        - name: Run Desktop Acceptance Test ${{ matrix.suite.name }}
+          run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" make run_tests.acceptance suite=${{ matrix.suite.name }}
+        - name: Uploading generated test to angular module mapping as an artifact
+          if: ${{ failure() }}
+          uses: actions/upload-artifact@v3
+          with:
+            name: generated-test-to-angular-module-mapping
+            path: /home/runner/work/oppia/oppia/core/tests/test-modules-mappings/acceptance/${{ matrix.suite.name }}.txt
+        - name: Run Mobile Acceptance Test ${{ matrix.suite.name }}
+          run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" make run_tests.acceptance suite=${{ matrix.suite.name }} MOBILE=true
+        - name: Report failure if failed on oppia/oppia develop branch
+          if: ${{
+            failure() &&
+            github.event_name == 'push' &&
+            github.repository == 'oppia/oppia' &&
+            github.ref == 'refs/heads/develop'
+            }}
+          uses: ./.github/actions/send-webhook-notification
+          with:
+            message: "An acceptance test failed on the upstream develop branch."
+            webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   check_e2e_lighthouse_performance_acceptance_workflow_status:
     needs: [check_test_suites_to_run, build, e2e_test, lighthouse_performance, acceptance_test]
     if: always()
@@ -392,14 +415,11 @@ jobs:
         os: [ubuntu-22.04]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Setup Python 3.9.20
-        uses: actions/setup-python@v4
+        uses: actions/checkout@v4
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
         with:
-          python-version: '3.9.20'
-          architecture: 'x64'
-      - name: Merge develop branch into the current branch
-        uses: ./.github/actions/merge
+          use_cache: false
       - name: Check workflow status
         uses: ./.github/actions/check-workflow-status
         id: check_workflow_status
