@@ -83,7 +83,7 @@
         <div class="oppia-exp-summary-tiles-container" *ngIf="pageMode === LIBRARY_PAGE_MODES.SEARCH">
           <oppia-search-results></oppia-search-results>
         </div>
-  
+
         <div class="oppia-exp-summary-tiles-container oppia-exp-summary-tiles-container-extra-info"
              *ngIf="pageMode === LIBRARY_PAGE_MODES.GROUP">
           <div *ngIf="activityList?.length === 0"
@@ -92,13 +92,13 @@
               <span>{{ 'I18N_LIBRARY_NO_EXPLORATIONS' | translate }}</span>
             </p>
           </div>
-  
+
           <div *ngIf="activityList?.length > 0"
                class="oppia-exploration-summary-header">
             <h2 class="oppia-group-page-header">
               <span [translate]="groupHeaderI18nId"></span>
             </h2>
-  
+
             <div *ngFor="let tile of activityList" class="d-inline-block">
               <oppia-exploration-summary-tile *ngIf="tile.activity_type == 'exploration'"
                                               [explorationId]="tile.id"
@@ -115,7 +115,7 @@
             </div>
           </div>
         </div>
-  
+
         <div class="oppia-exp-summary-tiles-container" *ngIf="pageMode === LIBRARY_PAGE_MODES.INDEX">
           <div class="community-library-breadcrumbs-container">
             <a href="/">{{ 'I18N_TOPNAV_HOME' | translate }}</a>
@@ -136,17 +136,17 @@
           <div class="text-center w-100 mt-4" tabindex="0">
             <h2 class="oppia-library-h2">{{ 'I18N_LIBRARY_SUB_HEADER' | translate }}</h2>
           </div>
-  
+
           <div class="oppia-search-bar-container">
             <oppia-search-bar [enableDropup]="false"></oppia-search-bar>
           </div>
-  
+
           <div *ngIf="libraryGroups?.length === 0"
                class="text-center w-100 oppia-library-no-exploration-groups"
                tabindex="0">
                {{ 'I18N_LIBRARY_NO_EXPLORATION_GROUPS' | translate }}
           </div>
-  
+
           <div class="oppia-library-group"
                dir="auto"
                *ngFor="let group of libraryGroups; index as idx"
@@ -166,7 +166,7 @@
                 </span>
               </h2>
             </div>
-  
+
             <!-- TODO(all): Add card at end of the row that, when clicked, does showFullResultsPage(group.categories)" -->
             <div *ngIf="!libraryWindowIsNarrow" class="oppia-carousel-box">
               <button mat-button class="md-no-ink oppia-library-carousel-scroller"
@@ -177,7 +177,7 @@
               </button>
               <div class="oppia-library-carousel-scroller" *ngIf="leftmostCardIndices[idx] == 0" aria-hidden="true">
               </div>
-  
+
               <div class="oppia-library-carousel"
                    (swiperight)="scroll(idx, true)"
                    (swipeleft)="scroll(idx, false)">
@@ -212,7 +212,7 @@
                   </div>
                 </div>
               </div>
-  
+
               <button mat-button class="md-no-ink oppia-library-carousel-scroller"
                       (click)="scroll(idx, false)"
                       [hidden]="(group.activity_summary_dicts.length - tileDisplayCount) <= leftmostCardIndices[idx]"
@@ -224,7 +224,7 @@
                    *ngIf="(group.activity_summary_dicts?.length - tileDisplayCount) <= leftmostCardIndices[idx]">
               </div>
             </div>
-  
+
             <div class="oppia-mobile-activity-cards-container"
                  [ngClass]="{'limit-cards-shown': mobileLibraryGroupsProperties[idx].inCollapsedState}"
                  *ngIf="libraryWindowIsNarrow && leftmostCardIndices">
