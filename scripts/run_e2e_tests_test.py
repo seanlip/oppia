@@ -419,8 +419,7 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
             if self.first_run:
                 self.first_run = False
                 return None
-            (null_ctx).enter_result.returncode = 1
-            return null_ctx.enter_result.returncode
+            return 0
 
         poll_swap = self.swap(null_ctx.enter_result, 'poll', poll_mock)
 
@@ -460,7 +459,7 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
                 },
             ]))
         self.exit_stack.enter_context(self.swap_with_checks(
-            sys, 'exit', lambda _: None, expected_args=[(1,)]))
+            sys, 'exit', lambda _: None, expected_args=[(0,)]))
 
         with self.swap_mock_set_constants_to_default:
             with poll_swap:
