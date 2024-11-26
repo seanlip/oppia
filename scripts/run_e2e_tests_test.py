@@ -421,7 +421,7 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
                 return None
             return 0
 
-        poll_swap = self.swap(null_ctx.enter_result, 'poll', poll_mock)
+        poll_swap = self.swap(null_ctx.__enter__(), 'poll', poll_mock)
 
         self.exit_stack.enter_context(self.swap_with_checks(
             common, 'is_oppia_server_already_running', lambda *_: False))
