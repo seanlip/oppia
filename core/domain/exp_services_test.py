@@ -419,7 +419,7 @@ class ExplorationSummaryQueriesUnitTests(ExplorationServicesUnitTests):
         self.signup(self.MODERATOR_EMAIL, self.MODERATOR_USERNAME)
         self.moderator_id = self.get_user_id_from_email(self.MODERATOR_EMAIL)
         self.user_moderator = user_services.get_user_actions_info(
-            self.moderator_id
+        self.moderator_id
         )
         # Setup the explorations to fit into 2 different categoriers and 2
         # different language groups. Also, ensure 2 of them have similar
@@ -667,10 +667,9 @@ class ExplorationSummaryQueriesUnitTests(ExplorationServicesUnitTests):
         )
         self.assertEqual(len(exp_ids), 4)
     def test_update_exploration_updates_summary(self) -> None:
-        """Test that updating the title or category of 
-        an exploration updates the ExpSummaryModel.
+        """Test that updating the title or category of an 
+        exploration updates the ExpSummaryModel.
         """
-
         self.save_new_default_exploration(
             self.EXP_0_ID,
             self.owner_id,
@@ -683,24 +682,27 @@ class ExplorationSummaryQueriesUnitTests(ExplorationServicesUnitTests):
             'property_name': 'title',
             'new_value': 'Updated Title'
         })]
-        exp_services.update_exploration(
-            self.owner_id,
-            self.EXP_0_ID,
-            change_list, 'Updated title.'
+        exp_services\
+        .update_exploration(
+        self.owner_id,
+        self.EXP_0_ID,
+        change_list, 'Updated title.'
         )
-        updated_summary = exp_fetchers.get_exploration_summary_by_id(
+        updated_summary = exp_fetchers\
+        .get_exploration_summary_by_id(
             self.EXP_0_ID
         )
-        self.assertEqual(updated_summary.title, 'Updated Title')
+        self.assertEqual(
+        updated_summary.title,
+        'Updated Title')
     def test_revert_exploration_updates_summary(self) -> None:
         """Test that reverting an exploration
           also restores the ExpSummaryModel.
         """
-
         self.save_new_default_exploration(
-            self.EXP_1_ID,
-            self.owner_id,
-            title='First Title'
+        self.EXP_1_ID,
+        self.owner_id,
+        title='First Title'
         )
         change_list = [exp_domain.ExplorationChange({
             'cmd': exp_domain.CMD_EDIT_EXPLORATION_PROPERTY,
