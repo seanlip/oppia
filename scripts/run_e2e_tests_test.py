@@ -54,7 +54,6 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
 
     def setUp(self) -> None:
         super().setUp()
-        self.first_run = True
         self.exit_stack = contextlib.ExitStack()
 
         def mock_constants() -> None:
@@ -407,23 +406,20 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
     def test_loop_invocation_continues_while_poll_is_none(
         self
     ) -> None:
-        null_ctx = contextlib.nullcontext(
-            enter_result=scripts_test_utils.PopenStub(alive=False))
+        process_stub = scripts_test_utils.PopenStub(alive=False)
 
         def mock_managed_webdriverio_server(
             **unused_kwargs: str
         ) -> ContextManager[scripts_test_utils.PopenStub]:  # pylint: disable=unused-argument
-            return null_ctx
+            return contextlib.nullcontext(enter_result=process_stub)
 
         def poll_mock() -> Optional[int]:
-            if self.first_run:
-                self.first_run = False
+            if process_stub.poll_count == 0:
+                process_stub.poll_count += 1
                 return None
             return 0
 
-        poll_swap = self.swap(
-            null_ctx.enter_result, 'poll', poll_mock  # type: ignore[attr-defined]
-        )
+        poll_swap = self.swap(process_stub, 'poll', poll_mock)
 
         self.exit_stack.enter_context(self.swap_with_checks(
             common, 'is_oppia_server_already_running', lambda *_: False))
