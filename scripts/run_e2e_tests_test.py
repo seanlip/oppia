@@ -31,7 +31,7 @@ from scripts import run_e2e_tests
 from scripts import scripts_test_utils
 from scripts import servers
 
-from typing import ContextManager, Final, Tuple
+from typing import ContextManager, Final, Optional, Tuple
 
 CHROME_DRIVER_VERSION: Final = '77.0.3865.40'
 
@@ -415,9 +415,11 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
         ) -> ContextManager[scripts_test_utils.PopenStub]:  # pylint: disable=unused-argument
             return null_ctx
 
-        def poll_mock():
-            null_ctx.enter_result.returncode = None if self.first_run else 1
-            self.first_run = False
+        def poll_mock() -> Optional[int]:
+            if self.first_run:
+                self.first_run = False
+                return None
+            (null_ctx).enter_result.returncode = 1
             return null_ctx.enter_result.returncode
 
         poll_swap = self.swap(null_ctx.enter_result, 'poll', poll_mock)
