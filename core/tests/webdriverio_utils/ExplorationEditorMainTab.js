@@ -1048,6 +1048,10 @@ var ExplorationEditorMainTab = function () {
     );
     await action.waitForAutosave();
     await action.click('State Name Container', stateNameContainer);
+    await waitFor.visibilityOf(
+      stateNameInput,
+      'State Name Input takes too long to appear'
+    );
     await action.clear('State Name input', stateNameInput);
     await action.setValue('State Name input', stateNameInput, name);
 
