@@ -155,11 +155,16 @@ export class CreateNewSubtopicModalComponent
 
   isUrlFragmentValid(): boolean {
     return this.subtopicValidationService.isUrlFragmentValid(
-      this.editableUrlFragment
+      this.editableUrlFragment.trim()
     );
   }
 
   checkSubtopicExistence(): void {
+    this.editableUrlFragment = this.editableUrlFragment
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+
     this.subtopicUrlFragmentExists =
       this.subtopicValidationService.doesSubtopicWithUrlFragmentExist(
         this.editableUrlFragment

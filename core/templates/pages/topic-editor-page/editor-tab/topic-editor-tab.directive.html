@@ -63,7 +63,8 @@
                      [(ngModel)]="editableTopicUrlFragment"
                      (blur)="updateTopicUrlFragment(editableTopicUrlFragment)"
                      [maxlength]="maxCharsInTopicUrlFragment"
-                     [ngClass]="{'is-invalid': topicUrlFragmentExists}"
+                     [ngClass]="{'is-invalid': topicUrlFragmentExists} || !validUrlFragmentRegex.test(editableTopicUrlFragment.trim())"
+                     (change)="onChangeTopicEditorUrlFragment()"
                      trim>
               <span class="oppia-input-box-subtitle">
                 <em>
@@ -72,6 +73,12 @@
                   {{ hostname }}/learn/{{ classroomUrlFragment }}/{{ editableTopicUrlFragment }}
                 </em>
               </span>
+              <div class="oppia-input-box-subtitle text-danger"
+                [hidden]="editableTopicUrlFragment === '' || validUrlFragmentRegex.test(editableTopicUrlFragment.trim())">
+                <b>
+                  Please use only lowercase letters, optionally separated by hyphen.
+                </b>
+              </div>
               <div *ngIf="topicUrlFragmentExists" class="oppia-input-box-subtitle text-danger">
                 <em>
                   This topic URL fragment already exists.

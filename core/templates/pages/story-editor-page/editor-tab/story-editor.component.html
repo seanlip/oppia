@@ -80,7 +80,8 @@
                      [(ngModel)]="editableUrlFragment" (blur)="updateStoryUrlFragment(editableUrlFragment)"
                      [ngModelOptions]="{standalone: true}"
                      placeholder="Enter url fragment for the story." maxlength="{{ MAX_CHARS_IN_STORY_URL_FRAGMENT }}" ng-trim="true"
-                     [ngClass]="{'is-invalid': storyUrlFragmentExists}">
+                     [ngClass]="{'is-invalid': storyUrlFragmentExists || !validUrlFragmentRegex.test(editableUrlFragment.trim())}"
+                     (change)="onStoryEditorUrlFragmentChange()">
               <span class="oppia-input-box-subtitle">
                 <em>
                   The story URL fragment is used to uniquely access the story viewer page. It should consist of one or more hyphen-separated words, all in lowercase, with at most {{ MAX_CHARS_IN_STORY_URL_FRAGMENT }} characters in total and must be unique across the topic. Please use meaningful keywords, and avoid using words like "and", "of", or "the".
@@ -88,6 +89,12 @@
                   {{ hostname }}/learn/{{ getClassroomUrlFragment() }}/{{ getTopicUrlFragment() }}/story/{{ editableUrlFragment }}
                 </em>
               </span>
+              <div class="oppia-input-box-subtitle text-danger"
+                [hidden]="editableUrlFragment === '' || validUrlFragmentRegex.test(editableUrlFragment.trim())">
+                <b>
+                  Please use only lowercase letters, optionally separated by hyphen.
+                </b>
+              </div>
               <div *ngIf="storyUrlFragmentExists" class="oppia-input-box-subtitle text-danger">
                 <em>
                   This story URL fragment already exists.

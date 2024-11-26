@@ -122,6 +122,7 @@ export class TopicEditorTabComponent implements OnInit, OnDestroy {
   ) {}
 
   directiveSubscriptions = new Subscription();
+  validUrlFragmentRegex = new RegExp(AppConstants.VALID_URL_FRAGMENT_REGEX);
 
   drop(event: CdkDragDrop<Subtopic[]>): void {
     moveItemInArray(this.subtopics, event.previousIndex, event.currentIndex);
@@ -387,6 +388,13 @@ export class TopicEditorTabComponent implements OnInit, OnDestroy {
         newTopicUrlFragment
       );
     }
+  }
+
+  onChangeTopicEditorUrlFragment(): void {
+    this.editableTopicUrlFragment = this.editableTopicUrlFragment
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-');
   }
 
   updateTopicThumbnailFilename(newThumbnailFilename: string): void {

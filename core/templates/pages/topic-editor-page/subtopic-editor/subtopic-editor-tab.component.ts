@@ -166,6 +166,13 @@ export class SubtopicEditorTabComponent implements OnInit, OnDestroy {
     );
   }
 
+  onSubtopicUrlFragmentChange(): void {
+    this.editableUrlFragment = this.editableUrlFragment
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+  }
+
   updateSubtopicUrlFragment(urlFragment: string): void {
     this.subtopicUrlFragmentIsValid =
       this.subtopicValidationService.isUrlFragmentValid(urlFragment);

@@ -108,6 +108,7 @@ export class StoryEditorComponent implements OnInit, OnDestroy {
 
   hostname = this.windowRef.nativeWindow.location.hostname;
   TOPIC_EDITOR_URL_TEMPLATE = '/topic_editor/<topic_id>';
+  validUrlFragmentRegex = new RegExp(AppConstants.VALID_URL_FRAGMENT_REGEX);
 
   _init(): void {
     this.story = this.storyEditorStateService.getStory();
@@ -267,6 +268,13 @@ export class StoryEditorComponent implements OnInit, OnDestroy {
           // No further action is needed.
         }
       );
+  }
+
+  onStoryEditorUrlFragmentChange(): void {
+    this.editableUrlFragment = this.editableUrlFragment
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '-');
   }
 
   createNode(): void {

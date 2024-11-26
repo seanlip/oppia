@@ -71,7 +71,8 @@
                      [(ngModel)]="editableUrlFragment"
                      aria-label="Input field to add Subtopic URL"
                      [ngModelOptions]="{standalone: true}"
-                     [maxlength]="maxCharsInSubtopicUrlFragment">
+                     [maxlength]="maxCharsInSubtopicUrlFragment"
+                     (change)="onSubtopicUrlFragmentChange()">
               <div class="oppia-input-box-subtitle text-danger" [hidden]="editableUrlFragment === '' || subtopicUrlFragmentIsValid">
                 <b>
                   Please use only lowercase letters, optionally separated by hyphen.
