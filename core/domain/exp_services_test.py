@@ -666,64 +666,61 @@ class ExplorationSummaryQueriesUnitTests(ExplorationServicesUnitTests):
         self.assertEqual(len(exp_ids), 4)
     def test_update_exploration_updates_summary(self) -> None:
         """Test that updating the title or category of an exploration updates the ExpSummaryModel."""
-
-        # Initial configuration
-        self.save_new_default_exploration(self.EXP_0_ID, self.owner_id, title='Original Title')
-
-        # Check the initial state of the summary
+        self.save_new_default_exploration(
+            self.EXP_0_ID,
+            self.owner_id,
+            title='Original Title'
+        )
         summary = exp_fetchers.get_exploration_summary_by_id(self.EXP_0_ID)
         self.assertEqual(summary.title, 'Original Title')
-
-        # Update the title and verify that the summary is updated
         change_list = [exp_domain.ExplorationChange({
             'cmd': exp_domain.CMD_EDIT_EXPLORATION_PROPERTY,
             'property_name': 'title',
             'new_value': 'Updated Title'
         })]
-        exp_services.update_exploration(self.owner_id, self.EXP_0_ID, change_list, 'Updated title.')
-
-        # Retrieve and verify the updated summary
+        exp_services.update_exploration(
+            self.owner_id,
+            self.EXP_0_ID,
+            change_list, 'Updated title.'
+        )
         updated_summary = exp_fetchers.get_exploration_summary_by_id(self.EXP_0_ID)
         self.assertEqual(updated_summary.title, 'Updated Title')
     def test_revert_exploration_updates_summary(self) -> None:
         """Test that reverting an exploration also restores the ExpSummaryModel."""
-
-        # Create an exploration and make updates
-        self.save_new_default_exploration(self.EXP_1_ID, self.owner_id, title='First Title')
-
-        # Update the title
+        self.save_new_default_exploration(
+            self.EXP_1_ID,
+            self.owner_id,
+            title='First Title'
+        )
         change_list = [exp_domain.ExplorationChange({
             'cmd': exp_domain.CMD_EDIT_EXPLORATION_PROPERTY,
             'property_name': 'title',
             'new_value': 'Second Title'
         })]
-        exp_services.update_exploration(self.owner_id, self.EXP_1_ID, change_list, 'Second title update.')
-
-        # Verify the updated title in the summary
+        exp_services.update_exploration(
+            self.owner_id,
+            self.EXP_1_ID,
+            change_list,
+            'Second title update.'
+        )
         summary = exp_fetchers.get_exploration_summary_by_id(self.EXP_1_ID)
         self.assertEqual(summary.title, 'Second Title')
-
-        # Revert the exploration to the previous version and verify the summary
         exp = exp_fetchers.get_exploration_by_id(self.EXP_1_ID)
-        exp_services.revert_exploration(self.owner_id, self.EXP_1_ID, exp.version, exp.version - 1)
+        exp_services.revert_exploration(
+            self.owner_id, self.EXP_1_ID,
+            exp.version,
+            exp.version - 1
+        )
 
         reverted_summary = exp_fetchers.get_exploration_summary_by_id(self.EXP_1_ID)
         self.assertEqual(reverted_summary.title, 'First Title')
     def test_rights_change_updates_summary(self) -> None:
         """Test that changing the access rights of an exploration updates its visibility in ExpSummaryModel."""
-
-        # Create and publish the exploration
         self.save_new_default_exploration(self.EXP_2_ID, self.owner_id)
         rights_manager.publish_exploration(self.owner, self.EXP_2_ID)
-
-        # Verify that the summary is public
         summary = exp_fetchers.get_exploration_summary_by_id(self.EXP_2_ID)
         self.assertTrue(summary.status == rights_domain.ACTIVITY_STATUS_PUBLIC)
-
-        # Set to private using a user with moderator privileges
         rights_manager.unpublish_exploration(self.user_moderator, self.EXP_2_ID)
-
-        # Verify the summary update to confirm it is now private
         updated_summary = exp_fetchers.get_exploration_summary_by_id(self.EXP_2_ID)
         self.assertTrue(updated_summary.status == rights_domain.ACTIVITY_STATUS_PRIVATE)
 
