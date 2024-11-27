@@ -28,10 +28,11 @@ from core.jobs.types import job_run_result
 from core.platform import models
 
 import apache_beam as beam
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 MYPY = False
 if MYPY: # pragma: no cover
+    from mypy_imports import datastore_services
     from mypy_imports import exp_models
     from mypy_imports import opportunity_models
     from mypy_imports import suggestion_models
@@ -54,62 +55,64 @@ class RejectTranslationSuggestionsForTranslatedContentsJob(base_jobs.JobBase):
     """Job that rejects translation suggestions in review for the content
     with an accepted translation."""
 
-    @staticmethod
-    def _reject_suggestions_in_review_for_translated_contents(
-        entity_translation_model: translation_models.EntityTranslationsModel
-    ) -> List[suggestion_models.GeneralSuggestionModel]:
-        """Rejects all translation suggestions in review for the content
-        with an accepted translation, for an entity translation model.
+    # TODO(#15613): Here we use MyPy ignore because the incomplete typing of
+    # apache_beam library and absences of stubs in Typeshed, forces MyPy to
+    # assume that DoFn class is of type Any. Thus to avoid MyPy's error (Class
+    # cannot subclass 'DoFn' (has type 'Any')), we added an ignore here.
+    class RejectSuggestionsInReviewForTranslatedContents(
+        beam.DoFn):  # type: ignore[misc]
+        """DoFn to reject translation suggestions in review for the content with
+        an accepted translation."""
 
-        Args:
-            entity_translation_model: (EntityTranslationsModel). An entity 
-                translation model.
+        def process(
+            self,
+            entity_translation_model: translation_models.EntityTranslationsModel
+        ) -> Iterable[List[suggestion_models.GeneralSuggestionModel]]:
+            """Rejects all translation suggestions in review for the content
+            with an accepted translation, for an entity translation model.
 
-        Returns:
-            list(GeneralSuggestionModel). A list of rejected suggestions
-            for an entity translation model.
-        """
-        updated_suggestions: List[
-            suggestion_models.GeneralSuggestionModel] = []
-        content_ids = []
-        for content_id in entity_translation_model.translations.keys():
-            if entity_translation_model.translations[content_id][
-                'needs_update'] is False:
-                content_ids.append(content_id)
+            Args:
+                entity_translation_model: (EntityTranslationsModel). An entity 
+                    translation model.
 
-        suggestions = suggestion_models.GeneralSuggestionModel.get_all(
-            include_deleted=False).filter(
-                (
-                    suggestion_models
-                    .GeneralSuggestionModel.suggestion_type
-                ) == feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT
-            ).filter(
-                suggestion_models.GeneralSuggestionModel.target_id == (
-                    entity_translation_model.entity_id
-                )
-            ).filter(
-                suggestion_models.GeneralSuggestionModel
-                .target_version_at_submission == (
-                    entity_translation_model.entity_version
-                )
-            ).filter(
-                suggestion_models.GeneralSuggestionModel
-                .language_code == (
-                    entity_translation_model.language_code
-                )
-            ).filter(
-                suggestion_models.GeneralSuggestionModel.status == (
-                    suggestion_models.STATUS_IN_REVIEW
-                )
-            )
+            Yields:
+                list(GeneralSuggestionModel). A list of rejected suggestions
+                for an entity translation model.
+            """
+            with datastore_services.get_ndb_context():
+                updated_suggestions: List[
+                    suggestion_models.GeneralSuggestionModel] = []
+                content_ids = []
+                for content_id in entity_translation_model.translations.keys():
+                    if entity_translation_model.translations[content_id][
+                        'needs_update'] is False:
+                        content_ids.append(content_id)
 
-        for suggestion in suggestions:
-            if suggestion.change_cmd['content_id'] in content_ids:
-                suggestion.status = suggestion_models.STATUS_REJECTED
-                suggestion.final_reviewer_id = feconf.SUGGESTION_BOT_USER_ID
-                updated_suggestions.append(suggestion)
+                suggestions: Sequence[
+                    suggestion_models.GeneralSuggestionModel] = (
+                        suggestion_models.GeneralSuggestionModel.query(
+                        suggestion_models.GeneralSuggestionModel
+                            .suggestion_type == (
+                                feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT),
+                        suggestion_models.GeneralSuggestionModel
+                            .target_id == entity_translation_model.entity_id,
+                        suggestion_models.GeneralSuggestionModel
+                            .target_version_at_submission == (
+                                entity_translation_model.entity_version),
+                        suggestion_models.GeneralSuggestionModel
+                            .language_code == (
+                                entity_translation_model.language_code),
+                        suggestion_models.GeneralSuggestionModel
+                            .status == suggestion_models.STATUS_IN_REVIEW
+                ).fetch())
 
-        return updated_suggestions
+                for suggestion in suggestions:
+                    if suggestion.change_cmd['content_id'] in content_ids:
+                        suggestion.status = suggestion_models.STATUS_REJECTED
+                        suggestion.final_reviewer_id = (
+                            feconf.SUGGESTION_BOT_USER_ID)
+                        updated_suggestions.append(suggestion)
+                yield updated_suggestions
 
     def run(self) -> beam.PCollection[job_run_result.JobRunResult]:
         """Returns a PCollection of suggestion update results.
@@ -121,8 +124,8 @@ class RejectTranslationSuggestionsForTranslatedContentsJob(base_jobs.JobBase):
             self.pipeline)
         updated_suggestions = (
             entity_translation_models
-            | 'Update translation suggestion models' >> beam.Map(
-                    self._reject_suggestions_in_review_for_translated_contents)
+            | 'Update translation suggestion models' >> beam.ParDo(
+                self.RejectSuggestionsInReviewForTranslatedContents())
             | 'Flatten the list' >> beam.FlatMap(lambda x: x)
         )
 
@@ -149,69 +152,73 @@ class AuditTranslationSuggestionsForTranslatedContentsJob(base_jobs.JobBase):
     """Audits translation suggestions in review for the content with an
     accepted translation."""
 
-    @staticmethod
-    def _get_suggestions_in_review_for_translated_contents(
-        entity_translation_model: translation_models.EntityTranslationsModel
-    ) -> List[Dict[str, Union[
-        str, int, suggestion_models.GeneralSuggestionModel]]]:
-        """Finds the list of all translation suggestions in review for the 
-        content with an accepted translation, for an entity translation model.
+    # TODO(#15613): Here we use MyPy ignore because the incomplete typing of
+    # apache_beam library and absences of stubs in Typeshed, forces MyPy to
+    # assume that DoFn class is of type Any. Thus to avoid MyPy's error (Class
+    # cannot subclass 'DoFn' (has type 'Any')), we added an ignore here.
+    class GetSuggestionsInReviewForTranslatedContents(
+        beam.DoFn):  # type: ignore[misc]
+        """DoFn to compute translation suggestions in review for the content
+        with an accepted translation."""
 
-        Args:
-            entity_translation_model: (EntityTranslationsModel). An entity 
-                translation model.
+        def process(
+            self,
+            entity_translation_model: translation_models.EntityTranslationsModel
+        ) -> Iterable[List[Dict[str, Union[
+            str, int, suggestion_models.GeneralSuggestionModel]]]]:
+            """Finds the list of all translation suggestions in review for the 
+            content with an accepted translation, for an entity translation
+            model.
 
-        Returns:
-            list(dict(str, union(str, int, GeneralSuggestionModel))).
-            A list of dict containing all entity_translation_model_id,
-            entity_id, entity_version, content_id and corresponding
-            suggestions in review, for an entity translation model.
-        """
-        suggestion_dicts: List[Dict[str, Union[
-            str, int, suggestion_models.GeneralSuggestionModel]]] = []
-        content_ids = []
-        for content_id in entity_translation_model.translations.keys():
-            if entity_translation_model.translations[content_id][
-                'needs_update'] is False:
-                content_ids.append(content_id)
+            Args:
+                entity_translation_model: (EntityTranslationsModel). An entity 
+                    translation model.
 
-        suggestions = suggestion_models.GeneralSuggestionModel.get_all(
-            include_deleted=False).filter(
-                (
-                    suggestion_models
-                    .GeneralSuggestionModel.suggestion_type
-                ) == feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT
-            ).filter(
-                suggestion_models.GeneralSuggestionModel.target_id == (
-                    entity_translation_model.entity_id
-                )
-            ).filter(
-                suggestion_models.GeneralSuggestionModel
-                .target_version_at_submission == (
-                    entity_translation_model.entity_version
-                )
-            ).filter(
-                suggestion_models.GeneralSuggestionModel
-                .language_code == (
-                    entity_translation_model.language_code
-                )
-            ).filter(
-                suggestion_models.GeneralSuggestionModel.status == (
-                    suggestion_models.STATUS_IN_REVIEW
-                )
-            )
+            Yields:
+                list(dict(str, union(str, int, GeneralSuggestionModel))).
+                A list of dict containing all entity_translation_model_id,
+                entity_id, entity_version, content_id and corresponding
+                suggestions in review, for an entity translation model.
+            """
+            with datastore_services.get_ndb_context():
+                suggestion_dicts: List[Dict[str, Union[
+                    str, int, suggestion_models.GeneralSuggestionModel]]] = []
+                content_ids = []
+                for content_id in entity_translation_model.translations.keys():
+                    if entity_translation_model.translations[content_id][
+                        'needs_update'] is False:
+                        content_ids.append(content_id)
 
-        for suggestion in suggestions:
-            if suggestion.change_cmd['content_id'] in content_ids:
-                suggestion_dicts.append({
-                    'entity_id': entity_translation_model.entity_id,
-                    'entity_version': entity_translation_model.entity_version,
-                    'entity_translation_model_id': entity_translation_model.id,
-                    'content_id': suggestion.change_cmd['content_id'],
-                    'suggestion_id': suggestion.id
-                })
+                suggestions: Sequence[
+                    suggestion_models.GeneralSuggestionModel] = (
+                        suggestion_models.GeneralSuggestionModel.query(
+                        suggestion_models.GeneralSuggestionModel
+                            .suggestion_type == (
+                                feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT),
+                        suggestion_models.GeneralSuggestionModel
+                            .target_id == entity_translation_model.entity_id,
+                        suggestion_models.GeneralSuggestionModel
+                            .target_version_at_submission == (
+                                entity_translation_model.entity_version),
+                        suggestion_models.GeneralSuggestionModel
+                            .language_code == (
+                                entity_translation_model.language_code),
+                        suggestion_models.GeneralSuggestionModel
+                            .status == suggestion_models.STATUS_IN_REVIEW
+                ).fetch())
 
-        return suggestion_dicts
+                for suggestion in suggestions:
+                    if suggestion.change_cmd['content_id'] in content_ids:
+                        suggestion_dicts.append({
+                            'entity_id': entity_translation_model.entity_id,
+                            'entity_version': (
+                                entity_translation_model.entity_version),
+                            'entity_translation_model_id': (
+                                entity_translation_model.id),
+                            'content_id': suggestion.change_cmd['content_id'],
+                            'suggestion_id': suggestion.id
+                        })
+                yield suggestion_dicts
 
     def run(self) -> beam.PCollection[job_run_result.JobRunResult]:
         """Returns a PCollection of audit job run results.
@@ -223,8 +230,8 @@ class AuditTranslationSuggestionsForTranslatedContentsJob(base_jobs.JobBase):
             self.pipeline)
         suggestion_dicts = (
             entity_translation_models
-            | 'Get suggestions to be rejected list' >> beam.Map(
-                    self._get_suggestions_in_review_for_translated_contents)
+            | 'Get suggestions to be rejected list' >> beam.ParDo(
+                self.GetSuggestionsInReviewForTranslatedContents())
             | 'Flatten the list' >> beam.FlatMap(lambda x: x)
         )
 
