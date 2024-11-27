@@ -303,7 +303,9 @@ class CreateExplorationVoiceArtistLinkModelsJob(base_jobs.JobBase):
                 with datastore_services.get_ndb_context():
                     voice_artist_username = (
                         user_services.get_username(voice_artist_id))
-            except Exception:
+            except Exception as e:
+                logging.info(e)
+                logging.info('\n')
                 voice_artist_username = (
                     'Not Found for user ID: %s.' % voice_artist_id)
 
@@ -385,8 +387,10 @@ class CreateExplorationVoiceArtistLinkModelsJob(base_jobs.JobBase):
         Returns:
             str. The exploration ID extracted from the snapshot model ID.
         """
-
-        return snapshot_model_id.split('-')[0]
+        # The length of exploration ID must be 12.
+        exploration_id = snapshot_model_id[:12]
+        logging.info('Exploration ID: ' + exploration_id)
+        return exploration_id
 
     def run(self) -> beam.PCollection[job_run_result.JobRunResult]:
         """Returns a PCollection of results for the exploration for which an
