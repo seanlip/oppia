@@ -389,7 +389,6 @@ class CreateExplorationVoiceArtistLinkModelsJob(base_jobs.JobBase):
         """
         # The length of exploration ID must be 12.
         exploration_id = snapshot_model_id[:12]
-        logging.info('Exploration ID: ' + exploration_id)
         return exploration_id
 
     def run(self) -> beam.PCollection[job_run_result.JobRunResult]:

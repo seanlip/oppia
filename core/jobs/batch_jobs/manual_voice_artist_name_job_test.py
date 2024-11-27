@@ -57,9 +57,9 @@ class VoiceArtistMetadataModelsTestsBaseClass(
     EDITOR_USERNAME_3 = 'editor3'
     EDITOR_USERNAME_4 = 'editor4'
 
-    CURATED_EXPLORATION_ID_1 = 'exploration_id_1'
-    CURATED_EXPLORATION_ID_2 = 'exploration_id_2'
-    NON_CURATED_EXPLORATION_ID_3 = 'exploration_id_3'
+    CURATED_EXPLORATION_ID_1 = 'exp_id_abcde'
+    CURATED_EXPLORATION_ID_2 = 'exp_id_kjsd-'
+    NON_CURATED_EXPLORATION_ID_3 = 'exp_id_abchj'
 
     TOPIC_ID_1 = 'topic_id_1'
     TOPIC_ID_2 = 'topic_id_2'
@@ -499,19 +499,19 @@ class CreateExplorationVoiceArtistLinkModelsJobTests(
         )
 
         debug_logs_1 = (
-            'Exp ID: exploration_id_1.\nSnapshots: 5\n-\na. editor1\nb. '
-            'exploration_id_1-4 & exploration_id_1-5\nc. 1, [filename3.mp3]\n-'
-            '\na. editor2\nb. exploration_id_1-2 & exploration_id_1-3\nc. 1, '
-            '[filename2.mp3]\n-\na. editor1\nb. exploration_id_1-1 & '
-            'exploration_id_1-2\nc. 1, [filename1.mp3]\n\n'
+            'Exp ID: exp_id_abcde.\nSnapshots: 5\n-\na. editor1\nb. '
+            'exp_id_abcde-4 & exp_id_abcde-5\nc. 1, [filename3.mp3]\n-'
+            '\na. editor2\nb. exp_id_abcde-2 & exp_id_abcde-3\nc. 1, '
+            '[filename2.mp3]\n-\na. editor1\nb. exp_id_abcde-1 & '
+            'exp_id_abcde-2\nc. 1, [filename1.mp3]\n\n'
         )
         debug_logs_2 = (
-            'Exp ID: exploration_id_2.\nSnapshots: 5\n-\na. editor1\nb. '
-            'exploration_id_2-4 & exploration_id_2-5\nc. 1, [filename7.mp3]\n-'
-            '\na. editor4\nb. exploration_id_2-3 & exploration_id_2-4\nc. 1, '
-            '[filename6.mp3]\n-\na. editor3\nb. exploration_id_2-2 & '
-            'exploration_id_2-3\nc. 1, [filename5.mp3]\n-\na. editor1\nb. '
-            'exploration_id_2-1 & exploration_id_2-2\nc. 1, [filename4.mp3]\n\n'
+            'Exp ID: exp_id_kjsd-.\nSnapshots: 5\n-\na. editor1\nb. '
+            'exp_id_kjsd--4 & exp_id_kjsd--5\nc. 1, [filename7.mp3]\n-'
+            '\na. editor4\nb. exp_id_kjsd--3 & exp_id_kjsd--4\nc. 1, '
+            '[filename6.mp3]\n-\na. editor3\nb. exp_id_kjsd--2 & '
+            'exp_id_kjsd--3\nc. 1, [filename5.mp3]\n-\na. editor1\nb. '
+            'exp_id_kjsd--1 & exp_id_kjsd--2\nc. 1, [filename4.mp3]\n\n'
         )
         self.assert_job_output_is([
             job_run_result.JobRunResult(
@@ -579,7 +579,7 @@ class CreateExplorationVoiceArtistLinkModelsJobTests(
             'exploration %s.'
         )
 
-        snapshot_model_id: str = 'exploration_id_1-4'
+        snapshot_model_id: str = 'exp_id_abcde-4'
         snapshot_model: exp_models.ExplorationSnapshotContentModel = (
             exp_models.ExplorationSnapshotContentModel.get_by_id(
                 snapshot_model_id))
@@ -590,18 +590,18 @@ class CreateExplorationVoiceArtistLinkModelsJobTests(
         snapshot_model.put()
 
         debug_logs_1 = (
-            'Exp ID: exploration_id_1.\nSnapshots: 5\n-\na. editor2\nb. '
-            'exploration_id_1-2 & exploration_id_1-3\nc. 1, [filename2.mp3]\n-'
-            '\na. editor1\nb. exploration_id_1-1 & exploration_id_1-2\nc. 1, '
+            'Exp ID: exp_id_abcde.\nSnapshots: 5\n-\na. editor2\nb. '
+            'exp_id_abcde-2 & exp_id_abcde-3\nc. 1, [filename2.mp3]\n-'
+            '\na. editor1\nb. exp_id_abcde-1 & exp_id_abcde-2\nc. 1, '
             '[filename1.mp3]\n\n'
         )
         debug_logs_2 = (
-            'Exp ID: exploration_id_2.\nSnapshots: 5\n-\na. editor1\nb. '
-            'exploration_id_2-4 & exploration_id_2-5\nc. 1, [filename7.mp3]'
-            '\n-\na. editor4\nb. exploration_id_2-3 & exploration_id_2-4\nc. 1,'
-            ' [filename6.mp3]\n-\na. editor3\nb. exploration_id_2-2 & '
-            'exploration_id_2-3\nc. 1, [filename5.mp3]\n-\na. editor1\nb. '
-            'exploration_id_2-1 & exploration_id_2-2\nc. 1, [filename4.mp3]\n\n'
+            'Exp ID: exp_id_kjsd-.\nSnapshots: 5\n-\na. editor1\nb. '
+            'exp_id_kjsd--4 & exp_id_kjsd--5\nc. 1, [filename7.mp3]'
+            '\n-\na. editor4\nb. exp_id_kjsd--3 & exp_id_kjsd--4\nc. 1,'
+            ' [filename6.mp3]\n-\na. editor3\nb. exp_id_kjsd--2 & '
+            'exp_id_kjsd--3\nc. 1, [filename5.mp3]\n-\na. editor1\nb. '
+            'exp_id_kjsd--1 & exp_id_kjsd--2\nc. 1, [filename4.mp3]\n\n'
         )
 
         self.assert_job_output_is([
@@ -676,19 +676,19 @@ class AuditVoiceArtistMetadataModelsJobTests(
             'exploration %s.'
         )
         debug_logs_1 = (
-            'Exp ID: exploration_id_1.\nSnapshots: 5\n-\na. editor1\nb. '
-            'exploration_id_1-4 & exploration_id_1-5\nc. 1, [filename3.mp3]\n-'
-            '\na. editor2\nb. exploration_id_1-2 & exploration_id_1-3\nc. 1, '
-            '[filename2.mp3]\n-\na. editor1\nb. exploration_id_1-1 & '
-            'exploration_id_1-2\nc. 1, [filename1.mp3]\n\n'
+            'Exp ID: exp_id_abcde.\nSnapshots: 5\n-\na. editor1\nb. '
+            'exp_id_abcde-4 & exp_id_abcde-5\nc. 1, [filename3.mp3]\n-'
+            '\na. editor2\nb. exp_id_abcde-2 & exp_id_abcde-3\nc. 1, '
+            '[filename2.mp3]\n-\na. editor1\nb. exp_id_abcde-1 & '
+            'exp_id_abcde-2\nc. 1, [filename1.mp3]\n\n'
         )
         debug_logs_2 = (
-            'Exp ID: exploration_id_2.\nSnapshots: 5\n-\na. editor1\nb. '
-            'exploration_id_2-4 & exploration_id_2-5\nc. 1, [filename7.mp3]\n-'
-            '\na. editor4\nb. exploration_id_2-3 & exploration_id_2-4\nc. 1, '
-            '[filename6.mp3]\n-\na. editor3\nb. exploration_id_2-2 & '
-            'exploration_id_2-3\nc. 1, [filename5.mp3]\n-\na. editor1\nb. '
-            'exploration_id_2-1 & exploration_id_2-2\nc. 1, [filename4.mp3]\n\n'
+            'Exp ID: exp_id_kjsd-.\nSnapshots: 5\n-\na. editor1\nb. '
+            'exp_id_kjsd--4 & exp_id_kjsd--5\nc. 1, [filename7.mp3]\n-'
+            '\na. editor4\nb. exp_id_kjsd--3 & exp_id_kjsd--4\nc. 1, '
+            '[filename6.mp3]\n-\na. editor3\nb. exp_id_kjsd--2 & '
+            'exp_id_kjsd--3\nc. 1, [filename5.mp3]\n-\na. editor1\nb. '
+            'exp_id_kjsd--1 & exp_id_kjsd--2\nc. 1, [filename4.mp3]\n\n'
         )
 
         self.assert_job_output_is([
@@ -721,25 +721,25 @@ class AuditVoiceArtistMetadataModelsJobTests(
         )
 
         # Deleting an exploration commit log entry model.
-        snapshot_model_id: str = 'exploration_id_1-3'
+        snapshot_model_id: str = 'exp_id_abcde-3'
         snapshot_model: exp_models.ExplorationSnapshotMetadataModel = (
             exp_models.ExplorationSnapshotMetadataModel.get_by_id(
                 snapshot_model_id))
         snapshot_model.delete()
 
         debug_logs_1 = (
-            'Exp ID: exploration_id_1.\nSnapshots: 5\n-\na. editor1\nb. '
-            'exploration_id_1-4 & exploration_id_1-5\nc. 1, [filename3.mp3]\n-'
-            '\na. editor1\nb. exploration_id_1-1 & exploration_id_1-2\nc. 1, '
+            'Exp ID: exp_id_abcde.\nSnapshots: 5\n-\na. editor1\nb. '
+            'exp_id_abcde-4 & exp_id_abcde-5\nc. 1, [filename3.mp3]\n-'
+            '\na. editor1\nb. exp_id_abcde-1 & exp_id_abcde-2\nc. 1, '
             '[filename1.mp3]\n\n'
         )
         debug_logs_2 = (
-            'Exp ID: exploration_id_2.\nSnapshots: 5\n-\na. editor1\nb. '
-            'exploration_id_2-4 & exploration_id_2-5\nc. 1, [filename7.mp3]\n-'
-            '\na. editor4\nb. exploration_id_2-3 & exploration_id_2-4\nc. 1, '
-            '[filename6.mp3]\n-\na. editor3\nb. exploration_id_2-2 & '
-            'exploration_id_2-3\nc. 1, [filename5.mp3]\n-\na. editor1\nb. '
-            'exploration_id_2-1 & exploration_id_2-2\nc. 1, [filename4.mp3]\n\n'
+            'Exp ID: exp_id_kjsd-.\nSnapshots: 5\n-\na. editor1\nb. '
+            'exp_id_kjsd--4 & exp_id_kjsd--5\nc. 1, [filename7.mp3]\n-'
+            '\na. editor4\nb. exp_id_kjsd--3 & exp_id_kjsd--4\nc. 1, '
+            '[filename6.mp3]\n-\na. editor3\nb. exp_id_kjsd--2 & '
+            'exp_id_kjsd--3\nc. 1, [filename5.mp3]\n-\na. editor1\nb. '
+            'exp_id_kjsd--1 & exp_id_kjsd--2\nc. 1, [filename4.mp3]\n\n'
         )
 
         self.assert_job_output_is([
@@ -766,25 +766,25 @@ class AuditVoiceArtistMetadataModelsJobTests(
         )
 
         # Deleting an exploration commit log entry model.
-        snapshot_model_id: str = 'exploration_id_1-3'
+        snapshot_model_id: str = 'exp_id_abcde-3'
         snapshot_model: exp_models.ExplorationSnapshotContentModel = (
             exp_models.ExplorationSnapshotContentModel.get_by_id(
                 snapshot_model_id))
         snapshot_model.delete()
 
         debug_logs_1 = (
-            'Exp ID: exploration_id_1.\nSnapshots: 4\n-\na. editor1\nb. '
-            'exploration_id_1-4 & exploration_id_1-5\nc. 1, '
-            '[filename3.mp3]\n-\na. editor1\nb. exploration_id_1-1 & '
-            'exploration_id_1-2\nc. 1, [filename1.mp3]\n\n'
+            'Exp ID: exp_id_abcde.\nSnapshots: 4\n-\na. editor1\nb. '
+            'exp_id_abcde-4 & exp_id_abcde-5\nc. 1, '
+            '[filename3.mp3]\n-\na. editor1\nb. exp_id_abcde-1 & '
+            'exp_id_abcde-2\nc. 1, [filename1.mp3]\n\n'
         )
         debug_logs_2 = (
-            'Exp ID: exploration_id_2.\nSnapshots: 5\n-\na. editor1\nb. '
-            'exploration_id_2-4 & exploration_id_2-5\nc. 1, [filename7.mp3]\n-'
-            '\na. editor4\nb. exploration_id_2-3 & exploration_id_2-4\nc. 1, '
-            '[filename6.mp3]\n-\na. editor3\nb. exploration_id_2-2 & '
-            'exploration_id_2-3\nc. 1, [filename5.mp3]\n-\na. editor1\nb. '
-            'exploration_id_2-1 & exploration_id_2-2\nc. 1, [filename4.mp3]\n\n'
+            'Exp ID: exp_id_kjsd-.\nSnapshots: 5\n-\na. editor1\nb. '
+            'exp_id_kjsd--4 & exp_id_kjsd--5\nc. 1, [filename7.mp3]\n-'
+            '\na. editor4\nb. exp_id_kjsd--3 & exp_id_kjsd--4\nc. 1, '
+            '[filename6.mp3]\n-\na. editor3\nb. exp_id_kjsd--2 & '
+            'exp_id_kjsd--3\nc. 1, [filename5.mp3]\n-\na. editor1\nb. '
+            'exp_id_kjsd--1 & exp_id_kjsd--2\nc. 1, [filename4.mp3]\n\n'
         )
 
         self.assert_job_output_is([
@@ -802,7 +802,7 @@ class AuditVoiceArtistMetadataModelsJobTests(
         self._create_curated_explorations()
 
         # Updating committer ID.
-        snapshot_model_id: str = 'exploration_id_1-3'
+        snapshot_model_id: str = 'exp_id_abcde-3'
         snapshot_model: exp_models.ExplorationSnapshotMetadataModel = (
             exp_models.ExplorationSnapshotMetadataModel.get_by_id(
                 snapshot_model_id))
@@ -816,20 +816,20 @@ class AuditVoiceArtistMetadataModelsJobTests(
         )
 
         debug_logs_1 = (
-            'Exp ID: exploration_id_1.\nSnapshots: 5\n-\na. editor1\nb. '
-            'exploration_id_1-4 & exploration_id_1-5\nc. 1, [filename3.mp3]\n-'
+            'Exp ID: exp_id_abcde.\nSnapshots: 5\n-\na. editor1\nb. '
+            'exp_id_abcde-4 & exp_id_abcde-5\nc. 1, [filename3.mp3]\n-'
             '\na. Not Found for user ID: non_existent_user.\nb. '
-            'exploration_id_1-2 & exploration_id_1-3\nc. 1, [filename2.mp3]\n-'
-            '\na. editor1\nb. exploration_id_1-1 & exploration_id_1-2\nc. 1, '
+            'exp_id_abcde-2 & exp_id_abcde-3\nc. 1, [filename2.mp3]\n-'
+            '\na. editor1\nb. exp_id_abcde-1 & exp_id_abcde-2\nc. 1, '
             '[filename1.mp3]\n\n'
         )
         debug_logs_2 = (
-            'Exp ID: exploration_id_2.\nSnapshots: 5\n-\na. editor1\nb. '
-            'exploration_id_2-4 & exploration_id_2-5\nc. 1, [filename7.mp3]\n-'
-            '\na. editor4\nb. exploration_id_2-3 & exploration_id_2-4\nc. 1, '
-            '[filename6.mp3]\n-\na. editor3\nb. exploration_id_2-2 & '
-            'exploration_id_2-3\nc. 1, [filename5.mp3]\n-\na. editor1\nb. '
-            'exploration_id_2-1 & exploration_id_2-2\nc. 1, [filename4.mp3]\n\n'
+            'Exp ID: exp_id_kjsd-.\nSnapshots: 5\n-\na. editor1\nb. '
+            'exp_id_kjsd--4 & exp_id_kjsd--5\nc. 1, [filename7.mp3]\n-'
+            '\na. editor4\nb. exp_id_kjsd--3 & exp_id_kjsd--4\nc. 1, '
+            '[filename6.mp3]\n-\na. editor3\nb. exp_id_kjsd--2 & '
+            'exp_id_kjsd--3\nc. 1, [filename5.mp3]\n-\na. editor1\nb. '
+            'exp_id_kjsd--1 & exp_id_kjsd--2\nc. 1, [filename4.mp3]\n\n'
         )
 
         self.assert_job_output_is([
@@ -1087,7 +1087,7 @@ class HelperMethodsForExplorationVoiceArtistLinkJobTest(
 
         snapshot_metadata_model = (
             exp_models.ExplorationSnapshotMetadataModel.get(
-                'exploration_id_1-2'))
+                'exp_id_abcde-2'))
         del snapshot_metadata_model.commit_cmds[0]['cmd']
         snapshot_metadata_model.update_timestamps()
         snapshot_metadata_model.put()
