@@ -65,10 +65,6 @@ module.exports = {
     },
   },
   entry: {
-    creator_dashboard:
-      commonPrefix +
-      '/pages/creator-dashboard-page/' +
-      'creator-dashboard-page.import.ts',
     contributor_dashboard:
       commonPrefix +
       '/pages/contributor-dashboard-page/' +
@@ -92,16 +88,12 @@ module.exports = {
       '/pages/practice-session-page/practice-session-page.import.ts',
     skill_editor:
       commonPrefix + '/pages/skill-editor-page/skill-editor-page.import.ts',
-    story_editor:
-      commonPrefix + '/pages/story-editor-page/story-editor-page.import.ts',
     topic_editor:
       commonPrefix + '/pages/topic-editor-page/topic-editor-page.import.ts',
     topics_and_skills_dashboard:
       commonPrefix +
       '/pages/topics-and-skills-dashboard-page/' +
       'topics-and-skills-dashboard-page.import.ts',
-    topic_viewer:
-      commonPrefix + '/pages/topic-viewer-page/topic-viewer-page.import.ts',
   },
 
   /**
@@ -130,18 +122,6 @@ module.exports = {
       DIFF_EQUAL: ['diff_match_patch/lib/diff_match_patch', 'DIFF_EQUAL'],
       DIFF_INSERT: ['diff_match_patch/lib/diff_match_patch', 'DIFF_INSERT'],
       DIFF_DELETE: ['diff_match_patch/lib/diff_match_patch', 'DIFF_DELETE'],
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['creator_dashboard'],
-      filename: 'creator-dashboard-page.mainpage.html',
-      hybrid: true,
-      meta: defaultMeta,
-      template:
-        commonPrefix +
-        '/pages/creator-dashboard-page/' +
-        'creator-dashboard-page.mainpage.html',
-      minify: htmlMinifyConfig,
-      inject: false,
     }),
     new HtmlWebpackPlugin({
       chunks: ['contributor_dashboard'],
@@ -263,18 +243,6 @@ module.exports = {
       inject: false,
     }),
     new HtmlWebpackPlugin({
-      chunks: ['story_editor'],
-      filename: 'story-editor-page.mainpage.html',
-      hybrid: true,
-      meta: defaultMeta,
-      template:
-        commonPrefix +
-        '/pages/story-editor-page/' +
-        'story-editor-page.mainpage.html',
-      minify: htmlMinifyConfig,
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
       chunks: ['topic_editor'],
       filename: 'topic-editor-page.mainpage.html',
       hybrid: true,
@@ -295,18 +263,6 @@ module.exports = {
         commonPrefix +
         '/pages/topics-and-skills-dashboard-page/' +
         'topics-and-skills-dashboard-page.mainpage.html',
-      minify: htmlMinifyConfig,
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['topic_viewer'],
-      filename: 'topic-viewer-page.mainpage.html',
-      hybrid: true,
-      meta: defaultMeta,
-      template:
-        commonPrefix +
-        '/pages/topic-viewer-page/' +
-        'topic-viewer-page.mainpage.html',
       minify: htmlMinifyConfig,
       inject: false,
     }),

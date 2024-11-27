@@ -682,13 +682,7 @@ class WipeoutServiceRunFunctionsTests(test_utils.GenericTestBase):
             user_models.PendingDeletionRequestModel.get_by_id(self.user_1_id))
 
     @test_utils.set_platform_parameters(
-        [
-            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
-            (
-                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
-                'system@example.com'
-            )
-        ]
+        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
     )
     def test_run_user_deletion_completion_with_user_properly_deleted(
         self
@@ -728,13 +722,7 @@ class WipeoutServiceRunFunctionsTests(test_utils.GenericTestBase):
                 self.user_1_id))
 
     @test_utils.set_platform_parameters(
-        [
-            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
-            (
-                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
-                'system@example.com'
-            )
-        ]
+        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
     )
     def test_run_user_deletion_completion_user_wrongly_deleted_emails_enabled(
         self
@@ -1224,6 +1212,25 @@ class WipeoutServiceDeleteConfigModelsTests(test_utils.GenericTestBase):
         )
         self.assertEqual(
             metadata_model.committer_id, config_mappings[self.CONFIG_1_ID])
+
+    def test_remove_user_from_user_groups(self) -> None:
+        user_group_model = user_models.UserGroupModel(
+            id='group_1',
+            name='Test Group',
+            user_ids=[self.user_1_id, self.user_2_id]
+        )
+        user_group_model.put()
+
+        existing_user_group_model = user_models.UserGroupModel.get_by_id(
+            'group_1')
+        self.assertIn(self.user_1_id, existing_user_group_model.user_ids)
+
+        wipeout_service.delete_user(
+            wipeout_service.get_pending_deletion_request(self.user_1_id))
+
+        updated_user_group_model = user_models.UserGroupModel.get_by_id(
+            'group_1')
+        self.assertNotIn(self.user_1_id, updated_user_group_model.user_ids)
 
     def test_one_config_property_when_the_deletion_is_repeated_is_pseudonymized(
         self
@@ -5665,13 +5672,7 @@ class PendingUserDeletionTaskServiceTests(test_utils.GenericTestBase):
             email_manager, 'send_mail_to_admin', _mock_send_mail_to_admin)
 
     @test_utils.set_platform_parameters(
-        [
-            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
-            (
-                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
-                'system@example.com'
-            )
-        ]
+        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
     )
     def test_repeated_deletion_is_successful_when_emails_enabled(
         self
@@ -5718,13 +5719,7 @@ class PendingUserDeletionTaskServiceTests(test_utils.GenericTestBase):
             self.assertEqual(len(self.email_bodies), 0)
 
     @test_utils.set_platform_parameters(
-        [
-            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
-            (
-                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
-                'system@example.com'
-            )
-        ]
+        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
     )
     def test_regular_deletion_is_successful(self) -> None:
         with self.send_mail_to_admin_swap:
@@ -5820,19 +5815,7 @@ class CheckCompletionOfUserDeletionTaskServiceTests(
     @test_utils.set_platform_parameters(
         [
             (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
-            (platform_parameter_list.ParamName.EMAIL_SENDER_NAME, 'senderName'),
-            (
-                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS,
-                'testadmin@example.com'
-            ),
-            (
-                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
-                'system@example.com'
-            ),
-            (
-                platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS,
-                'noreply@example.com'
-            )
+            (platform_parameter_list.ParamName.EMAIL_SENDER_NAME, 'senderName')
         ]
     )
     def test_verification_when_user_is_deleted_is_successful(self) -> None:
@@ -5852,13 +5835,7 @@ class CheckCompletionOfUserDeletionTaskServiceTests(
             user_models.UserSettingsModel.get_by_id(self.user_1_id))
 
     @test_utils.set_platform_parameters(
-        [
-            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
-            (
-                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
-                'system@example.com'
-            )
-        ]
+        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
     )
     def test_verification_when_user_is_wrongly_deleted_fails(self) -> None:
         pending_deletion_request = (

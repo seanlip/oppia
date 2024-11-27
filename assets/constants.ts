@@ -6189,8 +6189,6 @@ export default {
 
   "ENABLE_PREREQUISITE_SKILLS": false,
 
-  "ENABLE_NEW_STRUCTURE_VIEWER_UPDATES": true,
-
   "ENABLE_SOLICIT_ANSWER_DETAILS_FEATURE": true,
 
   "MAX_SKILLS_PER_QUESTION": 3,
@@ -6702,6 +6700,25 @@ export default {
         }
       ]
     },
+    "STORY_EDITOR": {
+      "ROUTE": "story_editor/:story_id",
+      "TITLE": "Story Editor Page",
+      "MANUALLY_REGISTERED_WITH_BACKEND": true,
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
     "COLLECTION_PLAYER": {
       "ROUTE": "collection/:collection_id",
       "TITLE": "",
@@ -6710,6 +6727,24 @@ export default {
       // manually in the backend. Please use angular router syntax here.
       "MANUALLY_REGISTERED_WITH_BACKEND": true,
       "META": []
+    },
+    "CREATOR_DASHBOARD": {
+      "ROUTE": "creator-dashboard",
+      "TITLE": "Creator Dashboard | Oppia",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
     },
     "EMAIL_DASHBOARD": {
       "ROUTE": "emaildashboard",
@@ -6936,6 +6971,27 @@ export default {
           "PROPERTY_TYPE": "property",
           "PROPERTY_VALUE": "og:description",
           "CONTENT": "Learn how to get started using Oppia."
+        }
+      ]
+    },
+    "TOPIC_VIEWER": {
+      "ROUTE": "learn/:classroom_url_fragment/:topic_url_fragment",
+      "TITLE": "Topic Viewer Page",
+      // Some routes contain url fragments, as syntax for url fragments are
+      // different for angular router and backend. They have to be registered
+      // manually in the backend. Please use angular router syntax here.
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
         }
       ]
     },
