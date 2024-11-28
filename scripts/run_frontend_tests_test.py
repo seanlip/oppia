@@ -97,6 +97,20 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
             def wait(self) -> None: # pylint: disable=missing-docstring
                 return None
 
+        class MockSlowTask:
+            def __init__(self) -> None:
+                self.returncode = 1
+                self.first_call = True
+                self.stdout = MockFile(flakes=2)
+            def poll(self) -> Optional[int]: # pylint: disable=missing-docstring
+                if self.first_call:
+                    self.first_call = False
+                    return None
+                self.returncode = 0
+                return self.returncode
+            def wait(self) -> None: # pylint: disable=missing-docstring
+                return None
+
         self.cmd_token_list: list[list[str]] = []
         def mock_success_check_call(
             cmd_tokens: list[str], **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
@@ -114,6 +128,10 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
             cmd_tokens: list[str], **unused_kwargs: str) -> MockFailedTask:  # pylint: disable=unused-argument
             self.cmd_token_list.append(cmd_tokens)
             return MockFailedTask()
+        def mock_slow_check_call(
+            cmd_tokens: list[str], **unused_kwargs: str) -> MockSlowTask:  # pylint: disable=unused-argument
+            self.cmd_token_list.append(cmd_tokens)
+            return MockSlowTask()
 
         self.sys_exit_message: list[str] = []
         def mock_sys_exit(error_message: str) -> None:
@@ -137,6 +155,8 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
             subprocess, 'Popen', mock_very_flaky_check_call)
         self.swap_failed_Popen = self.swap(
             subprocess, 'Popen', mock_failed_check_call)
+        self.swap_slow_Popen = self.swap(
+            subprocess, 'Popen', mock_slow_check_call)
         self.swap_sys_exit = self.swap(sys, 'exit', mock_sys_exit)
         self.swap_build = self.swap(build, 'main', mock_build)
         self.swap_common = self.swap(
@@ -169,6 +189,22 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
         self.assertIn(cmd, self.cmd_token_list)
         self.assertIn('Running dtslint type tests.', self.print_arr)
         self.assertIn(
+            'The dtslint (type tests) failed.', self.sys_exit_message)
+
+    def test_run_dtslint_type_tests_passed_with_long_output(self) -> None:
+        with self.swap_slow_Popen, self.print_swap:
+            run_frontend_tests.run_dtslint_type_tests()
+        cmd = ['./node_modules/dtslint/bin/index.js',
+           run_frontend_tests.DTSLINT_TYPE_TESTS_DIR_RELATIVE_PATH,
+           '--localTs',
+           run_frontend_tests.TYPESCRIPT_DIR_RELATIVE_PATH]
+        self.assertIn(cmd, self.cmd_token_list)
+        self.assertIn('Running dtslint type tests.', self.print_arr)
+        self.assertIn(
+            b'Executed tests. Trying to get the Angular injector..',
+            self.print_arr)
+        self.assertIn(b'Disconnected , because no message', self.print_arr)
+        self.assertNotIn(
             'The dtslint (type tests) failed.', self.sys_exit_message)
 
     def test_no_tests_are_run_when_dtslint_flag_passed(self) -> None:
