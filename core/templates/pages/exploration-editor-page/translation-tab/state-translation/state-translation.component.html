@@ -383,8 +383,12 @@
     display: block;
   }
   .voiceover-disabled-text-class {
-    margin-top: revert;
     text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 90%;
+    padding: 5px;
   }
   .oppia-translation-preview {
     list-style: none;
@@ -436,6 +440,17 @@
     width: calc(100% / 5);
   }
 
+  .oppia-audio-translation-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+  }
+
   @media screen and (max-width: 768px) {
     .oppia-state-translation-page {
       margin-left: auto;
@@ -476,7 +491,7 @@
     border-bottom-width: 2px;
     border-top-width: 3px;
     color: #009688;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     padding: 10px 10px 20px 2px;
     text-decoration: none;
     width: 100%;
@@ -500,7 +515,13 @@
     padding: 20px 30px 20px 30px;
   }
   .oppia-audio-translation-bar {
-    height: 60px;
+    padding: 15px;
+    flex-direction: column;
+  }
+
+  .voiceover-disabled-text-class {
+    font-family: 0.9rem;
+    max-width: 100%;
   }
   .oppia-rte-editor-focused:focus > p {
     outline: solid 2px #009688;
