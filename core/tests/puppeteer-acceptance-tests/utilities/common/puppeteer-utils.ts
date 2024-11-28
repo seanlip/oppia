@@ -601,7 +601,7 @@ export class BaseUser {
    * Name the image by describing what the page is, and add 'with..' if there's something notable in the screenshots.
    * @param {string} imageName - The name for the image
    * @param {string} testPath - The path of the file that called this function
-   * @param {Page|undefined} newPage - The page to take screenshot from, If not
+   * @param {Page|undefined} newPage - The page to take screenshot from. If not
    *     specified, uses this.page instead.
    */
   async expectScreenshotToMatch(
