@@ -262,105 +262,133 @@ class AuditTranslationSuggestionsForTranslatedContentsJob(base_jobs.JobBase):
 class DeleteTranslationsForInvalidContentIDsJob(base_jobs.JobBase):
     """Job that deletes translations for invalid content id."""
 
-    @staticmethod
-    def _delete_translations_with_invalid_content_ids(
-        entity_translation_model: translation_models.EntityTranslationsModel
-    ) -> Optional[
-            Dict[str, Union[
-                translation_models.EntityTranslationsModel, int]]]:
-        """Delete all invalid content ids for an entity translation model.
+    # TODO(#15613): Here we use MyPy ignore because the incomplete typing of
+    # apache_beam library and absences of stubs in Typeshed, forces MyPy to
+    # assume that DoFn class is of type Any. Thus to avoid MyPy's error (Class
+    # cannot subclass 'DoFn' (has type 'Any')), we added an ignore here.
+    class DeleteTranslationsWithInvalidContentIds(
+        beam.DoFn):  # type: ignore[misc]
+        """DoFn to delete all translations with invalid content ids."""
 
-        Args:
-            entity_translation_model: (EntityTranslationsModel). An entity 
-                translation model.
+        def process(
+            self,
+            entity_translation_model: translation_models.EntityTranslationsModel
+        ) -> Iterable[Optional[Dict[str, Union[
+                translation_models.EntityTranslationsModel, int]]]]:
+            """Delete all translations with invalid content ids for an entity
+            translation model.
 
-        Returns:
-            optional(dict(Union(EntityTranslationsModel, int)). An
-            dict containing updated entity translation model and number on
-            deleted translations from it, if any.
-        """
-        exp_model = exp_models.ExplorationModel.get(
+            Args:
+                entity_translation_model: (EntityTranslationsModel). An entity 
+                    translation model.
+
+            Yields:
+                optional(dict(Union(EntityTranslationsModel, int)). An
+                dict containing updated entity translation model and number on
+                deleted translations from it, if any.
+            """
+            with datastore_services.get_ndb_context():
+                exp_model = exp_models.ExplorationModel.get(
                 entity_translation_model.entity_id,
-                strict=True,
-                version=entity_translation_model.entity_version)
-        exp = exp_fetchers.get_exploration_from_model(exp_model)
+                    strict=True,
+                    version=entity_translation_model.entity_version)
+                exp = exp_fetchers.get_exploration_from_model(exp_model)
 
-        exp_content_ids = exp.get_translatable_content_ids()
-        translated_content_ids = list(
-            entity_translation_model.translations.keys())
+                exp_content_ids = exp.get_translatable_content_ids()
+                translated_content_ids = list(
+                    entity_translation_model.translations.keys())
 
-        deleted_translations_count = 0
-        is_updated = False
-        for content_id in translated_content_ids:
-            if content_id not in exp_content_ids:
-                entity_translation_model.translations.pop(content_id)
-                deleted_translations_count += 1
-                is_updated = True
+                deleted_translations_count = 0
+                is_updated = False
+                for content_id in translated_content_ids:
+                    if content_id not in exp_content_ids:
+                        entity_translation_model.translations.pop(content_id)
+                        deleted_translations_count += 1
+                        is_updated = True
 
-        if is_updated:
-            result: Dict[str, Union[
-                translation_models.EntityTranslationsModel, int]] = {
-                'entity_translation_model': entity_translation_model,
-                'deleted_translations_count': deleted_translations_count
-            }
-            return result
-        return None
+                if is_updated:
+                    result: Dict[str, Union[
+                        translation_models.EntityTranslationsModel, int]] = {
+                        'entity_translation_model': entity_translation_model,
+                        'deleted_translations_count': deleted_translations_count
+                    }
+                    yield result
+                yield None
 
-    @staticmethod
-    def _compute_updated_exp_opportunity_model(
-        entity_translation_model: translation_models.EntityTranslationsModel
-    ) -> opportunity_models.ExplorationOpportunitySummaryModel:
-        """Compute exploration opportunity model with updated translation
-        count for an updated entity translation model.
+    # TODO(#15613): Here we use MyPy ignore because the incomplete typing of
+    # apache_beam library and absences of stubs in Typeshed, forces MyPy to
+    # assume that DoFn class is of type Any. Thus to avoid MyPy's error (Class
+    # cannot subclass 'DoFn' (has type 'Any')), we added an ignore here.
+    class ComputeUpdatedExpOpportunityModel(beam.DoFn):  # type: ignore[misc]
+        """DoFn to compute updated exp opportunity model."""
 
-        Args:
-            entity_translation_model: (EntityTranslationsModel). An entity 
-                translation model.
+        def process(
+            self,
+            entity_translation_model: translation_models.EntityTranslationsModel
+        ) -> Iterable[opportunity_models.ExplorationOpportunitySummaryModel]:
+            """Compute exploration opportunity model with updated translation
+            count for an updated entity translation model.
 
-        Returns:
-            (ExplorationOpportunitySummaryModel). An exploration opportunity
-            model with updated translation count.
-        """
-        exp_opportunity_model = (
-            opportunity_models.ExplorationOpportunitySummaryModel.get(
-                entity_translation_model.entity_id))
+            Args:
+                entity_translation_model: (EntityTranslationsModel). An entity 
+                    translation model.
 
-        new_translation_count = len(
-            entity_translation_model.translations.keys())
+            Yields:
+                (ExplorationOpportunitySummaryModel). An exploration opportunity
+                model with updated translation count.
+            """
+            with datastore_services.get_ndb_context():
+                exp_opportunity_model = (
+                    opportunity_models.ExplorationOpportunitySummaryModel.get(
+                        entity_translation_model.entity_id))
 
-        exp_opportunity_model.translation_counts[
-            entity_translation_model.language_code] = new_translation_count
+                new_translation_count = len(
+                    entity_translation_model.translations.keys())
 
-        return exp_opportunity_model
+                exp_opportunity_model.translation_counts[
+                    entity_translation_model.language_code] = (
+                        new_translation_count)
 
-    @staticmethod
-    def _get_latest_model(
-        entity_id: str, entity_translation_models: List[
-            translation_models.EntityTranslationsModel]) -> Tuple[
-               str, translation_models.EntityTranslationsModel]:
-        """Returns latest entity translation model from a list of entity
-        translation models.
+                yield exp_opportunity_model
 
-        Args:
-            entity_id: str. Id of the entity for which the latest entity
-                translation model has to be computed.
-            entity_translation_models: list(EntityTranslationsModel). A
-                list of entity translation models.
+    # TODO(#15613): Here we use MyPy ignore because the incomplete typing of
+    # apache_beam library and absences of stubs in Typeshed, forces MyPy to
+    # assume that DoFn class is of type Any. Thus to avoid MyPy's error (Class
+    # cannot subclass 'DoFn' (has type 'Any')), we added an ignore here.
+    class GetLatestModel(beam.DoFn):  # type: ignore[misc]
+        """DoFn to compute latest entity translation model."""
 
-        Returns:
-            (tuple(str, EntityTranslationsModel)). A tuple of entity id
-            and latest entity translation model corresponding to it.
-        """
-        version_list = list(
-            model.entity_version for model in entity_translation_models)
-        latest_version = max(version_list)
-        latest_model = entity_translation_models[0]
-        for model in entity_translation_models:
-            if model.entity_version == latest_version:
-                latest_model = model
-                break
+        def process(
+            self,
+            element: Tuple[str, List[
+                translation_models.EntityTranslationsModel]]
+        ) -> Iterable[Tuple[
+               str, translation_models.EntityTranslationsModel]]:
+            """Returns latest entity translation model from a list of entity
+            translation models.
 
-        return (entity_id, latest_model)
+            Args:
+                element: Tuple[str, List[EntityTranslationsModel]]. A tuple of
+                    id of the entity for which the latest entity translation
+                    model has to be computed and A list of entity translation
+                    models.
+
+            Yields:
+                (tuple(str, EntityTranslationsModel)). A tuple of entity id
+                and latest entity translation model corresponding to it.
+            """
+            with datastore_services.get_ndb_context():
+                entity_id, entity_translation_models = element
+                version_list = list(
+                    model.entity_version for model in entity_translation_models)
+                latest_version = max(version_list)
+                latest_model = entity_translation_models[0]
+                for model in entity_translation_models:
+                    if model.entity_version == latest_version:
+                        latest_model = model
+                        break
+
+                yield (entity_id, latest_model)
 
     def run(self) -> beam.PCollection[job_run_result.JobRunResult]:
         """Returns a PCollection of entity translation model update results.
@@ -372,8 +400,8 @@ class DeleteTranslationsForInvalidContentIDsJob(base_jobs.JobBase):
             self.pipeline)
         deletion_result_dicts = (
             entity_translation_models
-            | 'Get deletion results' >> beam.Map(
-                    self._delete_translations_with_invalid_content_ids)
+            | 'Get deletion results' >> beam.ParDo(
+                    self.DeleteTranslationsWithInvalidContentIds())
             | 'Filter out None values' >> beam.Filter(lambda x: x is not None)
         )
 
@@ -413,16 +441,16 @@ class DeleteTranslationsForInvalidContentIDsJob(base_jobs.JobBase):
             # PCollection<entity_id: list(entity_translation_model)>.
             | 'Group by entity id' >> beam.GroupByKey()
             # PCollection<entity_id: entity_translation_model>.
-            | 'Filter model with latest entity version' >> beam.MapTuple(
-                self._get_latest_model)
+            | 'Filter model with latest entity version' >> beam.ParDo(
+                self.GetLatestModel())
             # PCollection<entity_translation_model>.
             | 'Get list of latest entity transaltion model' >> beam.Values()  # pylint: disable=no-value-for-parameter
         )
 
         updated_exp_opportunity_models = (
             latest_version_updated_entity_translation_models
-            | 'Get updated explortion opportunity models' >> beam.Map(
-                    self._compute_updated_exp_opportunity_model)
+            | 'Get updated explortion opportunity models' >> beam.ParDo(
+                    self.ComputeUpdatedExpOpportunityModel())
         )
 
         unused_put_results = (
@@ -446,43 +474,53 @@ class DeleteTranslationsForInvalidContentIDsJob(base_jobs.JobBase):
 class AuditTranslationsForInvalidContentIDsJob(base_jobs.JobBase):
     """Audits translations for invalid content id."""
 
-    @staticmethod
-    def _get_translations_with_invalid_content_ids(
-        entity_translation_model: translation_models.EntityTranslationsModel
-    ) -> List[Dict[str, Union[str, int]]]:
-        """Finds the list of all invalid content ids for an entity
-        translation model.
+    # TODO(#15613): Here we use MyPy ignore because the incomplete typing of
+    # apache_beam library and absences of stubs in Typeshed, forces MyPy to
+    # assume that DoFn class is of type Any. Thus to avoid MyPy's error (Class
+    # cannot subclass 'DoFn' (has type 'Any')), we added an ignore here.
+    class GetTranslationsWithInvalidContentIds(beam.DoFn):  # type: ignore[misc]
+        """DoFn to compute list of all invalid content ids."""
 
-        Args:
-            entity_translation_model: (EntityTranslationsModel). An entity 
-                translation model.
+        def process(
+            self,
+            entity_translation_model: translation_models.EntityTranslationsModel
+        ) -> Iterable[List[Dict[str, Union[str, int]]]]:
+            """Finds the list of all invalid content ids for an entity
+            translation model.
 
-        Returns:
-            list(dict(str, union(str, int))). A list of dict containing all
-            invalid entity_translation_model_id, entity_id, entity_version
-            and content_id, for an entity translation model.
-        """
-        invalid_translation_dicts: List[Dict[str, Union[str, int]]] = []
+            Args:
+                entity_translation_model: (EntityTranslationsModel). An entity 
+                    translation model.
 
-        exp_model = exp_models.ExplorationModel.get(
-                entity_translation_model.entity_id,
-                strict=True,
-                version=entity_translation_model.entity_version)
-        exp = exp_fetchers.get_exploration_from_model(exp_model)
+            Yields:
+                list(dict(str, union(str, int))). A list of dict containing all
+                invalid entity_translation_model_id, entity_id, entity_version
+                and content_id, for an entity translation model.
+            """
+            with datastore_services.get_ndb_context():
+                invalid_translation_dicts: List[Dict[str, Union[str, int]]] = []
 
-        exp_content_ids = exp.get_translatable_content_ids()
-        translated_content_ids = entity_translation_model.translations.keys()
+                exp_model = exp_models.ExplorationModel.get(
+                        entity_translation_model.entity_id,
+                        strict=True,
+                        version=entity_translation_model.entity_version)
+                exp = exp_fetchers.get_exploration_from_model(exp_model)
 
-        for content_id in translated_content_ids:
-            if content_id not in exp_content_ids:
-                invalid_translation_dicts.append({
-                    'entity_id': entity_translation_model.entity_id,
-                    'entity_version': entity_translation_model.entity_version,
-                    'entity_translation_model_id': entity_translation_model.id,
-                    'content_id': content_id
-                })
+                exp_content_ids = exp.get_translatable_content_ids()
+                translated_content_ids = (
+                    entity_translation_model.translations.keys())
 
-        return invalid_translation_dicts
+                for content_id in translated_content_ids:
+                    if content_id not in exp_content_ids:
+                        invalid_translation_dicts.append({
+                            'entity_id': entity_translation_model.entity_id,
+                            'entity_version': (
+                                entity_translation_model.entity_version),
+                            'entity_translation_model_id': (
+                                entity_translation_model.id),
+                            'content_id': content_id
+                        })
+                yield invalid_translation_dicts
 
     def run(self) -> beam.PCollection[job_run_result.JobRunResult]:
         """Returns a PCollection of audit job run results.
@@ -494,8 +532,8 @@ class AuditTranslationsForInvalidContentIDsJob(base_jobs.JobBase):
             self.pipeline)
         invalid_translation_dicts = (
             entity_translation_models
-            | 'Get invalid translation dicts' >> beam.Map(
-                    self._get_translations_with_invalid_content_ids)
+            | 'Get invalid translation dicts' >> beam.ParDo(
+                    self.GetTranslationsWithInvalidContentIds())
             | 'Flatten the list' >> beam.FlatMap(lambda x: x)
         )
 
