@@ -648,20 +648,35 @@ export class BaseUser {
       }
     }
 
-    expect(await currentPage.screenshot()).toMatchImageSnapshot({
-      failureThreshold: failureTrigger,
-      failureThresholdType: 'percent',
-      customSnapshotIdentifier: imageName,
-      customSnapshotsDir: path.join(testPath, dirName),
-      customDiffDir: path.isAbsolute('/home/runner/work/..')
-        ? path.join(
-            '/home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots',
-            path.basename(dirName)
-          )
-        : path.join(testPath, dirName, 'diff-snapshots'),
-    });
-    if (typeof newPage !== 'undefined') {
-      await newPage.close();
+    try {
+      expect(await currentPage.screenshot()).toMatchImageSnapshot({
+        failureThreshold: failureTrigger,
+        failureThresholdType: 'percent',
+        customSnapshotIdentifier: imageName,
+        customSnapshotsDir: path.join(testPath, dirName),
+        /*
+         * The following checks if the tests are running on CI. If it is, the folder diff-snapshots will be uploaded as
+         * artifacts in the github workflow.
+         */
+        customDiffDir: __dirname.startsWith('/home/runner')
+          ? path.join(
+              '/home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots',
+              path.basename(dirName)
+            )
+          : path.join(testPath, dirName, 'diff-snapshots'),
+      });
+      if (typeof newPage !== 'undefined') {
+        await newPage.close();
+      }
+    } catch (error) {
+      if (__dirname.startsWith('/home/runner')) {
+        throw new Error(
+          error.message +
+            '\r\nDownload the artifact folder diff-snapshots from the github workflow to check the screenshot(s).'
+        );
+      } else {
+        throw new Error(error.message);
+      }
     }
   }
   /*
