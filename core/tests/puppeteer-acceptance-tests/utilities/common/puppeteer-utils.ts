@@ -619,7 +619,6 @@ export class BaseUser {
      * Based on the existence of the background/library banner, which are randomly selected from a set of four,
      * failureTrigger is set in the specific percentage for the randomness of the banner in desktop mode and mobile mode.
      */
-
     var failureTrigger = 0;
     var dirName = '';
     if (this.isViewportAtMobileWidth()) {
