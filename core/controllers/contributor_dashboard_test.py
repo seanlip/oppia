@@ -347,24 +347,17 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
             }
         )
 
-        # Simulate `get_skill_opportunities` returning no data.
-        with unittest.mock.patch.object(
-            opportunity_services,
-            'get_skill_opportunities',
-            return_value=([], None, False)
-        ):
+        # Test when no opportunities are returned from the beginning.
+        with self.swap(constants, 'OPPORTUNITIES_PAGE_SIZE', 0):
+            response = self.get_json(
+                '%s/skill' % feconf.CONTRIBUTOR_OPPORTUNITIES_DATA_URL,
+                params={}
+            )
 
-            # Test when no opportunities are returned from the beginning.
-            with self.swap(constants, 'OPPORTUNITIES_PAGE_SIZE', 0):
-                response = self.get_json(
-                    '%s/skill' % feconf.CONTRIBUTOR_OPPORTUNITIES_DATA_URL,
-                    params={}
-                )
-
-                # Verify that no opportunities are returned.
-                self.assertEqual(len(response['opportunities']), 0)
-                self.assertFalse(response['more']) 
-                self.assertIsNone(response['next_cursor'])
+            # Verify that no opportunities are returned.
+            self.assertEqual(len(response['opportunities']), 0)
+            self.assertFalse(response['more'])
+            self.assertIsNone(response['next_cursor'])
 
     def test_get_translation_opportunity_data_pagination(self) -> None:
         with self.swap(constants, 'OPPORTUNITIES_PAGE_SIZE', 1):
@@ -589,7 +582,7 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
                 language_codes_with_assigned_voice_artists=[],
                 translation_in_review_counts={}
             ),
-            '1': None,  # This should be skipped
+            '1': None,
             '2': opportunity_domain.ExplorationOpportunitySummary(
                 exp_id='2',
                 topic_id='topic 2',
@@ -605,6 +598,9 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
                 translation_in_review_counts={}
             )
         }
+
+        # Here we use object because we need to return mock_exp_opp_summaries
+        # where some items in the list is null.
         with unittest.mock.patch.object(
             opportunity_services,
             'get_exploration_opportunity_summaries_by_ids',
@@ -1293,6 +1289,8 @@ class TranslatableTextHandlerTest(test_utils.GenericTestBase):
             }
         }
 
+        # Here we use object because we need to simulate the case where
+        # multiple contents in the state is in list format.
         with unittest.mock.patch.object(
             translation_services,
             'get_translatable_text',
