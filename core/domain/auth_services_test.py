@@ -26,6 +26,7 @@ from core.domain import user_domain
 from core.domain import user_services
 from core.platform import models
 from core.tests import test_utils
+from unittest.mock import patch
 
 import webapp2
 
@@ -237,59 +238,27 @@ class AuthServicesTests(test_utils.GenericTestBase):
         # Should not raise.
         auth_services.delete_external_auth_associations('does_not_exist')
 
-    def test_auth_session_established_or_destoryed(self) -> None:
-        auth_section = []
-        def mock_establish_auth_session(
-            _: webapp2.Request,
-            __: webapp2.Response
-        ) -> None:
-            auth_section.append('established')
+    @patch("core.domain.auth_services.platform_auth_services.establish_auth_session", return_value=None)
+    @patch("core.domain.auth_services.platform_auth_services.destroy_auth_session", return_value=None)
+    def test_auth_session_established_or_destoryed(self,mock_destroy_auth_session,mock_establish_auth_session) -> None:
+        request = webapp2.Request.blank('/')
+        response = webapp2.Response()
 
-        def mock_destroy_auth_session(
-            _: webapp2.Response
-        ) -> None:
-            auth_section.remove('established')
+        auth_services.establish_auth_session(request, response)
+        mock_establish_auth_session.assert_called_once_with(request, response)
 
-        with self.swap(
-            platform_auth_services,
-            'establish_auth_session',
-            mock_establish_auth_session
-        ):
-            auth_services.establish_auth_session(
-                webapp2.Request.blank('/'),
-                webapp2.Response()
-            )
-            self.assertEqual(['established'], auth_section)
-        with self.swap(
-            platform_auth_services,
-            'destroy_auth_session',
-            mock_destroy_auth_session
-        ):
-            auth_services.destroy_auth_session(webapp2.Response())
-            self.assertEqual([], auth_section)
+        auth_services.destroy_auth_session(response)
+        mock_destroy_auth_session.assert_called_once_with(response)
 
-    def test_super_admin_granted_or_revoked(self) -> None:
-        super_admin_privilage = []
-        def mock_grant_super_admin_privileges(uid: str) -> None:
-            super_admin_privilage.append(uid)
+    @patch("core.domain.auth_services.firebase_auth_services.revoke_super_admin_privileges", return_value=None)
+    @patch("core.domain.auth_services.firebase_auth_services.grant_super_admin_privileges", return_value=None)
+    def test_super_admin_granted_or_revoked(self,mock_grant_super_admin_privileges,mock_revoke_super_admin_privileges) -> None:
 
-        def mock_revoke_super_admin_privileges(uid: str) -> None:
-            super_admin_privilage.remove(uid)
+        auth_services.grant_super_admin_privileges('uid1')
+        mock_grant_super_admin_privileges.assert_called_once_with('uid1')
 
-        with self.swap(
-            platform_auth_services,
-            'grant_super_admin_privileges',
-            mock_grant_super_admin_privileges
-        ):
-            auth_services.grant_super_admin_privileges('uid1')
-            self.assertEqual(['uid1'], super_admin_privilage)
-        with self.swap(
-            platform_auth_services,
-            'revoke_super_admin_privileges',
-            mock_revoke_super_admin_privileges
-        ):
-            auth_services.revoke_super_admin_privileges('uid1')
-            self.assertEqual([], super_admin_privilage)
+        auth_services.revoke_super_admin_privileges('uid1')
+        mock_revoke_super_admin_privileges.assert_called_once_with('uid1')
 
     def test_get_csrf_secret_value_returns_when_no_models(self) -> None:
         csrf_secret_model = auth_models.CsrfSecretModel.get(
