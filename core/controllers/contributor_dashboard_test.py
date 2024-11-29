@@ -38,6 +38,8 @@ from core.domain import topic_domain
 from core.domain import topic_fetchers
 from core.domain import topic_services
 from core.domain import user_services
+from core.domain import translation_domain
+from core.domain import translation_services
 from core.platform import models
 from core.tests import test_utils
 
@@ -321,6 +323,48 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
             self.assertFalse(response['more'])
             self.assertIsInstance(response['next_cursor'], str)
 
+    def test_get_skill_opportunity_data_pagination_null_from_beginning(self) -> None:
+        # Unassign topic 0 from the classroom.
+        classroom_config_services.delete_classroom(self.classroom_id)
+
+        # Create a new topic.
+        topic_id = '10'
+        topic_name = 'topic10'
+        topic = topic_domain.Topic.create_default_topic(
+            topic_id, topic_name, 'url-fragment-ten', 'description', 'fragm-ten')
+        skill_id_6 = 'skill_id_6'
+        skill_id_7 = 'skill_id_7'
+        skill_id_8 = 'skill_id_8'
+        self._publish_valid_topic(
+            topic, [skill_id_6, skill_id_7, skill_id_8])
+
+        # Add new topic to a classroom.
+        self.save_new_valid_classroom(
+            classroom_id=self.classroom_id,
+            topic_id_to_prerequisite_topic_ids={
+                topic_id: []
+            }
+        )
+
+        # Simulate `get_skill_opportunities` returning no data.
+        with unittest.mock.patch.object(
+            opportunity_services,
+            'get_skill_opportunities',
+            return_value=([], None, False)
+        ):
+
+            # Test when no opportunities are returned from the beginning.
+            with self.swap(constants, 'OPPORTUNITIES_PAGE_SIZE', 0):
+                response = self.get_json(
+                    '%s/skill' % feconf.CONTRIBUTOR_OPPORTUNITIES_DATA_URL,
+                    params={}
+                )
+
+                # Verify that no opportunities are returned, and the loop did not execute.
+                self.assertEqual(len(response['opportunities']), 0)
+                self.assertFalse(response['more'])  # No more data.
+                self.assertIsNone(response['next_cursor'])
+
     def test_get_translation_opportunity_data_pagination(self) -> None:
         with self.swap(constants, 'OPPORTUNITIES_PAGE_SIZE', 1):
             response = self.get_json(
@@ -485,6 +529,115 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
         self.assertItemsEqual(
             response['opportunities'], [self.expected_opportunity_dict_1, self.expected_opportunity_dict_2])
 
+        self.logout()
+        response = self.get_json(
+            '%s' % feconf.REVIEWABLE_OPPORTUNITIES_URL,
+            params={'language_code': 'pt'})
+        # Should be empty.
+        self.assertItemsEqual(
+            response['opportunities'], [])
+
+    def test_get_reviewable_translation_opportunities_with_null_items( # pylint: disable=line-too-long
+            self
+        ) -> None:
+        # Create a translation suggestion in Hindi.
+        change_dict = {
+            'cmd': 'add_translation',
+            'content_id': 'content_0',
+            'language_code': 'hi',
+            'content_html': 'Content',
+            'state_name': 'Introduction',
+            'translation_html': '<p>Translation for content.</p>'
+        }
+        suggestion_services.create_suggestion(
+            feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT,
+            feconf.ENTITY_TYPE_EXPLORATION,
+            '0', 1, self.owner_id, change_dict, 'description')
+
+        # Create a translation suggestion in Spanish.
+        change_dict = {
+            'cmd': 'add_translation',
+            'content_id': 'content_0',
+            'language_code': 'es',
+            'content_html': 'Content',
+            'state_name': 'Introduction',
+            'translation_html': '<p>Translation for content 2.</p>'
+        }
+        suggestion_services.create_suggestion(
+            feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT,
+            feconf.ENTITY_TYPE_EXPLORATION,
+            '1', 1, self.owner_id, change_dict, 'description 2')
+
+        self.login(self.CURRICULUM_ADMIN_EMAIL)
+
+        # Create exploration opportunity summaries with some items set to None.
+        suported_audio_langs_codes = [
+            lang['id'] for lang in constants.SUPPORTED_AUDIO_LANGUAGES]
+        mock_exp_opp_summaries = {
+            '0': opportunity_domain.ExplorationOpportunitySummary(
+                exp_id='0',
+                topic_id='topic',
+                topic_name='topic',
+                chapter_title = 'Node1',
+                story_id='story',
+                story_title='title story_id_0',
+                content_count=2,
+                incomplete_translation_language_codes=suported_audio_langs_codes,
+                translation_counts={},
+                language_codes_needing_voice_artists=['en'],
+                language_codes_with_assigned_voice_artists=[],
+                translation_in_review_counts={}
+            ),
+            '1': None,  # This should be skipped
+            '2': opportunity_domain.ExplorationOpportunitySummary(
+                exp_id='2',
+                topic_id='topic 2',
+                topic_name='topic2',
+                chapter_title = 'Node1',
+                story_id='story_2',
+                story_title='title story_id_2',
+                content_count=2,
+                incomplete_translation_language_codes=suported_audio_langs_codes,
+                translation_counts={},
+                language_codes_needing_voice_artists=['en'],
+                language_codes_with_assigned_voice_artists=[],
+                translation_in_review_counts={}
+            )
+        }
+        with unittest.mock.patch.object(
+            opportunity_services,
+            'get_exploration_opportunity_summaries_by_ids',
+            return_value=mock_exp_opp_summaries
+        ):
+            response = self.get_json(
+                '%s' % feconf.REVIEWABLE_OPPORTUNITIES_URL,
+                params={'language_code': 'hi'})
+
+            expected_opp_dict_1 = {
+                'id': '0', 
+                'topic_name': 'topic', 
+                'story_title': 'title story_id_0', 
+                'chapter_title': 'Node1', 
+                'content_count': 2, 
+                'translation_counts': {}, 
+                'translation_in_review_counts': {}, 
+                'is_pinned': False
+            }
+            expected_opp_dict_2 = {
+                'id': '2', 
+                'topic_name': 'topic2', 
+                'story_title': 'title story_id_2', 
+                'chapter_title': 'Node1', 
+                'content_count': 2, 
+                'translation_counts': {}, 
+                'translation_in_review_counts': {}, 
+                'is_pinned': False
+            }
+
+            # Assert that only valid summaries are included in the response.
+            self.assertItemsEqual(
+                response['opportunities'], [expected_opp_dict_1, expected_opp_dict_2])
+
     def test_get_reviewable_translation_opportunities_with_pinned_opportunity( # pylint: disable=line-too-long
             self
         ) -> None:
@@ -624,6 +777,26 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
                 request_dict,
                 csrf_token=csrf_token,
                 expected_status_int=200)
+
+    def test_pin_translation_opportunity_none_language(self) -> None:
+        self.login(self.OWNER_EMAIL)
+        topic_id = ''
+        language_code = ''
+        opportunity_id = 'opp123'
+
+        request_dict = {
+            'topic_id': topic_id,
+            'language_code': language_code,
+            'opportunity_id': opportunity_id
+        }
+        csrf_token = self.get_new_csrf_token()
+
+        response = self.put_json(
+            '%s' % feconf.PINNED_OPPORTUNITIES_URL,
+            request_dict,
+            csrf_token=csrf_token,
+            expected_status_int=200
+        )
 
     def test_unpin_translation_opportunity(self) -> None:
         self.login(self.OWNER_EMAIL)
@@ -1070,6 +1243,79 @@ class TranslatableTextHandlerTest(test_utils.GenericTestBase):
         }, expected_status_int=400)
 
         self.logout()
+
+    def test_handler_with_user_reviewable_language_code(
+        self
+    ) -> None:
+        self.login(self.OWNER_EMAIL)
+        user_services.allow_user_to_review_translation_in_language(
+            self.owner_id, 'hi')
+
+        self.get_json('/gettranslatabletexthandler', params={
+            'language_code': 'hi',
+            'exp_id': '0'
+        }, expected_status_int=200)
+
+        self.logout()
+
+    def test_handler_translatable_item_is_data_format_list(self) -> None:
+        mock_get_translatable_text_return_value = {
+            'Introduction': {
+                'content_01': translation_domain.TranslatableContent(
+                    content_id='content_01',
+                    content_type=translation_domain.ContentType.CONTENT,
+                    content_format=translation_domain.TranslatableContentFormat.SET_OF_NORMALIZED_STRING,
+                    content_value=['string1', 'string2', 'string3']
+                ),
+                'content_02': translation_domain.TranslatableContent(
+                    content_id='content_02',
+                    content_type=translation_domain.ContentType.CONTENT,
+                    content_format=translation_domain.TranslatableContentFormat.SET_OF_NORMALIZED_STRING,
+                    content_value=['string1', 'string2', 'string3']
+                )
+            },
+            'End State': {
+                'content_03': translation_domain.TranslatableContent(
+                    content_id='content_03',
+                    content_type=translation_domain.ContentType.CONTENT,
+                    content_format=translation_domain.TranslatableContentFormat.HTML,
+                    content_value='<p>Not a list content.</p>'
+                )
+            }
+        }
+
+        with unittest.mock.patch.object(
+            translation_services,
+            'get_translatable_text',
+            return_value=mock_get_translatable_text_return_value
+        ):
+
+            # Step 2: Send a GET request to retrieve the content.
+            output = self.get_json('/gettranslatabletexthandler', params={
+                'language_code': 'hi',
+                'exp_id': '0'
+            })
+
+            print(output)
+            # Step 3: Define the expected output based on the updated exploration state.
+            expected_output = {
+                'version': 1,
+                'state_names_to_content_id_mapping': {
+                    'End State': {
+                        'content_03': {
+                            'content_value': '<p>Not a list content.</p>',
+                            'content_id': 'content_03',
+                            'content_format': 'html',
+                            'content_type': 'content',
+                            'interaction_id': None,
+                            'rule_type': None
+                        }
+                    }
+                }
+            }
+
+            # Step 4: Assert that the output matches the expected output.
+            self.assertEqual(output, expected_output)
 
     def test_handler_returns_correct_data(self) -> None:
         exp_services.update_exploration(
