@@ -32,6 +32,7 @@ from core.domain import topic_fetchers
 from core.domain import topic_services
 from core.platform import models
 from core.tests import test_utils
+from unittest.mock import patch
 
 MYPY = False
 if MYPY: # pragma: no cover
@@ -173,33 +174,20 @@ class InitializeAndroidTestDataTests(test_utils.GenericTestBase):
 
 class AndroidBuildSecretTests(test_utils.GenericTestBase):
     """Tests for the verify_android_build_secret."""
-
-    def setUp(self) -> None:
-        super().setUp()
-        self.swap_webhook_secrets_return_none = self.swap_to_always_return(
-            secrets_services, 'get_secret', None)
-        self.swap_webhook_secrets_return_secret = self.swap_with_checks(
-            secrets_services,
-            'get_secret',
-            lambda _: 'secret',
-            expected_args=[
-                ('ANDROID_BUILD_SECRET',),
-                ('ANDROID_BUILD_SECRET',),
-            ]
-        )
-
-    def test_cloud_secrets_return_none_logs_exception(self) -> None:
-        with self.swap_webhook_secrets_return_none:
-            with self.capture_logging(min_level=logging.WARNING) as logs:
-                self.assertFalse(
-                    android_services.verify_android_build_secret('secret'))
-                self.assertEqual(
-                    ['Android build secret is not available.'], logs
-                )
-
-    def test_cloud_secrets_return_secret_passes(self) -> None:
-        with self.swap_webhook_secrets_return_secret:
-            self.assertTrue(
-                android_services.verify_android_build_secret('secret'))
+    
+    @patch("core.domain.android_services.secrets_services.get_secret", return_value=None)
+    def test_cloud_secrets_return_none_logs_exception(self,mock_get_secret) -> None:
+        with self.capture_logging(min_level=logging.WARNING) as logs:
             self.assertFalse(
-                android_services.verify_android_build_secret('not-secret'))
+                android_services.verify_android_build_secret('secret'))
+            self.assertEqual(
+                ['Android build secret is not available.'], logs
+            )
+
+    @patch("core.domain.android_services.secrets_services.get_secret", return_value='secret')
+    def test_cloud_secrets_return_secret_passes(self,mock_get_secret) -> None:
+        self.assertTrue(
+            android_services.verify_android_build_secret('secret'))
+        self.assertFalse(
+            android_services.verify_android_build_secret('not-secret'))
+            
