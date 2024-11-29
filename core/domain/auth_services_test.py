@@ -26,7 +26,7 @@ from core.domain import user_domain
 from core.domain import user_services
 from core.platform import models
 from core.tests import test_utils
-from unittest.mock import patch
+from unittest.mock import Mock,patch
 
 import webapp2
 
@@ -238,9 +238,11 @@ class AuthServicesTests(test_utils.GenericTestBase):
         # Should not raise.
         auth_services.delete_external_auth_associations('does_not_exist')
 
-    @patch("core.domain.auth_services.platform_auth_services.establish_auth_session", return_value=None)
-    @patch("core.domain.auth_services.platform_auth_services.destroy_auth_session", return_value=None)
-    def test_auth_session_established_or_destoryed(self,mock_destroy_auth_session,mock_establish_auth_session) -> None:
+    @patch("core.domain.auth_services.platform_auth_services.establish_auth_session")
+    @patch("core.domain.auth_services.platform_auth_services.destroy_auth_session")
+    def test_auth_session_established_or_destoryed(self,mock_destroy_auth_session:Mock,mock_establish_auth_session:Mock) -> None:
+        mock_destroy_auth_session.return_value = None
+        mock_establish_auth_session.return_value = None
         request = webapp2.Request.blank('/')
         response = webapp2.Response()
 
@@ -250,9 +252,11 @@ class AuthServicesTests(test_utils.GenericTestBase):
         auth_services.destroy_auth_session(response)
         mock_destroy_auth_session.assert_called_once_with(response)
 
-    @patch("core.domain.auth_services.firebase_auth_services.revoke_super_admin_privileges", return_value=None)
-    @patch("core.domain.auth_services.firebase_auth_services.grant_super_admin_privileges", return_value=None)
-    def test_super_admin_granted_or_revoked(self,mock_grant_super_admin_privileges,mock_revoke_super_admin_privileges) -> None:
+    @patch("core.domain.auth_services.firebase_auth_services.revoke_super_admin_privileges")
+    @patch("core.domain.auth_services.firebase_auth_services.grant_super_admin_privileges")
+    def test_super_admin_granted_or_revoked(self,mock_grant_super_admin_privileges:Mock,mock_revoke_super_admin_privileges:Mock) -> None:
+        mock_grant_super_admin_privileges.return_value = None
+        mock_revoke_super_admin_privileges.return_value = None
 
         auth_services.grant_super_admin_privileges('uid1')
         mock_grant_super_admin_privileges.assert_called_once_with('uid1')

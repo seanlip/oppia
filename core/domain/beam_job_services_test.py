@@ -28,7 +28,7 @@ from core.jobs import jobs_manager
 from core.jobs import registry as jobs_registry
 from core.platform import models
 from core.tests import test_utils
-from unittest.mock import patch
+from unittest.mock import Mock,patch
 
 import apache_beam as beam
 
@@ -123,7 +123,7 @@ class BeamJobRunServicesTests(test_utils.GenericTestBase):
                     run.job_is_synchronous, model.dataflow_job_id is None)
 
     @patch("core.domain.beam_job_services.jobs_manager.run_job")
-    def test_run_beam_job_using_job_name(self,mock_run_job) -> None:
+    def test_run_beam_job_using_job_name(self,mock_run_job:Mock) -> None:
         model = beam_job_services.create_beam_job_run_model('NoOpJob')
         mock_run_job.return_value = model
 
@@ -134,7 +134,7 @@ class BeamJobRunServicesTests(test_utils.GenericTestBase):
             run.to_dict())
 
     @patch("core.domain.beam_job_services.jobs_manager.run_job")
-    def test_run_beam_job_using_job_class(self,mock_run_job) -> None:
+    def test_run_beam_job_using_job_class(self,mock_run_job:Mock) -> None:
         model = beam_job_services.create_beam_job_run_model('NoOpJob')
         mock_run_job.return_value = model
 
@@ -149,7 +149,7 @@ class BeamJobRunServicesTests(test_utils.GenericTestBase):
             beam_job_services.run_beam_job()
 
     @patch("core.domain.beam_job_services.jobs_manager.cancel_job")
-    def test_cancel_beam_job(self,mock_cancel_job) -> None:
+    def test_cancel_beam_job(self,mock_cancel_job:Mock) -> None:
         model = beam_job_services.create_beam_job_run_model(
             'NoOpJob', dataflow_job_id='123')
         model.put()
@@ -161,7 +161,7 @@ class BeamJobRunServicesTests(test_utils.GenericTestBase):
             beam_job_services.get_beam_job_run_from_model(model).to_dict())
 
     @patch("core.domain.beam_job_services.jobs_manager.cancel_job")
-    def test_cancel_beam_job_which_does_not_exist_raises_an_error(self,mock_cancel_job) -> None:
+    def test_cancel_beam_job_which_does_not_exist_raises_an_error(self,mock_cancel_job:Mock) -> None:
         with self.assertRaisesRegex(
             ValueError, 'No such job'
         ):
@@ -169,7 +169,7 @@ class BeamJobRunServicesTests(test_utils.GenericTestBase):
 
     @patch("core.domain.beam_job_services.jobs_manager.cancel_job")
     def test_cancel_beam_job_which_has_no_dataflow_job_id_raises_an_error(
-        self,mock_cancel_job
+        self,mock_cancel_job:Mock
     ) -> None:
         model = beam_job_services.create_beam_job_run_model(
             'NoOpJob', dataflow_job_id=None)
@@ -199,7 +199,7 @@ class BeamJobRunServicesTests(test_utils.GenericTestBase):
             beam_job_run_models)
 
     @patch("core.domain.beam_job_services.jobs_manager.refresh_state_of_beam_job_run_model")
-    def test_get_beam_job_runs_with_refresh(self,mock_refresh_state_of_beam_job_run_model) -> None:
+    def test_get_beam_job_runs_with_refresh(self,mock_refresh_state_of_beam_job_run_model:Mock) -> None:
         beam_job_run_models = [
             self.create_beam_job_run_model(
                 job_state=beam_job_models.BeamJobState.DONE.value),

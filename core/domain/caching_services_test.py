@@ -32,7 +32,7 @@ from core.domain import story_domain
 from core.domain import topic_domain
 from core.platform import models
 from core.tests import test_utils
-from unittest.mock import patch
+from unittest.mock import Mock,patch
 
 from typing import Dict, List, Optional, Union
 
@@ -578,7 +578,7 @@ class CachingServicesUnitTests(test_utils.GenericTestBase):
 
     @patch('core.domain.caching_services.memory_cache_services.set_multi')
     def test_explorations_identically_cached_in_dev_and_test_environment(
-        self, mock_set_multi
+        self, mock_set_multi: Mock
     ) -> None:
         """Test to make sure that caching in the test environment is in sync
         with caching in the main development server. More specifically, when an
