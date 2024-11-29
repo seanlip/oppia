@@ -37,9 +37,9 @@ from core.domain import suggestion_services
 from core.domain import topic_domain
 from core.domain import topic_fetchers
 from core.domain import topic_services
-from core.domain import user_services
 from core.domain import translation_domain
 from core.domain import translation_services
+from core.domain import user_services
 from core.platform import models
 from core.tests import test_utils
 
@@ -323,7 +323,8 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
             self.assertFalse(response['more'])
             self.assertIsInstance(response['next_cursor'], str)
 
-    def test_get_skill_opportunity_data_pagination_null_from_beginning(self) -> None:
+    def test_get_skill_opportunity_data_pagination_null_from_beginning(
+        self) -> None:
         # Unassign topic 0 from the classroom.
         classroom_config_services.delete_classroom(self.classroom_id)
 
@@ -331,7 +332,7 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
         topic_id = '10'
         topic_name = 'topic10'
         topic = topic_domain.Topic.create_default_topic(
-            topic_id, topic_name, 'url-fragment-ten', 'description', 'fragm-ten')
+            topic_id, topic_name, 'url-fragment-ten', 'description', 'fragm-t')
         skill_id_6 = 'skill_id_6'
         skill_id_7 = 'skill_id_7'
         skill_id_8 = 'skill_id_8'
@@ -360,9 +361,9 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
                     params={}
                 )
 
-                # Verify that no opportunities are returned, and the loop did not execute.
+                # Verify that no opportunities are returned.
                 self.assertEqual(len(response['opportunities']), 0)
-                self.assertFalse(response['more'])  # No more data.
+                self.assertFalse(response['more']) 
                 self.assertIsNone(response['next_cursor'])
 
     def test_get_translation_opportunity_data_pagination(self) -> None:
@@ -578,7 +579,7 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
                 exp_id='0',
                 topic_id='topic',
                 topic_name='topic',
-                chapter_title = 'Node1',
+                chapter_title='Node1',
                 story_id='story',
                 story_title='title story_id_0',
                 content_count=2,
@@ -593,7 +594,7 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
                 exp_id='2',
                 topic_id='topic 2',
                 topic_name='topic2',
-                chapter_title = 'Node1',
+                chapter_title='Node1',
                 story_id='story_2',
                 story_title='title story_id_2',
                 content_count=2,
@@ -791,7 +792,7 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
         }
         csrf_token = self.get_new_csrf_token()
 
-        response = self.put_json(
+        self.put_json(
             '%s' % feconf.PINNED_OPPORTUNITIES_URL,
             request_dict,
             csrf_token=csrf_token,
@@ -1264,13 +1265,19 @@ class TranslatableTextHandlerTest(test_utils.GenericTestBase):
                 'content_01': translation_domain.TranslatableContent(
                     content_id='content_01',
                     content_type=translation_domain.ContentType.CONTENT,
-                    content_format=translation_domain.TranslatableContentFormat.SET_OF_NORMALIZED_STRING,
+                    content_format=(
+                        translation_domain.
+                        TranslatableContentFormat.
+                        SET_OF_NORMALIZED_STRING),
                     content_value=['string1', 'string2', 'string3']
                 ),
                 'content_02': translation_domain.TranslatableContent(
                     content_id='content_02',
                     content_type=translation_domain.ContentType.CONTENT,
-                    content_format=translation_domain.TranslatableContentFormat.SET_OF_NORMALIZED_STRING,
+                    content_format=(
+                        translation_domain.
+                        TranslatableContentFormat.
+                        SET_OF_NORMALIZED_STRING),
                     content_value=['string1', 'string2', 'string3']
                 )
             },
@@ -1278,7 +1285,9 @@ class TranslatableTextHandlerTest(test_utils.GenericTestBase):
                 'content_03': translation_domain.TranslatableContent(
                     content_id='content_03',
                     content_type=translation_domain.ContentType.CONTENT,
-                    content_format=translation_domain.TranslatableContentFormat.HTML,
+                    content_format=(
+                        translation_domain.TranslatableContentFormat.HTML
+                    ),
                     content_value='<p>Not a list content.</p>'
                 )
             }
@@ -1290,14 +1299,13 @@ class TranslatableTextHandlerTest(test_utils.GenericTestBase):
             return_value=mock_get_translatable_text_return_value
         ):
 
-            # Step 2: Send a GET request to retrieve the content.
+            # Send a GET request to retrieve the content.
             output = self.get_json('/gettranslatabletexthandler', params={
                 'language_code': 'hi',
                 'exp_id': '0'
             })
 
-            print(output)
-            # Step 3: Define the expected output based on the updated exploration state.
+            # Define the expected output based on the updated exploration state.
             expected_output = {
                 'version': 1,
                 'state_names_to_content_id_mapping': {
@@ -1314,7 +1322,7 @@ class TranslatableTextHandlerTest(test_utils.GenericTestBase):
                 }
             }
 
-            # Step 4: Assert that the output matches the expected output.
+            # Assert that the output matches the expected output.
             self.assertEqual(output, expected_output)
 
     def test_handler_returns_correct_data(self) -> None:

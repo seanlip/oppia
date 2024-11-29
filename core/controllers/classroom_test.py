@@ -455,7 +455,6 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
         }
         self.assertDictContainsSubset(expected_dict, json_response)
 
-
     def test_get_fails_for_invalid_classroom_name(self) -> None:
         self.get_json(
             '%s/%s' % (
