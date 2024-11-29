@@ -54,7 +54,6 @@ from core.domain import exp_fetchers
 from core.domain import exp_services
 from core.domain import feature_flag_domain
 from core.domain import feature_flag_services
-from core.domain import fs_services
 from core.domain import interaction_registry
 from core.domain import object_registry
 from core.domain import param_domain

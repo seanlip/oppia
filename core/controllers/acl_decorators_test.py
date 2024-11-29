@@ -49,7 +49,7 @@ from core.domain import user_services
 from core.platform import models
 from core.tests import test_utils
 
-from typing import Dict, Final, List, Optional, TypedDict, Union
+from typing import Dict, Final, List, Union
 import webapp2
 import webtest
 

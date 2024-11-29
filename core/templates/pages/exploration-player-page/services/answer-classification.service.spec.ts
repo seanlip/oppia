@@ -58,7 +58,6 @@ describe('Answer Classification Service', () => {
 
   describe('with string classifier disabled', () => {
     let stateDict;
-    let expId = '0';
 
     beforeEach(() => {
       spyOn(interactionSpecsService, 'isInteractionTrainable').and.returnValue(
@@ -528,7 +527,6 @@ describe('Answer Classification Service', () => {
 
   describe('with training data classification', () => {
     let stateDict;
-    let expId = '0';
 
     beforeEach(() => {
       spyOn(interactionSpecsService, 'isInteractionTrainable').and.returnValue(

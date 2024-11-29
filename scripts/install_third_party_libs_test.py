@@ -23,7 +23,6 @@ import os
 import shutil
 import subprocess
 import tempfile
-import zipfile
 
 from core import feconf
 from core import utils

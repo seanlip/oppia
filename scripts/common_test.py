@@ -37,7 +37,6 @@ from urllib import request as urlrequest
 from core import feconf
 from core import utils
 from core.tests import test_utils
-from scripts import install_python_dev_dependencies
 from scripts import servers
 
 from typing import Generator, List, Literal, NoReturn

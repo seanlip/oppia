@@ -22,7 +22,6 @@ import base64
 import copy
 import datetime
 import os
-import sys
 import time
 import urllib
 

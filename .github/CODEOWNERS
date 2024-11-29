@@ -223,6 +223,7 @@
 /core/templates/components/stale-tab-info/ @oppia/lace-frontend-reviewers
 /core/templates/components/unsaved-changes-status-info/ @oppia/lace-frontend-reviewers
 /core/templates/components/version-diff-visualization/ @oppia/lace-frontend-reviewers
+/core/templates/domain/classifier/ @oppia/lace-frontend-reviewers
 /core/templates/domain/editor/ @oppia/lace-frontend-reviewers
 /core/templates/domain/entity_editor_browser_tabs_info/ @oppia/lace-frontend-reviewers
 /core/templates/domain/exploration/ @oppia/lace-frontend-reviewers

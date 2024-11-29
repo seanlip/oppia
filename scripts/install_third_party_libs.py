@@ -18,15 +18,13 @@ from __future__ import annotations
 
 import argparse
 import os
-import pathlib
 import shutil
 import subprocess
-import zipfile
 
 from core import feconf
 from scripts import install_python_dev_dependencies
 
-from typing import Final, List
+from typing import Final
 
 if not feconf.OPPIA_IS_DOCKERIZED:
     install_python_dev_dependencies.main(['--assert_compiled'])
