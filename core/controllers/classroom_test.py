@@ -231,6 +231,231 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
         }
         self.assertDictContainsSubset(expected_dict, json_response)
 
+    def test_get_skip_no_summary_or_topic_rights(self) -> None:
+
+        no_summary_topic_id = topic_fetchers.get_new_topic_id()
+        no_summary_topic = topic_domain.Topic.create_default_topic(
+            no_summary_topic_id, 'no_summary_topic',
+            'no-summary-topic', 'description', 'fragm')
+
+        admin_id = self.get_user_id_from_email(self.CURRICULUM_ADMIN_EMAIL)
+        topic_services.save_new_topic(admin_id, no_summary_topic)
+        topic_services.delete_topic_summary(no_summary_topic_id)
+
+        self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
+        self.save_new_valid_classroom(
+            classroom_id='test_id',
+            topic_id_to_prerequisite_topic_ids={
+                        no_summary_topic_id: [],
+                        self.public_topic_id_1: [],
+                        self.private_topic_id: []
+            },
+            course_details='Course details for classroom.',
+            topic_list_intro='Topics covered for classroom'
+        )
+        self.logout()
+
+        json_response = self.get_json(
+            '%s/%s' % (feconf.CLASSROOM_DATA_HANDLER, 'math'))
+        topic_summary_dict = (
+            topic_fetchers.get_topic_summary_by_id(
+                self.public_topic_id_1
+            ).to_dict()
+        )
+        public_topic_1_summary_dict = {
+            'id': topic_summary_dict['id'],
+            'name': topic_summary_dict['name'],
+            'url_fragment': topic_summary_dict['url_fragment'],
+            'language_code': topic_summary_dict['language_code'],
+            'description': topic_summary_dict['description'],
+            'version': topic_summary_dict['version'],
+            'canonical_story_count': (
+                topic_summary_dict['canonical_story_count']),
+            'additional_story_count': (
+                topic_summary_dict['additional_story_count']),
+            'uncategorized_skill_count': (
+                topic_summary_dict['uncategorized_skill_count']),
+            'subtopic_count': topic_summary_dict['subtopic_count'],
+            'total_skill_count': (
+                topic_summary_dict['total_skill_count']),
+            'total_published_node_count': (
+                topic_summary_dict['total_published_node_count']),
+            'thumbnail_filename': (
+                topic_summary_dict['thumbnail_filename']),
+            'thumbnail_bg_color': (
+                topic_summary_dict['thumbnail_bg_color']),
+            'published_story_exploration_mapping': (
+                topic_summary_dict['published_story_exploration_mapping']),
+            'topic_model_created_on': (
+                topic_summary_dict['topic_model_created_on']),
+            'topic_model_last_updated': (
+                topic_summary_dict['topic_model_last_updated']),
+            'is_published': True
+        }
+        topic_summary_dict = (
+            topic_fetchers.get_topic_summary_by_id(
+                self.private_topic_id
+            ).to_dict()
+        )
+        private_topic_summary_dict = {
+            'id': topic_summary_dict['id'],
+            'name': topic_summary_dict['name'],
+            'url_fragment': topic_summary_dict['url_fragment'],
+            'language_code': topic_summary_dict['language_code'],
+            'description': topic_summary_dict['description'],
+            'version': topic_summary_dict['version'],
+            'canonical_story_count': (
+                topic_summary_dict['canonical_story_count']),
+            'additional_story_count': (
+                topic_summary_dict['additional_story_count']),
+            'uncategorized_skill_count': (
+                topic_summary_dict['uncategorized_skill_count']),
+            'subtopic_count': topic_summary_dict['subtopic_count'],
+            'total_skill_count': (
+                topic_summary_dict['total_skill_count']),
+            'total_published_node_count': (
+                topic_summary_dict['total_published_node_count']),
+            'thumbnail_filename': (
+                topic_summary_dict['thumbnail_filename']),
+            'thumbnail_bg_color': (
+                topic_summary_dict['thumbnail_bg_color']),
+            'published_story_exploration_mapping': (
+                topic_summary_dict['published_story_exploration_mapping']),
+            'topic_model_created_on': (
+                topic_summary_dict['topic_model_created_on']),
+            'topic_model_last_updated': (
+                topic_summary_dict['topic_model_last_updated']),
+            'is_published': False
+        }
+        expected_dict = {
+            'classroom_id': 'test_id',
+            'name': 'math',
+            'url_fragment': 'math',
+            'topic_summary_dicts': [
+                public_topic_1_summary_dict, private_topic_summary_dict
+            ],
+            'course_details': 'Course details for classroom.',
+            'topic_list_intro': 'Topics covered for classroom',
+            'teaser_text': 'Teaser Text',
+            'thumbnail_data': dummy_thumbnail_data.to_dict(),
+            'banner_data': dummy_banner_data.to_dict(),
+            'is_published': True,
+            'public_classrooms_count': 1
+        }
+        self.assertDictContainsSubset(expected_dict, json_response)
+
+    def test_get_multiple_classrooms(self) -> None:
+        self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
+        self.save_new_valid_classroom(
+            classroom_id='test_id',
+            topic_id_to_prerequisite_topic_ids={
+                        self.public_topic_id_1: [],
+                        self.private_topic_id: []
+            },
+            course_details='Course details for classroom.',
+            topic_list_intro='Topics covered for classroom'
+        )
+        self.save_new_valid_classroom(
+            classroom_id='history', name='history', url_fragment='history',
+            topic_id_to_prerequisite_topic_ids={self.public_topic_id_2: []},
+            is_published=False
+        )
+        self.save_new_valid_classroom(
+            classroom_id='science', name='science', url_fragment='science',
+            topic_id_to_prerequisite_topic_ids={self.public_topic_id_2: []}
+        )
+        self.logout()
+
+        json_response = self.get_json(
+            '%s/%s' % (feconf.CLASSROOM_DATA_HANDLER, 'math'))
+        topic_summary_dict = (
+            topic_fetchers.get_topic_summary_by_id(
+                self.public_topic_id_1
+            ).to_dict()
+        )
+        public_topic_1_summary_dict = {
+            'id': topic_summary_dict['id'],
+            'name': topic_summary_dict['name'],
+            'url_fragment': topic_summary_dict['url_fragment'],
+            'language_code': topic_summary_dict['language_code'],
+            'description': topic_summary_dict['description'],
+            'version': topic_summary_dict['version'],
+            'canonical_story_count': (
+                topic_summary_dict['canonical_story_count']),
+            'additional_story_count': (
+                topic_summary_dict['additional_story_count']),
+            'uncategorized_skill_count': (
+                topic_summary_dict['uncategorized_skill_count']),
+            'subtopic_count': topic_summary_dict['subtopic_count'],
+            'total_skill_count': (
+                topic_summary_dict['total_skill_count']),
+            'total_published_node_count': (
+                topic_summary_dict['total_published_node_count']),
+            'thumbnail_filename': (
+                topic_summary_dict['thumbnail_filename']),
+            'thumbnail_bg_color': (
+                topic_summary_dict['thumbnail_bg_color']),
+            'published_story_exploration_mapping': (
+                topic_summary_dict['published_story_exploration_mapping']),
+            'topic_model_created_on': (
+                topic_summary_dict['topic_model_created_on']),
+            'topic_model_last_updated': (
+                topic_summary_dict['topic_model_last_updated']),
+            'is_published': True
+        }
+        topic_summary_dict = (
+            topic_fetchers.get_topic_summary_by_id(
+                self.private_topic_id
+            ).to_dict()
+        )
+        private_topic_summary_dict = {
+            'id': topic_summary_dict['id'],
+            'name': topic_summary_dict['name'],
+            'url_fragment': topic_summary_dict['url_fragment'],
+            'language_code': topic_summary_dict['language_code'],
+            'description': topic_summary_dict['description'],
+            'version': topic_summary_dict['version'],
+            'canonical_story_count': (
+                topic_summary_dict['canonical_story_count']),
+            'additional_story_count': (
+                topic_summary_dict['additional_story_count']),
+            'uncategorized_skill_count': (
+                topic_summary_dict['uncategorized_skill_count']),
+            'subtopic_count': topic_summary_dict['subtopic_count'],
+            'total_skill_count': (
+                topic_summary_dict['total_skill_count']),
+            'total_published_node_count': (
+                topic_summary_dict['total_published_node_count']),
+            'thumbnail_filename': (
+                topic_summary_dict['thumbnail_filename']),
+            'thumbnail_bg_color': (
+                topic_summary_dict['thumbnail_bg_color']),
+            'published_story_exploration_mapping': (
+                topic_summary_dict['published_story_exploration_mapping']),
+            'topic_model_created_on': (
+                topic_summary_dict['topic_model_created_on']),
+            'topic_model_last_updated': (
+                topic_summary_dict['topic_model_last_updated']),
+            'is_published': False
+        }
+        expected_dict = {
+            'classroom_id': 'test_id',
+            'name': 'math',
+            'url_fragment': 'math',
+            'topic_summary_dicts': [
+                public_topic_1_summary_dict, private_topic_summary_dict
+            ],
+            'course_details': 'Course details for classroom.',
+            'topic_list_intro': 'Topics covered for classroom',
+            'teaser_text': 'Teaser Text',
+            'thumbnail_data': dummy_thumbnail_data.to_dict(),
+            'banner_data': dummy_banner_data.to_dict(),
+            'is_published': True,
+            'public_classrooms_count': 2
+        }
+        self.assertDictContainsSubset(expected_dict, json_response)
+
+
     def test_get_fails_for_invalid_classroom_name(self) -> None:
         self.get_json(
             '%s/%s' % (
@@ -354,6 +579,74 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
 
         self.physics_classroom_dict['name'] = 'Quantum physics'
         self.physics_classroom_dict['thumbnail_data']['filename'] = 'update.svg'
+        self.physics_classroom_dict['banner_data']['filename'] = 'update.png'
+
+        with utils.open_file(
+            os.path.join(feconf.TESTS_DATA_DIR, 'test_svg.svg'),
+            'rb', encoding=None
+        ) as f:
+            raw_thumbnail_image = f.read()
+        with utils.open_file(
+            os.path.join(feconf.TESTS_DATA_DIR, 'img.png'),
+            'rb', encoding=None
+        ) as f:
+            raw_banner_image = f.read()
+        params = {'payload': json.dumps({
+            'classroom_dict': self.physics_classroom_dict
+        })}
+        params['csrf_token'] = csrf_token
+        thumbnail = (
+            'thumbnail_image', 'thumbnail_filename1', raw_thumbnail_image)
+        banner = ('banner_image', 'banner_filename1', raw_banner_image)
+        self.testapp.put(
+                    classroom_handler_url,
+                    params=params, expect_errors=False,
+                    upload_files=[thumbnail, banner]
+        )
+
+        self.logout()
+
+    def test_update_classroom_thumbnail_data_only(self) -> None:
+        self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
+        classroom_handler_url = '%s/%s' % (
+            feconf.CLASSROOM_HANDLER_URL, self.physics_classroom_id)
+        csrf_token = self.get_new_csrf_token()
+
+        self.physics_classroom_dict['name'] = 'Quantum physics'
+        self.physics_classroom_dict['thumbnail_data']['filename'] = 'update.svg'
+
+        with utils.open_file(
+            os.path.join(feconf.TESTS_DATA_DIR, 'test_svg.svg'),
+            'rb', encoding=None
+        ) as f:
+            raw_thumbnail_image = f.read()
+        with utils.open_file(
+            os.path.join(feconf.TESTS_DATA_DIR, 'img.png'),
+            'rb', encoding=None
+        ) as f:
+            raw_banner_image = f.read()
+        params = {'payload': json.dumps({
+            'classroom_dict': self.physics_classroom_dict
+        })}
+        params['csrf_token'] = csrf_token
+        thumbnail = (
+            'thumbnail_image', 'thumbnail_filename1', raw_thumbnail_image)
+        banner = ('banner_image', 'banner_filename1', raw_banner_image)
+        self.testapp.put(
+                    classroom_handler_url,
+                    params=params, expect_errors=False,
+                    upload_files=[thumbnail, banner]
+        )
+
+        self.logout()
+
+    def test_update_classroom_banner_data_only(self) -> None:
+        self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
+        classroom_handler_url = '%s/%s' % (
+            feconf.CLASSROOM_HANDLER_URL, self.physics_classroom_id)
+        csrf_token = self.get_new_csrf_token()
+
+        self.physics_classroom_dict['name'] = 'Quantum physics'
         self.physics_classroom_dict['banner_data']['filename'] = 'update.png'
 
         with utils.open_file(
