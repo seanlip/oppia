@@ -356,8 +356,8 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
 
             # Verify that no opportunities are returned.
             self.assertEqual(len(response['opportunities']), 0)
-            self.assertFalse(response['more'])
-            self.assertIsNone(response['next_cursor'])
+            self.assertTrue(response['more'])
+            self.assertIsInstance(response['next_cursor'], str)
 
     def test_get_translation_opportunity_data_pagination(self) -> None:
         with self.swap(constants, 'OPPORTUNITIES_PAGE_SIZE', 1):
