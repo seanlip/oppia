@@ -383,8 +383,12 @@
     display: block;
   }
   .voiceover-disabled-text-class {
-    margin-top: revert;
     text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 90%;
+    padding: 5px;
   }
   .oppia-translation-preview {
     list-style: none;
@@ -500,7 +504,8 @@
     padding: 20px 30px 20px 30px;
   }
   .oppia-audio-translation-bar {
-    height: 60px;
+    padding: 15px;
+    flex-direction: column;
   }
   .oppia-rte-editor-focused:focus > p {
     outline: solid 2px #009688;
