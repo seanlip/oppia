@@ -65,7 +65,7 @@ module.exports = function (config) {
       'third_party/static/angularjs-1.8.2/angular.js',
       'core/templates/karma.module.ts',
       'third_party/static/angularjs-1.8.2/angular-mocks.js',
-      '/third_party/static/lamejs-1.2.0/worker-example/worker-realtime.js',
+      'third_party/static/lamejs-1.2.0/worker-example/worker-realtime.js',
       generatedJs,
       // Note that unexpected errors occur ("Cannot read property 'num' of
       // undefined" in MusicNotesInput.js) if the order of core/templates/...
@@ -91,7 +91,6 @@ module.exports = function (config) {
         served: true,
         included: false,
       },
-      'extensions/interactions/**/*.directive.html',
       'extensions/interactions/**/*.component.html',
       'extensions/interactions/*.json',
       'core/tests/data/*.json',
