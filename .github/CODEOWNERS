@@ -514,7 +514,6 @@
 /core/templates/pages/login-page/ @oppia/lace-frontend-reviewers
 /core/templates/pages/logout-page/ @oppia/lace-frontend-reviewers
 /core/templates/app-events/ @oppia/lace-frontend-reviewers
-/core/templates/services/app.service*.ts @oppia/lace-frontend-reviewers
 /core/templates/services/contextual/document-attribute-customization.service*.ts @oppia/lace-frontend-reviewers
 /core/templates/services/contextual/meta-tag-customization.service*.ts @oppia/lace-frontend-reviewers
 /core/templates/services/interaction-rules-registry.service*.ts @oppia/lace-frontend-reviewers
