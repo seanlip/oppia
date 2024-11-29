@@ -28,6 +28,7 @@ from core.jobs import jobs_manager
 from core.jobs import registry as jobs_registry
 from core.platform import models
 from core.tests import test_utils
+from unittest.mock import patch
 
 import apache_beam as beam
 
@@ -121,21 +122,23 @@ class BeamJobRunServicesTests(test_utils.GenericTestBase):
                 self.assertEqual(
                     run.job_is_synchronous, model.dataflow_job_id is None)
 
-    def test_run_beam_job_using_job_name(self) -> None:
+    @patch("core.domain.beam_job_services.jobs_manager.run_job")
+    def test_run_beam_job_using_job_name(self,mock_run_job) -> None:
         model = beam_job_services.create_beam_job_run_model('NoOpJob')
+        mock_run_job.return_value = model
 
-        with self.swap_to_always_return(jobs_manager, 'run_job', value=model):
-            run = beam_job_services.run_beam_job(job_name='NoOpJob')
+        run = beam_job_services.run_beam_job(job_name='NoOpJob')
 
         self.assertEqual(
             beam_job_services.get_beam_job_run_from_model(model).to_dict(),
             run.to_dict())
 
-    def test_run_beam_job_using_job_class(self) -> None:
+    @patch("core.domain.beam_job_services.jobs_manager.run_job")
+    def test_run_beam_job_using_job_class(self,mock_run_job) -> None:
         model = beam_job_services.create_beam_job_run_model('NoOpJob')
+        mock_run_job.return_value = model
 
-        with self.swap_to_always_return(jobs_manager, 'run_job', value=model):
-            run = beam_job_services.run_beam_job(job_class=NoOpJob)
+        run = beam_job_services.run_beam_job(job_class=NoOpJob)
 
         self.assertEqual(
             beam_job_services.get_beam_job_run_from_model(model).to_dict(),
@@ -145,37 +148,37 @@ class BeamJobRunServicesTests(test_utils.GenericTestBase):
         with self.assertRaisesRegex(ValueError, 'Must specify the job'):
             beam_job_services.run_beam_job()
 
-    def test_cancel_beam_job(self) -> None:
+    @patch("core.domain.beam_job_services.jobs_manager.cancel_job")
+    def test_cancel_beam_job(self,mock_cancel_job) -> None:
         model = beam_job_services.create_beam_job_run_model(
             'NoOpJob', dataflow_job_id='123')
         model.put()
 
-        with self.swap_to_always_return(jobs_manager, 'cancel_job'):
-            run = beam_job_services.cancel_beam_job(model.id)
+        run = beam_job_services.cancel_beam_job(model.id)
 
         self.assertEqual(
             run.to_dict(),
             beam_job_services.get_beam_job_run_from_model(model).to_dict())
 
-    def test_cancel_beam_job_which_does_not_exist_raises_an_error(self) -> None:
-        with self.swap_to_always_return(jobs_manager, 'cancel_job'):
-            with self.assertRaisesRegex(
-                ValueError, 'No such job'
-            ):
-                beam_job_services.cancel_beam_job('123')
+    @patch("core.domain.beam_job_services.jobs_manager.cancel_job")
+    def test_cancel_beam_job_which_does_not_exist_raises_an_error(self,mock_cancel_job) -> None:
+        with self.assertRaisesRegex(
+            ValueError, 'No such job'
+        ):
+            beam_job_services.cancel_beam_job('123')
 
+    @patch("core.domain.beam_job_services.jobs_manager.cancel_job")
     def test_cancel_beam_job_which_has_no_dataflow_job_id_raises_an_error(
-        self
+        self,mock_cancel_job
     ) -> None:
         model = beam_job_services.create_beam_job_run_model(
             'NoOpJob', dataflow_job_id=None)
         model.put()
 
-        with self.swap_to_always_return(jobs_manager, 'cancel_job'):
-            with self.assertRaisesRegex(
-                ValueError, 'cannot be cancelled'
-            ):
-                beam_job_services.cancel_beam_job(model.id)
+        with self.assertRaisesRegex(
+            ValueError, 'cannot be cancelled'
+        ):
+            beam_job_services.cancel_beam_job(model.id)
 
     def test_get_beam_job_runs(self) -> None:
         beam_job_run_models = [
@@ -195,7 +198,8 @@ class BeamJobRunServicesTests(test_utils.GenericTestBase):
             beam_job_services.get_beam_job_runs(refresh=False),
             beam_job_run_models)
 
-    def test_get_beam_job_runs_with_refresh(self) -> None:
+    @patch("core.domain.beam_job_services.jobs_manager.refresh_state_of_beam_job_run_model")
+    def test_get_beam_job_runs_with_refresh(self,mock_refresh_state_of_beam_job_run_model) -> None:
         beam_job_run_models = [
             self.create_beam_job_run_model(
                 job_state=beam_job_models.BeamJobState.DONE.value),
@@ -209,11 +213,9 @@ class BeamJobRunServicesTests(test_utils.GenericTestBase):
             beam_job_run_models)
         beam_job_models.BeamJobRunModel.put_multi(beam_job_run_models)
 
-        with self.swap_to_always_return(
-            jobs_manager, 'refresh_state_of_beam_job_run_model'):
-            self.assert_domains_equal_models(
-                beam_job_services.get_beam_job_runs(refresh=True),
-                beam_job_run_models)
+        self.assert_domains_equal_models(
+            beam_job_services.get_beam_job_runs(refresh=True),
+            beam_job_run_models)
 
     def test_create_beam_job_run_model(self) -> None:
         model = beam_job_services.create_beam_job_run_model(

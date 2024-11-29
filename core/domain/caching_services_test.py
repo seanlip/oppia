@@ -32,6 +32,7 @@ from core.domain import story_domain
 from core.domain import topic_domain
 from core.platform import models
 from core.tests import test_utils
+from unittest.mock import patch
 
 from typing import Dict, List, Optional, Union
 
@@ -575,8 +576,9 @@ class CachingServicesUnitTests(test_utils.GenericTestBase):
         for namespace in caching_services.SERIALIZATION_FUNCTIONS:
             self.assertNotIn(caching_services.MEMCACHE_KEY_DELIMITER, namespace)
 
+    @patch('core.domain.caching_services.memory_cache_services.set_multi')
     def test_explorations_identically_cached_in_dev_and_test_environment(
-        self
+        self, mock_set_multi
     ) -> None:
         """Test to make sure that caching in the test environment is in sync
         with caching in the main development server. More specifically, when an
@@ -612,15 +614,15 @@ class CachingServicesUnitTests(test_utils.GenericTestBase):
                     json.loads(value),
                     json.loads(
                         self.json_encoded_string_representing_an_exploration))
-        with self.swap(
-            memory_cache_services, 'set_multi',
-            mock_memory_cache_services_set_multi):
-            caching_services.set_multi(
-                caching_services.CACHE_NAMESPACE_EXPLORATION,
-                '0',
-                {
-                    exploration_id: default_exploration
-                })
+
+        mock_set_multi.side_effect = mock_memory_cache_services_set_multi
+
+        caching_services.set_multi(
+            caching_services.CACHE_NAMESPACE_EXPLORATION,
+            '0',
+            {
+                exploration_id: default_exploration
+            })
 
     def test_unicode_characters_are_set_and_get_correctly_in_default_namespace(
         self
