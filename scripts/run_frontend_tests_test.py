@@ -45,89 +45,83 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
         self.print_swap = self.swap(builtins, 'print', mock_print)
 
         class MockFile:
-            def __init__(self, flakes: int = 0) -> None:
-                self.counter = 0
+            def __init__(
+                    self,
+                    flakes: int = 0,
+                    counter: int = 0,
+                    print_karma_logs: bool = False) -> None:
+                self.counter = counter
                 self.run_counter = 0
                 self.flakes = flakes
+                self.print_karma_logs = print_karma_logs
 
             def readline(self) -> bytes: # pylint: disable=missing-docstring
                 self.counter += 1
                 if self.counter == 1:
                     return (
                         b'Executed tests. Trying to get the Angular injector..')
+                if self.counter == 2 and self.print_karma_logs:
+                    self.counter += 1
+                    return b'[web-server]: foo'
                 if self.counter == 2 and self.run_counter < self.flakes:
                     return b'Disconnected , because no message'
                 self.counter = 0
                 self.run_counter += 1
                 return b''
 
-        class MockTask:
-            def __init__(self) -> None:
-                self.returncode = 0
-                self.stdout = MockFile()
-            def poll(self) -> int: # pylint: disable=missing-docstring
+        class MockTask():
+            def __init__(
+                self,
+                returncode: int = 0,
+                flakes: int = 0,
+                counter: int = 0,
+                print_karma_logs: bool = False) -> None:
+                self.returncode = returncode
+                self.stdout = MockFile(
+                    flakes=flakes,
+                    counter=counter,
+                    print_karma_logs=print_karma_logs)
+            def poll(self) -> Optional[int]: # pylint: disable=missing-docstring
                 return 1
             def wait(self) -> None: # pylint: disable=missing-docstring
                 return None
 
-        class MockFlakyTask:
+        class MockSlowTask(MockTask):
             def __init__(self) -> None:
-                self.returncode = 0
-                self.stdout = MockFile(flakes=1)
-            def poll(self) -> int: # pylint: disable=missing-docstring
-                return 1
-            def wait(self) -> None: # pylint: disable=missing-docstring
-                return None
-
-        class MockVeryFlakyTask:
-            def __init__(self) -> None:
-                self.returncode = 0
-                self.stdout = MockFile(flakes=10)
-            def poll(self) -> int: # pylint: disable=missing-docstring
-                return 1
-            def wait(self) -> None: # pylint: disable=missing-docstring
-                return None
-
-        class MockFailedTask:
-            def __init__(self) -> None:
-                self.returncode = 1
-                self.stdout = MockFile()
-            def poll(self) -> int: # pylint: disable=missing-docstring
-                return 1
-            def wait(self) -> None: # pylint: disable=missing-docstring
-                return None
-
-        class MockSlowTask:
-            def __init__(self) -> None:
-                self.returncode = 1
+                super().__init__(returncode=1, flakes=2)
                 self.first_call = True
-                self.stdout = MockFile(flakes=2)
             def poll(self) -> Optional[int]: # pylint: disable=missing-docstring
                 if self.first_call:
                     self.first_call = False
                     return None
                 self.returncode = 0
                 return self.returncode
-            def wait(self) -> None: # pylint: disable=missing-docstring
-                return None
 
         self.cmd_token_list: list[list[str]] = []
         def mock_success_check_call(
             cmd_tokens: list[str], **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             self.cmd_token_list.append(cmd_tokens)
-            return MockTask()
+            return MockTask(flakes=0)
         def mock_flaky_check_call(
-            cmd_tokens: list[str], **unused_kwargs: str) -> MockFlakyTask:  # pylint: disable=unused-argument
+            cmd_tokens: list[str], **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             self.cmd_token_list.append(cmd_tokens)
-            return MockFlakyTask()
+            return MockTask(flakes=1)
         def mock_very_flaky_check_call(
-            cmd_tokens: list[str], **unused_kwargs: str) -> MockVeryFlakyTask:  # pylint: disable=unused-argument
+            cmd_tokens: list[str], **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             self.cmd_token_list.append(cmd_tokens)
-            return MockVeryFlakyTask()
+            return MockTask(flakes=10)
         def mock_failed_check_call(
-            cmd_tokens: list[str], **unused_kwargs: str) -> MockFailedTask:  # pylint: disable=unused-argument
+            cmd_tokens: list[str], **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             self.cmd_token_list.append(cmd_tokens)
-            return MockFailedTask()
+            return MockTask(returncode=1)
+        def mock_karma_printing_check_call(
+            cmd_tokens: list[str], **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
+            self.cmd_token_list.append(cmd_tokens)
+            return MockTask(print_karma_logs=True)
+        def mock_quiet_check_call(
+            cmd_tokens: list[str], **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
+            self.cmd_token_list.append(cmd_tokens)
+            return MockTask(counter=2)
         def mock_slow_check_call(
             cmd_tokens: list[str], **unused_kwargs: str) -> MockSlowTask:  # pylint: disable=unused-argument
             self.cmd_token_list.append(cmd_tokens)
@@ -155,16 +149,26 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
             subprocess, 'Popen', mock_very_flaky_check_call)
         self.swap_failed_Popen = self.swap(
             subprocess, 'Popen', mock_failed_check_call)
+        self.swap_karma_printing_Popen = self.swap(
+            subprocess, 'Popen', mock_karma_printing_check_call)
+        self.swap_quiet_Popen = self.swap(
+            subprocess, 'Popen', mock_quiet_check_call)
         self.swap_slow_Popen = self.swap(
             subprocess, 'Popen', mock_slow_check_call)
         self.swap_sys_exit = self.swap(sys, 'exit', mock_sys_exit)
         self.swap_build = self.swap(build, 'main', mock_build)
         self.swap_common = self.swap(
             common, 'print_each_string_after_two_new_lines', lambda _: None)
-        self.swap_install_third_party_libs = self.swap(
-            install_third_party_libs, 'main', lambda: None)
         self.swap_check_frontend_coverage = self.swap(
             check_frontend_test_coverage, 'main', mock_check_frontend_coverage)
+
+        self.install_third_party_libs_main_called = False
+        def mock_install_third_party_libs_main() -> None:
+            self.install_third_party_libs_main_called = True
+        self.swap_install_third_party_libs = self.swap(
+            install_third_party_libs,
+            'main',
+            mock_install_third_party_libs_main)
 
     def test_run_dtslint_type_tests_passed(self) -> None:
         with self.swap_success_Popen, self.print_swap:
@@ -249,6 +253,7 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
             'test-module.spec.js']
         self.assertIn(cmd, self.cmd_token_list)
         self.assertTrue(self.frontend_coverage_checks_called)
+        self.assertTrue(self.install_third_party_libs_main_called)
         self.assertEqual(self.frontend_coverage_checks_args, [[
             '--files_to_check=AppSpec.ts,'
             'about-page.component.spec.ts,'
@@ -266,6 +271,17 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
                     ):
                         run_frontend_tests.main(
                             args=['--specs_to_run', 'invalid.ts'])
+
+    def test_frontend_tests_with_specs_to_run_invalid_file_type(self) -> None:
+        with self.swap_success_Popen, self.print_swap, self.swap_build:
+            with self.swap_install_third_party_libs, self.swap_common:
+                with self.swap_check_frontend_coverage:
+                    with self.assertRaisesRegex(
+                        ValueError,
+                        'No spec file found for the file: invalid.txt'
+                    ):
+                        run_frontend_tests.main(
+                            args=['--specs_to_run', 'invalid.txt'])
 
     def test_frontend_tests_with_specs_to_run_no_specs_found_allow_no_spec(
         self
@@ -293,8 +309,9 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
                 'branch1': (
                     [git_changes_utils.FileDiff('M', b'file1.js'),
                      git_changes_utils.FileDiff('M', b'file2.ts'),
-                     git_changes_utils.FileDiff('M', b'file3.py')],
-                    [b'file1.js', b'file2.ts', b'file3.py']
+                     git_changes_utils.FileDiff('M', b'file3.py'),
+                     git_changes_utils.FileDiff('M', b'file4.ts')],
+                    [b'file1.js', b'file2.ts', b'file3.py', b'file4.ts']
                 ),
                 'branch2': (
                     [],
@@ -302,7 +319,7 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
                 )
             }
         def mock_get_staged_acmrt_files() -> List[bytes]:
-            return [b'file1.js', b'file2.ts', b'file3.ts']
+            return [b'file1.js', b'file2.ts', b'file3.ts', b'file4.ts']
         def mock_get_file_spec(file_path: str) -> Optional[str]:
             if file_path == 'file1.js':
                 return 'file1.spec.js'
@@ -384,6 +401,68 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
             ' for details on how to fix it.', self.print_arr)
         self.assertTrue(self.frontend_coverage_checks_called)
         self.assertEqual(self.frontend_coverage_checks_args, [[]])
+        self.assertTrue(self.install_third_party_libs_main_called)
+        self.assertEqual(len(self.sys_exit_message), 0)
+
+    def test_frontend_tests_suppress_karma_logs(self) -> None:
+        with self.swap_karma_printing_Popen, self.print_swap, self.swap_build:
+            with self.swap_install_third_party_libs, self.swap_common:
+                with self.swap_check_frontend_coverage:
+                    run_frontend_tests.main(args=['--check_coverage'])
+
+        cmd = [
+            common.NODE_BIN_PATH, '--max-old-space-size=4096',
+            os.path.join(common.NODE_MODULES_PATH, 'karma', 'bin', 'karma'),
+            'start', os.path.join('core', 'tests', 'karma.conf.ts')]
+        self.assertIn(cmd, self.cmd_token_list)
+        self.assertNotIn('[web-server]: foo', self.print_arr)
+        self.assertTrue(self.frontend_coverage_checks_called)
+        self.assertEqual(self.frontend_coverage_checks_args, [[]])
+        self.assertTrue(self.install_third_party_libs_main_called)
+        self.assertEqual(len(self.sys_exit_message), 0)
+
+    def test_frontend_tests_do_not_print_angular_injector_warning(
+        self
+    ) -> None:
+        with self.swap_quiet_Popen, self.print_swap, self.swap_build:
+            with self.swap_install_third_party_libs, self.swap_common:
+                with self.swap_check_frontend_coverage:
+                    run_frontend_tests.main(args=['--check_coverage'])
+
+        cmd = [
+            common.NODE_BIN_PATH, '--max-old-space-size=4096',
+            os.path.join(common.NODE_MODULES_PATH, 'karma', 'bin', 'karma'),
+            'start', os.path.join('core', 'tests', 'karma.conf.ts')]
+        self.assertIn(cmd, self.cmd_token_list)
+        self.assertNotIn(
+            'If you run into the error "Trying to get the Angular injector",'
+            ' please see https://github.com/oppia/oppia/wiki/'
+            'Frontend-unit-tests-guide#how-to-handle-common-errors'
+            ' for details on how to fix it.', self.print_arr)
+        self.assertTrue(self.frontend_coverage_checks_called)
+        self.assertEqual(self.frontend_coverage_checks_args, [[]])
+        self.assertTrue(self.install_third_party_libs_main_called)
+        self.assertEqual(len(self.sys_exit_message), 0)
+
+    def test_frontend_tests_skip_third_party_install(self) -> None:
+        with self.swap_success_Popen, self.print_swap, self.swap_build:
+            with self.swap_common, self.swap_check_frontend_coverage:
+                run_frontend_tests.main(
+                    args=['--check_coverage', '--skip_install'])
+
+        cmd = [
+            common.NODE_BIN_PATH, '--max-old-space-size=4096',
+            os.path.join(common.NODE_MODULES_PATH, 'karma', 'bin', 'karma'),
+            'start', os.path.join('core', 'tests', 'karma.conf.ts')]
+        self.assertIn(cmd, self.cmd_token_list)
+        self.assertIn(
+            'If you run into the error "Trying to get the Angular injector",'
+            ' please see https://github.com/oppia/oppia/wiki/'
+            'Frontend-unit-tests-guide#how-to-handle-common-errors'
+            ' for details on how to fix it.', self.print_arr)
+        self.assertTrue(self.frontend_coverage_checks_called)
+        self.assertEqual(self.frontend_coverage_checks_args, [[]])
+        self.assertFalse(self.install_third_party_libs_main_called)
         self.assertEqual(len(self.sys_exit_message), 0)
 
     def test_frontend_tests_rerun(self) -> None:
@@ -411,6 +490,7 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
         self.assertIn('Attempt 2 of 2', self.print_arr)
         self.assertTrue(self.frontend_coverage_checks_called)
         self.assertEqual(self.frontend_coverage_checks_args, [[]])
+        self.assertTrue(self.install_third_party_libs_main_called)
         self.assertEqual(len(self.sys_exit_message), 0)
 
     def test_frontend_tests_rerun_twice(self) -> None:
@@ -440,6 +520,7 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
         self.assertIn('Attempt 2 of 2', self.print_arr)
         self.assertTrue(self.frontend_coverage_checks_called)
         self.assertEqual(self.frontend_coverage_checks_args, [[]])
+        self.assertTrue(self.install_third_party_libs_main_called)
         self.assertEqual(len(self.sys_exit_message), 0)
 
     def test_frontend_tests_failed(self) -> None:
