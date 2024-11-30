@@ -1051,11 +1051,8 @@ var ExplorationEditorMainTab = function () {
       stateNameContainer,
       'State name container is taking too long to become clickable.'
     );
-    // eslint-disable-next-line oppia/e2e-practices
-    await browser.pause(2000);
     await action.click('State Name Container', stateNameContainer);
-    // eslint-disable-next-line oppia/e2e-practices
-    await browser.pause(2000);
+    await waitFor.pageToFullyLoad();
     await waitFor.visibilityOf(
       stateNameInput,
       'State Name Input takes too long to appear'
