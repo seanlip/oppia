@@ -72,7 +72,7 @@ class RejectTranslationSuggestionsForTranslatedContentsJob(base_jobs.JobBase):
             with an accepted translation, for an entity translation model.
 
             Args:
-                entity_translation_model: (EntityTranslationsModel). An entity 
+                entity_translation_model: EntityTranslationsModel. An entity 
                     translation model.
 
             Yields:
@@ -82,15 +82,16 @@ class RejectTranslationSuggestionsForTranslatedContentsJob(base_jobs.JobBase):
             with datastore_services.get_ndb_context():
                 updated_suggestions: List[
                     suggestion_models.GeneralSuggestionModel] = []
-                content_ids = []
+                content_ids_not_needing_update = []
                 for content_id in entity_translation_model.translations.keys():
                     if entity_translation_model.translations[content_id][
                         'needs_update'] is False:
-                        content_ids.append(content_id)
+                        content_ids_not_needing_update.append(content_id)
 
                 suggestions: Sequence[
-                    suggestion_models.GeneralSuggestionModel] = (
-                        suggestion_models.GeneralSuggestionModel.query(
+                    suggestion_models.GeneralSuggestionModel
+                ] = (
+                    suggestion_models.GeneralSuggestionModel.query(
                         suggestion_models.GeneralSuggestionModel
                             .suggestion_type == (
                                 feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT),
@@ -107,7 +108,8 @@ class RejectTranslationSuggestionsForTranslatedContentsJob(base_jobs.JobBase):
                 ).fetch())
 
                 for suggestion in suggestions:
-                    if suggestion.change_cmd['content_id'] in content_ids:
+                    if suggestion.change_cmd[
+                        'content_id'] in content_ids_not_needing_update:
                         suggestion.status = suggestion_models.STATUS_REJECTED
                         suggestion.final_reviewer_id = (
                             feconf.SUGGESTION_BOT_USER_ID)
@@ -171,7 +173,7 @@ class AuditTranslationSuggestionsForTranslatedContentsJob(base_jobs.JobBase):
             model.
 
             Args:
-                entity_translation_model: (EntityTranslationsModel). An entity 
+                entity_translation_model: EntityTranslationsModel. An entity 
                     translation model.
 
             Yields:
@@ -183,15 +185,16 @@ class AuditTranslationSuggestionsForTranslatedContentsJob(base_jobs.JobBase):
             with datastore_services.get_ndb_context():
                 suggestion_dicts: List[Dict[str, Union[
                     str, int, suggestion_models.GeneralSuggestionModel]]] = []
-                content_ids = []
+                content_ids_not_needing_update = []
                 for content_id in entity_translation_model.translations.keys():
                     if entity_translation_model.translations[content_id][
                         'needs_update'] is False:
-                        content_ids.append(content_id)
+                        content_ids_not_needing_update.append(content_id)
 
                 suggestions: Sequence[
-                    suggestion_models.GeneralSuggestionModel] = (
-                        suggestion_models.GeneralSuggestionModel.query(
+                    suggestion_models.GeneralSuggestionModel
+                ] = (
+                    suggestion_models.GeneralSuggestionModel.query(
                         suggestion_models.GeneralSuggestionModel
                             .suggestion_type == (
                                 feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT),
@@ -208,7 +211,8 @@ class AuditTranslationSuggestionsForTranslatedContentsJob(base_jobs.JobBase):
                 ).fetch())
 
                 for suggestion in suggestions:
-                    if suggestion.change_cmd['content_id'] in content_ids:
+                    if suggestion.change_cmd[
+                        'content_id'] in content_ids_not_needing_update:
                         suggestion_dicts.append({
                             'entity_id': entity_translation_model.entity_id,
                             'entity_version': (
@@ -279,7 +283,7 @@ class DeleteTranslationsForInvalidContentIDsJob(base_jobs.JobBase):
             translation model.
 
             Args:
-                entity_translation_model: (EntityTranslationsModel). An entity 
+                entity_translation_model: EntityTranslationsModel. An entity 
                     translation model.
 
             Yields:
@@ -330,11 +334,11 @@ class DeleteTranslationsForInvalidContentIDsJob(base_jobs.JobBase):
             count for an updated entity translation model.
 
             Args:
-                entity_translation_model: (EntityTranslationsModel). An entity 
+                entity_translation_model: EntityTranslationsModel. An entity 
                     translation model.
 
             Yields:
-                (ExplorationOpportunitySummaryModel). An exploration opportunity
+                ExplorationOpportunitySummaryModel. An exploration opportunity
                 model with updated translation count.
             """
             with datastore_services.get_ndb_context():
@@ -374,7 +378,7 @@ class DeleteTranslationsForInvalidContentIDsJob(base_jobs.JobBase):
                     models.
 
             Yields:
-                (tuple(str, EntityTranslationsModel)). A tuple of entity id
+                tuple(str, EntityTranslationsModel). A tuple of entity id
                 and latest entity translation model corresponding to it.
             """
             with datastore_services.get_ndb_context():
@@ -444,12 +448,12 @@ class DeleteTranslationsForInvalidContentIDsJob(base_jobs.JobBase):
             | 'Filter model with latest entity version' >> beam.ParDo(
                 self.GetLatestModel())
             # PCollection<entity_translation_model>.
-            | 'Get list of latest entity transaltion model' >> beam.Values()  # pylint: disable=no-value-for-parameter
+            | 'Get list of latest entity translation model' >> beam.Values()  # pylint: disable=no-value-for-parameter
         )
 
         updated_exp_opportunity_models = (
             latest_version_updated_entity_translation_models
-            | 'Get updated explortion opportunity models' >> beam.ParDo(
+            | 'Get updated exploration opportunity models' >> beam.ParDo(
                     self.ComputeUpdatedExpOpportunityModel())
         )
 
@@ -489,7 +493,7 @@ class AuditTranslationsForInvalidContentIDsJob(base_jobs.JobBase):
             translation model.
 
             Args:
-                entity_translation_model: (EntityTranslationsModel). An entity 
+                entity_translation_model: EntityTranslationsModel. An entity 
                     translation model.
 
             Yields:
