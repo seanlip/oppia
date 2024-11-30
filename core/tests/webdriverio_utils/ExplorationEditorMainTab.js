@@ -1052,7 +1052,10 @@ var ExplorationEditorMainTab = function () {
       'State name container is taking too long to become clickable.'
     );
     await action.click('State Name Container', stateNameContainer);
-    await waitFor.pageToFullyLoad();
+    await waitFor.invisibilityOf(
+      stateNameContainer,
+      'State name container takes too long to disappear'
+    );
     await waitFor.visibilityOf(
       stateNameInput,
       'State Name Input takes too long to appear'
