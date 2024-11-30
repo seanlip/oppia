@@ -365,8 +365,6 @@ class ExplorationPlayerAccessValidationPageTests(
         test_utils.GenericTestBase):
     """Test for exploration player access validation."""
 
-    EXP_ID: Final = 'eid'
-    
     def setUp(self) -> None:
         """Complete the signup process for self.RELEASE_COORDINATOR_EMAIL."""
         super().setUp()
@@ -375,8 +373,10 @@ class ExplorationPlayerAccessValidationPageTests(
         self.editor = user_services.get_user_actions_info(self.editor_id)
 
         self.exploration = self.save_new_valid_exploration(
-            self.EXP_ID, self.editor_id, title=self.UNICODE_TEST_STRING,
+            'asaB1nm2UGVI', self.editor_id, title=self.UNICODE_TEST_STRING,
             category=self.UNICODE_TEST_STRING)
+
+        self.publish_exploration(self.editor_id, self.exploration.id)
 
     def test_exploration_player_page_with_invalid_id(self) -> None:
         self.get_html_response(
@@ -384,42 +384,35 @@ class ExplorationPlayerAccessValidationPageTests(
                 ACCESS_VALIDATION_HANDLER_PREFIX),
             expected_status_int=404)
 
-    def test_exploration_page_with_iframed_redirects(self) -> None:	
-        self.login(self.EDITOR_EMAIL)	
-
-        exp_version = self.exploration.version	
+    def test_exploration_player_page_with_valid_id(self) -> None:
         self.get_html_response(
             '%s/can_access_exploration_player_page/%s' % (
-                ACCESS_VALIDATION_HANDLER_PREFIX, self.EXP_ID), 
-                expected_status_int=200)
-        
-        # response = self.get_html_response(	
-        #     '%s/%s' % (feconf.EXPLORATION_URL_PREFIX, self.EXP_ID), params={	
-        #         'parent': True,	
-        #         'iframed': True,	
-        #         'v': exp_version
-        #     }, expected_status_int=302	
-        # )	
-        # self.assertTrue(	
-        #     response.headers['Location'].endswith(	
-        #         '/embed/exploration/%s?v=%s' % (self.EXP_ID, exp_version)))	
+                ACCESS_VALIDATION_HANDLER_PREFIX,
+                self.exploration.id),
+            expected_status_int=200)
 
-        self.logout()	
+    def test_exploration_page_raises_error_with_invalid_exploration_version(
+        self) -> None:
 
-    # def test_exploration_page_raises_error_with_invalid_exploration_version(	
-    #     self) -> None:	
-    #     self.login(self.EDITOR_EMAIL)	
+        self.get_html_response(
+            '%s/can_access_exploration_player_page/%s' % (
+                ACCESS_VALIDATION_HANDLER_PREFIX,
+                self.exploration.id), params={
+                'v': 10,
+            }, expected_status_int=404
+        )
 
-    #     self.get_html_response(	
-    #         '%s/%s' % (feconf.EXPLORATION_URL_PREFIX, self.EXP_ID), params={	
-    #             'v': 10,	
-    #             'parent': True	
-    #         }, expected_status_int=404	
-    #     )	
+    def test_exploration_page_with_valid_exploration_version(
+        self) -> None:
 
-    #     self.logout()
-
-
+        self.get_html_response(
+            '%s/can_access_exploration_player_page/%s' % (
+                ACCESS_VALIDATION_HANDLER_PREFIX,
+                self.exploration.id), params={
+                'v': self.exploration.version,
+                'parent': True,
+            }, expected_status_int=200
+        )
 
 
 class DiagnosticTestPlayerPageAccessValidationHandlerTests(
