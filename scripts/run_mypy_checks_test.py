@@ -33,11 +33,6 @@ PYTHON_CMD: Final = 'python3'
 MYPY_SCRIPT_MODULE: Final = 'scripts.run_mypy_checks'
 
 
-def mock_install_third_party_libs_main() -> None:
-    """Mock for install_third_party_libs."""
-    return
-
-
 class Ret:
     """Return object that gives user-prefix error."""
 
@@ -58,10 +53,15 @@ class MypyScriptChecks(test_utils.GenericTestBase):
     def setUp(self) -> None:
         super().setUp()
 
-        self.install_swap = self.swap_with_checks(
+        self.third_party_libs_main_called = False
+
+        def mock_install_third_party_libs_main() -> None:
+            self.third_party_libs_main_called = True
+
+        self.install_swap = self.swap(
             install_third_party_libs, 'main',
             mock_install_third_party_libs_main)
-        self.oppia_is_dockerized_swap = self.swap(
+        self.oppia_is_not_dockerized_swap = self.swap(
             feconf, 'OPPIA_IS_DOCKERIZED', False)
 
         process_success = subprocess.Popen(
@@ -134,13 +134,16 @@ class MypyScriptChecks(test_utils.GenericTestBase):
     def test_install_third_party_libraries_with_skip_install_as_true(
         self
     ) -> None:
-        run_mypy_checks.install_third_party_libraries(True)
+        with self.oppia_is_not_dockerized_swap, self.install_swap:
+            run_mypy_checks.install_third_party_libraries(True)
+        self.assertFalse(self.third_party_libs_main_called)
 
     def test_install_third_party_libraries_with_skip_install_as_false(
         self
     ) -> None:
-        with self.oppia_is_dockerized_swap, self.install_swap:
+        with self.oppia_is_not_dockerized_swap, self.install_swap:
             run_mypy_checks.install_third_party_libraries(False)
+        self.assertTrue(self.third_party_libs_main_called)
 
     def test_get_mypy_cmd_without_files(self) -> None:
         expected_cmd = [
@@ -219,40 +222,54 @@ class MypyScriptChecks(test_utils.GenericTestBase):
             self.assertEqual(output[0], b'')
 
     def test_main_with_files_without_mypy_errors(self) -> None:
-        with self.oppia_is_dockerized_swap, self.popen_swap_success:
+        with self.oppia_is_not_dockerized_swap, self.popen_swap_success:
             with self.install_swap, self.install_mypy_prereq_swap_success:
                 process = run_mypy_checks.main(args=[
                     '--files', 'file1.py'])
                 self.assertEqual(process, 0)
+        self.assertTrue(self.third_party_libs_main_called)
 
     def test_main_without_mypy_errors(self) -> None:
-        with self.oppia_is_dockerized_swap, self.popen_swap_success:
+        with self.oppia_is_not_dockerized_swap, self.popen_swap_success:
             with self.install_swap, self.install_mypy_prereq_swap_success:
                 process = run_mypy_checks.main(args=[])
                 self.assertEqual(process, 0)
+        self.assertTrue(self.third_party_libs_main_called)
 
     def test_main_with_files_with_mypy_errors(self) -> None:
-        with self.oppia_is_dockerized_swap:
+        with self.oppia_is_not_dockerized_swap:
             with self.install_mypy_prereq_swap_success:
                 with self.install_swap, self.popen_swap_failure:
                     with self.assertRaisesRegex(SystemExit, '2'):
                         run_mypy_checks.main(args=['--files', 'file1.py'])
+        self.assertTrue(self.third_party_libs_main_called)
 
     def test_main_failure_due_to_mypy_errors(self) -> None:
-        with self.oppia_is_dockerized_swap, self.popen_swap_failure:
+        with self.oppia_is_not_dockerized_swap, self.popen_swap_failure:
             with self.install_swap, self.install_mypy_prereq_swap_success:
                 with self.assertRaisesRegex(SystemExit, '2'):
                     run_mypy_checks.main(args=[])
+        self.assertTrue(self.third_party_libs_main_called)
 
     def test_main_with_install_prerequisites_success(self) -> None:
-        with self.oppia_is_dockerized_swap:
+        with self.oppia_is_not_dockerized_swap:
             with self.popen_swap_success, self.install_swap:
                 with self.mypy_install_swap:
                     process = run_mypy_checks.main(args=[])
                     self.assertEqual(process, 0)
+        self.assertTrue(self.third_party_libs_main_called)
 
     def test_main_with_install_prerequisites_failure(self) -> None:
-        with self.oppia_is_dockerized_swap:
+        with self.oppia_is_not_dockerized_swap:
             with self.popen_swap_failure, self.install_swap:
                 with self.assertRaisesRegex(SystemExit, '1'):
                     run_mypy_checks.main(args=[])
+        self.assertTrue(self.third_party_libs_main_called)
+
+    def test_main_dockerized(self) -> None:
+        with self.swap(feconf, 'OPPIA_IS_DOCKERIZED', True):
+            with self.popen_swap_success, self.install_swap:
+                with self.install_mypy_prereq_swap_success:
+                    process = run_mypy_checks.main(args=[])
+                    self.assertEqual(process, 0)
+        self.assertFalse(self.third_party_libs_main_called)
