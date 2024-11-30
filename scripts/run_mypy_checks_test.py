@@ -139,9 +139,8 @@ class MypyScriptChecks(test_utils.GenericTestBase):
     def test_install_third_party_libraries_with_skip_install_as_false(
         self
     ) -> None:
-        with self.oppia_is_dockerized_swap:
-            with self.install_swap:
-                run_mypy_checks.install_third_party_libraries(False)
+        with self.oppia_is_dockerized_swap, self.install_swap:
+            run_mypy_checks.install_third_party_libraries(False)
 
     def test_get_mypy_cmd_without_files(self) -> None:
         expected_cmd = [
@@ -220,19 +219,17 @@ class MypyScriptChecks(test_utils.GenericTestBase):
             self.assertEqual(output[0], b'')
 
     def test_main_with_files_without_mypy_errors(self) -> None:
-        with self.oppia_is_dockerized_swap:
-            with self.popen_swap_success:
-                with self.install_swap, self.install_mypy_prereq_swap_success:
-                    process = run_mypy_checks.main(args=[
-                        '--files', 'file1.py'])
-                    self.assertEqual(process, 0)
+        with self.oppia_is_dockerized_swap, self.popen_swap_success:
+            with self.install_swap, self.install_mypy_prereq_swap_success:
+                process = run_mypy_checks.main(args=[
+                    '--files', 'file1.py'])
+                self.assertEqual(process, 0)
 
     def test_main_without_mypy_errors(self) -> None:
-        with self.swap(feconf, 'OPPIA_IS_DOCKERIZED', False):
-            with self.popen_swap_success:
-                with self.install_swap, self.install_mypy_prereq_swap_success:
-                    process = run_mypy_checks.main(args=[])
-                    self.assertEqual(process, 0)
+        with self.oppia_is_dockerized_swap, self.popen_swap_success:
+            with self.install_swap, self.install_mypy_prereq_swap_success:
+                process = run_mypy_checks.main(args=[])
+                self.assertEqual(process, 0)
 
     def test_main_with_files_with_mypy_errors(self) -> None:
         with self.oppia_is_dockerized_swap:
@@ -242,11 +239,10 @@ class MypyScriptChecks(test_utils.GenericTestBase):
                         run_mypy_checks.main(args=['--files', 'file1.py'])
 
     def test_main_failure_due_to_mypy_errors(self) -> None:
-        with self.oppia_is_dockerized_swap:
-            with self.popen_swap_failure:
-                with self.install_swap, self.install_mypy_prereq_swap_success:
-                    with self.assertRaisesRegex(SystemExit, '2'):
-                        run_mypy_checks.main(args=[])
+        with self.oppia_is_dockerized_swap, self.popen_swap_failure:
+            with self.install_swap, self.install_mypy_prereq_swap_success:
+                with self.assertRaisesRegex(SystemExit, '2'):
+                    run_mypy_checks.main(args=[])
 
     def test_main_with_install_prerequisites_success(self) -> None:
         with self.oppia_is_dockerized_swap:
@@ -256,7 +252,7 @@ class MypyScriptChecks(test_utils.GenericTestBase):
                     self.assertEqual(process, 0)
 
     def test_main_with_install_prerequisites_failure(self) -> None:
-        with self.swap(feconf, 'OPPIA_IS_DOCKERIZED', False):
+        with self.oppia_is_dockerized_swap:
             with self.popen_swap_failure, self.install_swap:
                 with self.assertRaisesRegex(SystemExit, '1'):
                     run_mypy_checks.main(args=[])

@@ -46,10 +46,11 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
 
         class MockFile:
             def __init__(
-                    self,
-                    flakes: int = 0,
-                    counter: int = 0,
-                    print_karma_logs: bool = False) -> None:
+                self,
+                flakes: int = 0,
+                counter: int = 0,
+                print_karma_logs: bool = False
+            ) -> None:
                 self.counter = counter
                 self.run_counter = 0
                 self.flakes = flakes
@@ -75,7 +76,8 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
                 returncode: int = 0,
                 flakes: int = 0,
                 counter: int = 0,
-                print_karma_logs: bool = False) -> None:
+                print_karma_logs: bool = False
+            ) -> None:
                 self.returncode = returncode
                 self.stdout = MockFile(
                     flakes=flakes,
