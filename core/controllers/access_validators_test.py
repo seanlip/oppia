@@ -365,7 +365,61 @@ class ExplorationPlayerAccessValidationPageTests(
         test_utils.GenericTestBase):
     """Test for exploration player access validation."""
 
-    pass
+    EXP_ID: Final = 'eid'
+    
+    def setUp(self) -> None:
+        """Complete the signup process for self.RELEASE_COORDINATOR_EMAIL."""
+        super().setUp()
+        self.signup(self.EDITOR_EMAIL, self.EDITOR_USERNAME)
+        self.editor_id = self.get_user_id_from_email(self.EDITOR_EMAIL)
+        self.editor = user_services.get_user_actions_info(self.editor_id)
+
+        self.exploration = self.save_new_valid_exploration(
+            self.EXP_ID, self.editor_id, title=self.UNICODE_TEST_STRING,
+            category=self.UNICODE_TEST_STRING)
+
+    def test_exploration_player_page_with_invalid_id(self) -> None:
+        self.get_html_response(
+            '%s/can_access_exploration_player_page/invalid' % (
+                ACCESS_VALIDATION_HANDLER_PREFIX),
+            expected_status_int=404)
+
+    def test_exploration_page_with_iframed_redirects(self) -> None:	
+        self.login(self.EDITOR_EMAIL)	
+
+        exp_version = self.exploration.version	
+        self.get_html_response(
+            '%s/can_access_exploration_player_page/%s' % (
+                ACCESS_VALIDATION_HANDLER_PREFIX, self.EXP_ID), 
+                expected_status_int=200)
+        
+        # response = self.get_html_response(	
+        #     '%s/%s' % (feconf.EXPLORATION_URL_PREFIX, self.EXP_ID), params={	
+        #         'parent': True,	
+        #         'iframed': True,	
+        #         'v': exp_version
+        #     }, expected_status_int=302	
+        # )	
+        # self.assertTrue(	
+        #     response.headers['Location'].endswith(	
+        #         '/embed/exploration/%s?v=%s' % (self.EXP_ID, exp_version)))	
+
+        self.logout()	
+
+    # def test_exploration_page_raises_error_with_invalid_exploration_version(	
+    #     self) -> None:	
+    #     self.login(self.EDITOR_EMAIL)	
+
+    #     self.get_html_response(	
+    #         '%s/%s' % (feconf.EXPLORATION_URL_PREFIX, self.EXP_ID), params={	
+    #             'v': 10,	
+    #             'parent': True	
+    #         }, expected_status_int=404	
+    #     )	
+
+    #     self.logout()
+
+
 
 
 class DiagnosticTestPlayerPageAccessValidationHandlerTests(

@@ -450,6 +450,7 @@ import { ModeratorAuthGuard } from 'pages/moderator-page/moderator-auth.guard';
 import { ClassroomAdminAuthGuard } from 'pages/classroom-admin-page/classroom-admin-auth.guard';
 import { VoiceoverBackendApiService } from
   'domain/voiceover/voiceover-backend-api.service';
+import { ExplorationPlayerPageAuthGuard } from 'pages/exploration-player-page/exploration-player-page-auth.guard';
 import { BlogAdminAuthGuard } from 'pages/blog-admin-page/blog-admin-auth.guard';
 import { EmailDashboardAuthGuard } from 'pages/email-dashboard-pages/email-dashboard-auth.guard';
 import { IsNewLessonPlayerGuard } from 'pages/exploration-player-page/new-lesson-player/lesson-player-flag.guard';
@@ -601,6 +602,7 @@ export const angularServices: [string, Type<{}>][] = [
     ExplorationImprovementsBackendApiService],
   ['ExplorationImprovementsTaskRegistryService',
     ExplorationImprovementsTaskRegistryService],
+  ['ExplorationPlayerPageAuthGuard', ExplorationPlayerPageAuthGuard],
   ['ExplorationImprovementsService', ExplorationImprovementsService],
   ['ExplorationInitStateNameService', ExplorationInitStateNameService],
   ['ExplorationLanguageCodeService', ExplorationLanguageCodeService],

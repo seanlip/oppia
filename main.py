@@ -717,7 +717,7 @@ URLS = [
         r'%s' % feconf.USER_GROUPS_HANDLER_URL,
         release_coordinator.UserGroupHandler),
     get_redirect_route(
-        r'%s/can_access_exploration_player/<exploration_id>' %
+        r'%s/can_access_exploration_player_page/<exploration_id>' %
         feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
         access_validators.ExplorationPlayerAccessValidationPage
     ),

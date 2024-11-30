@@ -44,9 +44,10 @@ export class ExplorationPlayerPageAuthGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Promise<boolean> {
     return new Promise<boolean>(resolve => {
+      const version = route.queryParams.v || null;
       let explorationId = route.paramMap.get('exploration_id') || '';
       this.accessValidationBackendApiService
-        .validateAccessToExplorationPlayerPage(explorationId)
+        .validateAccessToExplorationPlayerPage(explorationId, version)
         .then(() => {
           resolve(true);
         })

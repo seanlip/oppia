@@ -346,7 +346,7 @@ class ViewLearnerGroupPageAccessValidationHandler(
             raise self.NotFoundException
 
 
-class ExplorationPageNormalizedRequestDict(TypedDict):
+class ExplorationPlayerPageNormalizedRequestDict(TypedDict):
     """Dict representation of ExplorationPage's
     normalized_request dictionary.
     """
@@ -359,7 +359,7 @@ class ExplorationPageNormalizedRequestDict(TypedDict):
 
 class ExplorationPlayerAccessValidationPage(
     base.BaseHandler[
-        Dict[str, str], ExplorationPageNormalizedRequestDict
+        Dict[str, str], ExplorationPlayerPageNormalizedRequestDict
     ]
 ):
     """Page describing a single exploration."""
