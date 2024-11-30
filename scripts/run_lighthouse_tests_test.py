@@ -127,6 +127,7 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
             'dummy-lighthouse-pages.json')
         self.oppia_is_dockerized_swap = self.swap(
             feconf, 'OPPIA_IS_DOCKERIZED', False)
+        self.swap_isfile = self.swap(os.path, 'isfile', lambda _: True)
 
     def tearDown(self) -> None:
         super().tearDown()
@@ -224,12 +225,11 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
         def mock_popen(*unused_args: str, **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             return MockTask()
 
-        swap_isfile = self.swap(os.path, 'isfile', lambda _: True)
         swap_popen = self.swap_with_checks(
             subprocess, 'Popen', mock_popen,
             expected_args=((self.puppeteer_bash_command + self.extra_args,),))
 
-        with self.print_swap, swap_popen, swap_isfile:
+        with self.print_swap, swap_popen, self.swap_isfile:
             run_lighthouse_tests.run_lighthouse_puppeteer_script(record=True)
 
         self.assertIn(
@@ -254,12 +254,11 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
         def mock_popen(*unused_args: str, **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             return MockTask()
 
-        swap_isfile = self.swap(os.path, 'isfile', lambda _: True)
         swap_popen = self.swap_with_checks(
             subprocess, 'Popen', mock_popen,
             expected_args=((self.puppeteer_bash_command + self.extra_args,),))
 
-        with self.print_swap, self.swap_sys_exit, swap_popen, swap_isfile:
+        with self.print_swap, self.swap_sys_exit, swap_popen, self.swap_isfile:
             run_lighthouse_tests.run_lighthouse_puppeteer_script(record=True)
 
         self.assertIn('Return code: 1', self.print_arr)
@@ -270,6 +269,30 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
         self.assertIn(
             'Resulting puppeteer video saved at %s' % self.extra_args[1],
             self.print_arr)
+
+    def test_run_lighthouse_puppeteer_script_creates_directory(self) -> None:
+        class MockTask:
+            returncode = 0
+            def communicate(self) -> tuple[bytes, bytes]:   # pylint: disable=missing-docstring
+                return b'Task output', b'No error.'
+
+        def mock_popen(*unused_args: str, **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
+            return MockTask()
+
+        swap_popen = self.swap_with_checks(
+            subprocess, 'Popen', mock_popen,
+            expected_args=((self.puppeteer_bash_command + self.extra_args,),))
+
+        dir_path = os.path.join(os.getcwd(), '..', 'lhci-puppeteer-video')
+
+        swap_mkdir = self.swap_with_checks(
+            os, 'mkdir', lambda _: None, expected_args=((dir_path,),))
+
+        swap_path_exists = self.swap_with_checks(
+            os.path, 'exists', lambda _: False, expected_args=((dir_path,),))
+
+        with self.print_swap, swap_popen, swap_mkdir, swap_path_exists:
+            run_lighthouse_tests.run_lighthouse_puppeteer_script(record=True)
 
     def test_run_webpack_compilation_successfully(self) -> None:
         swap_isdir = self.swap_with_checks(
@@ -622,3 +645,38 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                                             '--mode', 'performance',
                                             '--skip_build',
                                             '--record_screen'])
+
+    def test_run_lighthouse_tests_dockerized(self) -> None:
+        class MockTask:
+            returncode = 0
+            def communicate(self) -> tuple[bytes, bytes]:   # pylint: disable=missing-docstring
+                return b'Task output', b'No error.'
+
+        swap_run_lighthouse_tests = self.swap_with_checks(
+            run_lighthouse_tests, 'run_lighthouse_checks',
+            lambda *unused_args: None, expected_args=[])
+        def mock_popen(*unused_args: str, **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
+            return MockTask()
+        swap_popen = self.swap(subprocess, 'Popen', mock_popen)
+        swap_is_dockerized = self.swap(feconf, 'OPPIA_IS_DOCKERIZED', True)
+
+        with self.lighthouse_pages_json_filepath_swap, self.print_swap:
+            with swap_is_dockerized, swap_popen, swap_run_lighthouse_tests:
+                run_lighthouse_tests.main(args=['--mode', 'performance'])
+                expected_all_lighthouse_urls = ','.join([
+                    'http://localhost:8181/',
+                    'http://localhost:8181/about',
+                    'http://localhost:8181/contact'
+                ])
+                expected_lighthouse_urls_to_run = ','.join([
+                    'http://localhost:8181/', 'http://localhost:8181/about'])
+                self.assertEqual(
+                    os.environ['ALL_LIGHTHOUSE_URLS'],
+                    expected_all_lighthouse_urls)
+                self.assertEqual(
+                    os.environ['LIGHTHOUSE_URLS_TO_RUN'],
+                    expected_lighthouse_urls_to_run)
+
+        self.assertNotIn('Building files in production mode.', self.print_arr)
+        self.assertIn(
+            'Puppeteer script completed successfully.', self.print_arr)
