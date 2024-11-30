@@ -1054,8 +1054,6 @@ var ExplorationEditorMainTab = function () {
     // eslint-disable-next-line oppia/e2e-practices
     await browser.pause(2000);
     await action.click('State Name Container', stateNameContainer);
-    // eslint-disable-next-line oppia/e2e-practices
-    await browser.pause(2000);
     await waitFor.visibilityOf(
       stateNameInput,
       'State Name Input takes too long to appear'
