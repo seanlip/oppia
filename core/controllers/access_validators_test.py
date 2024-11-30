@@ -368,6 +368,8 @@ class ExplorationPlayerAccessValidationPageTests(
     def setUp(self) -> None:
         """Complete the signup process for self.RELEASE_COORDINATOR_EMAIL."""
         super().setUp()
+        self.signup(self.OWNER_EMAIL, self.OWNER_USERNAME)
+        self.owner_id = self.get_user_id_from_email(self.OWNER_EMAIL)
         self.signup(self.EDITOR_EMAIL, self.EDITOR_USERNAME)
         self.editor_id = self.get_user_id_from_email(self.EDITOR_EMAIL)
         self.editor = user_services.get_user_actions_info(self.editor_id)
@@ -391,7 +393,7 @@ class ExplorationPlayerAccessValidationPageTests(
                 self.exploration.id),
             expected_status_int=200)
 
-    def test_exploration_page_raises_error_with_invalid_exploration_version(
+    def test_exploration_player_page_raises_error_with_invalid_exploration_version(
         self) -> None:
 
         self.get_html_response(
@@ -402,7 +404,7 @@ class ExplorationPlayerAccessValidationPageTests(
             }, expected_status_int=404
         )
 
-    def test_exploration_page_with_valid_exploration_version(
+    def test_exploration_player_page_with_valid_exploration_version(
         self) -> None:
 
         self.get_html_response(
@@ -413,6 +415,34 @@ class ExplorationPlayerAccessValidationPageTests(
                 'parent': True,
             }, expected_status_int=200
         )
+    
+    def test_handler_raises_error_with_invaild_collection(self) -> None:
+        self.login(self.OWNER_EMAIL)
+
+        self.get_html_response(
+            '%s/can_access_exploration_player_page/%s' % (
+                ACCESS_VALIDATION_HANDLER_PREFIX,
+                self.exploration.id), params={
+                'v': self.exploration.version,
+                'collection_id': 'aZ9_______12'
+            }, expected_status_int=404
+        )
+        self.logout()
+    
+    def test_handler_with_valid_collection(self) -> None:
+        self.login(self.OWNER_EMAIL)
+        COL_ID = 'col_id'
+        self.save_new_valid_collection(COL_ID, self.owner_id)
+
+        self.get_html_response(
+            '%s/can_access_exploration_player_page/%s' % (
+                ACCESS_VALIDATION_HANDLER_PREFIX,
+                self.exploration.id), params={
+                'v': self.exploration.version,
+                'collection_id': COL_ID
+            }, expected_status_int=200
+        )
+        self.logout()
 
 
 class DiagnosticTestPlayerPageAccessValidationHandlerTests(

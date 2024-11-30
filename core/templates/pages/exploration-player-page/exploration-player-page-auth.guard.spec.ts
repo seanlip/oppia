@@ -18,10 +18,15 @@
 
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {TestBed} from '@angular/core/testing';
-import {Router, RouterStateSnapshot, NavigationExtras} from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  Router,
+  RouterStateSnapshot,
+  NavigationExtras,
+} from '@angular/router';
 import {Location} from '@angular/common';
 
-import {AppConstants} from 'app.constants';
+import {AppConstants} from '../../app.constants';
 import {AccessValidationBackendApiService} from 'pages/oppia-root/routing/access-validation-backend-api.service';
 import {ExplorationPlayerPageAuthGuard} from './exploration-player-page-auth.guard';
 
@@ -68,23 +73,23 @@ describe('ExplorationPlayerPageAuthGuard', () => {
     guard
       .canActivate(
         {
-          queryParams: {v: '1'},
-          paramMap: new Map([['exploration_id', 'exp123']]),
-        } as any,
+          queryParams: {},
+          paramMap: new Map([['explorationId', 'exp123']]),
+        } as unknown as ActivatedRouteSnapshot,
         {} as RouterStateSnapshot
       )
       .then(canActivate => {
         expect(canActivate).toBeTrue();
         expect(navigateSpy).not.toHaveBeenCalled();
-        done();
       });
+    done();
   });
 
   it('should redirect to embed error page if URL contains "embed"', done => {
     spyOn(
       accessValidationBackendApiService,
       'validateAccessToExplorationPlayerPage'
-    ).and.returnValue(Promise.reject({status: 403}));
+    ).and.returnValue(Promise.reject({status: 404}));
     const navigateSpy = spyOn(router, 'navigate').and.callThrough();
 
     guard
@@ -92,15 +97,17 @@ describe('ExplorationPlayerPageAuthGuard', () => {
         {
           queryParams: {},
           paramMap: new Map([['exploration_id', 'exp123']]),
-        } as any,
-        {url: '/embed/exp123'} as RouterStateSnapshot
+        } as unknown as ActivatedRouteSnapshot,
+        {url: '/embed/exploration/exp123'} as RouterStateSnapshot
       )
       .then(canActivate => {
         expect(canActivate).toBeFalse();
         expect(navigateSpy).toHaveBeenCalledWith([
           `${AppConstants.PAGES_REGISTERED_WITH_FRONTEND.ERROR_IFRAMED.ROUTE}`,
         ]);
-        expect(location.replaceState).toHaveBeenCalledWith('/embed/exp123');
+        expect(location.replaceState).toHaveBeenCalledWith(
+          '/embed/exploration/exp123'
+        );
         done();
       });
   });
@@ -109,7 +116,7 @@ describe('ExplorationPlayerPageAuthGuard', () => {
     spyOn(
       accessValidationBackendApiService,
       'validateAccessToExplorationPlayerPage'
-    ).and.returnValue(Promise.reject({status: 401}));
+    ).and.returnValue(Promise.reject({status: 404}));
     const navigateSpy = spyOn(router, 'navigate').and.callThrough();
 
     guard
@@ -117,13 +124,13 @@ describe('ExplorationPlayerPageAuthGuard', () => {
         {
           queryParams: {},
           paramMap: new Map([['exploration_id', 'exp123']]),
-        } as any,
+        } as unknown as ActivatedRouteSnapshot,
         {url: '/exp123'} as RouterStateSnapshot
       )
       .then(canActivate => {
         expect(canActivate).toBeFalse();
         expect(navigateSpy).toHaveBeenCalledWith([
-          `${AppConstants.PAGES_REGISTERED_WITH_FRONTEND.ERROR.ROUTE}/401`,
+          `${AppConstants.PAGES_REGISTERED_WITH_FRONTEND.ERROR.ROUTE}/404`,
         ]);
         expect(location.replaceState).toHaveBeenCalledWith('/exp123');
         done();

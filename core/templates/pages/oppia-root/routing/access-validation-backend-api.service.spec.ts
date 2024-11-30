@@ -254,11 +254,12 @@ describe('Access validation backend api service', () => {
     expect(failSpy).not.toHaveBeenCalled();
   }));
 
-  it('should validate access to exploratio-player page', fakeAsync(() => {
+  it('should validate access to exploration player page', fakeAsync(() => {
     let explorationId = 'exploration_id';
+    let version = null;
 
     avbas
-      .validateAccessToExplorationPlayerPage(explorationId)
+      .validateAccessToExplorationPlayerPage(explorationId, version)
       .then(successSpy, failSpy);
 
     const req = httpTestingController.expectOne(
