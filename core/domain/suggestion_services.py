@@ -101,8 +101,7 @@ SUGGESTION_EMPHASIZED_TEXT_GETTER_FUNCTIONS: Dict[str, Callable[..., str]] = {
 
 RECENT_REVIEW_OUTCOMES_LIMIT: Final = 100
 
-IMAGE_TAG_REGEX = r'<oppia-noninteractive-image\b[^>]*>'
-
+IMAGE_TAG_REGEX = r'<oppia-noninteractive-image\b[^>]*?>(?:.*?)</oppia-noninteractive-image>'
 
 @overload
 def create_suggestion(
@@ -2147,17 +2146,7 @@ def _update_suggestion_counts_in_community_contribution_stats(
 
 
 def count_images(html_content: str) -> int:
-    """Counts the number of image tags in the provided HTML content.
-
-    This function uses a regular expression to count the number of
-    <oppia-noninteractive-image> tags within the HTML content.
-
-    Args:
-        html_content: str. The HTML content to count image tags.
-
-    Returns:
-        int. The count of image tags found.
-    """
+    """Counts the number of image tags in the provided HTML content."""
     return len(re.findall(IMAGE_TAG_REGEX, html_content))
 
 
