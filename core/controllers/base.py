@@ -657,7 +657,7 @@ class BaseHandler(
     def render_template(
         self,
         filepath: str,
-        iframe_restriction: Optional[str] = 'DENY',
+        # iframe_restriction: Optional[str] = 'DENY',
         *,
         template_is_aot_compiled: bool = False
     ) -> None:
@@ -686,14 +686,13 @@ class BaseHandler(
             'max-age=31536000; includeSubDomains')
         self.response.headers['X-Content-Type-Options'] = 'nosniff'
         self.response.headers['X-Xss-Protection'] = '1; mode=block'
-
-        if iframe_restriction is not None:
-            if iframe_restriction in ['SAMEORIGIN', 'DENY']:
-                self.response.headers['X-Frame-Options'] = (
-                    str(iframe_restriction))
-            else:
-                raise Exception(
-                    'Invalid X-Frame-Options: %s' % iframe_restriction)
+        # if iframe_restriction is None:
+        #     if iframe_restriction in ['SAMEORIGIN', 'DENY']:
+        #         self.response.headers['X-Frame-Options'] = (
+        #             str(iframe_restriction))
+        #     else:
+        #         raise Exception(
+        #             'Invalid X-Frame-Options: %s' % iframe_restriction)
 
         self.response.expires = 'Mon, 01 Jan 1990 00:00:00 GMT'
         self.response.pragma = 'no-cache'

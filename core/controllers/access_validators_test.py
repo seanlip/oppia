@@ -393,7 +393,7 @@ class ExplorationPlayerAccessValidationPageTests(
                 self.exploration.id),
             expected_status_int=200)
 
-    def test_exploration_player_page_raises_error_with_invalid_exploration_version(
+    def test_exploration_player_page_raises_error_with_invalid_exploration_version( # pylint: disable=line-too-long
         self) -> None:
 
         self.get_html_response(
@@ -415,7 +415,7 @@ class ExplorationPlayerAccessValidationPageTests(
                 'parent': True,
             }, expected_status_int=200
         )
-    
+
     def test_handler_raises_error_with_invaild_collection(self) -> None:
         self.login(self.OWNER_EMAIL)
 
@@ -428,18 +428,18 @@ class ExplorationPlayerAccessValidationPageTests(
             }, expected_status_int=404
         )
         self.logout()
-    
+
     def test_handler_with_valid_collection(self) -> None:
         self.login(self.OWNER_EMAIL)
-        COL_ID = 'col_id'
-        self.save_new_valid_collection(COL_ID, self.owner_id)
+        col_id = 'aZ9_______12'
+        self.save_new_valid_collection(col_id, self.owner_id)
 
         self.get_html_response(
             '%s/can_access_exploration_player_page/%s' % (
                 ACCESS_VALIDATION_HANDLER_PREFIX,
                 self.exploration.id), params={
                 'v': self.exploration.version,
-                'collection_id': COL_ID
+                'collection_id': col_id
             }, expected_status_int=200
         )
         self.logout()
