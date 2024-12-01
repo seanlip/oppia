@@ -110,7 +110,7 @@ describe('Full exploration editor', function () {
     await users.logout();
   });
 
-  fit(
+  it(
     'should handle discarding changes, navigation, deleting states, ' +
       'changing the first state, displaying content, deleting responses and ' +
       'switching to preview mode',
