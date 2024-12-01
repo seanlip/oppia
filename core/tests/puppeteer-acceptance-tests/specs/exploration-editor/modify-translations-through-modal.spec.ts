@@ -274,14 +274,18 @@ describe('Exploration Editor', function () {
         CARD_NAME.MULTIPLE_CHOICE_QUESTION
       );
       await explorationEditor.navigateToTranslationsTab();
-      await explorationEditor.closeEditorNavigationDropdown();
+      if (explorationEditor.isViewportAtMobileWidth()) {
+        await explorationEditor.closeEditorNavigationDropdownOnMobile();
+      }
       await explorationEditor.editTranslationOfContent(
         'de',
         'Hint',
         'Hint translation text'
       );
       await explorationEditor.navigateToEditorTab();
-      await explorationEditor.closeEditorNavigationDropdown();
+      if (explorationEditor.isViewportAtMobileWidth()) {
+        await explorationEditor.closeEditorNavigationDropdownOnMobile();
+      }
       await explorationEditor.updateHint('Hint content.');
       await explorationEditor.openModifyExistingTranslationsModal();
       await explorationEditor.verifyTranslationInModifyTranslationsModal(

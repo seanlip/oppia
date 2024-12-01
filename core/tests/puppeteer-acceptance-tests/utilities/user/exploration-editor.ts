@@ -415,7 +415,7 @@ export class ExplorationEditor extends BaseUser {
    * Function to close editor navigation dropdown. Can be done by clicking
    * on the dropdown toggle.
    */
-  async closeEditorNavigationDropdown(): Promise<void> {
+  async closeEditorNavigationDropdownOnMobile(): Promise<void> {
     try {
       await this.page.waitForSelector(dropdownToggleIcon, {
         visible: true,

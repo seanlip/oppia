@@ -843,16 +843,14 @@ export class CurriculumAdmin extends BaseUser {
    * Function to close editor navigation dropdown. Can be done by clicking
    * on the dropdown toggle.
    */
-  async closeEditorNavigationDropdown(): Promise<void> {
+  async closeEditorNavigationDropdownOnMobile(): Promise<void> {
     try {
-      if (this.isViewportAtMobileWidth()) {
         await this.page.waitForSelector(dropdownToggleIcon, {
           visible: true,
           timeout: 5000,
         });
         await this.clickOn(dropdownToggleIcon);
         showMessage('Editor navigation closed successfully.');
-      }
     } catch (error) {
       showMessage(`Dropdown Toggle Icon not found: ${error.message}`);
     }

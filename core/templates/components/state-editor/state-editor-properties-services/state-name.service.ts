@@ -36,6 +36,7 @@ export class StateNameService {
    * @param {boolean} value - Visibility of the state name editor to be set to.
    */
   setStateNameEditorVisibility(value: boolean): void {
+    console.log('setStateNameEditorVisibility called. New value:', value, 'Previous value:', this.stateNameEditorIsShown);
     this.stateNameEditorIsShown = value;
   }
 

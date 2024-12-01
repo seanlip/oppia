@@ -130,7 +130,9 @@ describe('Exploration Creator', function () {
       await voiceoverAdmin.navigateToExplorationEditor(explorationId);
       await voiceoverAdmin.dismissWelcomeModal();
       await voiceoverAdmin.navigateToExplorationSettingsTab();
-      await voiceoverAdmin.closeEditorNavigationDropdown();
+      if (voiceoverAdmin.isViewportAtMobileWidth()) {
+        await voiceoverAdmin.closeEditorNavigationDropdownOnMobile();
+      }
       await voiceoverAdmin.openvoiceArtistDropdown();
       await voiceoverAdmin.addVoiceoverArtistsToExploration([
         'guestUser1',
@@ -141,7 +143,9 @@ describe('Exploration Creator', function () {
       await curriculumAdmin.navigateToExplorationEditor(explorationId);
       await curriculumAdmin.dismissWelcomeModal();
       await curriculumAdmin.navigateToExplorationSettingsTab();
-      await curriculumAdmin.closeEditorNavigationDropdown();
+      if (curriculumAdmin.isViewportAtMobileWidth()) {
+        await curriculumAdmin.closeEditorNavigationDropdownOnMobile();
+      }
       await curriculumAdmin.openExplorationControlDropdown();
       await curriculumAdmin.deleteExplorationPermanently();
 
