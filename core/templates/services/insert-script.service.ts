@@ -30,9 +30,9 @@ export enum KNOWN_SCRIPTS {
 })
 export class InsertScriptService {
   // Set of scripts that have already loaded.
-  private loadedScripts: Set<string> = new Set<string>();
+  private fullyLoadedScripts: Set<string> = new Set<string>();
   // Maps scripts that are currently still loading along with their promises.
-  private scriptsLoading: Map<string, Promise<void>> = new Map();
+  private partiallyLoadedScripts: Map<string, Promise<void>> = new Map();
   private renderer: Renderer2;
 
   constructor(rendererFactory: RendererFactory2) {
@@ -41,14 +41,14 @@ export class InsertScriptService {
 
   loadScript(script: KNOWN_SCRIPTS, onLoadCb?: () => void): boolean {
     // If the script is already loaded, it does not load again.
-    if (this.loadedScripts.has(script)) {
+    if (this.fullyLoadedScripts.has(script)) {
       Promise.resolve().then(onLoadCb);
       return false;
     }
 
-    // The loading method continues only if the script is not in scriptsLoading.
+    // The loading method continues only if the script is not in partiallyLoadedScripts.
     // This is to prevent the same script from creating multiple promises to load.
-    if (!this.scriptsLoading.has(script)) {
+    if (!this.partiallyLoadedScripts.has(script)) {
       const scriptElement = this.renderer.createElement('script');
 
       switch (script) {
@@ -67,13 +67,13 @@ export class InsertScriptService {
 
       const scriptLoadPromise = new Promise<void>((resolve, reject) => {
         scriptElement.onerror = (error: ErrorEvent) => {
-          this.scriptsLoading.delete(script);
+          this.partiallyLoadedScripts.delete(script);
           reject(error);
         };
 
         scriptElement.onload = () => {
-          this.loadedScripts.add(script);
-          this.scriptsLoading.delete(script);
+          this.fullyLoadedScripts.add(script);
+          this.partiallyLoadedScripts.delete(script);
           resolve();
           if (onLoadCb) {
             onLoadCb();
@@ -81,11 +81,11 @@ export class InsertScriptService {
         };
       });
 
-      this.scriptsLoading.set(script, scriptLoadPromise);
+      this.partiallyLoadedScripts.set(script, scriptLoadPromise);
       this.renderer.appendChild(document.body, scriptElement);
     }
 
-    this.scriptsLoading.get(script)?.then(onLoadCb, () => {
+    this.partiallyLoadedScripts.get(script)?.then(onLoadCb, () => {
       console.error('Script loading failed:', script);
     });
 
