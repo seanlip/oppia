@@ -281,6 +281,7 @@ describe('Exploration Editor', function () {
         'Hint translation text'
       );
       await explorationEditor.navigateToEditorTab();
+      await explorationEditor.closeEditorNavigationDropdown();
       await explorationEditor.updateHint('Hint content.');
       await explorationEditor.openModifyExistingTranslationsModal();
       await explorationEditor.verifyTranslationInModifyTranslationsModal(
