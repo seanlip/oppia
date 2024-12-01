@@ -25,9 +25,7 @@ import {downgradeComponent} from '@angular/upgrade/static';
 import {StateCard} from 'domain/state_card/state-card.model';
 import {MultipleChoiceInputCustomizationArgs} from 'interactions/customization-args-defs';
 import {InteractionAttributesExtractorService} from 'interactions/interaction-attributes-extractor.service';
-import {AudioTranslationManagerService} from 'pages/exploration-player-page/services/audio-translation-manager.service';
 import {CurrentInteractionService} from 'pages/exploration-player-page/services/current-interaction.service';
-import {PlayerPositionService} from 'pages/exploration-player-page/services/player-position.service';
 import {PlayerTranscriptService} from 'pages/exploration-player-page/services/player-transcript.service';
 import {MultipleChoiceInputRulesService} from './multiple-choice-input-rules.service';
 import {

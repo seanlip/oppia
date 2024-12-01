@@ -155,7 +155,7 @@ SAMPLE_EXPLORATION_DICT = exp_domain.ExplorationDict({
     'category': 'Algorithms',
     'author_notes': '',
     'blurb': '',
-    'states_schema_version': 56,
+    'states_schema_version': 57,
     'init_state_name': 'Introduction',
     'language_code': 'en',
     'objective': 'Learn the exploration',
