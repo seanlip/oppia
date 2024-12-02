@@ -1,7 +1,7 @@
 name: Lighthouse performance tests
 on:
   workflow_run:
-    workflows: [Prepare environment for full-stack tests]
+    workflows: [Prepare env for full-stack tests]
     types: [completed]
 
 jobs:

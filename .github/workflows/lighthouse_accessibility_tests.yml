@@ -1,36 +1,33 @@
 name: Lighthouse accessibility tests
 on:
-  merge_group:
-    types: [checks_requested]
-  push:
-    branches:
-      - develop
-      - release-*
-  pull_request:
-    branches:
-      - develop
-      - release-*
+  workflow_run:
+    workflows: [Prepare env for full-stack tests]
+    types: [completed]
 
 jobs:
-  check_test_suites_to_run:
-    name: Compute which tests to run
-    runs-on: ubuntu-22.04
+  identify_suites_to_run:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    name: Identify which suites to run
     steps:
-      - name: Checkout repository so that local actions can be used
-        uses: actions/checkout@v4
-      - name: Check which test suites to run based on PR changes
-        uses: ./.github/actions/check-test-suites-to-run
+      - name: Download suites-to-run mapping
+        uses: actions/download-artifact@v4
         with:
-          event_name: ${{ github.event_name }}
-          pr_base_ref: ${{ github.event.pull_request.base.ref }}
-          run_suites_on_changed_files: ${{ vars.RUN_SUITES_ON_CHANGED_FILES }}
+          run-id: ${{ github.event.workflow_run.id }}
+          name: suites-to-run
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Parse suites-to-run mapping
+        runs-on: ubuntu-22.04
+        id: set_test_suites_to_run
+        run: echo "TEST_SUITES_JSON=$(cat ./suites-to-run.json)" >> "$GITHUB_OUTPUT"
+    outputs:
+      test_suites_to_run: ${{ fromJSON(steps.set_test_suites_to_run.outputs.TEST_SUITES_JSON) }}
   lighthouse_accessibility:
     needs: check_test_suites_to_run
-    if: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_accessibility.count > 0 }}
+    if: ${{ needs.identify_suites_to_run.outputs.test_suites_to_run.lighthouse_accessibility.count > 0 }}
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_accessibility.suites }}
+        suite: ${{ needs.identify_suites_to_run.outputs.test_suites_to_run.lighthouse_accessibility.suites }}
     name: Run Lighthouse accessibility tests (shard ${{ matrix.suite.name }})
     steps:
       - name: Checkout repository so that local actions can be used
@@ -88,7 +85,7 @@ jobs:
           message: "A Lighthouse test failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   check_lighthouse_accessibility_workflow_status:
-    needs: [check_test_suites_to_run, lighthouse_accessibility]
+    needs: [identify_suites_to_run, lighthouse_accessibility]
     if: always()
     runs-on: ubuntu-22.04
     steps:
