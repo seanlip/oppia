@@ -1,4 +1,4 @@
-name: Lighthouse CI accessibility tests
+name: Lighthouse accessibility tests
 on:
   merge_group:
     types: [checks_requested]
