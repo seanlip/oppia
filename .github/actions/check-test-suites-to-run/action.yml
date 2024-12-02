@@ -15,19 +15,20 @@ outputs:
     value: ${{ steps.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN }}
 
 runs:
-  using: composite
-  env:
-    SHOULD_OUTPUT_ALL_TESTS: ${{ inputs.event_name != 'pull_request' || inputs.run_suites_on_changed_files == 'false' }}
+  using: 'composite'
   steps:
-    - name: Check test suites to run
-      id: check_test_suites_to_run
+    - id: check_test_suites_to_run
+      name: Check test suites to run
       # This prints to stdout and also writes the output to ./suites-to-run.json.
+      env:
+        SHOULD_OUTPUT_ALL_TESTS: ${{ inputs.event_name != 'pull_request' || inputs.run_suites_on_changed_files == 'false' }}
       run: >
         echo "TEST_SUITES_TO_RUN=";
         python -m scripts.check_ci_test_suites_to_run
         --github_head_ref="HEAD"
         --github_base_ref="origin/${{ github.event.pull_request.base.ref }}"
         ${{ env.SHOULD_OUTPUT_ALL_TESTS == 'true' && '--output_all_test_suites' || '' }} | tee ./suites-to-run.json
+      shell: bash
     - name: Upload suites-to-run mapping as a GitHub artifact
       needs: [check_test_suites_to_run]
       uses: actions/upload-artifact@v4
