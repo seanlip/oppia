@@ -36,6 +36,7 @@ export class LessonCardComponent implements OnInit {
   @Input() topic!: string;
   @Input() isCommunityLessonComplete?: boolean;
   @Input() isGoal?: boolean;
+  @Input() isRecommendation?: boolean;
 
   desc!: string;
   imgColor!: string;
@@ -70,10 +71,26 @@ export class LessonCardComponent implements OnInit {
       storyModel.getId()
     );
 
-    const nextStory =
-      completedStories === storyModel.getAllNodes().length
-        ? completedStories - 1
-        : completedStories;
+    let nextStory = 0;
+    // TODO(#18384): Returns next unplayed node from the earliest completed node. Does not account for if played out of order.
+    if (this.isRecommendation) {
+      const storyNodes = storyModel.getAllNodes();
+      if (completedStories === 0) {
+        nextStory = 1;
+      } else {
+        for (let i = 0; i < storyNodes.length; i++) {
+          if (!storyModel.isNodeCompleted(storyNodes[i].getTitle())) {
+            nextStory = i;
+            break;
+          }
+        }
+      }
+    } else {
+      nextStory =
+        completedStories === storyModel.getAllNodes().length
+          ? completedStories - 1
+          : completedStories;
+    }
 
     this.lessonUrl = this.getStorySummaryLessonUrl(
       storyModel.getClassroomUrlFragment(),
