@@ -80,7 +80,7 @@ export class LessonCardComponent implements OnInit {
       } else {
         for (let i = 0; i < storyNodes.length; i++) {
           if (!storyModel.isNodeCompleted(storyNodes[i].getTitle())) {
-            nextStory = i;
+            nextStory = i + 1;
             break;
           }
         }
@@ -100,6 +100,7 @@ export class LessonCardComponent implements OnInit {
     );
 
     this.title = `Chapter ${nextStory + 1}: ${storyModel.getNodeTitles()[nextStory]}`;
+
     this.progress = Math.floor(
       (completedStories / storyModel.getNodeTitles().length) * 100
     );
