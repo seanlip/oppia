@@ -116,7 +116,7 @@ jobs:
         with:
           message: "An acceptance test failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
-acceptance_test_with_docker:
+  acceptance_test_with_docker:
     needs: [identify_suites_to_run]
     runs-on: ubuntu-22.04
     if: ${{ needs.identify_suites_to_run.outputs.test_suites_to_run.acceptance.docker.count > 0 }}
