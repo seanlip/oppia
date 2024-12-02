@@ -21,7 +21,7 @@ jobs:
         run: echo "TEST_SUITES_JSON=$(cat ./suites-to-run.json)" >> "$GITHUB_OUTPUT"
     outputs:
       test_suites_to_run: ${{ fromJSON(steps.set_test_suites_to_run.outputs.TEST_SUITES_JSON) }}
-  acceptance_test:
+  acceptance_test_with_python_installation:
     needs: [identify_suites_to_run]
     runs-on: ubuntu-22.04
     if: ${{ needs.identify_suites_to_run.outputs.test_suites_to_run.acceptance.python.count > 0 }}
@@ -116,7 +116,7 @@ jobs:
         with:
           message: "An acceptance test failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
-  acceptance_test_with_docker:
+  acceptance_test_with_docker_installation:
     needs: [identify_suites_to_run]
     runs-on: ubuntu-22.04
     if: ${{ needs.identify_suites_to_run.outputs.test_suites_to_run.acceptance.docker.count > 0 }}
@@ -172,7 +172,10 @@ jobs:
     # "required" check via GitHub, since different tasks may execute depending
     # on which files are modified in the PR.
     name: Check that all necessary acceptance tests pass
-    needs: [identify_suites_to_run, acceptance_test]
+    needs:
+      - identify_suites_to_run
+      - acceptance_test_with_python_installation
+      - acceptance_test_with_docker_installation
     if: always()
     runs-on: ubuntu-22.04
     steps:
