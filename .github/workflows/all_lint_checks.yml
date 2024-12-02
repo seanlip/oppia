@@ -1,4 +1,4 @@
-name: Lint Checks
+name: Lint checks
 on:
   merge_group:
     types: [checks_requested]
@@ -13,7 +13,7 @@ on:
 
 jobs:
   backend_lint:
-    name: Backend lint checks
+    name: Backend
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository so that local actions can be used
@@ -37,7 +37,7 @@ jobs:
           message: "Lint checks failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   frontend_lint:
-    name: Custom eslint checks
+    name: ESLint (custom)
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository so that local actions can be used
@@ -59,7 +59,7 @@ jobs:
           message: "ESLint checks failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   frontend_formatter:
-    name: Frontend formatter check (using prettier)
+    name: Frontend formatting, using prettier
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository so that local actions can be used

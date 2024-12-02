@@ -1,4 +1,4 @@
-name: Type Checks
+name: Type checks
 on:
   merge_group:
     types: [checks_requested]
@@ -13,7 +13,7 @@ on:
 
 jobs:
   backend_type_checks:
-    name: Run Backend Type Checks (using MyPy)
+    name: Backend
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository so that local actions can be used
@@ -36,7 +36,7 @@ jobs:
           message: "Python type checks failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   frontend_type_checks:
-    name: Run Frontend Type Checks (using TypeScript)
+    name: Frontend
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository so that local actions can be used

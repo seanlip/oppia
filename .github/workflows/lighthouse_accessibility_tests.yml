@@ -13,7 +13,11 @@ on:
 
 jobs:
   check_test_suites_to_run:
-    uses: ./.github/actions/check-test-suites-to-run
+    steps:
+      - name: Checkout repository so that local actions can be used
+        uses: actions/checkout@v4
+      - name: Check which test suites to run based on PR changes
+        uses: ./.github/actions/check-test-suites-to-run
   lighthouse_accessibility:
     needs: check_test_suites_to_run
     if: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_accessibility.count > 0 }}
