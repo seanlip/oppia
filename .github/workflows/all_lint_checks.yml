@@ -37,7 +37,7 @@ jobs:
           message: "Lint checks failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   frontend_lint:
-    name: ESLint (custom)
+    name: Custom checks (ESLint)
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository so that local actions can be used
@@ -59,7 +59,7 @@ jobs:
           message: "ESLint checks failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   frontend_formatter:
-    name: Frontend formatting, using prettier
+    name: Frontend formatting with prettier
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository so that local actions can be used

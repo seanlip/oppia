@@ -13,7 +13,7 @@ on:
 
 jobs:
   e2e_acceptance_coverage:
-    name: Check that all e2e and acceptance tests are included in CI
+    name: Verify all e2e/acceptance tests are included
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository so that local actions can be used
@@ -31,7 +31,7 @@ jobs:
           message: "The e2e/acceptance coverage test failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   check_test_suites_to_run:
-    name: Compute which test suites to run
+    name: Compute which tests to run
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository so that local actions can be used
