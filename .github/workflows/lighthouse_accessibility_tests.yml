@@ -65,9 +65,9 @@ jobs:
           sed -i 's/$SEARCH_TARGET/$REPLACEMENT/' $FILEPATH
           echo "Replaced '$SEARCH_TARGET' with '$REPLACEMENT' in $FILEPATH"
         shell: bash
-      - name: Install chrome
+      - name: Install Chrome
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        run: python -m scripts.install_chrome_for_ci
+        uses: ./.github/actions/install-chrome
       - name: Run Lighthouse accessibility checks shard ${{ matrix.suite.name }}
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         run: python -m scripts.run_lighthouse_tests --mode accessibility --pages ${{ join(matrix.suite.pages_to_run, ',') }}

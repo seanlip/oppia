@@ -75,8 +75,8 @@ jobs:
         shell: bash
       - name: Install Oppia dependencies
         uses: ./.github/actions/install-oppia-dependencies
-      - name: Install chrome
-        run: python -m scripts.install_chrome_for_ci
+      - name: Install Chrome
+        uses: ./.github/actions/install-chrome
       - name: Install ffmpeg
         run: sudo apt install ffmpeg
       - name: (Artifact re-build) Cache third_party/static

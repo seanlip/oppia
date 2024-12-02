@@ -89,9 +89,9 @@ jobs:
         run: python -m scripts.build --prod_env
       - name: Install Oppia dependencies
         uses: ./.github/actions/install-oppia-dependencies
-      - name: Install chrome
+      - name: Install Chrome
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        run: python -m scripts.install_chrome_for_ci
+        uses: ./.github/actions/install-chrome
       - name: Run Lighthouse performance checks (shard ${{ matrix.suite.name }})
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         run: python -m scripts.run_lighthouse_tests --mode performance --skip_build --record_screen --pages ${{ join(matrix.suite.pages_to_run, ',') }}
