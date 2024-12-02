@@ -359,6 +359,6 @@ describe('Home tab Component', () => {
   });
 
   it('should get the correct number of stories that have available story nodes to recommend', () => {
-    expect(component.storySummariesWithAvailableNodes).toEqual(1);
+    expect(component.storySummariesWithAvailableNodes).toEqual(new Set(['1']));
   });
 });
