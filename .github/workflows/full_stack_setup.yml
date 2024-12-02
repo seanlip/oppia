@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
         with:
