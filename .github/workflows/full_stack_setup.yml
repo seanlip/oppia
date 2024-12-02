@@ -36,9 +36,13 @@ jobs:
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
       - name: Check which test suites to run based on PR changes
         uses: ./.github/actions/check-test-suites-to-run
         id: test_suites_to_run
+        with:
+          event_name: ${{ github.event_name }}
   build:
     name: Build the app, and store build files as an artifact
     needs: check_test_suites_to_run

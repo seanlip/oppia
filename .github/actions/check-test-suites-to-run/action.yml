@@ -1,44 +1,35 @@
 name: Checks CI Test Suites To Run
-on:
-  workflow_call:
-    outputs:
-      test_suites_to_run: 
-        value: ${{ jobs.check_test_suites_to_run.outputs.test_suites_to_run }}
+description: Computes which CI test suites to run
+inputs:
+  event_name:
+    required: true
+    type: string
+outputs:
+  test_suites_to_run:
+    value: ${{ steps.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN }}
 
-jobs:
-  check_test_suites_to_run:
-    runs-on: ubuntu-22.04
-    outputs:
-      test_suites_to_run: ${{ steps.check_test_suites_to_run.outputs.test_suites_to_run }}
-    env:
-      SHOULD_OUTPUT_ALL_TESTS: ${{ github.event_name != 'pull_request' || vars.RUN_SUITES_ON_CHANGED_FILES == 'false' }}
-    steps:
-      - name: Checkout repository so that local actions can be used
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Merge develop and set up Python
-        uses: ./.github/actions/merge-develop-and-setup-python
-        with:
-          use_cache: true
-      - name: Install Oppia dependencies
-        uses: ./.github/actions/install-oppia-dependencies
-      - name: Check test suites to run
-        id: check_test_suites_to_run
-        # This prints to stdout and also writes the output to ./suites-to-run.json.
-        run: >
-          python -m scripts.check_ci_test_suites_to_run
-          --github_head_ref="HEAD"
-          --github_base_ref="origin/${{ github.event.pull_request.base.ref }}"
-          ${{ env.SHOULD_OUTPUT_ALL_TESTS == 'true' && '--output_all_test_suites' || '' }} | tee ./suites-to-run.json
-      - name: Upload suites-to-run mapping as a GitHub artifact
-        needs: [check_test_suites_to_run]
-        uses: actions/upload-artifact@v4
-        with:
-          name: suites-to-run
-          path: suites-to-run.json
-      - name: Upload root files mapping as a GitHub artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: root-files-mapping
-          path: root-files-mapping.json
+runs:
+  using: composite
+  env:
+    SHOULD_OUTPUT_ALL_TESTS: ${{ event_name != 'pull_request' || vars.RUN_SUITES_ON_CHANGED_FILES == 'false' }}
+  steps:
+    - name: Check test suites to run
+      id: check_test_suites_to_run
+      # This prints to stdout and also writes the output to ./suites-to-run.json.
+      run: >
+        echo "TEST_SUITES_TO_RUN=";
+        python -m scripts.check_ci_test_suites_to_run
+        --github_head_ref="HEAD"
+        --github_base_ref="origin/${{ github.event.pull_request.base.ref }}"
+        ${{ env.SHOULD_OUTPUT_ALL_TESTS == 'true' && '--output_all_test_suites' || '' }} | tee ./suites-to-run.json
+    - name: Upload suites-to-run mapping as a GitHub artifact
+      needs: [check_test_suites_to_run]
+      uses: actions/upload-artifact@v4
+      with:
+        name: suites-to-run
+        path: suites-to-run.json
+    - name: Upload root files mapping as a GitHub artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: root-files-mapping
+        path: root-files-mapping.json
