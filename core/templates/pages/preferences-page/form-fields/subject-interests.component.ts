@@ -129,8 +129,8 @@ export class SubjectInterestsComponent implements ControlValueAccessor {
     const inputValue = inputElement.value.trim();
     if (inputValue) {
       this.subjectInterests.push(inputValue);
-      inputElement.value = ''; // Clear the input field
-      this.formCtrl.setValue(''); // Reset form control
+      inputElement.value = '';
+      this.formCtrl.setValue('');
     }
   }
 
