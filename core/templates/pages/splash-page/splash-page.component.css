@@ -250,6 +250,10 @@
   }
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5a51c7b17f (Added  oppia-splash-section-five-left-testimonial class to the div for testimonial  section and added the css for the same)
 .splash-page .oppia-splash-section-seven-left {
   margin-bottom: auto;
   margin-left: 10vw;
@@ -564,9 +568,9 @@
   }
 
   .splash-page .splash-arrows-container {
-    position: relative;
+    position: relative;  
   }
-
+  
   .splash-page .oppia-splash-section-four-left .oppia-splash-button,
   .splash-page .oppia-splash-section-six-right .oppia-splash-button,
   .splash-page .oppia-splash-section-seven-left .oppia-splash-button {
