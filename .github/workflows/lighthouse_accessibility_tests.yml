@@ -16,6 +16,8 @@ jobs:
     name: Compute which tests to run
     runs-on: ubuntu-22.04
     steps:
+      - name: Checkout repository so that local actions can be used
+        uses: actions/checkout@v4
       - name: Check which test suites to run based on PR changes
         uses: ./.github/actions/check-test-suites-to-run
         with:
