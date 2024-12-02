@@ -96,6 +96,7 @@ export class SubjectInterestsComponent implements ControlValueAccessor {
       } else {
         this.chipList.errorState = false;
       }
+      this.onChange(this.subjectInterests);
     });
     this.allSubjectInterests = cloneDeep(this.subjectInterests);
   }
@@ -121,6 +122,15 @@ export class SubjectInterestsComponent implements ControlValueAccessor {
       }
       this.onChange(this.subjectInterests);
       this.subjectInterestInput.nativeElement.value = '';
+    }
+  }
+
+  addOnBlur(inputElement: HTMLInputElement): void {
+    const inputValue = inputElement.value.trim();
+    if (inputValue) {
+      this.subjectInterests.push(inputValue);
+      inputElement.value = ''; // Clear the input field
+      this.formCtrl.setValue(''); // Reset form control
     }
   }
 
