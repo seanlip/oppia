@@ -16,7 +16,7 @@ jobs:
     name: Run Backend Type Checks (using MyPy)
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
+      - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
@@ -39,7 +39,7 @@ jobs:
     name: Run Frontend Type Checks (using TypeScript)
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
+      - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python

@@ -30,7 +30,7 @@ jobs:
         suite: ${{ needs.identify_suites_to_run.outputs.test_suites_to_run.e2e.suites }}
     name: e2e_test (${{ matrix.suite.name }})
     steps:
-      - name: Checkout repository
+      - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
@@ -137,7 +137,7 @@ jobs:
     if: always()
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
+      - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python

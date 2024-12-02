@@ -13,7 +13,7 @@ jobs:
     env:
       SHOULD_OUTPUT_ALL_TESTS: ${{ github.event_name != 'pull_request' || vars.RUN_SUITES_ON_CHANGED_FILES == 'false' }}
     steps:
-      - name: Checkout repository
+      - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
         with:
           fetch-depth: 0

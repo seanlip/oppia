@@ -11,9 +11,8 @@ jobs:
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
+      - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
-
       - name: Set environment variables
         env:
           AUTHOR: ${{ github.event.pull_request.user.login }}
@@ -23,7 +22,6 @@ jobs:
           echo "AUTHOR=${AUTHOR}" >> $GITHUB_ENV
           echo "REPO=${REPO}" >> $GITHUB_ENV
           echo "OWNER=${OWNER}" >> $GITHUB_ENV
-
       - name: Count merged PRs
         id: count-prs
         uses: actions/github-script@v6
@@ -38,7 +36,6 @@ jobs:
             });
             const prCount = data.items.filter(pr => pr.pull_request.merged_at).length;
             core.exportVariable('PR_COUNT', prCount);
-
       - name: Comment on the PR
         uses: actions/github-script@v6
         with:

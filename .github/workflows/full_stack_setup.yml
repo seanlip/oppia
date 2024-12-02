@@ -16,7 +16,7 @@ jobs:
     name: Check that all e2e and acceptance tests are included in CI
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
+      - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
@@ -31,9 +31,12 @@ jobs:
           message: "The e2e/acceptance coverage test failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   check_test_suites_to_run:
-    name: Check which test suites to run based on PR changes
-    uses: ./.github/actions/check-test-suites-to-run
-    id: check_test_suites_to_run
+    steps:
+      - name: Checkout repository so that local actions can be used
+        uses: actions/checkout@v4
+      - name: Check which test suites to run based on PR changes
+        uses: ./.github/actions/check-test-suites-to-run
+        id: check_test_suites_to_run
   build:
     name: Build the app, and store build files as an artifact
     needs: check_test_suites_to_run
@@ -43,7 +46,7 @@ jobs:
             fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.python.count > 0 }}
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
+      - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
