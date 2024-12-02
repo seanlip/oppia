@@ -192,4 +192,26 @@ export class HomeTabComponent {
       topicName
     );
   }
+
+  getTotalInProgressLessons(): number {
+    const totalStories = this.partiallyLearntTopicsList.reduce((acc, curr) => {
+      let availableStories = 0;
+      for (let i = 0; i < curr.getCanonicalStorySummaryDicts().length; i++) {
+        let currentStory = curr.getCanonicalStorySummaryDicts()[i];
+        if (
+          currentStory.getAllNodes().length >
+          currentStory.getCompletedNodeTitles().length
+        ) {
+          availableStories++;
+        }
+      }
+      return acc + availableStories;
+    }, 0);
+
+    return (
+      totalStories +
+      this.incompleteExplorationsList.length +
+      this.incompleteCollectionsList.length
+    );
+  }
 }

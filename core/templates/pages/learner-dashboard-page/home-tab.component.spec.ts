@@ -29,6 +29,8 @@ import {LearnerTopicSummary} from 'domain/topic/learner-topic-summary.model';
 import {WindowDimensionsService} from 'services/contextual/window-dimensions.service';
 import {I18nLanguageCodeService} from 'services/i18n-language-code.service';
 import {SiteAnalyticsService} from 'services/site-analytics.service';
+import {CollectionSummary} from 'domain/collection/collection-summary.model';
+import {LearnerExplorationSummary} from 'domain/summary/learner-exploration-summary.model';
 
 describe('Home tab Component', () => {
   let component: HomeTabComponent;
@@ -217,7 +219,11 @@ describe('Home tab Component', () => {
         learnerTopicSummaryBackendDict1
       ),
     ];
-    component.partiallyLearntTopicsList = [];
+    component.partiallyLearntTopicsList = [
+      LearnerTopicSummary.createFromBackendDict(
+        learnerTopicSummaryBackendDict1
+      ),
+    ];
     component.untrackedTopics = {};
     component.username = 'username';
     fixture.detectChanges();
@@ -360,5 +366,56 @@ describe('Home tab Component', () => {
 
   it('should get the correct number of stories that have available story nodes to recommend', () => {
     expect(component.storySummariesWithAvailableNodes).toEqual(new Set(['1']));
+  });
+
+  it('should get the correct number in-progress lessons (explorations, collections, and classrooms)', () => {
+    const sampleExploration = {
+      last_updated_msec: 1591296737470.528,
+      community_owned: false,
+      objective: 'Test Objective',
+      id: '44LKoKLlIbGe',
+      num_views: 0,
+      thumbnail_icon_url: '/subjects/Algebra.svg',
+      human_readable_contributors_summary: {},
+      language_code: 'en',
+      thumbnail_bg_color: '#cc4b00',
+      created_on_msec: 1591296635736.666,
+      ratings: {
+        1: 0,
+        2: 0,
+        3: 0,
+        4: 0,
+        5: 0,
+      },
+      status: 'public',
+      tags: [],
+      activity_type: 'exploration',
+      category: 'Algebra',
+      title: 'Test Title',
+    };
+
+    const sampleCollection = {
+      last_updated_msec: 1591296737470.528,
+      community_owned: false,
+      objective: 'Test Objective',
+      id: '44LKoKLlIbGe',
+      thumbnail_icon_url: '/subjects/Algebra.svg',
+      language_code: 'en',
+      thumbnail_bg_color: '#cc4b00',
+      created_on: 1591296635736.666,
+      status: 'public',
+      category: 'Algebra',
+      title: 'Test Title',
+      node_count: 0,
+    };
+    component.incompleteCollectionsList = [
+      CollectionSummary.createFromBackendDict(sampleCollection),
+    ];
+    component.incompleteExplorationsList = [
+      LearnerExplorationSummary.createFromBackendDict(sampleExploration),
+    ];
+
+    fixture.detectChanges();
+    expect(component.getTotalInProgressLessons()).toBe(4);
   });
 });
