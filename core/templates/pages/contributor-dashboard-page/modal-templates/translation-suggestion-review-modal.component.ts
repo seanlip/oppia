@@ -165,6 +165,9 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   currentSnackbarRef?: MatSnackBarRef<UndoSnackbarComponent>;
   isUndoFeatureEnabled: boolean = false;
   initialImageCount: number = 0;
+  private readonly IMAGE_TAG_REGEX =
+    /<oppia-noninteractive-image\b[^>]*?filepath-with-value="(?:&quot;|&amp;quot;|")([^"&]*?)(?:&quot;|&amp;quot;|")[^>]*?>/g;
+
   @Input() altTextIsDisplayed: boolean = false;
 
   @ViewChild('contentPanel')
@@ -249,11 +252,8 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     this.allContributions = this.suggestionIdToContribution;
     this.allContributions[this.activeSuggestionId] = this.activeContribution;
     this.refreshActiveContributionState();
-    const tempDiv = this.renderer.createElement('div');
-    this.renderer.setProperty(tempDiv, 'innerHTML', this.translationHtml || '');
-    this.initialImageCount = tempDiv.querySelectorAll(
-      'oppia-noninteractive-image'
-    ).length;
+    const imageTags = this.translationHtml.match(this.IMAGE_TAG_REGEX);
+    this.initialImageCount = imageTags ? imageTags.length : 0;
 
     // The 'html' value is passed as an object as it is required for
     // schema-based-editor. Otherwise the corrrectly updated value for
@@ -376,11 +376,8 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   }
 
   isImageRemoved(): boolean {
-    const tempDiv = this.renderer.createElement('div');
-    this.renderer.setProperty(tempDiv, 'innerHTML', this.editedContent.html);
-    const currentImageCount = tempDiv.querySelectorAll(
-      'oppia-noninteractive-image'
-    ).length;
+    const imageTags = this.editedContent.html.match(this.IMAGE_TAG_REGEX);
+    const currentImageCount = imageTags ? imageTags.length : 0;
     return currentImageCount < this.initialImageCount;
   }
 

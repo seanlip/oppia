@@ -101,7 +101,7 @@ SUGGESTION_EMPHASIZED_TEXT_GETTER_FUNCTIONS: Dict[str, Callable[..., str]] = {
 
 RECENT_REVIEW_OUTCOMES_LIMIT: Final = 100
 
-IMAGE_TAG_REGEX = r'<oppia-noninteractive-image\b[^>]*?>(?:.*?)</oppia-noninteractive-image>'
+IMAGE_TAG_REGEX = r'<oppia-noninteractive-image\b[^>]*?filepath-with-value="(?:&quot;|&amp;quot;|")([^"&]*?)(?:&quot;|&amp;quot;|")[^>]*?>'
 
 @overload
 def create_suggestion(

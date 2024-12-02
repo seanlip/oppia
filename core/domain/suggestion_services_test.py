@@ -1095,7 +1095,7 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             '<oppia-noninteractive-image '
             'alt-with-value="Special character in image path" '
             'caption-with-value="Sample caption" '
-            'filepath-with-value="img_with_>_&_character.svg"></oppia-noninteractive-image>'
+            'filepath-with-value="img_with_>_&_character>-.svg"></oppia-noninteractive-image>'
         )
         suggestion = self.create_translation_suggestion(translation_html_with_special_char_image)
 
