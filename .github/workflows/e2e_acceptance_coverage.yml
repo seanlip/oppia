@@ -1,4 +1,4 @@
-name: Custom ESLint tests
+name: E2e/Acceptance test coverage
 on:
   merge_group:
     types: [checks_requested]
@@ -12,8 +12,7 @@ on:
       - release-*
 
 jobs:
-  run_tests:
-    name: Run Tests for Custom ESLint Checks
+  e2e_acceptance_coverage:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
@@ -22,15 +21,15 @@ jobs:
         uses: ./.github/actions/merge-develop-and-setup-python
         with:
           use_cache: false
-      - name: Initialize Docker containers
-        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
+      - name: Install Chrome
+        uses: ./.github/actions/install-chrome
+      - name: Initialize Containers
         uses: ./.github/actions/install-oppia-dependencies-docker
-      - name: Run ESLint Tests
-        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        run: make run_tests.custom_eslint
+      - name: Check that all e2e test files are captured in wdio.conf.js
+        run: make run_tests.check_tests_are_captured_in_ci
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
         uses: ./.github/actions/send-webhook-notification
         with:
-          message: "ESLint checks failed on the upstream develop branch."
+          message: "A typescript test failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
