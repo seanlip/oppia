@@ -1,4 +1,4 @@
-name: Lint and Format Checks
+name: Lint Checks
 on:
   merge_group:
     types: [checks_requested]
@@ -59,7 +59,7 @@ jobs:
           message: "ESLint checks failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   frontend_formatter:
-    name: Frontend formatting check (using prettier)
+    name: Frontend formatter check (using prettier)
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
