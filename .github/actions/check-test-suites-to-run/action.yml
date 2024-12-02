@@ -30,7 +30,6 @@ runs:
         ${{ env.SHOULD_OUTPUT_ALL_TESTS == 'true' && '--output_all_test_suites' || '' }} | tee ./suites-to-run.json
       shell: bash
     - name: Upload suites-to-run mapping as a GitHub artifact
-      needs: [check_test_suites_to_run]
       uses: actions/upload-artifact@v4
       with:
         name: suites-to-run
