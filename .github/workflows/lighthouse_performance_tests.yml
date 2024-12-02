@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         suite: ${{ needs.identify_suites_to_run.outputs.test_suites_to_run.lighthouse_performance.suites }}
-    name: Lighthouse Performance (${{ matrix.suite.name }})
+    name: Run Lighthouse performance tests (shard ${{ matrix.suite.name }})
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -92,7 +92,7 @@ jobs:
       - name: Install chrome
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         run: python -m scripts.install_chrome_for_ci
-      - name: Run Lighthouse performance checks shard ${{ matrix.suite.name }}
+      - name: Run Lighthouse performance checks (shard ${{ matrix.suite.name }})
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         run: python -m scripts.run_lighthouse_tests --mode performance --skip_build --record_screen --pages ${{ join(matrix.suite.pages_to_run, ',') }}
       - name: Uploading puppeteer video as Artifacts

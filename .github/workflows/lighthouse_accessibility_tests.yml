@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_accessibility.suites }}
-    name: lighthouse_accessibility (${{ matrix.suite.name }})
+    name: Run Lighthouse accessibility tests (shard ${{ matrix.suite.name }})
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

@@ -31,7 +31,7 @@ jobs:
           message: "Some backend files lack an associated test file."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   run_tests:
-    name: Run backend tests
+    name: Run backend tests (shard ${{ matrix.shard }})
     runs-on: ubuntu-22.04
     strategy:
       matrix:
