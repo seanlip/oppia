@@ -13,11 +13,7 @@ on:
 
 jobs:
   lint:
-    runs-on:  ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-22.04]
-        shard: ['other']
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -32,7 +28,7 @@ jobs:
         run: make run_tests.third_party_size_check
       - name: Run Lint Checks
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        run: make run_tests.lint PYTHON_ARGS="--shard ${{ matrix.shard }} --verbose"
+        run: make run_tests.lint PYTHON_ARGS="--shard other --verbose"
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
         uses: ./.github/actions/send-webhook-notification

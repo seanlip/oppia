@@ -17,12 +17,11 @@ jobs:
   lighthouse_accessibility:
     needs: check_test_suites_to_run
     if: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_accessibility.count > 0 }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        os: [ubuntu-22.04]
         suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_accessibility.suites }}
-    name: lighthouse_accessibility (${{ matrix.os }}, ${{ matrix.suite.name }})
+    name: lighthouse_accessibility (${{ matrix.suite.name }})
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -81,10 +80,7 @@ jobs:
   check_lighthouse_accessibility_workflow_status:
     needs: [check_test_suites_to_run, lighthouse_accessibility]
     if: always()
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-22.04]
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

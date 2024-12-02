@@ -20,10 +20,7 @@ jobs:
             fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_performance.count > 0 ||
             fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.docker.count > 0 ||
             fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.python.count > 0 }}
-    runs-on:  ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-22.04]
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -67,12 +64,11 @@ jobs:
   e2e_test:
     needs: [check_test_suites_to_run, build]
     if: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).e2e.count > 0 }}
-    runs-on:  ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        os: [ubuntu-22.04]
         suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).e2e.suites }}
-    name: e2e_test (${{ matrix.os }}, ${{ matrix.suite.name }})
+    name: e2e_test (${{ matrix.suite.name }})
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -174,12 +170,11 @@ jobs:
   lighthouse_performance:
     needs: [check_test_suites_to_run, build]
     if: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_performance.count > 0 }}
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        os: [ubuntu-22.04]
         suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_performance.suites }}
-    name: lighthouse (${{ matrix.os }}, ${{ matrix.suite.name }})
+    name: lighthouse (${{ matrix.suite.name }})
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -261,12 +256,11 @@ jobs:
   acceptance_test:
       needs: [check_test_suites_to_run, build]
       if: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.python.count > 0 }}
-      runs-on:  ${{ matrix.os }}
+      runs-on: ubuntu-22.04
       strategy:
         matrix:
-          os: [ubuntu-22.04]
           suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.python.suites }}
-      name: acceptance_test (${{ matrix.os }}, ${{ matrix.suite.name }})
+      name: acceptance_test (${{ matrix.suite.name }})
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
@@ -357,12 +351,11 @@ jobs:
   acceptance_test_with_docker:
       needs: [check_test_suites_to_run]
       if: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.docker.count > 0 }}
-      runs-on:  ${{ matrix.os }}
+      runs-on: ubuntu-22.04
       strategy:
         matrix:
-          os: [ubuntu-22.04]
           suite: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.docker.suites }}
-      name: acceptance_test (${{ matrix.os }}, ${{ matrix.suite.name }})
+      name: acceptance_test (${{ matrix.suite.name }})
       steps:
         - name: Checkout repository
           uses: actions/checkout@v3
@@ -409,10 +402,7 @@ jobs:
   check_e2e_lighthouse_performance_acceptance_workflow_status:
     needs: [check_test_suites_to_run, build, e2e_test, lighthouse_performance, acceptance_test]
     if: always()
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-22.04]
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

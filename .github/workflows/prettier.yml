@@ -14,10 +14,7 @@ on:
 jobs:
   run_prettier:
     name: Run prettier on the whole codebase
-    runs-on:  ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-22.04]
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
