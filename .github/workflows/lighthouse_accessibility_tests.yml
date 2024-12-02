@@ -26,6 +26,7 @@ jobs:
         uses: ./.github/actions/check-test-suites-to-run
         with:
           event_name: ${{ github.event_name }}
+          pr_base_ref: ${{ github.event.pull_request.base.ref }}
           run_suites_on_changed_files: ${{ vars.RUN_SUITES_ON_CHANGED_FILES }}
   lighthouse_accessibility:
     needs: check_test_suites_to_run

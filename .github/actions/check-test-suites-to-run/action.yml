@@ -4,6 +4,9 @@ inputs:
   event_name:
     required: true
     type: string
+  pr_base_ref:
+    required: true
+    type: string
   # This is set as a repository-level variable and passed in from the GitHub
   # Actions workflow.
   # See https://github.com/oppia/oppia/settings/variables/actions
@@ -26,7 +29,7 @@ runs:
         echo "TEST_SUITES_TO_RUN=";
         python -m scripts.check_ci_test_suites_to_run
         --github_head_ref="HEAD"
-        --github_base_ref="origin/${{ github.event.pull_request.base.ref }}"
+        --github_base_ref="origin/${{ inputs.pr_base_ref }}"
         ${{ env.SHOULD_OUTPUT_ALL_TESTS == 'true' && '--output_all_test_suites' || '' }} | tee ./suites-to-run.json
       shell: bash
     - name: Upload suites-to-run mapping as a GitHub artifact
