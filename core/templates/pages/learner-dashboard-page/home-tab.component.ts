@@ -98,7 +98,7 @@ export class HomeTabComponent {
         this.continueWhereYouLeftOffList[i].getCanonicalStorySummaryDicts();
       for (let j = 0; j < currentStorySummary.length; j++) {
         if (
-          currentStorySummary[j].getAllNodes().length >
+          currentStorySummary[j].getAllNodes().length - 1 >
           currentStorySummary[j].getCompletedNodeTitles().length
         ) {
           this.storySummariesWithAvailableNodes.add(

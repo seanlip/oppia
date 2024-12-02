@@ -96,6 +96,77 @@ describe('Home tab Component', () => {
       first_publication_date_msecs: 200,
       unpublishing_reason: null,
     };
+
+    let nodeDict2 = {
+      id: 'node_2',
+      thumbnail_filename: 'image.png',
+      title: 'Title 2',
+      description: 'Description 2',
+      prerequisite_skill_ids: ['skill_2'],
+      acquired_skill_ids: ['skill_3'],
+      destination_node_ids: ['node_3'],
+      outline: 'Outline',
+      exploration_id: 'exp_id_2',
+      outline_is_finalized: false,
+      thumbnail_bg_color: '#a33f40',
+      status: 'Published',
+      planned_publication_date_msecs: 100,
+      last_modified_msecs: 100,
+      first_publication_date_msecs: 200,
+      unpublishing_reason: null,
+    };
+
+    let nodeDict3 = {
+      id: 'node_3',
+      thumbnail_filename: 'image.png',
+      title: 'Title 3',
+      description: 'Description 2',
+      prerequisite_skill_ids: ['skill_3'],
+      acquired_skill_ids: ['skill_4'],
+      destination_node_ids: ['node_4'],
+      outline: 'Outline',
+      exploration_id: 'exp_id_3',
+      outline_is_finalized: false,
+      thumbnail_bg_color: '#a33f40',
+      status: 'Published',
+      planned_publication_date_msecs: 100,
+      last_modified_msecs: 100,
+      first_publication_date_msecs: 200,
+      unpublishing_reason: null,
+    };
+
+    let inProgressStorySummary = {
+      id: '1',
+      title: 'Started Story Title',
+      description: 'Story Description',
+      node_titles: ['Title 1', 'Title 2', 'Title 3'],
+      thumbnail_filename: 'image.svg',
+      thumbnail_bg_color: '#F8BF74',
+      story_is_published: true,
+      completed_node_titles: ['Title 1'],
+      url_fragment: 'story-title',
+      all_node_dicts: [nodeDict, nodeDict2, nodeDict3],
+      topic_name: 'Topic',
+      classroom_url_fragment: 'math',
+      topic_url_fragment: 'topic',
+    };
+
+    let lastLessonStorySummary = {
+      id: '2',
+      title: 'Incomplete Story Title',
+      description: 'Story Description',
+      node_titles: ['Title 1', 'Title 2', 'Title 3'],
+      thumbnail_filename: 'image.svg',
+      thumbnail_bg_color: '#F8BF74',
+      story_is_published: true,
+      completed_node_titles: ['Title 1', 'Title 2'],
+      url_fragment: 'story-title',
+      all_node_dicts: [nodeDict, nodeDict2, nodeDict3],
+      topic_name: 'Topic',
+      classroom_url_fragment: 'math',
+      topic_url_fragment: 'topic',
+    };
+
     const learnerTopicSummaryBackendDict1 = {
       id: 'sample_topic_id',
       name: 'Topic Name',
@@ -122,6 +193,8 @@ describe('Home tab Component', () => {
           url_fragment: 'story-title',
           all_node_dicts: [nodeDict],
         },
+        inProgressStorySummary,
+        lastLessonStorySummary,
       ],
       url_fragment: 'topic-name',
       subtopics: [subtopic],
@@ -283,5 +356,9 @@ describe('Home tab Component', () => {
     expect(
       siteAnalyticsService.registerInProgressClassroomLessonEngagedWithEvent
     ).toHaveBeenCalled();
+  });
+
+  it('should get the correct number of stories that have available story nodes to recommend', () => {
+    expect(component.storySummariesWithAvailableNodes).toEqual(1);
   });
 });
