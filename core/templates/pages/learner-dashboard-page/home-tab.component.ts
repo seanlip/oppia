@@ -64,6 +64,7 @@ export class HomeTabComponent {
   windowIsNarrow: boolean = false;
   directiveSubscriptions = new Subscription();
   currentGoalIds: Set<string> = new Set();
+  storySummariesWithAvailableNodes: Set<string> = new Set();
 
   constructor(
     private i18nLanguageCodeService: I18nLanguageCodeService,
@@ -88,6 +89,22 @@ export class HomeTabComponent {
       for (var uniqueGoalId of uniqueGoalIds) {
         var index = allGoalIds.indexOf(uniqueGoalId);
         this.continueWhereYouLeftOffList.push(allGoals[index]);
+      }
+    }
+
+    // TODO(#18384): Test cases - current lesson is last lesson.
+    for (let i = 0; i < this.continueWhereYouLeftOffList.length; i++) {
+      let currentStorySummary =
+        this.continueWhereYouLeftOffList[i].getCanonicalStorySummaryDicts();
+      for (let j = 0; j < currentStorySummary.length; j++) {
+        if (
+          currentStorySummary[j].getAllNodes().length >
+          currentStorySummary[j].getCompletedNodeTitles().length
+        ) {
+          this.storySummariesWithAvailableNodes.add(
+            currentStorySummary[j].getId()
+          );
+        }
       }
     }
 
