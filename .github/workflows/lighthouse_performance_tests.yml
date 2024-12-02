@@ -107,10 +107,10 @@ jobs:
         with:
           message: "A Lighthouse performance test failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
-  # This is needed because we cannot make each lighthouse performance task a "required" check
-  # via GitHub, since different tasks may execute depending on which files are modified in
-  # the PR.
   check_lighthouse_performance_workflow_status:
+    # This job is needed because we cannot make each lighthouse performance
+    # task a "required" check via GitHub, since different tasks may execute
+    # depending on which files are modified in the PR.
     name: Check that all necessary lighthouse performance tests pass
     needs: [identify_suites_to_run, lighthouse_performance_test]
     if: always()

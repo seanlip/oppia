@@ -167,9 +167,10 @@ acceptance_test_with_docker:
         with:
           message: "An acceptance test failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
-  # This is needed because we cannot make each acceptance task a "required" check via GitHub,
-  # since different tasks may execute depending on which files are modified in the PR.
   check_acceptance_workflow_status:
+    # This job is needed because we cannot make each acceptance task a
+    # "required" check via GitHub, since different tasks may execute depending
+    # on which files are modified in the PR.
     name: Check that all necessary acceptance tests pass
     needs: [identify_suites_to_run, acceptance_test]
     if: always()
