@@ -110,7 +110,9 @@ describe('InsertScriptService', () => {
     setTimeout(() => {
       expect(
         // eslint-disable-next-line dot-notation
-        insertScriptService['partiallyLoadedScripts'].has(KNOWN_SCRIPTS.DONORBOX)
+        insertScriptService['partiallyLoadedScripts'].has(
+          KNOWN_SCRIPTS.DONORBOX
+        )
       ).toBe(false);
       done();
     }, 20);
