@@ -20,6 +20,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
+      - name: Install Oppia dependencies
+        uses: ./.github/actions/install-oppia-dependencies
       - name: Check which test suites to run based on PR changes
         uses: ./.github/actions/check-test-suites-to-run
         with:
