@@ -23,6 +23,10 @@ runs:
     # This is needed for the git references in the check_ci_test_suites_to_work.
     - name: Checkout repository
       uses: actions/checkout@v4
+    - name: Merge develop and set up Python
+      uses: ./.github/actions/merge-develop-and-setup-python
+    - name: Install Oppia dependencies
+      uses: ./.github/actions/install-oppia-dependencies
     - id: check_test_suites_to_run
       name: Check test suites to run
       # This prints to stdout and also writes the output to ./suites-to-run.json.
