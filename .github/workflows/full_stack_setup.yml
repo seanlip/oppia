@@ -1,4 +1,4 @@
-name: Prepare env for full-stack tests
+name: Preflight
 on:
   merge_group:
     types: [checks_requested]

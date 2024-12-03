@@ -1,16 +1,25 @@
 name: End-to-End tests
 on:
   workflow_run:
-    workflows: [Prepare env for full-stack tests]
-    types: [completed]
+    workflows:
+      - Preflight
+    types:
+      - completed
 
 jobs:
   on_always:
     name: Report workflow triggering
     runs-on: ubuntu-22.04
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
       - name: Output status message
-        run: echo 'The triggering workflow happened'
+        run: |
+          git branch
+          env
+          echo 'The triggering workflow happened'
   on_failure:
     name: Report failure of prerequisite workflow
     runs-on: ubuntu-22.04
