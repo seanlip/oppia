@@ -128,6 +128,25 @@ describe('LessonCardComponent', () => {
     unpublishing_reason: null,
   };
 
+  const sampleNode4 = {
+    id: 'node_4',
+    thumbnail_filename: 'image.png',
+    title: 'Title 4',
+    description: 'Description 1',
+    prerequisite_skill_ids: ['skill_1'],
+    acquired_skill_ids: ['skill_2'],
+    destination_node_ids: ['node_2'],
+    outline: 'Outline',
+    exploration_id: 'exp_id_1',
+    outline_is_finalized: false,
+    thumbnail_bg_color: '#a33f40',
+    status: 'Published',
+    planned_publication_date_msecs: 100,
+    last_modified_msecs: 100,
+    first_publication_date_msecs: 200,
+    unpublishing_reason: null,
+  };
+
   const sampleTopic = {
     id: '0',
     title: 'Story Title',
@@ -154,7 +173,7 @@ describe('LessonCardComponent', () => {
     story_is_published: true,
     completed_node_titles: ['Title 1'],
     url_fragment: 'story-title',
-    all_node_dicts: [sampleNode, sampleNode],
+    all_node_dicts: [sampleNode, sampleNode2],
     topic_name: 'Topic',
     classroom_url_fragment: 'math',
     topic_url_fragment: 'topic',
@@ -203,6 +222,38 @@ describe('LessonCardComponent', () => {
     completed_node_titles: ['Title 1'],
     url_fragment: 'story-title',
     all_node_dicts: [sampleNode, sampleNode2, sampleNode3],
+    topic_name: 'Topic',
+    classroom_url_fragment: 'math',
+    topic_url_fragment: 'topic',
+  };
+
+  const incompleteMiddleNodesTopic = {
+    id: '0',
+    title: 'Story Title',
+    description: 'Story Description',
+    node_titles: ['Title 1', 'Title 2', 'Title 3'],
+    thumbnail_filename: 'image.svg',
+    thumbnail_bg_color: '#F8BF74',
+    story_is_published: true,
+    completed_node_titles: ['Title 2'],
+    url_fragment: 'story-title',
+    all_node_dicts: [sampleNode, sampleNode2, sampleNode3],
+    topic_name: 'Topic',
+    classroom_url_fragment: 'math',
+    topic_url_fragment: 'topic',
+  };
+
+  const multipleIncompleteMiddleNodesTopic = {
+    id: '0',
+    title: 'Story Title',
+    description: 'Story Description',
+    node_titles: ['Title 1', 'Title 2', 'Title 3', 'Title 4'],
+    thumbnail_filename: 'image.svg',
+    thumbnail_bg_color: '#F8BF74',
+    story_is_published: true,
+    completed_node_titles: ['Title 4', 'Title 2'],
+    url_fragment: 'story-title',
+    all_node_dicts: [sampleNode, sampleNode2, sampleNode3, sampleNode4],
     topic_name: 'Topic',
     classroom_url_fragment: 'math',
     topic_url_fragment: 'topic',
@@ -373,5 +424,83 @@ describe('LessonCardComponent', () => {
 
     expect(component.title).toBe('Chapter 2: Title 2');
     expect(component.progress).toBe(33);
+  });
+
+  it('should set to chapter 3 if is isRecommendation is false and user is currently on chapter 3', () => {
+    component.story = StorySummary.createFromBackendDict(
+      incompleteMiddleNodesTopic
+    );
+    component.topic = incompleteMiddleNodesTopic.topic_name;
+
+    fixture.detectChanges();
+
+    expect(component.title).toBe('Chapter 3: Title 3');
+    expect(component.progress).toBe(33);
+  });
+
+  it('should set to chapter 1 if is isRecommendation is true and user is currently on chapter 3 (last chapter)', () => {
+    component.isRecommendation = true;
+    component.story = StorySummary.createFromBackendDict(
+      incompleteMiddleNodesTopic
+    );
+    component.topic = incompleteMiddleNodesTopic.topic_name;
+
+    fixture.detectChanges();
+
+    expect(component.title).toBe('Chapter 1: Title 1');
+    expect(component.progress).toBe(33);
+  });
+
+  it('should set to chapter 3 if is isRecommendation is false and user has finished chapter 2', () => {
+    component.story = StorySummary.createFromBackendDict(
+      multipleIncompleteMiddleNodesTopic
+    );
+    component.topic = multipleIncompleteMiddleNodesTopic.topic_name;
+
+    fixture.detectChanges();
+
+    expect(component.title).toBe('Chapter 3: Title 3');
+    expect(component.progress).toBe(50);
+  });
+
+  it('should set to chapter 1 if is isRecommendation is true and user has finished chapter 4, 2 and is on 3', () => {
+    component.isRecommendation = true;
+    component.story = StorySummary.createFromBackendDict(
+      multipleIncompleteMiddleNodesTopic
+    );
+    component.topic = multipleIncompleteMiddleNodesTopic.topic_name;
+
+    fixture.detectChanges();
+
+    expect(component.title).toBe('Chapter 1: Title 1');
+    expect(component.progress).toBe(50);
+  });
+
+  it('should set to chapter 1 if is isRecommendation is false and user has finished chapter 4, 2, 3', () => {
+    const oneIncompleteMiddleNodeTopic = {
+      id: '0',
+      title: 'Story Title',
+      description: 'Story Description',
+      node_titles: ['Title 1', 'Title 2', 'Title 3', 'Title 4'],
+      thumbnail_filename: 'image.svg',
+      thumbnail_bg_color: '#F8BF74',
+      story_is_published: true,
+      completed_node_titles: ['Title 4', 'Title 2', 'Title 3'],
+      url_fragment: 'story-title',
+      all_node_dicts: [sampleNode, sampleNode2, sampleNode3, sampleNode4],
+      topic_name: 'Topic',
+      classroom_url_fragment: 'math',
+      topic_url_fragment: 'topic',
+    };
+
+    component.story = StorySummary.createFromBackendDict(
+      oneIncompleteMiddleNodeTopic
+    );
+    component.topic = oneIncompleteMiddleNodeTopic.topic_name;
+
+    fixture.detectChanges();
+
+    expect(component.title).toBe('Chapter 1: Title 1');
+    expect(component.progress).toBe(75);
   });
 });
