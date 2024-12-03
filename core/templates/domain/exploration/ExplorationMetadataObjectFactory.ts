@@ -40,6 +40,8 @@ export interface ExplorationMetadataBackendDict {
   param_changes: ParamChangeBackendDict[];
   auto_tts_enabled: boolean;
   edits_allowed: boolean;
+  has_viewed_lesson_info_modal_once: boolean;
+  most_recently_reached_checkpoint_state_name: string;
 }
 
 export class ExplorationMetadata {
@@ -62,6 +64,8 @@ export class ExplorationMetadata {
   _paramChanges: ParamChange[];
   _autoTtsEnabled: boolean;
   _editsAllowed: boolean;
+  _hasViewedLessonInfoModalOnce: boolean;
+  _mostRecentlyReachedCheckpointStateName: string;
 
   constructor(
     title: string,
@@ -76,7 +80,9 @@ export class ExplorationMetadata {
     paramSpecs: ParamSpecs,
     paramChanges: ParamChange[],
     autoTtsEnabled: boolean,
-    editsAllowed: boolean
+    editsAllowed: boolean,
+    hasViewedLessonInfoModalOnce: boolean,
+    mostRecentlyReachedCheckpointStateName: string
   ) {
     this._title = title;
     this._category = category;
@@ -91,6 +97,9 @@ export class ExplorationMetadata {
     this._paramChanges = paramChanges;
     this._autoTtsEnabled = autoTtsEnabled;
     this._editsAllowed = editsAllowed;
+    this._hasViewedLessonInfoModalOnce = hasViewedLessonInfoModalOnce;
+    this._mostRecentlyReachedCheckpointStateName =
+      mostRecentlyReachedCheckpointStateName;
   }
 
   toBackendDict(): ExplorationMetadataBackendDict {
@@ -110,6 +119,9 @@ export class ExplorationMetadata {
       ),
       auto_tts_enabled: this._autoTtsEnabled,
       edits_allowed: this._editsAllowed,
+      has_viewed_lesson_info_modal_once: this._hasViewedLessonInfoModalOnce,
+      most_recently_reached_checkpoint_state_name:
+        this._mostRecentlyReachedCheckpointStateName,
     };
   }
 }
@@ -149,7 +161,9 @@ export class ExplorationMetadataObjectFactory {
       paramSpecs,
       paramChanges,
       explorationMetadataBackendDict.auto_tts_enabled,
-      explorationMetadataBackendDict.edits_allowed
+      explorationMetadataBackendDict.edits_allowed,
+      explorationMetadataBackendDict.has_viewed_lesson_info_modal_once,
+      explorationMetadataBackendDict.most_recently_reached_checkpoint_state_name
     );
   }
 }

@@ -28,10 +28,8 @@ import {Subscription} from 'rxjs';
 import {ContextService} from 'services/context.service';
 import {I18nLanguageCodeService} from 'services/i18n-language-code.service';
 import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
-import {
-  ReadOnlyExplorationBackendApiService,
-  ReadOnlyExplorationBackendDict,
-} from 'domain/exploration/read-only-exploration-backend-api.service';
+import {ReadOnlyExplorationBackendApiService} from 'domain/exploration/read-only-exploration-backend-api.service';
+import {Exploration} from 'domain/exploration/ExplorationObjectFactory';
 import {CheckpointCelebrationUtilityService} from 'pages/exploration-player-page/services/checkpoint-celebration-utility.service';
 import {PlayerPositionService} from 'pages/exploration-player-page/services/player-position.service';
 import {StateCard} from 'domain/state_card/state-card.model';
@@ -70,7 +68,7 @@ export class CheckpointCelebrationModalComponent implements OnInit, OnDestroy {
   checkpointStatusArrayPlaceholder!: string[];
   checkpointTimer: SVGPolylineElement | null = null;
   directiveSubscriptions = new Subscription();
-  exploration: ReadOnlyExplorationBackendDict | undefined;
+  exploration: Exploration | undefined;
   hasViewedLessonInfoOnce: boolean | undefined;
   currentStateName: string | undefined;
   mostRecentlyReachedCheckpointStateName: string | null = null;
@@ -106,17 +104,17 @@ export class CheckpointCelebrationModalComponent implements OnInit, OnDestroy {
       );
     this.readOnlyExplorationBackendApiService
       .fetchExplorationAsync(this.explorationId, null)
-      .then(response => {
-        this.exploration = response.exploration;
+      .then(exploration => {
+        this.exploration = exploration;
         this.hasViewedLessonInfoOnce =
-          response.has_viewed_lesson_info_modal_once;
+          exploration.metadata.has_viewed_lesson_info_modal_once;
         this.mostRecentlyReachedCheckpointStateName =
-          response.most_recently_reached_checkpoint_state_name;
+          exploration.metadata.most_recently_reached_checkpoint_state_name;
 
         this.orderedCheckpointList =
           this.checkpointCelebrationUtilityService.getStateListForCheckpointMessages(
-            this.exploration.states,
-            this.exploration.init_state_name
+            exploration.getStates().toBackendDict(),
+            exploration.getInitialState().name
           );
         this.totalNumberOfCheckpoints = this.orderedCheckpointList.length;
         this.checkpointStatusArrayPlaceholder = new Array(
@@ -127,7 +125,7 @@ export class CheckpointCelebrationModalComponent implements OnInit, OnDestroy {
           this.totalNumberOfCheckpoints
         );
         this.setFadeInDelaysForCheckpointNodes();
-        this.currentStateName = this.exploration.init_state_name;
+        this.currentStateName = this.exploration.initStateName;
         this.subscribeToCardChangeEmitter();
       });
     this.shouldDisplayFullScaleMessage =

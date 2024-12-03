@@ -24,10 +24,8 @@ import {
   ExplorationSummaryBackendApiService,
   ExplorationSummaryBackendDict,
 } from 'domain/summary/exploration-summary-backend-api.service';
-import {
-  ReadOnlyExplorationBackendApiService,
-  FetchExplorationBackendResponse,
-} from './read-only-exploration-backend-api.service';
+import {ReadOnlyExplorationBackendApiService} from './read-only-exploration-backend-api.service';
+import {Exploration} from 'domain/exploration/ExplorationObjectFactory';
 import {MultipleChoiceInputCustomizationArgsBackendDict} from 'extensions/interactions/customization-args-defs';
 
 @Injectable({
@@ -40,8 +38,8 @@ export class CuratedExplorationValidationService {
   ) {}
 
   /* *****************************************
-  Validate exploration settings.
-  ***************************************** */
+    Validate exploration settings.
+    ***************************************** */
 
   // Exploration must be published.
   async isExpPublishedAsync(explorationId: string): Promise<boolean> {
@@ -73,16 +71,16 @@ export class CuratedExplorationValidationService {
   }
 
   /* *****************************************
-  Validate exploration RTE components.
-  ***************************************** */
+    Validate exploration RTE components.
+    ***************************************** */
 
   // We perform all RTE validation checks in the frontend by making a request
   // to the server and returning the result of the backend validation check.
   // This allows us to avoid needing to parse HTML DOM strings.
 
   /* *****************************************
-  Validate exploration interactions.
-  ***************************************** */
+    Validate exploration interactions.
+    ***************************************** */
 
   // Interactions are restricted to an allowlist.
   async getStatesWithRestrictedInteractions(
@@ -94,12 +92,11 @@ export class CuratedExplorationValidationService {
     }
     return this.readOnlyExplorationBackendApiService
       .fetchExplorationAsync(explorationId, null)
-      .then((response: FetchExplorationBackendResponse) => {
+      .then((exploration: Exploration) => {
         let invalidStateNames = [];
-        for (const [stateName, stateDict] of Object.entries(
-          response.exploration.states
-        )) {
-          const interactionId = stateDict.interaction.id as string;
+        for (const stateName of exploration.getStates().getStateNames()) {
+          const interactionId = exploration.getState(stateName).interaction
+            .id as string;
           if (!allowedInteractionIds.includes(interactionId)) {
             invalidStateNames.push(stateName);
           }
@@ -114,14 +111,13 @@ export class CuratedExplorationValidationService {
   ): Promise<string[]> {
     return this.readOnlyExplorationBackendApiService
       .fetchExplorationAsync(explorationId, null)
-      .then((response: FetchExplorationBackendResponse) => {
+      .then((exploration: Exploration) => {
         let invalidStateNames = [];
-        for (const [stateName, stateDict] of Object.entries(
-          response.exploration.states
-        )) {
-          if (stateDict.interaction.id === 'MultipleChoiceInput') {
-            const args = stateDict.interaction
-              .customization_args as MultipleChoiceInputCustomizationArgsBackendDict;
+        for (const stateName of exploration.getStates().getStateNames()) {
+          const state = exploration.getState(stateName);
+          if (state.interaction.id === 'MultipleChoiceInput') {
+            const args = state.interaction
+              .customizationArgs as MultipleChoiceInputCustomizationArgsBackendDict;
             if (
               args.choices.value.length <
               AppConstants.MIN_CHOICES_IN_MULTIPLE_CHOICE_INPUT_CURATED_EXP

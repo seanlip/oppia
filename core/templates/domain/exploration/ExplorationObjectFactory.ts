@@ -79,6 +79,7 @@ export class Exploration extends BaseTranslatableObject {
   states: States;
   title: string;
   languageCode: string;
+  metadata: ExplorationMetadataBackendDict;
   logger: LoggerService;
   urlInterpolationService: UrlInterpolationService;
   nextContentIdIndex: number;
@@ -91,6 +92,7 @@ export class Exploration extends BaseTranslatableObject {
     title: string,
     nextContentIdIndex: number,
     languageCode: string,
+    metadata: ExplorationMetadataBackendDict,
     loggerService: LoggerService,
     urlInterpolationService: UrlInterpolationService
   ) {
@@ -102,6 +104,7 @@ export class Exploration extends BaseTranslatableObject {
     this.states = states;
     this.title = title;
     this.languageCode = languageCode;
+    this.metadata = metadata;
     this.logger = loggerService;
     this.urlInterpolationService = urlInterpolationService;
     this.nextContentIdIndex = nextContentIdIndex;
@@ -242,6 +245,7 @@ export class ExplorationObjectFactory {
       explorationBackendDict.title,
       explorationBackendDict.next_content_id_index,
       explorationBackendDict.language_code,
+      explorationBackendDict.exploration_metadata,
       this.logger,
       this.urlInterpolationService
     );

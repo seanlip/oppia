@@ -168,6 +168,14 @@ export class States {
     return [...allLanguageCodes];
   }
 
+  toBackendDict(): StateObjectsBackendDict {
+    const backendDict: StateObjectsBackendDict = {};
+    for (const [stateName, state] of Object.entries(this._states)) {
+      backendDict[stateName] = state.toBackendDict();
+    }
+    return backendDict;
+  }
+
   getAllVoiceovers(languageCode: string): VoiceoverObjectsDict {
     let allAudioTranslations: VoiceoverObjectsDict = {};
     for (let stateName in this._states) {

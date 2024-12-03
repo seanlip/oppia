@@ -30,6 +30,9 @@ import {ExplorationMetadataBackendDict} from './ExplorationMetadataObjectFactory
 import {VersionedExplorationCachingService} from 'pages/exploration-editor-page/services/versioned-exploration-caching.service';
 import {UrlService} from 'services/contextual/url.service';
 
+import {Exploration} from 'domain/exploration/ExplorationObjectFactory';
+import {ExplorationObjectFactory} from 'domain/exploration/ExplorationObjectFactory';
+
 export interface ReadOnlyExplorationBackendDict {
   init_state_name: string;
   param_changes: ParamChangeBackendDict[];
@@ -66,10 +69,10 @@ export interface FetchExplorationBackendResponse {
   providedIn: 'root',
 })
 export class ReadOnlyExplorationBackendApiService {
-  private _explorationCache: Record<string, FetchExplorationBackendResponse> =
-    {};
+  private _explorationCache: Record<string, Exploration> = {};
 
   constructor(
+    private explorationObjectFactory: ExplorationObjectFactory,
     private http: HttpClient,
     private urlInterpolationService: UrlInterpolationService,
     private versionedExplorationCachingService: VersionedExplorationCachingService,
@@ -80,7 +83,7 @@ export class ReadOnlyExplorationBackendApiService {
     explorationId: string,
     version: number | null,
     uniqueProgressUrlId: string | null = null
-  ): Promise<FetchExplorationBackendResponse> {
+  ): Promise<Exploration> {
     return new Promise((resolve, reject) => {
       const explorationDataUrl = this._getExplorationUrl(
         explorationId,
@@ -95,12 +98,20 @@ export class ReadOnlyExplorationBackendApiService {
         version &&
         this.versionedExplorationCachingService.isCached(explorationId, version)
       ) {
-        resolve(
+        const cachedData =
           this.versionedExplorationCachingService.retrieveCachedVersionedExplorationData(
             explorationId,
             version
-          )
-        );
+          );
+        if (cachedData instanceof Exploration) {
+          resolve(cachedData);
+        } else {
+          resolve(
+            this.explorationObjectFactory.createFromExplorationBackendResponse(
+              cachedData
+            )
+          );
+        }
       } else {
         this.http
           .get<FetchExplorationBackendResponse>(explorationDataUrl)
@@ -116,7 +127,11 @@ export class ReadOnlyExplorationBackendApiService {
                   response
                 );
               }
-              resolve(response);
+              resolve(
+                this.explorationObjectFactory.createFromExplorationBackendResponse(
+                  response
+                )
+              );
             },
             errorResponse => {
               reject(errorResponse.error.error);
@@ -175,7 +190,7 @@ export class ReadOnlyExplorationBackendApiService {
     explorationId: string,
     version: number | null,
     uniqueProgressUrlId: string | null = null
-  ): Promise<FetchExplorationBackendResponse> {
+  ): Promise<Exploration> {
     return this._fetchExplorationAsync(
       explorationId,
       version,
@@ -196,7 +211,7 @@ export class ReadOnlyExplorationBackendApiService {
   async loadLatestExplorationAsync(
     explorationId: string,
     uniqueProgressUrlId: string | null = null
-  ): Promise<FetchExplorationBackendResponse> {
+  ): Promise<Exploration> {
     return new Promise((resolve, reject) => {
       if (this._isCached(explorationId)) {
         if (resolve) {
@@ -228,7 +243,7 @@ export class ReadOnlyExplorationBackendApiService {
   async loadExplorationAsync(
     explorationId: string,
     version: number
-  ): Promise<FetchExplorationBackendResponse> {
+  ): Promise<Exploration> {
     return new Promise((resolve, reject) => {
       this._fetchExplorationAsync(explorationId, version).then(exploration => {
         resolve(exploration);
@@ -249,10 +264,7 @@ export class ReadOnlyExplorationBackendApiService {
    * Replaces the current exploration in the cache given by the specified
    * exploration ID with a new exploration object.
    */
-  cacheExploration(
-    explorationId: string,
-    exploration: FetchExplorationBackendResponse
-  ): void {
+  cacheExploration(explorationId: string, exploration: Exploration): void {
     this._explorationCache[explorationId] = exploration;
   }
 
