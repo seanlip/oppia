@@ -78,7 +78,9 @@ jobs:
       - name: Install Chrome
         uses: ./.github/actions/install-chrome
       - name: Install ffmpeg for wdio videos
-        run: sudo apt install ffmpeg
+        run: |
+          sudo apt-get update && apt-get install -y apt-transport-https
+          sudo apt install ffmpeg
       - name: (Artifact re-build) Cache third_party/static
         if: steps.download_artifact_1.outcome == 'failure'
         uses: actions/cache@v3
