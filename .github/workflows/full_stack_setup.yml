@@ -18,8 +18,6 @@ jobs:
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
         with:
@@ -38,6 +36,10 @@ jobs:
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
+        with:
+          # This fetches all git refs, which is needed in the
+          # check_ci_test_suites_to_run script below.
+          fetch-depth: 0
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
       - name: Install Oppia dependencies
