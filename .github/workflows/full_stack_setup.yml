@@ -95,11 +95,6 @@ jobs:
             ${{ runner.os }}-
       - name: Install Oppia dependencies
         uses: ./.github/actions/install-oppia-dependencies
-      - name: Install Chrome
-        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        uses: ./.github/actions/install-chrome
-      - name: Install ffmpeg
-        run: sudo apt install ffmpeg
       - name: Build Webpack
         run: python -m scripts.build --prod_env
       - name: Zip build files

@@ -77,7 +77,7 @@ jobs:
         uses: ./.github/actions/install-oppia-dependencies
       - name: Install Chrome
         uses: ./.github/actions/install-chrome
-      - name: Install ffmpeg
+      - name: Install ffmpeg for wdio videos
         run: sudo apt install ffmpeg
       - name: (Artifact re-build) Cache third_party/static
         if: steps.download_artifact_1.outcome == 'failure'
