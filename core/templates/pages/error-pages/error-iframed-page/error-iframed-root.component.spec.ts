@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Unit tests for Topic Viewer Page Root component.
+ * @fileoverview Unit tests for Error Iframed Page Root component.
  */
 
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';

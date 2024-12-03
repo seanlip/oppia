@@ -13,8 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Guard that redirects user to 401 error page
- * if the user is not allowed to access Story Editor.
+ * @fileoverview Auth guard for the exploration player page.
  */
 
 import {Location} from '@angular/common';

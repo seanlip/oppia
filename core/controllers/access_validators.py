@@ -34,7 +34,6 @@ from typing import Dict, Optional, TypedDict
 # TODO(#13605): Refactor access validation handlers to follow a single handler
 # pattern.
 
-
 class ClassroomAccessValidationHandlerNormalizedRequestDict(TypedDict):
     """Dict representation of ClassroomAccessValidationHandler's
     normalized_request dictionary.
