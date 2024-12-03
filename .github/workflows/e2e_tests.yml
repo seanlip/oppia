@@ -5,6 +5,12 @@ on:
     types: [completed]
 
 jobs:
+  on_always:
+    name: Report workflow triggering
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Output status message
+        run: echo 'The triggering workflow happened'
   on_failure:
     name: Report failure of prerequisite workflow
     runs-on: ubuntu-22.04
