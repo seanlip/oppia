@@ -234,10 +234,6 @@ def output_variable_to_github_workflow(
         output_variable: str. The name of the output variable.
         output_value: str. The value of the output variable.
     """
-    print('OUTPUT DEBUGGING')
-    print(output_variable)
-    print(output_value)
-    print('-------------------------')
     with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as o:
         print(f'{output_variable}={output_value}', file=o)
 
