@@ -3,17 +3,6 @@ on:
   workflow_run:
     workflows: [Prepare env for full-stack tests]
     types: [completed]
-  # The following are added temporarily.
-  merge_group:
-    types: [checks_requested]
-  push:
-    branches:
-      - develop
-      - release-*
-  pull_request:
-    branches:
-      - develop
-      - release-*
 
 jobs:
   on_always:
