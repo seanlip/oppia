@@ -33,6 +33,8 @@ jobs:
   check_test_suites_to_run:
     name: Compute which tests to run
     runs-on: ubuntu-22.04
+    outputs:
+      TEST_SUITES_TO_RUN: ${{ steps.compute_test_suites.outputs.TEST_SUITES_TO_RUN }}
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
@@ -44,17 +46,17 @@ jobs:
         uses: ./.github/actions/merge-develop-and-setup-python
       - name: Install Oppia dependencies
         uses: ./.github/actions/install-oppia-dependencies
-      - id: test_suites_to_run
+      - id: compute_test_suites
         name: Check test suites to run
-        # This prints to stdout and also writes the output to ./suites-to-run.json.
         env:
           SHOULD_OUTPUT_ALL_TESTS: ${{ github.event_name != 'pull_request' || vars.RUN_SUITES_ON_CHANGED_FILES == 'false' }}
+        # This writes the output to both ./suites-to-run.json and $GITHUB_OUTPUT.
         run: >
           echo "TEST_SUITES_TO_RUN=";
           python -m scripts.check_ci_test_suites_to_run
           --github_head_ref="HEAD"
           --github_base_ref="origin/${{ github.event.pull_request.base.ref }}"
-          ${{ env.SHOULD_OUTPUT_ALL_TESTS == 'true' && '--output_all_test_suites' || '' }} | tee ./suites-to-run.json
+          ${{ env.SHOULD_OUTPUT_ALL_TESTS == 'true' && '--output_all_test_suites' || '' }} | tee ./suites-to-run.json "$GITHUB_OUTPUT"
         shell: bash
       - name: Upload suites-to-run mapping as a GitHub artifact
         uses: actions/upload-artifact@v4
@@ -69,11 +71,11 @@ jobs:
   build:
     name: Build the app, and store build files as an artifact
     needs: check_test_suites_to_run
-    if: ${{ fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).e2e.count > 0 ||
-            fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).lighthouse_performance.count > 0 ||
-            fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.docker.count > 0 ||
-            fromJson(needs.check_test_suites_to_run.outputs.test_suites_to_run).acceptance.python.count > 0 }}
     runs-on: ubuntu-22.04
+    if: ${{ fromJson(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.count > 0 ||
+            fromJson(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_performance.count > 0 ||
+            fromJson(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.count > 0 ||
+            fromJson(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.count > 0 }}
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
