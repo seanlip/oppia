@@ -55,13 +55,6 @@ jobs:
         # Note that the script also writes the output to $GITHUB_OUTPUT.
         run: |
           TEST_SUITES_TO_RUN=$(python -m scripts.check_ci_test_suites_to_run --github_head_ref="HEAD" --github_base_ref="origin/${{ github.event.pull_request.base.ref }}" ${{ env.SHOULD_OUTPUT_ALL_TESTS == 'true' && '--output_all_test_suites' || '' }})
-          echo "TEST_SUITES_TO_RUN=$(TEST_SUITES_TO_RUN)" > ./suites-to-run.json
-        shell: bash
-      - name: Upload suites-to-run mapping as a GitHub artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: suites-to-run
-          path: suites-to-run.json
       - name: Upload root files mapping as a GitHub artifact
         uses: actions/upload-artifact@v4
         with:
@@ -71,10 +64,10 @@ jobs:
     name: Build the app, and store build files as an artifact
     needs: [check_test_suites_to_run]
     runs-on: ubuntu-22.04
-    if: ${{ fromJson(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.count > 0 ||
-            fromJson(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_performance.count > 0 ||
-            fromJson(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.count > 0 ||
-            fromJson(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.count > 0 }}
+    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.count > 0 ||
+            fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_performance.count > 0 ||
+            fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.count > 0 ||
+            fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.count > 0 }}
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
@@ -114,10 +107,10 @@ jobs:
   e2e_test:
     needs: [check_test_suites_to_run, build]
     runs-on: ubuntu-22.04
-    if: ${{ needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN.e2e.python.count > 0 }}
+    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.python.count > 0 }}
     strategy:
       matrix:
-        suite: ${{ needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN.e2e.suites }}
+        suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.suites }}
     name: E2E test (${{ matrix.suite.name }})
     steps:
       - name: Checkout repository so that local actions can be used
@@ -203,10 +196,10 @@ jobs:
   acceptance_test_with_python_installation:
     needs: [check_test_suites_to_run, build]
     runs-on: ubuntu-22.04
-    if: ${{ needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN.acceptance.python.count > 0 }}
+    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.count > 0 }}
     strategy:
       matrix:
-        suite: ${{ needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN.acceptance.python.suites }}
+        suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.suites }}
     name: acceptance_test (${{ matrix.suite.name }} -- old installation)
     steps:
       - name: Checkout repository so that local actions can be used
@@ -279,10 +272,10 @@ jobs:
   acceptance_test_with_docker_installation:
     needs: [check_test_suites_to_run, build]
     runs-on: ubuntu-22.04
-    if: ${{ needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN.acceptance.docker.count > 0 }}
+    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.count > 0 }}
     strategy:
       matrix:
-        suite: ${{ needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN.acceptance.docker.suites }}
+        suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.suites }}
     name: acceptance_test (${{ matrix.suite.name }})
     steps:
       - name: Checkout repository
@@ -329,11 +322,11 @@ jobs:
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
   lighthouse_accessibility_test:
     needs: [check_test_suites_to_run]
-    if: ${{ needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN.lighthouse_accessibility.count > 0 }}
+    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_accessibility.count > 0 }}
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        suite: ${{ needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN.lighthouse_accessibility.suites }}
+        suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_accessibility.suites }}
     name: Run Lighthouse accessibility tests (shard ${{ matrix.suite.name }})
     steps:
       - name: Checkout repository so that local actions can be used
@@ -393,10 +386,10 @@ jobs:
   lighthouse_performance_test:
     needs: [check_test_suites_to_run, build]
     runs-on: ubuntu-22.04
-    if: ${{ needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN.lighthouse_performance.count > 0 }}
+    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_performance.count > 0 }}
     strategy:
       matrix:
-        suite: ${{ needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN.lighthouse_performance.suites }}
+        suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_performance.suites }}
     name: Run Lighthouse performance tests (shard ${{ matrix.suite.name }})
     steps:
       - name: Checkout repository so that local actions can be used
