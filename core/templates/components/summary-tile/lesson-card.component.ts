@@ -72,7 +72,7 @@ export class LessonCardComponent implements OnInit {
     );
 
     let nextStory = 0;
-    const completedNodeIndices = {};
+    const completedNodeIndices: {[title: string]: number} = {};
     for (let j = 0; j < storyModel.getAllNodes().length; j++) {
       if (storyModel.isNodeCompleted(storyModel.getAllNodes()[j].getTitle())) {
         completedNodeIndices[storyModel.getAllNodes()[j].getTitle()] = j;
