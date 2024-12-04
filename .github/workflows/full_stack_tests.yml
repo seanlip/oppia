@@ -161,7 +161,6 @@ jobs:
       - name: Install ffmpeg for wdio videos
         run: |
           sudo apt-get update
-          sudo apt-get install -y apt-transport-https
           sudo apt install ffmpeg
       - name: Run E2E Test ${{ matrix.suite.name }}
         uses: oppia/retry@a9fb265410e634c84ee90f3e87f323fde0541037
@@ -177,19 +176,22 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: webdriverio-video-${{matrix.suite.name}}
+          # Replace slashes in the filename with hyphens.
+          name: webdriverio-video-${{matrix.suite.name//\//-}}
           path: /home/runner/work/oppia/webdriverio-video
       - name: Uploading webdriverio screenshots as Artifacts
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: webdriverio-screenshots-${{matrix.suite.name}}
+          # Replace slashes in the filename with hyphens.
+          name: webdriverio-screenshots-${{matrix.suite.name//\//-}}
           path: /home/runner/work/oppia/webdriverio-screenshots
       - name: Uploading webpack bundles as an artifact
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: webpack-bundles-${{matrix.suite.name}}
+          # Replace slashes in the filename with hyphens.
+          name: webpack-bundles-${{matrix.suite.name//\//-}}
           path: /home/runner/work/oppia/oppia/build
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
@@ -255,7 +257,8 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: generated-test-to-angular-module-mapping-${{matrix.suite.name}}
+          # Replace slashes in the filename with hyphens.
+          name: generated-test-to-angular-module-mapping-${{matrix.suite.name//\//-}}
           path: /home/runner/work/oppia/oppia/core/tests/test-modules-mappings/acceptance/${{ matrix.suite.name }}.txt
       - name: Run Mobile Acceptance Test ${{ matrix.suite.name }}
         run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" python -m scripts.run_acceptance_tests --skip-build --suite=${{ matrix.suite.name }} --prod_env --mobile
@@ -263,7 +266,8 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: webpack-bundles-${{matrix.suite.name}}
+          # Replace slashes in the filename with hyphens.
+          name: webpack-bundles-${{matrix.suite.name//\//-}}
           path: /home/runner/work/oppia/oppia/build
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{
@@ -311,9 +315,10 @@ jobs:
         run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" make run_tests.acceptance suite=${{ matrix.suite.name }}
       - name: Uploading generated test to angular module mapping as an artifact
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: generated-test-to-angular-module-mapping-${{matrix.suite.name}}
+          # Replace slashes in the filename with hyphens.
+          name: generated-test-to-angular-module-mapping-${{matrix.suite.name//\//-}}
           path: /home/runner/work/oppia/oppia/core/tests/test-modules-mappings/acceptance/${{ matrix.suite.name }}.txt
       - name: Run Mobile Acceptance Test ${{ matrix.suite.name }}
         run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" make run_tests.acceptance suite=${{ matrix.suite.name }} MOBILE=true
@@ -452,7 +457,8 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: lhci-puppeteer-video-${{matrix.suite.name}}
+          # Replace slashes in the filename with hyphens.
+          name: lhci-puppeteer-video-${{matrix.suite.name//\//-}}
           path: /home/runner/work/oppia/lhci-puppeteer-video/video.mp4
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}

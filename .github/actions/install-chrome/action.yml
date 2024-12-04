@@ -10,7 +10,7 @@ runs:
       env:
         # This must be one of the versions available from
         # github.com/webnicer/chrome-downloads.
-        CHROME_VERSION: "119.0.6045.199-1"
+        CHROME_VERSION: "102.0.5005.61-1"
       with:
         max_attempts: 3
         retry_on: error
