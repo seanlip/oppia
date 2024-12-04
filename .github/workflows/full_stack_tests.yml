@@ -135,7 +135,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build_files
-          path: build_files.zip
+          path: /home/runner/work/oppia/build_files.zip
       - name: Unzip build files
         run: |
           pwd
@@ -227,6 +227,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build_files
+          path: /home/runner/work/oppia/build_files.zip
       - name: Unzip build files
         run: |
           pwd
@@ -420,7 +421,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build_files
-          path: /home/runner/work/oppia/
+          path: /home/runner/work/oppia/build_files.zip
       - name: Unzip build files
         if: steps.download_artifact_1.outcome != 'failure'
         run: |
