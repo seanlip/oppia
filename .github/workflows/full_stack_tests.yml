@@ -107,11 +107,12 @@ jobs:
   e2e_test:
     needs: [check_test_suites_to_run, build]
     runs-on: ubuntu-22.04
-    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.python.count > 0 }}
+    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.count > 0 }}
     strategy:
+      max-parallel: 3
       matrix:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.suites }}
-    name: E2E test (${{ matrix.suite.name }})
+    name: E2E (${{ matrix.suite.name }})
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
@@ -200,9 +201,10 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.count > 0 }}
     strategy:
+      max-parallel: 3
       matrix:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.suites }}
-    name: acceptance_test (${{ matrix.suite.name }} -- old installation)
+    name: Acceptance (${{ matrix.suite.name }} -- old installation)
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
@@ -227,6 +229,7 @@ jobs:
           name: build_files
       - name: Unzip build files
         run: |
+          pwd
           ls -la
           unzip build_files.zip
           rm build_files.zip
@@ -276,9 +279,10 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.count > 0 }}
     strategy:
+      max-parallel: 3
       matrix:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.suites }}
-    name: acceptance_test (${{ matrix.suite.name }})
+    name: Acceptance (${{ matrix.suite.name }})
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -329,7 +333,7 @@ jobs:
     strategy:
       matrix:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_accessibility.suites }}
-    name: Run Lighthouse accessibility tests (shard ${{ matrix.suite.name }})
+    name: Lighthouse a11y (shard ${{ matrix.suite.name }})
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
@@ -392,7 +396,7 @@ jobs:
     strategy:
       matrix:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_performance.suites }}
-    name: Run Lighthouse performance tests (shard ${{ matrix.suite.name }})
+    name: Lighthouse perf (shard ${{ matrix.suite.name }})
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
@@ -420,6 +424,7 @@ jobs:
       - name: Unzip build files
         if: steps.download_artifact_1.outcome != 'failure'
         run: |
+          pwd
           ls -la
           unzip build_files.zip
           rm build_files.zip
