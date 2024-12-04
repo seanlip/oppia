@@ -502,14 +502,10 @@ SENDER_VALIDATORS: Dict[str, Union[bool, Callable[[str], bool]]] = {
         user_services.is_curriculum_admin),
     feconf.BULK_EMAIL_INTENT_CREATOR_REENGAGEMENT: (
         lambda x: x == feconf.SYSTEM_COMMITTER_ID),
-    feconf.BULK_EMAIL_INTENT_ML_JOB_FAILURE: (
-        lambda x: x == feconf.SYSTEM_COMMITTER_ID),
     feconf.BULK_EMAIL_INTENT_LEARNER_REENGAGEMENT: (
         lambda x: x == feconf.SYSTEM_COMMITTER_ID),
     feconf.BULK_EMAIL_INTENT_TEST: (
         lambda x: x == feconf.SYSTEM_COMMITTER_ID),
-    feconf.EMAIL_INTENT_ML_JOB_FAILURE: (
-        lambda x: x == feconf.SYSTEM_COMMITTER_ID)
 }
 
 
@@ -702,40 +698,6 @@ def _send_bulk_mail(
             email_subject, cleaned_html_body, datetime.datetime.utcnow())
 
     _send_bulk_mail_transactional(instance_id)
-
-
-def send_job_failure_email(job_id: str) -> None:
-    """Sends an email to admin regarding the ML job failure.
-
-    Args:
-        job_id: str. The Job ID of the failing job.
-    """
-    mail_subject = 'Failed ML Job'
-    mail_body = ((
-        'ML job %s has failed. For more information,'
-        'please visit the admin page at:\n'
-        'https://www.oppia.org/admin#/jobs') % job_id)
-    admin_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS.value))
-    assert isinstance(admin_email_address, str)
-    admin_user_settings = user_services.get_user_settings_from_email(
-        admin_email_address)
-    # Rulling out the possibility of admin_user_settings is None for
-    # the mypy checks.
-    assert admin_user_settings is not None
-    system_email_address = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS.value))
-    assert isinstance(system_email_address, str)
-    system_email_name = (
-        platform_parameter_services.get_platform_parameter_value(
-            platform_parameter_list.ParamName.SYSTEM_EMAIL_NAME.value))
-    assert isinstance(system_email_name, str)
-    _send_email(
-        admin_user_settings.user_id, feconf.SYSTEM_COMMITTER_ID,
-        feconf.EMAIL_INTENT_ML_JOB_FAILURE, mail_subject, mail_body,
-        system_email_address, False, system_email_name)
 
 
 def send_dummy_mail_to_admin(username: str) -> None:

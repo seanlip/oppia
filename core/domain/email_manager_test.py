@@ -60,51 +60,6 @@ EMAIL_FOOTER = (
 )
 
 
-class FailedMLTest(test_utils.EmailTestBase):
-    """Test that email functionality for sending failed ML Job emails
-    works.
-    """
-
-    def setUp(self) -> None:
-        super().setUp()
-        self.ADMIN_USERNAME = 'admusername'
-        self.can_send_feedback_email_ctx = self.swap(
-            feconf, 'CAN_SEND_TRANSACTIONAL_EMAILS', True)
-        self.admin_email_address = (
-            param_services.get_platform_parameter_value(
-                param_list.ParamName.ADMIN_EMAIL_ADDRESS.value))
-        assert isinstance(self.admin_email_address, str)
-        self.signup(
-            self.admin_email_address, self.ADMIN_USERNAME, True)
-        self.login(self.admin_email_address, is_super_admin=True)
-
-    @test_utils.set_platform_parameters(
-        [
-            (param_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
-            (param_list.ParamName.EMAIL_SENDER_NAME, 'Name'),
-            (param_list.ParamName.EMAIL_FOOTER, EMAIL_FOOTER),
-            (param_list.ParamName.ADMIN_EMAIL_ADDRESS, 'testadmin@example.com'),
-            (param_list.ParamName.SYSTEM_EMAIL_ADDRESS, 'system@example.com'),
-            (param_list.ParamName.SYSTEM_EMAIL_NAME, '.')
-        ]
-    )
-    def test_send_failed_ml_email(self) -> None:
-        with self.can_send_feedback_email_ctx:
-            # Make sure there are no emails already sent.
-            assert isinstance(self.admin_email_address, str)
-            messages = self._get_sent_email_messages(self.admin_email_address)
-            self.assertEqual(len(messages), 0)
-
-            # Send job failure email with mock Job ID.
-            email_manager.send_job_failure_email('123ABC')
-
-            # Make sure emails are sent.
-            messages = self._get_sent_email_messages(self.admin_email_address)
-            expected_subject = 'Failed ML Job'
-            self.assertEqual(len(messages), 1)
-            self.assertEqual(messages[0].subject, expected_subject)
-
-
 class EmailToAdminTest(test_utils.EmailTestBase):
     """Test that emails are correctly sent to the admin."""
 
