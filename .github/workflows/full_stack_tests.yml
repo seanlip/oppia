@@ -172,26 +172,28 @@ jobs:
             xvfb-run -a --server-args="-screen 0, 1285x1000x24"
             python -m scripts.run_e2e_tests --skip-install
             --skip-build --suite=${{ matrix.suite.name }} --prod_env
+      - name: Generate modified suite name for artifacts
+        id: generate_suite_name_for_artifacts
+        # Replace slashes in the filename with hyphens.
+        run: |
+          echo "MODIFIED_SUITE_NAME=${{matrix.suite.name//\//_}}" >> $GITHUB_OUTPUT
       - name: Uploading webdriverio-video as Artifacts
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          # Replace slashes in the filename with hyphens.
-          name: webdriverio-video-${{matrix.suite.name//\//-}}
+          name: webdriverio-video-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
           path: /home/runner/work/oppia/webdriverio-video
       - name: Uploading webdriverio screenshots as Artifacts
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          # Replace slashes in the filename with hyphens.
-          name: webdriverio-screenshots-${{matrix.suite.name//\//-}}
+          name: webdriverio-screenshots-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
           path: /home/runner/work/oppia/webdriverio-screenshots
       - name: Uploading webpack bundles as an artifact
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          # Replace slashes in the filename with hyphens.
-          name: webpack-bundles-${{matrix.suite.name//\//-}}
+          name: webpack-bundles-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
           path: /home/runner/work/oppia/oppia/build
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
@@ -253,12 +255,16 @@ jobs:
         uses: ./.github/actions/install-oppia-dependencies
       - name: Run Desktop Acceptance Test ${{ matrix.suite.name }}
         run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" python -m scripts.run_acceptance_tests --skip-build --suite=${{ matrix.suite.name }} --prod_env
+      - name: Generate modified suite name for artifacts
+        id: generate_suite_name_for_artifacts
+        # Replace slashes in the filename with underscores.
+        run: |
+          echo "MODIFIED_SUITE_NAME=${{matrix.suite.name//\//_}}" >> $GITHUB_OUTPUT
       - name: Uploading generated test to angular module mapping as an artifact
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          # Replace slashes in the filename with hyphens.
-          name: generated-test-to-angular-module-mapping-${{matrix.suite.name//\//-}}
+          name: generated-test-to-angular-module-mapping-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
           path: /home/runner/work/oppia/oppia/core/tests/test-modules-mappings/acceptance/${{ matrix.suite.name }}.txt
       - name: Run Mobile Acceptance Test ${{ matrix.suite.name }}
         run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" python -m scripts.run_acceptance_tests --skip-build --suite=${{ matrix.suite.name }} --prod_env --mobile
@@ -266,8 +272,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          # Replace slashes in the filename with hyphens.
-          name: webpack-bundles-${{matrix.suite.name//\//-}}
+          name: webpack-bundles-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
           path: /home/runner/work/oppia/oppia/build
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{
@@ -313,12 +318,16 @@ jobs:
           sudo docker cp oppia-angular-build:/app/oppia/node_modules .
       - name: Run Desktop Acceptance Test ${{ matrix.suite.name }}
         run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" make run_tests.acceptance suite=${{ matrix.suite.name }}
+      - name: Generate modified suite name for artifacts
+        id: generate_suite_name_for_artifacts
+        # Replace slashes in the filename with underscores.
+        run: |
+          echo "MODIFIED_SUITE_NAME=${{matrix.suite.name//\//_}}" >> $GITHUB_OUTPUT
       - name: Uploading generated test to angular module mapping as an artifact
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          # Replace slashes in the filename with hyphens.
-          name: generated-test-to-angular-module-mapping-${{matrix.suite.name//\//-}}
+          name: generated-test-to-angular-module-mapping-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
           path: /home/runner/work/oppia/oppia/core/tests/test-modules-mappings/acceptance/${{ matrix.suite.name }}.txt
       - name: Run Mobile Acceptance Test ${{ matrix.suite.name }}
         run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" make run_tests.acceptance suite=${{ matrix.suite.name }} MOBILE=true
@@ -453,12 +462,16 @@ jobs:
       - name: Run Lighthouse performance checks (shard ${{ matrix.suite.name }})
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         run: python -m scripts.run_lighthouse_tests --mode performance --skip_build --record_screen --pages ${{ join(matrix.suite.pages_to_run, ',') }}
+      - name: Generate modified suite name for artifacts
+        id: generate_suite_name_for_artifacts
+        # Replace slashes in the filename with underscores.
+        run: |
+          echo "MODIFIED_SUITE_NAME=${{matrix.suite.name//\//_}}" >> $GITHUB_OUTPUT
       - name: Uploading puppeteer video as artifact
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          # Replace slashes in the filename with hyphens.
-          name: lhci-puppeteer-video-${{matrix.suite.name//\//-}}
+          name: lhci-puppeteer-video-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
           path: /home/runner/work/oppia/lhci-puppeteer-video/video.mp4
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
