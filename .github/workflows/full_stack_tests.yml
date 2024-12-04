@@ -134,8 +134,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build_files
+          path: build_files.zip
       - name: Unzip build files
         run: |
+          pwd
           ls -la
           unzip build_files.zip
           rm build_files.zip
@@ -173,19 +175,19 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: webdriverio-video
+          name: webdriverio-video-${{matrix.suite.name}}
           path: /home/runner/work/oppia/webdriverio-video
       - name: Uploading webdriverio screenshots as Artifacts
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: webdriverio-screenshots
+          name: webdriverio-screenshots-${{matrix.suite.name}}
           path: /home/runner/work/oppia/webdriverio-screenshots
       - name: Uploading webpack bundles as an artifact
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: webpack-bundles
+          name: webpack-bundles-${{matrix.suite.name}}
           path: /home/runner/work/oppia/oppia/build
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
@@ -248,7 +250,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: generated-test-to-angular-module-mapping
+          name: generated-test-to-angular-module-mapping-${{matrix.suite.name}}
           path: /home/runner/work/oppia/oppia/core/tests/test-modules-mappings/acceptance/${{ matrix.suite.name }}.txt
       - name: Run Mobile Acceptance Test ${{ matrix.suite.name }}
         run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" python -m scripts.run_acceptance_tests --skip-build --suite=${{ matrix.suite.name }} --prod_env --mobile
@@ -256,7 +258,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: webpack-bundles
+          name: webpack-bundles-${{matrix.suite.name}}
           path: /home/runner/work/oppia/oppia/build
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{
@@ -305,7 +307,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v3
         with:
-          name: generated-test-to-angular-module-mapping
+          name: generated-test-to-angular-module-mapping-${{matrix.suite.name}}
           path: /home/runner/work/oppia/oppia/core/tests/test-modules-mappings/acceptance/${{ matrix.suite.name }}.txt
       - name: Run Mobile Acceptance Test ${{ matrix.suite.name }}
         run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" make run_tests.acceptance suite=${{ matrix.suite.name }} MOBILE=true
@@ -445,7 +447,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: lhci-puppeteer-video
+          name: lhci-puppeteer-video-${{matrix.suite.name}}
           path: /home/runner/work/oppia/lhci-puppeteer-video/video.mp4
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
