@@ -58,7 +58,6 @@ var expectComponentDetailsToMatch = async function (
     console.warn(
       'Skipping flaky test parts due to bot check message in YouTube player.'
     );
-    return;
   } else {
     const startSeconds = await youtubePlayer.getAttribute(
       'ng-reflect-start-seconds'

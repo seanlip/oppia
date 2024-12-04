@@ -1051,11 +1051,6 @@ var ExplorationEditorMainTab = function () {
       stateNameContainer,
       'State name container is taking too long to become clickable.'
     );
-    // We need to use browser.pause() in order to wait for the state name
-    // container to fully load as on clicking it, state name input disappears
-    // after appearing for a fraction of a second.
-    // eslint-disable-next-line oppia/e2e-practices
-    await browser.pause(2000);
     await action.click('State Name Container', stateNameContainer);
     await waitFor.visibilityOf(
       stateNameInput,

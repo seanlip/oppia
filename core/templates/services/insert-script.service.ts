@@ -31,7 +31,7 @@ export enum KNOWN_SCRIPTS {
 export class InsertScriptService {
   // Set of scripts that have already loaded.
   private fullyLoadedScripts: Set<string> = new Set<string>();
-  // Maps scripts that are currently still loading along with their promises.
+  // Maps scripts that are currently still loading along with their on-load-callback promises.
   private partiallyLoadedScripts: Map<string, Promise<void>> = new Map();
   private renderer: Renderer2;
 
@@ -47,7 +47,15 @@ export class InsertScriptService {
     }
 
     // The loading method continues only if the script is not in partiallyLoadedScripts.
-    // This is to prevent the same script from creating multiple promises to load.
+    // This is to prevent the same script from creating multiple promises to load. This can
+    // happen for both the MATHJAX and DONORBOX scripts.
+    // The same script can create multiple promises as we call loadScript in the ngOnInit
+    // function of the component needing the script. If on exploration editor, you open the
+    // math expression editor, the MATHJAX script starts loading. If you close the editor
+    // before it loads completely and reopen it again, another promise will be created
+    // for the MATHJAX script due to loadScript being called by the ngOnInit function again.
+    // Hence, we need the partiallyLoadedScripts Map and these checks to prevent this from
+    // happening.
     if (!this.partiallyLoadedScripts.has(script)) {
       const scriptElement = this.renderer.createElement('script');
 
