@@ -18,7 +18,7 @@
 
 from __future__ import annotations
 
-import logging
+from unittest import mock
 
 from core import utils
 from core.domain import rights_domain
@@ -160,8 +160,9 @@ class ActivityRightsTests(test_utils.GenericTestBase):
         self.assertFalse(rights_manager.check_can_unpublish_activity(
             self.owner, None))
 
+    @mock.patch('logging.error')
     def test_cannot_release_ownership_of_exploration_with_insufficient_rights(
-        self
+        self, mock_logging: mock.Mock
     ) -> None:
         observed_log_messages = []
 
@@ -169,7 +170,8 @@ class ActivityRightsTests(test_utils.GenericTestBase):
             """Mocks logging.error()."""
             observed_log_messages.append(msg % args)
 
-        logging_swap = self.swap(logging, 'error', _mock_logging_function)
+        mock_logging.side_effect = _mock_logging_function
+        logging_swap = mock_logging
 
         assert_raises_regexp_context_manager = self.assertRaisesRegex(
             Exception, 'The ownership of this exploration cannot be released.')

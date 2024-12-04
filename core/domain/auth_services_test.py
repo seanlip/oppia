@@ -17,7 +17,7 @@
 """Tests for core.domain.auth_services."""
 
 from __future__ import annotations
-
+from unittest import mock
 from core.constants import constants
 from core.domain import auth_domain
 from core.domain import auth_services
@@ -26,14 +26,12 @@ from core.domain import user_domain
 from core.domain import user_services
 from core.platform import models
 from core.tests import test_utils
-from unittest.mock import Mock,patch
 
 import webapp2
 
 MYPY = False
 if MYPY:  # pragma: no cover
     from mypy_imports import auth_models
-    from mypy_imports import platform_auth_services
 
 auth_models, = (
     models.Registry.import_models([models.Names.AUTH]))
@@ -238,23 +236,38 @@ class AuthServicesTests(test_utils.GenericTestBase):
         # Should not raise.
         auth_services.delete_external_auth_associations('does_not_exist')
 
-    @patch("core.domain.auth_services.platform_auth_services.establish_auth_session")
-    @patch("core.domain.auth_services.platform_auth_services.destroy_auth_session")
-    def test_auth_session_established_or_destoryed(self,mock_destroy_auth_session:Mock,mock_establish_auth_session:Mock) -> None:
+    @mock.patch(
+            'core.domain.auth_services.platform_auth_services.'
+            'establish_auth_session'
+            )
+    @mock.patch(
+        'core.domain.auth_services.platform_auth_services.destroy_auth_session'
+    )
+    def test_auth_session_established_or_destoryed(
+        self, mock_destroy_auth_session: mock.Mock,
+        mock_establish_auth_session: mock.Mock) -> None:
         mock_destroy_auth_session.return_value = None
         mock_establish_auth_session.return_value = None
         request = webapp2.Request.blank('/')
         response = webapp2.Response()
-
+        auth_services.establish_auth_session(request, response)
         auth_services.establish_auth_session(request, response)
         mock_establish_auth_session.assert_called_once_with(request, response)
 
         auth_services.destroy_auth_session(response)
         mock_destroy_auth_session.assert_called_once_with(response)
 
-    @patch("core.domain.auth_services.firebase_auth_services.revoke_super_admin_privileges")
-    @patch("core.domain.auth_services.firebase_auth_services.grant_super_admin_privileges")
-    def test_super_admin_granted_or_revoked(self,mock_grant_super_admin_privileges:Mock,mock_revoke_super_admin_privileges:Mock) -> None:
+    @mock.patch(
+        'core.domain.auth_services.firebase_auth_services.'
+        'revoke_super_admin_privileges'
+    )
+    @mock.patch(
+        'core.domain.auth_services.firebase_auth_services.'
+        'grant_super_admin_privileges'
+    )
+    def test_super_admin_granted_or_revoked(
+        self, mock_grant_super_admin_privileges: mock.Mock,
+        mock_revoke_super_admin_privileges: mock.Mock) -> None:
         mock_grant_super_admin_privileges.return_value = None
         mock_revoke_super_admin_privileges.return_value = None
 

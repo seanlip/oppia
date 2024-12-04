@@ -19,7 +19,7 @@
 from __future__ import annotations
 
 import datetime
-import logging
+from unittest import mock
 
 from core import feconf
 from core import utils
@@ -435,8 +435,9 @@ class UserSettingsTests(test_utils.GenericTestBase):
         ):
             user_services.add_user_role(self.owner_id, 'invalid_role')
 
+    @mock.patch('logging.error')
     def test_cannot_get_human_readable_user_ids_with_invalid_user_ids(
-        self
+        self, mock_logging: mock.Mock
     ) -> None:
         observed_log_messages = []
 
@@ -445,7 +446,9 @@ class UserSettingsTests(test_utils.GenericTestBase):
             """Mocks logging.error()."""
             observed_log_messages.append(msg % args)
 
-        logging_swap = self.swap(logging, 'error', _mock_logging_function)
+        mock_logging.side_effect = _mock_logging_function
+        logging_swap = mock_logging
+
         assert_raises_user_not_found = self.assertRaisesRegex(
             Exception, 'User not found.')
 

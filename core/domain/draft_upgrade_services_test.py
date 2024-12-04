@@ -18,6 +18,8 @@
 
 from __future__ import annotations
 
+from unittest import mock
+
 from core import feconf
 from core import utils
 from core.domain import draft_upgrade_services
@@ -128,7 +130,6 @@ class DraftUpgradeUtilUnitTests(test_utils.GenericTestBase):
             target_schema_version: string. The schema version to upgrade
                 the exploration to (eg. '30').
         """
-
         # Create an exploration change list with the command that will migrate
         # the schema from current_schema_version to target_schema_version.
         exp_migration_change_list = [
@@ -142,9 +143,14 @@ class DraftUpgradeUtilUnitTests(test_utils.GenericTestBase):
         # The migration will automatically migrate the exploration to the latest
         # state schema version, so we set the latest schema version to be the
         # target_schema_version.
-        with self.swap(
-            feconf, 'CURRENT_STATE_SCHEMA_VERSION', int(target_schema_version)):
 
+        # Here we use object because create_and_migrate_new_exploration
+        # Is called by other functions, and using a decorator would
+        # Require modifying all the functions that call it.
+        with mock.patch.object(
+            feconf, 'CURRENT_STATE_SCHEMA_VERSION',
+            int(target_schema_version)
+        ):
             # Create and migrate the exploration.
             self.save_new_valid_exploration(self.EXP_ID, self.USER_ID)
             exp_services.update_exploration(

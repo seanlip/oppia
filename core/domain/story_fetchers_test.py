@@ -16,6 +16,8 @@
 
 from __future__ import annotations
 
+from unittest import mock
+
 from core import feconf
 from core.domain import story_domain
 from core.domain import story_fetchers
@@ -250,7 +252,21 @@ class StoryFetchersUnitTests(test_utils.GenericTestBase):
             user_stories_progress[0]['completed_node_titles'], ['Title 1'])
         self.assertEqual(user_stories_progress[0]['topic_name'], 'Topic')
 
-    def test_get_story_summary_by_id(self) -> None:
+    # Here we use object because we want to mock the 'get' attribute.
+    @mock.patch.object(
+        story_models.StorySummaryModel, 'get'
+    )
+    def test_get_story_summary_by_id(self, mock_get: mock.Mock) -> None:
+        mock_story_summary = mock.Mock()
+        mock_story_summary.id = self.story_id
+        mock_story_summary.title = 'Title'
+        mock_story_summary.description = 'Description'
+        mock_story_summary.node_titles = ['Title 1']
+        mock_story_summary.thumbnail_bg_color = None
+        mock_story_summary.thumbnail_filename = None
+
+        mock_get.side_effect = [mock_story_summary, None]
+
         story_summary = story_fetchers.get_story_summary_by_id(self.story_id)
         self.assertEqual(story_summary.id, self.story_id)
         self.assertEqual(story_summary.title, 'Title')
@@ -258,12 +274,8 @@ class StoryFetchersUnitTests(test_utils.GenericTestBase):
         self.assertEqual(story_summary.node_titles, ['Title 1'])
         self.assertEqual(story_summary.thumbnail_bg_color, None)
         self.assertEqual(story_summary.thumbnail_filename, None)
-        with self.swap_to_always_return(
-            story_models.StorySummaryModel,
-            'get'
-            ):
-            story_summary = story_fetchers.get_story_summary_by_id('fakeID')
-            self.assertEqual(story_summary, None)
+        story_summary = story_fetchers.get_story_summary_by_id('fakeID')
+        self.assertEqual(story_summary, None)
 
     def test_get_completed_node_id(self) -> None:
         self.assertEqual(

@@ -18,8 +18,8 @@
 
 from __future__ import annotations
 
-import logging
 import re
+from unittest import mock
 
 from core import feconf
 from core.domain import question_domain
@@ -642,14 +642,18 @@ class QuestionServicesUnitTest(test_utils.GenericTestBase):
             question.inapplicable_skill_misconception_ids, ['skillid12345-1'])
         self.assertEqual(question.version, 2)
 
-    def test_cannot_update_question_with_invalid_change_list(self) -> None:
+    @mock.patch('logging.error')
+    def test_cannot_update_question_with_invalid_change_list(
+        self, mock_logging: mock.Mock
+    ) -> None:
         observed_log_messages = []
 
         def _mock_logging_function(msg: str, *args: str) -> None:
             """Mocks logging.error()."""
             observed_log_messages.append(msg % args)
 
-        logging_swap = self.swap(logging, 'error', _mock_logging_function)
+        mock_logging.side_effect = _mock_logging_function
+        logging_swap = mock_logging
         assert_raises_context_manager = self.assertRaisesRegex(
             Exception, '\'str\' object has no attribute \'cmd\'')
 
@@ -658,8 +662,10 @@ class QuestionServicesUnitTest(test_utils.GenericTestBase):
         # wrong inputs that we can normally catch by typing.
         with logging_swap, assert_raises_context_manager:
             question_services.update_question(
-                self.editor_id, self.question_id, 'invalid_change_list',  # type: ignore[arg-type]
-                'updated question language code')
+                self.editor_id, self.question_id,
+                'invalid_change_list',  # type: ignore[arg-type]
+                'updated question language code'
+            )
 
         self.assertEqual(len(observed_log_messages), 1)
         self.assertRegex(

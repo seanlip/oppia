@@ -18,7 +18,8 @@
 
 from __future__ import annotations
 
-from core import feconf
+from unittest import mock
+
 from core.domain import email_subscription_services
 from core.domain import platform_parameter_list
 from core.domain import subscription_services
@@ -47,8 +48,10 @@ class InformSubscribersTest(test_utils.EmailTestBase):
     USER_NAME_2: Final = 'user2'
     USER_EMAIL_2: Final = 'user2@test.com'
 
-    def setUp(self) -> None:
+    @mock.patch('core.feconf.CAN_SEND_TRANSACTIONAL_EMAILS')
+    def setUp(self, mock_can_send_transactional_emails: mock.Mock) -> None:
         super().setUp()
+        mock_can_send_transactional_emails.return_value = True
         self.signup(self.EDITOR_EMAIL, self.EDITOR_USERNAME)
         self.signup(self.USER_EMAIL, self.USER_NAME)
         self.signup(self.NEW_USER_EMAIL, self.NEW_USER_USERNAME)
@@ -62,8 +65,9 @@ class InformSubscribersTest(test_utils.EmailTestBase):
         self.exploration = self.save_new_default_exploration(
             'A', self.editor_id, title='Title')
 
-        self.can_send_subscription_email_ctx = self.swap(
-            feconf, 'CAN_SEND_TRANSACTIONAL_EMAILS', True)
+        self.can_send_subscription_email_ctx = (
+            mock_can_send_transactional_emails
+        )
 
     @test_utils.set_platform_parameters(
         [

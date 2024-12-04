@@ -20,8 +20,8 @@ from __future__ import annotations
 
 import importlib
 import inspect
-import logging
 import re
+from unittest import mock
 
 from core import feconf
 from core.domain import event_services
@@ -382,14 +382,18 @@ class EventHandlerUnitTests(test_utils.GenericTestBase):
 class StatsEventsHandlerUnitTests(test_utils.GenericTestBase):
     """Tests related to the stats events handler."""
 
-    def test_stats_events_with_undefined_state_name_gets_logged(self) -> None:
+    @mock.patch('logging.error')
+    def test_stats_events_with_undefined_state_name_gets_logged(
+        self, mock_logging: mock.Mock
+    ) -> None:
         observed_log_messages = []
 
         def _mock_logging_function(msg: str, *args: str) -> None:
             """Mocks logging.error()."""
             observed_log_messages.append(msg % args)
 
-        logging_swap = self.swap(logging, 'error', _mock_logging_function)
+        mock_logging.side_effect = _mock_logging_function
+        logging_swap = mock_logging
         with logging_swap:
             event_services.StatsEventsHandler.record(
                 'eid1', 1, {
