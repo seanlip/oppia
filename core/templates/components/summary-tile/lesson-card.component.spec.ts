@@ -503,4 +503,32 @@ describe('LessonCardComponent', () => {
     expect(component.title).toBe('Chapter 1: Title 1');
     expect(component.progress).toBe(75);
   });
+
+  it('should set to chapter 2 if is isRecommendation is true and user has finished chapter 1, 3 and is on 4', () => {
+    const earlyIncompleteNodeTopic = {
+      id: '0',
+      title: 'Story Title',
+      description: 'Story Description',
+      node_titles: ['Title 1', 'Title 2', 'Title 3', 'Title 4'],
+      thumbnail_filename: 'image.svg',
+      thumbnail_bg_color: '#F8BF74',
+      story_is_published: true,
+      completed_node_titles: ['Title 1', 'Title 3'],
+      url_fragment: 'story-title',
+      all_node_dicts: [sampleNode, sampleNode2, sampleNode3, sampleNode4],
+      topic_name: 'Topic',
+      classroom_url_fragment: 'math',
+      topic_url_fragment: 'topic',
+    };
+    component.isRecommendation = true;
+    component.story = StorySummary.createFromBackendDict(
+      earlyIncompleteNodeTopic
+    );
+    component.topic = earlyIncompleteNodeTopic.topic_name;
+
+    fixture.detectChanges();
+
+    expect(component.title).toBe('Chapter 2: Title 2');
+    expect(component.progress).toBe(50);
+  });
 });
