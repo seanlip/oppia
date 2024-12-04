@@ -18,11 +18,10 @@
 
 from __future__ import annotations
 
+import os
 import urllib
 import requests
-import unittest
 from unittest.mock import patch, Mock
-import os
 
 from core import feconf
 from core import utils
@@ -54,30 +53,12 @@ class EmailTests(test_utils.GenericTestBase):
             ]
         )
 
-    class Response:
-        """Class to mock utils.url_open responses."""
-
-        def __init__(
-            self, url: MailgunQueryType, expected_url: MailgunQueryType
-        ) -> None:
-            self.url = url
-            self.expected_url = expected_url
-
-        def getcode(self) -> int:
-            """Gets the status code of this url_open mock.
-
-            Returns:
-                int. 200 to signify status is OK. 500 otherwise.
-            """
-            return 200 if self.url == self.expected_url else 500
-
     @patch('requests.post')
     def test_send_email_to_mailgun_without_bcc_reply_to_and_recipients(
         self, mock_post: Mock
     ) -> None:
         """Test for sending HTTP POST request."""
         # Test sending email without bcc, reply_to or recipient_variables.
-
         mock_response = Mock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
@@ -92,7 +73,6 @@ class EmailTests(test_utils.GenericTestBase):
         swap_domain = self.swap(feconf, 'MAILGUN_DOMAIN_NAME', 'domain')
 
         with self.swap_api_key_secrets_return_secret, swap_domain:
-
             resp = mailgun_email_services.send_email_to_recipients(
                 sender_email,
                 recipient_emails,
@@ -161,103 +141,147 @@ class EmailTests(test_utils.GenericTestBase):
         self.assertIn('files', kwargs)
         self.assertEqual(kwargs['files'][0][1][0], 'test_file.txt')
 
-    def test_send_email_to_mailgun_with_bcc_and_recipient(self) -> None:
+    @patch("requests.post")
+    def test_send_email_to_mailgun_with_bcc_and_recipient(self, mock_post) -> None:
         # Test sending email with single bcc and single recipient email.
-        expected_query_url = (
-            'https://api.mailgun.net/v3/domain/messages',
-            b'from=a%40a.com&'
-            b'subject=Hola+%F0%9F%98%82+-+invitation+to+collaborate&'
-            b'text=plaintext_body+%F0%9F%98%82&'
-            b'html=Hi+abc%2C%3Cbr%3E+%F0%9F%98%82&'
-            b'to=b%40b.com&'
-            b'bcc=c%40c.com&'
-            b'h%3AReply-To=abc&'
-            b'recipient_variables=%7B%27b%40b.com'
-            b'%27%3A+%7B%27first%27%3A+%27Bob%27%2C+%27id%27%3A+1%7D%7D',
-            {'Authorization': 'Basic YXBpOmtleQ=='})
-        swapped_urlopen = lambda x: self.Response(x, expected_query_url)
-        swap_urlopen_context = self.swap(
-            utils, 'url_open', swapped_urlopen)
-        swap_request_context = self.swap(
-            urllib.request, 'Request', self.swapped_request)
-        swap_domain = self.swap(feconf, 'MAILGUN_DOMAIN_NAME', 'domain')
-        with self.swap_api_key_secrets_return_secret, swap_urlopen_context:
-            with swap_request_context, swap_domain:
-                resp = mailgun_email_services.send_email_to_recipients(
-                    'a@a.com',
-                    ['b@b.com'],
-                    'Hola 😂 - invitation to collaborate',
-                    'plaintext_body 😂',
-                    'Hi abc,<br> 😂',
-                    bcc=['c@c.com'],
-                    reply_to='abc',
-                    recipient_variables={'b@b.com': {'first': 'Bob', 'id': 1}})
-                self.assertTrue(resp)
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
 
-    def test_send_email_to_mailgun_with_bcc_and_recipients(self) -> None:
+        sender_email = "a@example.com"
+        recipient_emails = ["b@example.com"]
+        subject = "Hola 😂 - invitation to collaborate"
+        plaintext_body = "plaintext_body 😂"
+        html_body = 'Hi abc,<br> 😂'
+        recipient_variables = {'b@b.com': {'first': 'Bob', 'id': 1}}
+        bcc = ['c@example.com']
+        reply_to='abc'
+        attachments = None
+
+        swap_domain = self.swap(feconf, 'MAILGUN_DOMAIN_NAME', 'domain')
+
+        with self.swap_api_key_secrets_return_secret, swap_domain:
+            resp = mailgun_email_services.send_email_to_recipients(
+                sender_email,
+                recipient_emails,
+                subject,
+                plaintext_body,
+                html_body,
+                bcc=bcc,
+                reply_to=reply_to,
+                recipient_variables=recipient_variables)
+
+        expected_data = {
+            'from': sender_email,
+            'subject': subject,
+            'text': plaintext_body,
+            'html': html_body,
+            'to': recipient_emails[0],
+            'recipient_variables': recipient_variables,
+            'h:Reply-To': reply_to,
+            'bcc': bcc[0],
+        }
+
+        mock_post.assert_called_once_with(
+            f'https://api.mailgun.net/v3/domain/messages',
+            auth=('api', 'key'),
+            data=expected_data,
+            files=attachments
+        )
+        self.assertTrue(resp)
+
+    @patch("requests.post")
+    def test_send_email_to_mailgun_with_bcc_and_recipients(self, mock_post) -> None:
         # Test sending email with single bcc, and multiple recipient emails
         # differentiated by recipient_variables ids.
-        expected_query_url = (
-            'https://api.mailgun.net/v3/domain/messages',
-            b'from=a%40a.com&'
-            b'subject=Hola+%F0%9F%98%82+-+invitation+to+collaborate&'
-            b'text=plaintext_body+%F0%9F%98%82&'
-            b'html=Hi+abc%2C%3Cbr%3E+%F0%9F%98%82&'
-            b'to=b%40b.com&'
-            b'bcc=%5B%27c%40c.com%27%2C+%27d%40d.com%27%5D&'
-            b'h%3AReply-To=abc&'
-            b'recipient_variables=%7B%27b%40b.com'
-            b'%27%3A+%7B%27first%27%3A+%27Bob%27%2C+%27id%27%3A+1%7D%7D',
-            {'Authorization': 'Basic YXBpOmtleQ=='})
-        swapped_urlopen = lambda x: self.Response(x, expected_query_url)
-        swap_urlopen_context = self.swap(
-            utils, 'url_open', swapped_urlopen)
-        swap_request_context = self.swap(
-            urllib.request, 'Request', self.swapped_request)
-        swap_domain = self.swap(feconf, 'MAILGUN_DOMAIN_NAME', 'domain')
-        with self.swap_api_key_secrets_return_secret, swap_urlopen_context:
-            with swap_request_context, swap_domain:
-                resp = mailgun_email_services.send_email_to_recipients(
-                    'a@a.com',
-                    ['b@b.com'],
-                    'Hola 😂 - invitation to collaborate',
-                    'plaintext_body 😂',
-                    'Hi abc,<br> 😂',
-                    bcc=['c@c.com', 'd@d.com'],
-                    reply_to='abc',
-                    recipient_variables=({
-                        'b@b.com': {'first': 'Bob', 'id': 1}
-                    })
-                )
-                self.assertTrue(resp)
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
 
-    def test_batch_send_to_mailgun(self) -> None:
-        """Test for sending HTTP POST request."""
-        expected_query_url: MailgunQueryType = (
-            'https://api.mailgun.net/v3/domain/messages',
-            b'from=a%40a.com&'
-            b'subject=Hola+%F0%9F%98%82+-+invitation+to+collaborate&'
-            b'text=plaintext_body+%F0%9F%98%82&'
-            b'html=Hi+abc%2C%3Cbr%3E+%F0%9F%98%82&'
-            b'to=%5B%27b%40b.com%27%2C+%27c%40c.com%27%2C+%27d%40d.com%27%5D&'
-            b'recipient_variables=%7B%7D',
-            {'Authorization': 'Basic YXBpOmtleQ=='})
-        swapped_urlopen = lambda x: self.Response(x, expected_query_url)
-        swapped_request = lambda *args: args
-        swap_urlopen_context = self.swap(
-            utils, 'url_open', swapped_urlopen)
-        swap_request_context = self.swap(
-            urllib.request, 'Request', swapped_request)
+        sender_email = "a@example.com"
+        recipient_emails = ["b@example.com"]
+        subject = "Hola 😂 - invitation to collaborate"
+        plaintext_body = "plaintext_body 😂"
+        html_body = 'Hi abc,<br> 😂'
+        recipient_variables = {'b@example.com': {'first': 'Bob', 'id': 1}}
+        bcc = ['c@example.com', 'd@example.com']
+        reply_to='abc'
+        attachments = None
+
         swap_domain = self.swap(feconf, 'MAILGUN_DOMAIN_NAME', 'domain')
-        with self.swap_api_key_secrets_return_secret, swap_urlopen_context:
-            with swap_request_context, swap_domain:
-                resp = mailgun_email_services.send_email_to_recipients(
-                    'a@a.com',
-                    ['b@b.com', 'c@c.com', 'd@d.com'],
-                    'Hola 😂 - invitation to collaborate',
-                    'plaintext_body 😂',
-                    'Hi abc,<br> 😂')
-                self.assertTrue(resp)
+
+        with self.swap_api_key_secrets_return_secret, swap_domain:
+            resp = mailgun_email_services.send_email_to_recipients(
+                sender_email,
+                recipient_emails,
+                subject,
+                plaintext_body,
+                html_body,
+                bcc,
+                reply_to,
+                recipient_variables=(recipient_variables)
+            )
+
+        expected_data = {
+            'from': sender_email,
+            'subject': subject,
+            'text': plaintext_body,
+            'html': html_body,
+            'to': recipient_emails[0],
+            'recipient_variables': recipient_variables,
+            'h:Reply-To': reply_to,
+            'bcc': bcc,
+        }
+
+        mock_post.assert_called_once_with(
+            f'https://api.mailgun.net/v3/domain/messages',
+            auth=('api', 'key'),
+            data=expected_data,
+            files=attachments
+        )
+        self.assertTrue(resp)
+
+    @patch("requests.post")
+    def test_batch_send_to_mailgun(self, mock_post) -> None:
+        """Test for sending HTTP POST request."""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
+
+        sender_email = "a@example.com"
+        recipient_emails = ["b@example.com", 'c@example.com', 'd@example.com']
+        subject = "Hola 😂 - invitation to collaborate"
+        plaintext_body = "plaintext_body 😂"
+        html_body = 'Hi abc,<br> 😂'
+        attachments = None
+
+        swap_domain = self.swap(feconf, 'MAILGUN_DOMAIN_NAME', 'domain')
+
+        with self.swap_api_key_secrets_return_secret, swap_domain:
+            resp = mailgun_email_services.send_email_to_recipients(
+                sender_email,
+                recipient_emails,
+                subject,
+                plaintext_body,
+                html_body
+            )
+
+        expected_data = {
+            'from': sender_email,
+            'subject': subject,
+            'text': plaintext_body,
+            'html': html_body,
+            'to': recipient_emails,
+            'recipient_variables': {}
+        }
+
+        mock_post.assert_called_once_with(
+            f'https://api.mailgun.net/v3/domain/messages',
+            auth=('api', 'key'),
+            data=expected_data,
+            files=attachments
+        )
+        self.assertTrue(resp)
 
     def test_mailgun_key_not_set_raises_exception(self) -> None:
         """Test that exceptions are raised when API key or domain name are
@@ -296,35 +320,43 @@ class EmailTests(test_utils.GenericTestBase):
                     logs
                 )
 
-    def test_invalid_status_code_returns_false(self) -> None:
-        expected_query_url: MailgunQueryType = (
-            'https://api.mailgun.net/v3/domain/messages',
-            b'from=a%40a.com&'
-            b'subject=Hola+%F0%9F%98%82+-+invitation+to+collaborate&'
-            b'text=plaintext_body+%F0%9F%98%82&'
-            b'html=Hi+abc%2C%3Cbr%3E+%F0%9F%98%82&'
-            b'to=%5B%27b%40b.com%27%2C+%27c%40c.com%27%2C+%27d%40d.com%27%5D&'
-            b'recipient_variables=%7B%7D',
-            {'Authorization': 'Basic'})
-        swapped_request = lambda *args: args
-        swapped_urlopen = lambda x: self.Response(x, expected_query_url)
-        swap_urlopen_context = self.swap(
-            utils, 'url_open', swapped_urlopen)
-        swap_request_context = self.swap(
-            urllib.request, 'Request', swapped_request)
+    @patch("requests.post")
+    def test_invalid_status_code_returns_false(self, mock_post) -> None:
+        mock_response = Mock()
+        mock_response.status_code = 500
+        mock_post.return_value = mock_response
+
+        sender_email = "a@example.com"
+        recipient_emails = ["b@example.com", 'c@example.com', 'd@example.com']
+        subject = "Hola 😂 - invitation to collaborate"
+        plaintext_body = "plaintext_body 😂"
+        html_body = 'Hi abc,<br> 😂'
+        attachments = None
+
         swap_domain = self.swap(feconf, 'MAILGUN_DOMAIN_NAME', 'domain')
-        with self.swap_api_key_secrets_return_secret, swap_urlopen_context:
-            with swap_request_context, swap_domain:
-                resp = mailgun_email_services.send_email_to_recipients(
-                    'a@a.com',
-                    ['b@b.com'],
-                    'Hola 😂 - invitation to collaborate',
-                    'plaintext_body 😂',
-                    'Hi abc,<br> 😂',
-                    bcc=['c@c.com', 'd@d.com'],
-                    reply_to='abc',
-                    recipient_variables=({
-                        'b@b.com': {'first': 'Bob', 'id': 1}
-                    })
-                )
-                self.assertFalse(resp)
+
+        with self.swap_api_key_secrets_return_secret, swap_domain:
+            resp = mailgun_email_services.send_email_to_recipients(
+                sender_email,
+                recipient_emails,
+                subject,
+                plaintext_body,
+                html_body
+            )
+
+        expected_data = {
+            'from': sender_email,
+            'subject': subject,
+            'text': plaintext_body,
+            'html': html_body,
+            'to': recipient_emails,
+            'recipient_variables': {}
+        }
+
+        mock_post.assert_called_once_with(
+            f'https://api.mailgun.net/v3/domain/messages',
+            auth=('api', 'key'),
+            data=expected_data,
+            files=attachments
+        )
+        self.assertFalse(resp)

@@ -130,8 +130,8 @@ def send_email_to_recipients(
 
        # Adding attachments to the email.
         files = [(
-            "attachment", 
-            (attachment["filename"], open(attachment["path"], "rb"))) 
+            "attachment",
+            (attachment["filename"], open(attachment["path"], "rb")))
             for attachment in attachments
         ] if attachments else None
 
@@ -142,14 +142,14 @@ def send_email_to_recipients(
                 data=data,
                 files=files
             )
-            # Close file objects after the request.
+
             if files:
                 for _, (_, file_obj) in files:
                     file_obj.close()
 
             if response.status_code != 200:
                 logging.error(
-                    "Failed to send email: %s - %s." 
+                    "Failed to send email: %s - %s."
                     % (response.status_code, response.text))
                 return False
         except requests.RequestException as e:
