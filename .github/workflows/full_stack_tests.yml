@@ -160,7 +160,8 @@ jobs:
         uses: ./.github/actions/install-chrome
       - name: Install ffmpeg for wdio videos
         run: |
-          sudo apt-get update && apt-get install -y apt-transport-https
+          sudo apt-get update
+          sudo apt-get install -y apt-transport-https
           sudo apt install ffmpeg
       - name: Run E2E Test ${{ matrix.suite.name }}
         uses: oppia/retry@a9fb265410e634c84ee90f3e87f323fde0541037
@@ -341,9 +342,9 @@ jobs:
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
         with:
-          use_cache: false
+          use_cache: true
       # Caching is disabled to avoid poisoning our cache with the
-      # changed lighthouse file.
+      # changed lighthouse file (see later).
       #
       # - name: Cache node modules
       #   uses: actions/cache@v3
@@ -404,7 +405,7 @@ jobs:
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
         with:
-          use_cache: false
+          use_cache: true
       - name: Cache node modules
         uses: actions/cache@v3
         env:
