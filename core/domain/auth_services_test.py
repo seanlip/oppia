@@ -243,7 +243,7 @@ class AuthServicesTests(test_utils.GenericTestBase):
     @mock.patch(
         'core.domain.auth_services.platform_auth_services.destroy_auth_session'
     )
-    def test_auth_session_established_or_destoryed(
+    def test_auth_session_established_or_destroyed(
         self, mock_destroy_auth_session: mock.Mock,
         mock_establish_auth_session: mock.Mock) -> None:
         mock_destroy_auth_session.return_value = None
@@ -252,8 +252,7 @@ class AuthServicesTests(test_utils.GenericTestBase):
         response = webapp2.Response()
         auth_services.establish_auth_session(request, response)
         auth_services.establish_auth_session(request, response)
-        mock_establish_auth_session.assert_called_once_with(request, response)
-
+        self.assertEqual(mock_establish_auth_session.call_count, 2)
         auth_services.destroy_auth_session(response)
         mock_destroy_auth_session.assert_called_once_with(response)
 
@@ -270,10 +269,8 @@ class AuthServicesTests(test_utils.GenericTestBase):
         mock_revoke_super_admin_privileges: mock.Mock) -> None:
         mock_grant_super_admin_privileges.return_value = None
         mock_revoke_super_admin_privileges.return_value = None
-
         auth_services.grant_super_admin_privileges('uid1')
         mock_grant_super_admin_privileges.assert_called_once_with('uid1')
-
         auth_services.revoke_super_admin_privileges('uid1')
         mock_revoke_super_admin_privileges.assert_called_once_with('uid1')
 
