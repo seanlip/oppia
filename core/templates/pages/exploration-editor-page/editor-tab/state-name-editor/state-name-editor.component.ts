@@ -118,8 +118,7 @@ export class StateNameEditorComponent implements OnInit, OnDestroy {
         if (
           this.stateNameService.isStateNameEditorShown() &&
           !this.explorationStatesService.isNewStateNameDuplicate(
-            this.tmpStateName,
-            true
+            this.tmpStateName
           )
         ) {
           this.saveStateName(this.tmpStateName);
