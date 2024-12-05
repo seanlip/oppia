@@ -30,7 +30,6 @@ from core.controllers import beam_jobs
 from core.controllers import blog_admin
 from core.controllers import blog_dashboard
 from core.controllers import blog_homepage
-from core.controllers import classifier
 from core.controllers import classroom
 from core.controllers import collection_editor
 from core.controllers import collection_viewer
@@ -101,7 +100,7 @@ datastore_services = models.Registry.import_datastore_services()
 # Cloud Logging is disabled in emulator mode, since it is unnecessary and
 # creates a lot of noise.
 if not constants.EMULATOR_MODE:
-    # Instantiates a client and rtrieves a Cloud Logging handler based on the
+    # Instantiates a client and retrieves a Cloud Logging handler based on the
     # environment you're running in and integrates the handler with the Python
     # logging module.
     client = google.cloud.logging.Client()
@@ -408,9 +407,6 @@ URLS = [
     get_redirect_route(
         '/creator_dashboard',
         creator_dashboard.OldCreatorDashboardRedirectPage),
-    get_redirect_route(
-        r'%s' % feconf.CREATOR_DASHBOARD_URL,
-        creator_dashboard.CreatorDashboardPage),
     get_redirect_route(
         r'%s' % feconf.CREATOR_DASHBOARD_DATA_URL,
         creator_dashboard.CreatorDashboardHandler),
@@ -1096,11 +1092,6 @@ URLS = [
 
     get_redirect_route(
         r'/issuesdatahandler/<exploration_id>', editor.FetchIssuesHandler),
-
-    get_redirect_route(
-        r'/ml/trainedclassifierhandler', classifier.TrainedClassifierHandler),
-    get_redirect_route(
-        r'/ml/nextjobhandler', classifier.NextJobHandler),
 
     get_redirect_route(
         r'/playthroughdatahandler/<exploration_id>/<playthrough_id>',
