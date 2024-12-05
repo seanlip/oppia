@@ -13,6 +13,14 @@
       "module": "core/tests/puppeteer-acceptance-tests/specs/blog-editor/try-to-publish-a-duplicate-blog-post-and-get-blocked.spec.ts"
     },
     {
+      "name": "curriculum-admin/create-edit-and-delete-classroom",
+      "module": "core/tests/puppeteer-acceptance-tests/specs/curriculum-admin/create-edit-and-delete-classroom.spec.ts"
+    },
+    {
+      "name": "curriculum-admin/create-publish-unpublish-and-delete-topic-and-skill",
+      "module": "core/tests/puppeteer-acceptance-tests/specs/curriculum-admin/create-publish-unpublish-and-delete-topic-and-skill.spec.ts"
+    },
+    {
       "name": "exploration-editor/load-complete-and-restart-exploration-preview",
       "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/load-complete-and-restart-exploration-preview.spec.ts"
     },
@@ -35,14 +43,6 @@
     {
       "name": "exploration-editor/save-draft-publish-and-discard-the-changes",
       "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/save-draft-publish-and-discard-the-changes.spec.ts"
-    },
-    {
-      "name": "curriculum-admin/create-edit-and-delete-classroom",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/curriculum-admin/create-edit-and-delete-classroom.spec.ts"
-    },
-    {
-      "name": "curriculum-admin/create-publish-unpublish-and-delete-topic-and-skill",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/curriculum-admin/create-publish-unpublish-and-delete-topic-and-skill.spec.ts"
     },
     {
       "name": "logged-in-user/create-and-delete-account",
