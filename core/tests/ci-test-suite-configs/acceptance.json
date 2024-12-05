@@ -1,6 +1,42 @@
 {
   "suites": [
     {
+      "name": "blog-editor/create-and-publish-a-blog-post-with-required-details",
+      "module": "core/tests/puppeteer-acceptance-tests/specs/blog-editor/create-and-publish-a-blog-post-with-required-details.spec.ts"
+    },
+    {
+      "name": "blog-editor/create-and-delete-draft-blog-post",
+      "module": "core/tests/puppeteer-acceptance-tests/specs/blog-editor/create-and-delete-draft-blog-post.spec.ts"
+    },
+    {
+      "name": "blog-editor/try-to-publish-a-duplicate-blog-post-and-get-blocked",
+      "module": "core/tests/puppeteer-acceptance-tests/specs/blog-editor/try-to-publish-a-duplicate-blog-post-and-get-blocked.spec.ts"
+    },
+    {
+      "name": "exploration-editor/load-complete-and-restart-exploration-preview",
+      "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/load-complete-and-restart-exploration-preview.spec.ts"
+    },
+    {
+      "name": "exploration-editor/create-exploration-and-change-basic-settings",
+      "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/create-exploration-and-change-basic-settings.spec.ts"
+    },
+    {
+      "name": "exploration-editor/manage-exploration-misconceptions",
+      "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/manage-exploration-misconceptions.spec.ts"
+    },
+    {
+      "name": "exploration-editor/modify-translations-through-modal",
+      "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/modify-translations-through-modal.spec.ts"
+    },
+    {
+      "name": "exploration-editor/publish-the-exploration-with-an-interaction",
+      "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/publish-the-exploration-with-an-interaction.spec.ts"
+    },
+    {
+      "name": "exploration-editor/save-draft-publish-and-discard-the-changes",
+      "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/save-draft-publish-and-discard-the-changes.spec.ts"
+    },
+    {
       "name": "curriculum-admin/create-edit-and-delete-classroom",
       "module": "core/tests/puppeteer-acceptance-tests/specs/curriculum-admin/create-edit-and-delete-classroom.spec.ts"
     },
@@ -249,42 +285,6 @@
     {
       "name": "blog-admin/assign-roles-to-users-and-change-tag-properties",
       "module": "core/tests/puppeteer-acceptance-tests/specs/blog-admin/assign-roles-to-users-and-change-tag-properties.spec.ts"
-    },
-    {
-      "name": "blog-editor/create-and-publish-a-blog-post-with-required-details",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/blog-editor/create-and-publish-a-blog-post-with-required-details.spec.ts"
-    },
-    {
-      "name": "blog-editor/create-and-delete-draft-blog-post",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/blog-editor/create-and-delete-draft-blog-post.spec.ts"
-    },
-    {
-      "name": "blog-editor/try-to-publish-a-duplicate-blog-post-and-get-blocked",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/blog-editor/try-to-publish-a-duplicate-blog-post-and-get-blocked.spec.ts"
-    },
-    {
-      "name": "exploration-editor/load-complete-and-restart-exploration-preview",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/load-complete-and-restart-exploration-preview.spec.ts"
-    },
-    {
-      "name": "exploration-editor/create-exploration-and-change-basic-settings",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/create-exploration-and-change-basic-settings.spec.ts"
-    },
-    {
-      "name": "exploration-editor/manage-exploration-misconceptions",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/manage-exploration-misconceptions.spec.ts"
-    },
-    {
-      "name": "exploration-editor/modify-translations-through-modal",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/modify-translations-through-modal.spec.ts"
-    },
-    {
-      "name": "exploration-editor/publish-the-exploration-with-an-interaction",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/publish-the-exploration-with-an-interaction.spec.ts"
-    },
-    {
-      "name": "exploration-editor/save-draft-publish-and-discard-the-changes",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/exploration-editor/save-draft-publish-and-discard-the-changes.spec.ts"
     }
   ]
 }
