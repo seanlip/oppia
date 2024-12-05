@@ -115,12 +115,13 @@ export class StateNameEditorComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.directiveSubscriptions.add(
       this.externalSaveService.onExternalSave.subscribe(() => {
-        if
-        (
+        if (
           this.stateNameService.isStateNameEditorShown() &&
-          !this.explorationStatesService.isNewStateNameDuplicate(this.tmpStateName, true)
-        )
-        {
+          !this.explorationStatesService.isNewStateNameDuplicate(
+            this.tmpStateName,
+            true
+          )
+        ) {
           this.saveStateName(this.tmpStateName);
         }
       })

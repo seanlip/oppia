@@ -623,7 +623,7 @@ export class ExplorationStatesService {
     return count;
   }
 
-  isNewStateNameDuplicate(newStateName: string, showWarnings: boolean): boolean {
+  isNewStateNameDuplicate(newStateName: string): boolean {
     if (this._states.hasState(newStateName)) {
       return true;
     } else {
