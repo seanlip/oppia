@@ -742,10 +742,22 @@ class SignupEmailTests(test_utils.EmailTestBase):
                 PLACEHOLDER_SUBJECT
             ),
             (platform_parameter_list.ParamName.SIGNUP_EMAIL_BODY_CONTENT, ''),
-            (platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS, 'testadmin@example.com'),
-            (platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS, 'system@example.com'),
-            (platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS, 'noreply@example.com'),
-            (platform_parameter_list.ParamName.OPPIA_PROJECT_ID, 'dev-project-id')
+            (
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS,
+                'testadmin@example.com'
+            ),
+            (
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+                'system@example.com'
+            ),
+            (
+                platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS,
+                'noreply@example.com'
+            ),
+            (
+                platform_parameter_list.ParamName.OPPIA_PROJECT_ID,
+                'dev-project-id'
+            )
         ]
     )
     def test_email_not_sent_if_content_parameter_is_not_modified(self) -> None:
@@ -977,7 +989,6 @@ class SignupEmailTests(test_utils.EmailTestBase):
                 platform_parameter_list.ParamName.OPPIA_PROJECT_ID, 
                 'dev-project-id'
             )
-
         ]
     )
     def test_contents_of_signup_email_are_correct(self) -> None:
