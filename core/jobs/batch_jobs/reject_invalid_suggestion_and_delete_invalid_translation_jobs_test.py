@@ -283,7 +283,19 @@ class RejectTranslationSuggestionsForTranslatedContentsJobTests(
         valid_suggestion.update_timestamps()
         suggestion_models.GeneralSuggestionModel.put_multi([valid_suggestion])
 
+        errored_value = (
+            '{'
+            f'\'entity_id\': \'{self.exp_1.id}\', \'entity_version\': '
+            f'{self.exp_1.version}, \'entity_translation_model_id\': '
+            f'\'{self.entity_translation_1.id}\', \'content_id\': '
+            f'\'content_0\', \'suggestion_id\': {invalid_suggestion.id}'
+            '}'
+        )
+
         self.assert_job_output_is([
+            job_run_result.JobRunResult.as_stdout(
+                f'Results are - {errored_value}'
+            ),
             job_run_result.JobRunResult(
                 stdout='REJECTED SUGGESTIONS COUNT SUCCESS: 1'
             )
@@ -304,12 +316,12 @@ class RejectTranslationSuggestionsForTranslatedContentsJobTests(
         )
 
 
-class AuditTranslationSuggestionsForTranslatedContentsJobTests(
+class AuditRejectTranslationSuggestionsForTranslatedContentsJobTests(
     job_test_utils.JobTestBase
 ):
     JOB_CLASS = (
         reject_invalid_suggestion_and_delete_invalid_translation_jobs
-        .AuditTranslationSuggestionsForTranslatedContentsJob
+        .AuditRejectTranslationSuggestionsForTranslatedContentsJob
     )
     EXP_1_ID = 'exp1'
     EXP_2_ID = 'exp2'
@@ -599,7 +611,18 @@ class DeleteTranslationsForInvalidContentIDsJobTests(
         self.put_multi([
             self.entity_translation_1, self.exp_opportunity_summary_model_1])
 
+        errored_value = (
+            '{'
+            f'\'entity_id\': \'{self.exp_1.id}\', \'entity_version\': '
+            f'{self.exp_1.version}, \'entity_translation_model_id\': '
+            f'\'{self.entity_translation_1.id}\', \'content_id\': '
+            '\'invalid_content\'}'
+        )
+
         self.assert_job_output_is([
+            job_run_result.JobRunResult.as_stdout(
+                f'Results are - {errored_value}'
+            ),
             job_run_result.JobRunResult(
                 stdout='DELETED TRANSLATIONS COUNT SUCCESS: 1'
             ),
@@ -625,12 +648,12 @@ class DeleteTranslationsForInvalidContentIDsJobTests(
         )
 
 
-class AuditTranslationsForInvalidContentIDsJobTests(
+class AuditDeleteTranslationsForInvalidContentIDsJobTests(
     job_test_utils.JobTestBase
 ):
     JOB_CLASS = (
         reject_invalid_suggestion_and_delete_invalid_translation_jobs
-        .AuditTranslationsForInvalidContentIDsJob
+        .AuditDeleteTranslationsForInvalidContentIDsJob
     )
     EXP_1_ID = 'exp1'
     TOPIC_1_ID = 'topic_1_id'
