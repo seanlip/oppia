@@ -986,7 +986,7 @@ class SignupEmailTests(test_utils.EmailTestBase):
                 'noreply@example.com'
             ),
             (
-                platform_parameter_list.ParamName.OPPIA_PROJECT_ID, 
+                platform_parameter_list.ParamName.OPPIA_PROJECT_ID,
                 'dev-project-id'
             )
         ]
