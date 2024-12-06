@@ -58,6 +58,8 @@ import logging
 from core import feconf
 from core.constants import constants
 from core.domain import auth_domain
+from core.domain import platform_parameter_list
+from core.domain import platform_parameter_services
 from core.platform import models
 
 import firebase_admin
