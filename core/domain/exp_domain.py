@@ -44,6 +44,7 @@ import bs4
 from typing import (
     Any, Callable, Dict, Final, List, Literal, Mapping, Optional, Sequence,
     Set, Tuple, TypedDict, Union, cast, overload)
+import yaml
 
 from core.domain import html_cleaner  # pylint: disable=invalid-import-from # isort:skip
 from core.domain import html_validation_service  # pylint: disable=invalid-import-from # isort:skip
@@ -6831,3 +6832,107 @@ class ExplorationVersionHistory:
             ),
             'committer_ids': self.committer_ids
         }
+
+
+class OldVersionExploration(translation_domain.BaseTranslatableObject):
+    """Initailize old version Exploration object
+
+    Args:
+        exploration_id: str. The id of the exploration.
+        exploration_dict: dict. The dict representation of the old version
+            exploration.
+    """
+
+    def __init__(
+            self,
+            exploration_id: str,
+            exploration_dict: Dict[str, Any]):
+        self.id = exploration_id
+        self.author_notes = exploration_dict.get('author_notes', '')
+        self.auto_tts_enabled = exploration_dict.get(
+            'auto_tts_enabled', True)
+        self.blurb = exploration_dict.get('blurb', '')
+        self.category = exploration_dict.get('category', '')
+        self.edits_allowed = exploration_dict.get(
+            'edits_allowed', True)
+        self.init_state_name = exploration_dict.get(
+            'init_state_name', '')
+        self.language_code = exploration_dict.get(
+            'language_code', '')
+        self.objective = exploration_dict.get('objective', '')
+        self.param_changes = exploration_dict.get(
+            'param_changes', [])
+        self.param_specs = exploration_dict.get('param_specs', {})
+        self.version = exploration_dict.get('schema_version', 0)
+        self.states = exploration_dict.get('states', {})
+        self.states_schema_version = exploration_dict.get(
+            'states_schema_version', 0)
+        self.tags = exploration_dict.get('tags', [])
+        self.title = exploration_dict.get('title', '')
+        self.next_content_id_index = exploration_dict.get(
+            'next_content_id_index', 0)
+
+    # Here we use type Any because old versioned Exploration
+    # object have any field.
+    def to_dict(self) -> ExplorationDict:
+
+        """Returns a copy of the exploration as a dictionary."""
+
+        exploration_dict: ExplorationDict = ({
+            'id': self.id,
+            'title': self.title,
+            'category': self.category,
+            'author_notes': self.author_notes,
+            'blurb': self.blurb,
+            'states_schema_version': self.states_schema_version,
+            'language_code': self.language_code,
+            'objective': self.objective,
+            'param_changes': self.param_changes,
+            'param_specs': self.param_specs,
+            'tags': self.tags,
+            'auto_tts_enabled': self.auto_tts_enabled,
+            'states': {
+                state_name: (
+                    state.to_dict()
+                    if hasattr(state, 'to_dict') else state)
+                for state_name, state in self.states.items()
+            },
+            'version': self.version,
+            'edits_allowed': self.edits_allowed,
+            'init_state_name': self.init_state_name,
+            'next_content_id_index': self.next_content_id_index,
+
+        })
+        exploration_dict_deepcopy = copy.deepcopy(exploration_dict)
+        return exploration_dict_deepcopy
+
+    def serialize(self) -> str:
+        """Returns the object serialized as a JSON string.
+
+        Returns:
+            str. JSON-encoded str encoding all of the information
+            composing the object.
+        """
+        # Here we use MyPy ignore because to_dict() method returns a general
+        # dictionary representation of domain object (OldVersionExploration)
+        # that assign with SerializableExplorationDict to put in cache for
+        # testing purpose.
+        exploration_dict: SerializableExplorationDict = self.to_dict() # type: ignore[assignment]
+        exploration_dict['version'] = self.version
+        return json.dumps(exploration_dict)
+
+
+def create_old_schema_exploration(
+        exploration_id: str,
+        yaml_content: str) -> OldVersionExploration:
+    """Creates an old version exploration object from the yaml content.
+
+    Args:
+        exploration_id: str. The id of the exploration.
+        yaml_content: str. The yaml content of the old version exploration.
+
+    Returns:
+        OldVersionExploration. The exploration object of old version.
+    """
+    exploration_dict = yaml.safe_load(yaml_content)
+    return OldVersionExploration(exploration_id, exploration_dict)
