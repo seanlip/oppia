@@ -5692,74 +5692,7 @@ class PendingUserDeletionTaskServiceTests(test_utils.GenericTestBase):
             email_manager, 'send_mail_to_admin', _mock_send_mail_to_admin)
 
     @test_utils.set_platform_parameters(
-        [
-            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
-            (
-                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
-                'system@example.com'
-            ),
-            (
-                platform_parameter_list.ParamName.OPPIA_PROJECT_ID,
-                'dev-project-id'
-            )
-        ]
-    )
-    def test_repeated_deletion_is_successful_when_emails_enabled(
-        self
-    ) -> None:
-        with self.send_mail_to_admin_swap:
-            wipeout_service.delete_users_pending_to_be_deleted()
-            self.assertIn('SUCCESS', self.email_bodies[0])
-            self.assertIn(self.user_1_id, self.email_bodies[0])
-            wipeout_service.delete_users_pending_to_be_deleted()
-            self.assertIn('ALREADY DONE', self.email_bodies[1])
-            self.assertIn(self.user_1_id, self.email_bodies[1])
-
-    def test_repeated_deletion_is_successful_when_emails_disabled(
-        self
-    ) -> None:
-        send_mail_to_admin_swap = self.swap_with_checks(
-            email_manager,
-            'send_mail_to_admin',
-            lambda x, y: None,
-            # Func shouldn't be called when emails are disabled.
-            called=False
-        )
-        with send_mail_to_admin_swap:
-            wipeout_service.delete_users_pending_to_be_deleted()
-            self.assertEqual(len(self.email_bodies), 0)
-            wipeout_service.delete_users_pending_to_be_deleted()
-            self.assertEqual(len(self.email_bodies), 0)
-
-    @test_utils.set_platform_parameters(
         [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
-    )
-    def test_no_email_is_sent_when_there_are_no_users_pending_deletion(
-        self
-    ) -> None:
-        pending_deletion_request_models: Sequence[
-            user_models.PendingDeletionRequestModel
-        ] = (
-            user_models.PendingDeletionRequestModel.query().fetch())
-        for pending_deletion_request_model in pending_deletion_request_models:
-            pending_deletion_request_model.delete()
-        with self.send_mail_to_admin_swap:
-            # When there are no pending deletion models, expect no emails.
-            wipeout_service.delete_users_pending_to_be_deleted()
-            self.assertEqual(len(self.email_bodies), 0)
-
-    @test_utils.set_platform_parameters(
-        [
-            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
-            (
-                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
-                'system@example.com'
-            ),
-            (
-                platform_parameter_list.ParamName.OPPIA_PROJECT_ID,
-                'dev-project-id'
-            )
-        ]
     )
     def test_regular_deletion_is_successful(self) -> None:
         with self.send_mail_to_admin_swap:

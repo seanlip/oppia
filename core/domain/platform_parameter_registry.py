@@ -376,7 +376,7 @@ Registry.create_platform_parameter(
     default=(
         'You can change your email preferences via the '
         '<a href="%s%s">Preferences</a> page.' % (
-            feconf.OPPIA_PROJECT_ID,
+            feconf.OPPIA_SITE_URL,
             feconf.PREFERENCES_URL)
     )
 )
