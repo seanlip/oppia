@@ -789,15 +789,30 @@ export class LoggedInUser extends BaseUser {
 
     await this.clickOn(dashboardSelector);
   }
-
   /**
    * Updates the user's subject interests in preference page.
-   * @param {string[]} interests - The new interests to set for the user.
+   * @param {string[]} interests - The new interests to set for the user when enter key is pressed.
    */
-  async updateSubjectInterests(interests: string[]): Promise<void> {
+  async updateSubjectInterestsWithEnterKey(interests: string[]): Promise<void> {
     for (const interest of interests) {
       await this.type(subjectInterestsInputSelector, interest);
       await this.page.keyboard.press('Enter');
+    }
+  }
+
+  /**
+   * Updates the user's subject interests in preference page.
+   * @param {string[]} interests - The new interests to set for the user when focus is moved to the next input or anywhere in the page.
+   */
+  async updateSubjectInterestsByBlurringField(
+    interests: string[]
+  ): Promise<void> {
+    for (const interest of interests) {
+      // Focus and type in the subject interest input field
+      await this.page.click(subjectInterestsInputSelector); // Refocus the input field
+      await this.type(subjectInterestsInputSelector, interest);
+      // Click on the save button to trigger onBlur
+      await this.page.click('.e2e-test-save-changes-button');
     }
   }
 

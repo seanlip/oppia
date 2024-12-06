@@ -148,4 +148,30 @@ export class SubjectInterestsComponent implements ControlValueAccessor {
       interest.toLowerCase().includes(filterValue)
     );
   }
+
+  onBlur(): void {
+    const value = this.subjectInterestInput.nativeElement.value.trim();
+    if (value && this.validInput(value)) {
+      // Add the current value to the list of subject interests.
+      this.subjectInterests.push(value);
+      this.subjectInterestInput.nativeElement.value = ''; // Clear the input field.
+    }
+
+    this.onChange(this.subjectInterests);
+  }
+
+  onInput(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    const inputValue = inputElement.value.trim();
+
+    // Check if input is empty or valid
+    if (!inputValue) {
+      this.formCtrl.markAsPristine(); // Mark control as not dirty
+    } else if (this.validInput(inputValue)) {
+      this.formCtrl.markAsDirty(); // Mark control as dirty
+    }
+
+    // Update the parent form (if applicable)
+    this.onChange(this.subjectInterests);
+  }
 }
