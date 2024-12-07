@@ -335,3 +335,4 @@ class CustomLintChecksManagerTests(test_utils.LinterTestBase):
             isinstance(
                 custom_linter, other_files_linter.CustomLintChecksManager))
         self.assertEqual(third_party_linter, None)
+        
