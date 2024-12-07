@@ -32,6 +32,8 @@ from core.domain import fs_services
 from core.domain import platform_parameter_list
 from core.domain import rights_manager
 from core.domain import subscription_services
+from core.domain import takeout_domain
+from core.domain import takeout_service
 from core.domain import user_services
 from core.platform import models
 from core.tests import test_utils
@@ -122,6 +124,32 @@ class ProfilePageTests(test_utils.GenericTestBase):
 
 
 class ProfileDataHandlerTests(test_utils.GenericTestBase):
+
+    def test_get_profile_contributions_for_user_with_no_contributions(
+        self
+    ) -> None:
+        self.signup(self.EDITOR_EMAIL, self.EDITOR_USERNAME)
+        self.login(self.EDITOR_EMAIL)
+        user_contributions = None
+
+        with self.swap(
+            user_services,
+            'get_user_contributions',
+            lambda user_id: user_contributions
+        ):
+            response = self.get_json(
+                '/profilehandler/data/%s' % self.EDITOR_USERNAME
+            )
+            self.assertIsNone(response['first_contribution_msec'])
+            self.assertEqual(response['profile_is_of_current_user'], True)
+            self.assertEqual(
+                response['username_of_viewed_profile'],
+                self.EDITOR_USERNAME
+            )
+            self.assertEqual(response['created_exp_summary_dicts'], [])
+            self.assertEqual(response['edited_exp_summary_dicts'], [])
+
+        self.logout()
 
     def test_preference_page_updates(self) -> None:
         self.signup(self.EDITOR_EMAIL, self.EDITOR_USERNAME)
@@ -1009,6 +1037,29 @@ class SignupTests(test_utils.GenericTestBase):
 
         self.logout()
 
+    def test_signup_with_user_has_already_registered(self) -> None:
+        self.login(self.EDITOR_EMAIL)
+        self.get_html_response('%s?return_url=/' % feconf.SIGNUP_URL)
+        csrf_token = self.get_new_csrf_token()
+        with self.swap_to_always_return(
+            user_services, 'has_ever_registered', True
+        ):
+            json_response = self.post_json(
+                feconf.SIGNUP_DATA_URL,
+                {
+                    'username': self.EDITOR_USERNAME,
+                    'agreed_to_terms': True,
+                    'default_dashboard': constants.DASHBOARD_TYPE_CREATOR,
+                    'can_receive_email_updates': (
+                        feconf.DEFAULT_EMAIL_UPDATES_PREFERENCE
+                    )
+                },
+                csrf_token=csrf_token
+            )
+            self.assertFalse(
+                json_response['bulk_email_signup_message_should_be_shown']
+            )
+
     def test_default_dashboard_for_new_users(self) -> None:
         self.login(self.EDITOR_EMAIL)
         self.get_html_response('%s?return_url=/' % feconf.SIGNUP_URL)
@@ -1488,6 +1539,50 @@ class ExportAccountHandlerTests(test_utils.GenericTestBase):
         self.logout()
         self.get_json('/export-account-handler', expected_status_int=401)
 
+    def mock_export_data_for_user(self, user_id):
+        """Mock implementation for export_data_for_user."""
+        _ = user_id
+        invalid_image_data = 'data:application/json;base64,INVALID_DATA'
+        user_images = [
+            takeout_domain.TakeoutImage(
+                image_export_path='mocked_invalid_image.json',
+                b64_image_data=invalid_image_data
+            )
+        ]
+        return takeout_domain.TakeoutData(
+            user_data={}, user_images=user_images
+        )
+
+    def test_user_images_with_invalid_image_format_is_empty(self) -> None:
+        """Tests the case where an invalid image format is included."""
+
+        # Swap services for mocking.
+        takeout_service_swap = self.swap(
+            takeout_service,
+            'export_data_for_user',
+            self.mock_export_data_for_user
+        )
+        time_swap = self.swap(
+            user_services, 'record_user_logged_in', lambda *args: None
+        )
+
+        with takeout_service_swap, time_swap:
+            data = self.get_custom_response(
+                '/export-account-handler', 'text/plain'
+            )
+
+            # Check downloaded zip file.
+            filename = 'oppia_takeout_data.zip'
+            self.assertEqual(
+                data.headers['Content-Disposition'],
+                'attachment; filename=%s' % filename
+            )
+            zf_saved = zipfile.ZipFile(io.BytesIO(data.body))
+            self.assertEqual(
+                zf_saved.namelist(),
+                ['oppia_takeout_data.json']
+            )
+
 
 class PendingAccountDeletionPageTests(test_utils.GenericTestBase):
 
@@ -1629,6 +1724,26 @@ class UserInfoHandlerTests(test_utils.GenericTestBase):
         user_settings = user_services.get_user_settings(user_id)
         self.assertEqual(
             user_settings.has_viewed_lesson_info_modal_once, True)
+
+    def test_set_user_has_viewed_lesson_info_modal_once_to_false(
+        self
+    ) -> None:
+        self.signup(self.VIEWER_EMAIL, self.VIEWER_USERNAME)
+        self.login(self.VIEWER_EMAIL)
+        user_id = self.get_user_id_from_email(self.VIEWER_EMAIL)
+
+        user_settings = user_services.get_user_settings(user_id)
+        self.assertEqual(
+            user_settings.has_viewed_lesson_info_modal_once, False)
+
+        csrf_token = self.get_new_csrf_token()
+        self.put_json('/userinfohandler/data', {
+            'user_has_viewed_lesson_info_modal_once': False
+        }, csrf_token=csrf_token)
+
+        user_settings = user_services.get_user_settings(user_id)
+        self.assertEqual(
+            user_settings.has_viewed_lesson_info_modal_once, False)
 
     def test_no_user_info_provided_if_user_is_not_logged_in(self) -> None:
         csrf_token = self.get_new_csrf_token()
