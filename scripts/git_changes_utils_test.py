@@ -1085,4 +1085,3 @@ class GitChangesUtilsTests(test_utils.GenericTestBase):
             SystemExit, 'Error: No remote repository found.'
         ):
             git_changes_utils.get_changed_python_test_files()
-            
