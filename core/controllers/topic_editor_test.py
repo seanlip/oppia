@@ -639,6 +639,56 @@ class TopicEditorTests(
 
         self.logout()
 
+    def test_no_deleted_skills_in_topic(self) -> None:
+        self.login(self.CURRICULUM_ADMIN_EMAIL)
+
+        # Fetch topic details to ensure no deleted skills.
+        json_response = self.get_json(
+            '%s/%s' % (feconf.TOPIC_EDITOR_DATA_URL_PREFIX, self.topic_id))
+
+        # Check that there are no deleted skill IDs.
+        self.assertNotIn('deleted_skill_ids', json_response)
+        self.assertIn(
+            self.skill_id, json_response['skill_id_to_description_dict']
+        )
+        self.assertIn(
+            self.skill_id_2, json_response['skill_id_to_description_dict']
+        )
+
+        self.logout()
+
+    @test_utils.set_platform_parameters(
+        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, False)]
+    )
+    def test_topic_handler_get_with_deleted_skills_no_email(self) -> None:
+        skill_services.delete_skill(self.admin_id, self.skill_id_2)
+        # Check that admins can access the editable topic data.
+        self.login(self.CURRICULUM_ADMIN_EMAIL)
+        messages = self._get_sent_email_messages(
+            feconf.ADMIN_EMAIL_ADDRESS)
+        self.assertEqual(len(messages), 0)
+        json_response = self.get_json(
+            '%s/%s' % (
+                feconf.TOPIC_EDITOR_DATA_URL_PREFIX, self.topic_id))
+        self.assertEqual(self.topic_id, json_response['topic_dict']['id'])
+        self.assertTrue(
+            self.skill_id in json_response['skill_question_count_dict'])
+        self.assertEqual(
+            json_response['skill_question_count_dict'][self.skill_id], 0)
+        self.assertTrue(
+            self.skill_id_2 in json_response['skill_question_count_dict'])
+        self.assertEqual(
+            json_response['skill_question_count_dict'][self.skill_id_2], 0)
+        self.assertEqual(
+            'Skill Description',
+            json_response['skill_id_to_description_dict'][self.skill_id])
+
+        messages = self._get_sent_email_messages(
+            feconf.ADMIN_EMAIL_ADDRESS)
+        self.assertEqual(len(messages), 0)
+
+        self.logout()
+
     def test_editable_topic_handler_put_fails_with_long_commit_message(
         self
     ) -> None:
@@ -919,6 +969,108 @@ class TopicEditorTests(
 
         self.logout()
 
+    @test_utils.set_platform_parameters(
+        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, False)]
+    )
+    def test_editable_topic_handler_put_no_email_sent(self) -> None:
+        # Check that admins can edit a topic but no email is sent.
+        change_cmd = {
+            'version': 2,
+            'commit_message': 'Some changes and added a subtopic.',
+            'topic_and_subtopic_page_change_dicts': [{
+                'cmd': 'update_topic_property',
+                'property_name': 'name',
+                'old_value': '',
+                'new_value': 'A new name'
+            }, {
+                'cmd': 'update_subtopic_page_property',
+                'property_name': 'page_contents_html',
+                'old_value': {
+                    'html': '',
+                    'content_id': 'content'
+                },
+                'subtopic_id': 1,
+                'new_value': {
+                    'html': '<p>New Data</p>',
+                    'content_id': 'content'
+                }
+            }, {
+                'cmd': 'update_subtopic_property',
+                'property_name': 'url_fragment',
+                'new_value': 'subtopic-one',
+                'old_value': '',
+                'subtopic_id': 1
+            }, {
+                'cmd': 'add_subtopic',
+                'subtopic_id': 2,
+                'title': 'Title2',
+                'url_fragment': 'subtopic-frag-two'
+            }, {
+                'cmd': 'update_subtopic_property',
+                'property_name': 'url_fragment',
+                'new_value': 'subtopic-two',
+                'old_value': '',
+                'subtopic_id': 2
+            }, {
+                'cmd': 'update_subtopic_page_property',
+                'property_name': 'page_contents_html',
+                'old_value': {
+                    'html': '',
+                    'content_id': 'content'
+                },
+                'new_value': {
+                    'html': '<p>New Value</p>',
+                    'content_id': 'content'
+                },
+                'subtopic_id': 2
+            }, {
+                'cmd': 'update_subtopic_page_property',
+                'property_name': 'page_contents_audio',
+                'old_value': {
+                    'voiceovers_mapping': {
+                        'content': {}
+                    }
+                },
+                'new_value': {
+                    'voiceovers_mapping': {
+                        'content': {
+                            'en': {
+                                'filename': 'test.mp3',
+                                'file_size_bytes': 100,
+                                'needs_update': False,
+                                'duration_secs': 0.34342
+                            }
+                        }
+                    }
+                },
+                'subtopic_id': 2
+            }]
+        }
+
+        self.login(self.CURRICULUM_ADMIN_EMAIL)
+        csrf_token = self.get_new_csrf_token()
+        skill_services.delete_skill(self.admin_id, self.skill_id_2)
+
+        messages = self._get_sent_email_messages(
+            feconf.ADMIN_EMAIL_ADDRESS)
+        self.assertEqual(len(messages), 0)
+        json_response = self.put_json(
+            '%s/%s' % (
+                feconf.TOPIC_EDITOR_DATA_URL_PREFIX, self.topic_id),
+            change_cmd, csrf_token=csrf_token)
+        self.assertEqual(self.topic_id, json_response['topic_dict']['id'])
+        self.assertEqual('A new name', json_response['topic_dict']['name'])
+        self.assertEqual(2, len(json_response['topic_dict']['subtopics']))
+        self.assertEqual(
+            'Skill Description',
+            json_response['skill_id_to_description_dict'][self.skill_id])
+
+        messages = self._get_sent_email_messages(
+            feconf.ADMIN_EMAIL_ADDRESS)
+        self.assertEqual(len(messages), 0)
+
+        self.logout()
+
     def test_editable_topic_handler_put_for_assigned_topic_manager(
         self
     ) -> None:
@@ -1080,6 +1232,22 @@ class TopicPublishSendMailHandlerTests(
             % (feconf.TOPIC_EDITOR_URL_PREFIX, self.topic_id))
         self.assertEqual(len(messages), 1)
         self.assertIn(expected_email_html_body, messages[0].html)
+
+    @test_utils.set_platform_parameters(
+        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, False)]
+    )
+    def test_send_mail_no_email_sent(self) -> None:
+        self.login(self.CURRICULUM_ADMIN_EMAIL)
+        csrf_token = self.get_new_csrf_token()
+
+        self.put_json(
+            '%s/%s' % (
+                feconf.TOPIC_SEND_MAIL_URL_PREFIX, self.topic_id),
+            {'topic_name': 'Topic Name'}, csrf_token=csrf_token)
+        messages = self._get_sent_email_messages(
+            feconf.ADMIN_EMAIL_ADDRESS)
+        self.assertEqual(len(messages), 0)
+        self.logout()
 
 
 class TopicRightsHandlerTests(BaseTopicEditorControllerTests):
