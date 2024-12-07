@@ -93,6 +93,14 @@ class PracticeSessionsPageTests(BasePracticeSessionsControllerTests):
             '/learn/staging/invalid/practice/session?'
             'selected_subtopic_ids=["1","2"]',
             expected_status_int=302)
+    def test_invalid_input_exception_redirects_correctly(self) -> None:
+        response = self.get_html_response(
+            '/learn/staging/public-topic-name/practice/session?'
+            'selected_subtopic_ids=invalid_json',
+            expected_status_int=302)
+        self.assertEqual(
+            response.headers['location'],
+            'http://localhost/learn/staging/public-topic-name/practice')
 
 
 class PracticeSessionsPageDataHandlerTests(BasePracticeSessionsControllerTests):
