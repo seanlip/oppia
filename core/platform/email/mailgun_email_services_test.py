@@ -64,7 +64,7 @@ class EmailTests(test_utils.GenericTestBase):
         mock_post.return_value = mock_response
 
         sender_email = 'a@a.com'
-        recipient_emails = 'b@b.com'
+        recipient_emails = ['b@b.com']
         subject = 'Hola 😂 - invitation to collaborate'
         plaintext_body = 'plaintext_body 😂'
         html_body = 'Hi abc,<br> 😂'
@@ -99,7 +99,8 @@ class EmailTests(test_utils.GenericTestBase):
         self.assertTrue(resp)
 
     @patch("requests.post")
-    def test_send_email_to_mailgun_with_file_attachments(self, mock_post):
+    def test_send_email_to_mailgun_with_file_attachments(
+            self, mock_post: Mock) -> None:
         mock_response = Mock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
@@ -142,7 +143,8 @@ class EmailTests(test_utils.GenericTestBase):
         self.assertEqual(kwargs['files'][0][1][0], 'test_file.txt')
 
     @patch("requests.post")
-    def test_send_email_to_mailgun_with_bcc_and_recipient(self, mock_post) -> None:
+    def test_send_email_to_mailgun_with_bcc_and_recipient(
+            self, mock_post:Mock) -> None:
         # Test sending email with single bcc and single recipient email.
         mock_response = Mock()
         mock_response.status_code = 200
