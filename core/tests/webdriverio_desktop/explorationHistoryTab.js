@@ -722,6 +722,9 @@ describe('Exploration history', function () {
     // Revert to version 2.
     await explorationEditorPage.navigateToHistoryTab();
     await explorationEditorHistoryTab.revertToVersion(2);
+    // Due to the angular migration, the system navigates to the main tab
+    // too quickly to check for the revert message and version. Hence,
+    // we need to renavigate to the history tab to check for those.
     await explorationEditorPage.navigateToHistoryTab();
     await explorationEditorHistoryTab.expectRevertToVersion(2);
 
