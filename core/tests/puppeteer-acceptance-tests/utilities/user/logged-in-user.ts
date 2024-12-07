@@ -117,6 +117,7 @@ const mobileCompletedLessonSection = '.community-lessons-section';
 const currentGoalsSectionSelector = '.e2e-test-current-goals-section';
 const homeSectionGreetingElement = '.greeting';
 const LABEL_FOR_SUBMIT_BUTTON = 'Submit and start contributing';
+const preferencePageSaveButtonSelector = '.e2e-test-save-changes-button';
 
 export class LoggedInUser extends BaseUser {
   /**
@@ -791,7 +792,7 @@ export class LoggedInUser extends BaseUser {
   }
   /**
    * Updates the user's subject interests in preference page.
-   * @param {string[]} interests - The new interests to set for the user when enter key is pressed.
+   * @param {string[]} interests - The new interests to set for the user after entering value and enter key is pressed.
    */
   async updateSubjectInterestsWithEnterKey(interests: string[]): Promise<void> {
     for (const interest of interests) {
@@ -812,7 +813,7 @@ export class LoggedInUser extends BaseUser {
       await this.page.click(subjectInterestsInputSelector); // Refocus the input field
       await this.type(subjectInterestsInputSelector, interest);
       // Click on the save button to trigger onBlur
-      await this.page.click('.e2e-test-save-changes-button');
+      await this.page.click(preferencePageSaveButtonSelector);
     }
   }
 
