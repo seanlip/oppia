@@ -70,7 +70,7 @@ const textInputInteractionOption =
   'tr#e2e-test-schema-based-list-editor-table-row';
 const textInputField = '.e2e-test-text-input';
 
-const saveDraftButton = 'button.e2e-test-save-draft-button';
+const saveDraftButton = '.e2e-test-save-draft-button';
 const commitMessage = 'textarea.e2e-test-commit-message-input';
 const publishExplorationButton = 'button.e2e-test-publish-exploration';
 const explorationTitleInput = 'input.e2e-test-exploration-title-input-modal';
@@ -930,12 +930,9 @@ export class ExplorationEditor extends BaseUser {
     } else {
       await this.clickOn(saveChangesButton);
     }
-    console.log('Starting to type commit message');
+    await this.clickOn(commitMessage);
     await this.type(commitMessage, 'Testing Testing');
-    console.log('commit message typed successfully');
-    console.log('trying to click save draft button');
     await this.clickOn(saveDraftButton);
-    console.log('save draft button clicked successfully');
     await this.page.waitForSelector(saveDraftButton, {hidden: true});
 
     // Toast message confirms that the draft has been saved.
