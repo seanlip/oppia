@@ -1539,7 +1539,10 @@ class ExportAccountHandlerTests(test_utils.GenericTestBase):
         self.logout()
         self.get_json('/export-account-handler', expected_status_int=401)
 
-    def mock_export_data_for_user(self, user_id) -> takeout_domain.TakeoutData:
+    def mock_export_data_for_user(
+        self,
+        user_id: str
+    ) -> takeout_domain.TakeoutData:
         """Mock implementation for export_data_for_user."""
         _ = user_id
         invalid_image_data = 'data:application/json;base64,INVALID_DATA'
