@@ -63,14 +63,9 @@ import subprocess
 import sys
 import threading
 
+from core import utils
+from scripts import common
 from typing import Dict, List, Optional, Set, Tuple
-# TODO(#15567): This can be removed after Literal in utils.py is loaded
-# from typing instead of typing_extensions, this will be possible after
-# we migrate to Python 3.8.
-from scripts import common  # isort:skip pylint: disable=wrong-import-position
-
-from core import feconf  # isort:skip
-from core import utils  # isort:skip
 
 # Install third party dependencies before proceeding.
 from . import codeowner_linter  # isort:skip
@@ -82,8 +77,7 @@ from . import linter_utils  # isort:skip
 from . import other_files_linter  # isort:skip
 from . import python_linter  # isort:skip
 from .. import concurrent_task_utils  # isort:skip
-if not feconf.OPPIA_IS_DOCKERIZED:
-    from .. import install_third_party_libs  # isort:skip
+from .. import install_third_party_libs  # isort:skip
 
 OTHER_SHARD_NAME = 'other'
 
@@ -639,8 +633,7 @@ def main(args: Optional[List[str]] = None) -> None:
         namespace=namespace
     )
 
-    if not feconf.OPPIA_IS_DOCKERIZED:
-        install_third_party_libs.main()
+    install_third_party_libs.main()
 
     print('Starting Linter....')
 

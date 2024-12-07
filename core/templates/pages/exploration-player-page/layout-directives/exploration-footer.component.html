@@ -1,12 +1,12 @@
 <div class="footer navbar-fixed-bottom oppia-exploration-footer">
-  <div *ngIf="shouldRenderLessonInfoTooltip()" aria-live="assertive">
+  <div *ngIf="!iframed && shouldRenderLessonInfoTooltip()" aria-live="assertive">
     <div class="close-tooltip e2e-test-close-lesson-info-tooltip" (click)="learnerHasViewedLessonInfo()" (keydown.enter)="learnerHasViewedLessonInfo()" tabindex="0"></div>
     <div class="lesson-info-tooltip lesson-info-tooltip-add-ons"
          [innerHTML]="'I18N_LESSON_INFO_TOOLTIP_MESSAGE' | translate">
     </div>
   </div>
   <div class="row">
-    <div [ngClass]="{'col-sm-5': isLanguageRTL(), 'col-sm-3': !isLanguageRTL()}">
+    <div class="col-sm-5">
       <button class="oppia-lesson-info"
               #lessonInfoButton
               (keydown.escape)="learnerHasViewedLessonInfo()"
@@ -29,7 +29,7 @@
       <oppia-hint-and-solution-buttons *ngIf="windowIsNarrow && hintsAndSolutionsAreSupported">
       </oppia-hint-and-solution-buttons>
     </div>
-    <div [ngClass]="{'col-sm-7': isLanguageRTL(), 'col-sm-9': !isLanguageRTL()}">
+    <div class="col-sm-7">
       <div [ngClass]="{'float-left': isLanguageRTL(), 'float-right': !isLanguageRTL()}">
         <oppia-hint-and-solution-buttons *ngIf="!windowIsNarrow && hintsAndSolutionsAreSupported">
         </oppia-hint-and-solution-buttons>

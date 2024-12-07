@@ -37,7 +37,7 @@ import {AlertsService} from 'services/alerts.service';
   templateUrl: './diagnostic-test-player.component.html',
 })
 export class DiagnosticTestPlayerComponent implements OnInit {
-  OPPIA_AVATAR_IMAGE_URL: string = '';
+  OPPIA_AVATAR_IMAGE_URL!: string;
   diagnosticTestTopicTrackerModel!: DiagnosticTestTopicTrackerModel;
   diagnosticTestIsStarted: boolean = false;
   diagnosticTestIsFinished = false;
@@ -81,11 +81,6 @@ export class DiagnosticTestPlayerComponent implements OnInit {
       return this.diagnosticTestIsStarted && !this.diagnosticTestIsFinished;
     });
 
-    this.OPPIA_AVATAR_IMAGE_URL =
-      this.urlInterpolationService.getStaticCopyrightedImageUrl(
-        '/avatar/oppia_avatar_100px.svg'
-      );
-
     this.componentSubscription.add(
       this.diagnosticTestPlayerStatusService.onDiagnosticTestSessionCompleted.subscribe(
         (recommendedTopicIds: string[]) => {
@@ -104,6 +99,11 @@ export class DiagnosticTestPlayerComponent implements OnInit {
     );
 
     this.getProgressText();
+
+    this.OPPIA_AVATAR_IMAGE_URL =
+      this.urlInterpolationService.getStaticCopyrightedImageUrl(
+        '/avatar/oppia_avatar_100px.svg'
+      );
 
     this.classroomBackendApiService
       .fetchClassroomDataAsync(this.classroomUrlFragment)
