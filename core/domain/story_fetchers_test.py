@@ -365,3 +365,41 @@ class StoryFetchersUnitTests(test_utils.GenericTestBase):
         self.assertEqual(user_progress[0]['exploration_id'], exp_id_1)
         self.assertEqual(user_progress[0]['visited_checkpoints_count'], 1)
         self.assertEqual(user_progress[0]['total_checkpoints_count'], 1)
+
+    def test_get_completed_nodes_in_story_none(self) -> None:
+        completed_nodes = story_fetchers.get_completed_nodes_in_story(
+                    self.USER_ID, self.story_id)
+        self.assertEqual(completed_nodes, [])
+
+    def test_get_user_progress_in_story_chapters_none(self) -> None:
+        user_id = self.USER_ID
+        user_progress = story_fetchers.get_user_progress_in_story_chapters(
+            user_id, ['invalid_id','invalid_id'])
+        
+        self.assertEqual(user_progress, [])
+    
+    def test_get_user_progress_in_story_chapters_no_most_recent(
+        self) -> None:
+        story_id = self.story_id
+        exp_id_1 = 'expid1'
+        learner_id = 'learner1'
+
+        self.save_new_valid_exploration(exp_id_1, self.USER_ID)
+        change_list = [
+            story_domain.StoryChange({
+                'cmd': story_domain.CMD_UPDATE_STORY_NODE_PROPERTY,
+                'property_name': (
+                    story_domain.STORY_NODE_PROPERTY_EXPLORATION_ID),
+                'node_id': '%s1' % story_domain.NODE_ID_PREFIX,
+                'old_value': None,
+                'new_value': exp_id_1
+            })
+        ]
+        story_services.update_story(
+            self.USER_ID, self.story_id, change_list,
+            'Added node.')
+        
+        user_progress = story_fetchers.get_user_progress_in_story_chapters(
+            learner_id, [story_id,'invalid_id'])
+        
+        self.assertEqual(user_progress[0]['visited_checkpoints_count'], 0)
