@@ -374,10 +374,10 @@ class StoryFetchersUnitTests(test_utils.GenericTestBase):
     def test_get_user_progress_in_story_chapters_none(self) -> None:
         user_id = self.USER_ID
         user_progress = story_fetchers.get_user_progress_in_story_chapters(
-            user_id, ['invalid_id','invalid_id'])
-        
+            user_id, ['invalid_id', 'invalid_id'])
+
         self.assertEqual(user_progress, [])
-    
+
     def test_get_user_progress_in_story_chapters_no_most_recent(
         self) -> None:
         story_id = self.story_id
@@ -398,8 +398,8 @@ class StoryFetchersUnitTests(test_utils.GenericTestBase):
         story_services.update_story(
             self.USER_ID, self.story_id, change_list,
             'Added node.')
-        
+
         user_progress = story_fetchers.get_user_progress_in_story_chapters(
-            learner_id, [story_id,'invalid_id'])
-        
+            learner_id, [story_id, 'invalid_id'])
+
         self.assertEqual(user_progress[0]['visited_checkpoints_count'], 0)
