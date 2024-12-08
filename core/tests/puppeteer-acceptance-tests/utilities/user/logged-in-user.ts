@@ -809,10 +809,8 @@ export class LoggedInUser extends BaseUser {
     interests: string[]
   ): Promise<void> {
     for (const interest of interests) {
-      // Focus and type in the subject interest input field
-      await this.page.click(subjectInterestsInputSelector); // Refocus the input field
+      await this.page.click(subjectInterestsInputSelector);
       await this.type(subjectInterestsInputSelector, interest);
-      // Click on the save button to trigger onBlur
       await this.page.click(preferencePageSaveButtonSelector);
     }
   }
