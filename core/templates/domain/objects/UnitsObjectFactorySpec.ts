@@ -308,9 +308,9 @@ describe('UnitsObjectFactory', () => {
     }).toThrowError('Unit "dollarcent" not found.');
   });
 
-  it('should return the dupplicated unit in a input string or an empty string', () => {
-    expect(units.duplicatedUnit('2 km km')).toEqual('km');
-    expect(units.duplicatedUnit('2 kg/kg^4*K*mol')).toEqual('kg');
-    expect(units.duplicatedUnit('2 kg/km^4*K*mol')).toEqual('');
+  it('should return the duplicated unit in a input string or an empty string', () => {
+    expect(units.getDuplicatedUnit('2 km km')).toEqual('km');
+    expect(units.getDuplicatedUnit('2 kg/kg^4*K*mol')).toEqual('kg');
+    expect(units.getDuplicatedUnit('2 kg/km^4*K*mol')).toEqual('');
   });
 });
