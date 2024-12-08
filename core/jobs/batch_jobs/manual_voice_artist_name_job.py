@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import collections
 import logging
-import threading
 
 from core.domain import opportunity_services
 from core.domain import state_domain
@@ -212,7 +211,6 @@ class CreateExplorationVoiceArtistLinkModelsJob(base_jobs.JobBase):
         latest_content_id_to_voiceover_mapping: Dict[str, Dict[
             str, state_domain.VoiceoverDict]] = collections.defaultdict(dict)
 
-
         # Collects all the debug logs.
         debug_logs: str = (
             'Exp ID: %s.\n' % exploration_model.id)
@@ -227,7 +225,7 @@ class CreateExplorationVoiceArtistLinkModelsJob(base_jobs.JobBase):
                 collections.defaultdict(dict)
             )
 
-        language_code_to_voiceovers_count = {}
+        language_code_to_voiceovers_count: Dict[str, int] = {}
 
         for state in exploration_model.states.values():
             voiceovers_mapping = (
