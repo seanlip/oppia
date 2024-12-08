@@ -65,9 +65,11 @@ class PrePushHookTests(test_utils.GenericTestBase):
         self.print_arr: List[str] = []
         def mock_print(msg: str) -> None:
             self.print_arr.append(msg)
+        self.check_output_calls = 0
         def mock_check_output(
             cmd_tokens: List[str], encoding: str = 'utf-8'  # pylint: disable=unused-argument
         ) -> str:
+            self.check_output_calls += 1
             return 'Output'
         self.linter_code = 0
         def mock_start_linter(unused_files_to_lint: List[bytes]) -> int:
@@ -576,6 +578,7 @@ class PrePushHookTests(test_utils.GenericTestBase):
                         with self.execute_mypy_checks_swap:
                             with self.swap_check_backend_python_libs:
                                 pre_push_hook.main(args=[])
+        self.assertEqual(self.check_output_calls, 9)
 
     def test_main_exits_when_mismatches_exist_in_backend_python_libs(
         self
@@ -668,13 +671,22 @@ class PrePushHookTests(test_utils.GenericTestBase):
             self.print_arr,
             ['Python dependencies consistency check succeeded.'])
 
-    def test_main_with_same_branch(self) -> None:
+    def test_main_calls_check_output_only_once_when_on_same_branch(
+        self
+    ) -> None:
+        """check_output is used to switch switch branches with git checkout
+        when there are modified files that need to be linted; when there are
+        not, and the ChangedBranch new-branch points to the branch you are
+        already on, check_output should be called only once, for git
+        symbolic-ref -q --short HEAD.
+        """
         def mock_run_script_and_get_returncode(unused_script: List[str]) -> int:
             return 0
 
         def mock_check_output(
             cmd_tokens: List[str], encoding: str = 'utf-8'  # pylint: disable=unused-argument
         ) -> str:
+            self.check_output_calls += 1
             return 'branch1'
 
         def mock_get_changed_files(
@@ -701,3 +713,4 @@ class PrePushHookTests(test_utils.GenericTestBase):
                         with self.execute_mypy_checks_swap:
                             with self.swap_check_backend_python_libs:
                                 pre_push_hook.main(args=[])
+        self.assertEqual(self.check_output_calls, 1)
