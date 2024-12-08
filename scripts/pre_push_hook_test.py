@@ -674,11 +674,11 @@ class PrePushHookTests(test_utils.GenericTestBase):
     def test_main_calls_check_output_only_once_when_on_same_branch(
         self
     ) -> None:
-        """check_output is used to switch switch branches with git checkout
-        when there are modified files that need to be linted; when there are
-        not, and the ChangedBranch new-branch points to the branch you are
-        already on, check_output should be called only once, for git
-        symbolic-ref -q --short HEAD.
+        """check_output is used to switch branches with git checkout when there
+        are modified files that need to be linted; when there are not, and the
+        ChangedBranch new-branch points to the branch you are already on,
+        check_output should be called only once: for git symbolic-ref -q
+        --short HEAD.
         """
         def mock_run_script_and_get_returncode(unused_script: List[str]) -> int:
             return 0
@@ -700,8 +700,11 @@ class PrePushHookTests(test_utils.GenericTestBase):
         run_script_and_get_returncode_swap = self.swap(
             pre_push_hook, 'run_script_and_get_returncode',
             mock_run_script_and_get_returncode)
-        check_output_swap = self.swap(
-            subprocess, 'check_output', mock_check_output)
+        check_output_swap = self.swap_with_checks(
+            subprocess,
+            'check_output',
+            mock_check_output,
+            expected_args=(('git symbolic-ref -q --short HEAD'.split(),),))
         get_changed_files_swap = self.swap(
             git_changes_utils, 'get_changed_files',
             mock_get_changed_files)
