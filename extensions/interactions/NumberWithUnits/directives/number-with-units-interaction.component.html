@@ -6,9 +6,8 @@
          (ngModelChange)="answerValueChanged()"
          class="form-control"
          [oppiaFocusOn]="labelForFocusTarget">
-
-  <div class="oppia-form-error oppia-units-input-error">
-    {{ errorMessageI18nKey | translate }}
+  <div *ngIf="hasDuplicatedUnit()" class="oppia-form-error oppia-units-input-error">
+    <span>{{ errorMessageI18nKey }}</span>
   </div>
 </form>
 <button class="btn btn-secondary"
@@ -18,7 +17,9 @@
 
 <style>
   .oppia-units-input-error {
-    margin-top: 10px;
+    font-size: 0.90em;
+    margin-bottom: 5px;
+    margin-top: 5px;
   }
 
   .ng-invalid {

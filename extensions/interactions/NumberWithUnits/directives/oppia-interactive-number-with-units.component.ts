@@ -47,6 +47,7 @@ export class InteractiveNumberWithUnitsComponent implements OnInit, OnDestroy {
   componentSubscriptions: Subscription = new Subscription();
   FORM_ERROR_TYPE: string = 'NUMBER_WITH_UNITS_FORMAT_ERROR';
   errorMessageI18nKey: string = '';
+  duplicatedUnit: string = '';
   answer: string = '';
   isValid: boolean = true;
   answerChanged: Subject<string> = new Subject<string>();
@@ -75,9 +76,21 @@ export class InteractiveNumberWithUnitsComponent implements OnInit, OnDestroy {
             this.numberWithUnitsObjectFactory.fromRawInputString(newValue);
             this.errorMessageI18nKey = '';
             this.isValid = true;
+            this.duplicatedUnit = '';
           } catch (parsingError) {
             if (parsingError instanceof Error) {
-              this.errorMessageI18nKey = parsingError.message;
+              var errorMessageSplit = parsingError.message.split(' ');
+              var message = parsingError.message;
+              if (
+                errorMessageSplit[0] ===
+                'I18N_INTERACTIONS_NUMBER_WITH_UNITS_INVALID_DOUBLE_UNITS'
+              ) {
+                message = errorMessageSplit[0];
+                this.duplicatedUnit = errorMessageSplit[1];
+              } else {
+                this.duplicatedUnit = '';
+              }
+              this.errorMessageI18nKey = message;
             }
             this.isValid = false;
           }
@@ -131,7 +144,18 @@ export class InteractiveNumberWithUnitsComponent implements OnInit, OnDestroy {
       );
     } catch (parsingError) {
       if (parsingError instanceof Error) {
-        this.errorMessageI18nKey = parsingError.message;
+        var errorMessageSplit = parsingError.message.split(' ');
+        var message = parsingError.message;
+        if (
+          errorMessageSplit[0] ===
+          'I18N_INTERACTIONS_NUMBER_WITH_UNITS_INVALID_DOUBLE_UNITS'
+        ) {
+          message = errorMessageSplit[0];
+          this.duplicatedUnit = errorMessageSplit[1];
+        } else {
+          this.duplicatedUnit = '';
+        }
+        this.errorMessageI18nKey = message;
       } else {
         throw parsingError;
       }
@@ -155,8 +179,31 @@ export class InteractiveNumberWithUnitsComponent implements OnInit, OnDestroy {
       );
   }
 
+  hasDuplicatedUnit(): boolean {
+    const unitArray = this.answer.split(/[\s*\/()]+/).filter(Boolean);
+    const unitCount: {[key: string]: number} = {};
+
+    unitArray.forEach(unit => {
+      if (unitCount[unit]) {
+        unitCount[unit]++;
+      } else {
+        unitCount[unit] = 1;
+      }
+    });
+
+    for (const unit in unitCount) {
+      if (unitCount[unit] > 1) {
+        this.duplicatedUnit = unit;
+        return true;
+      }
+    }
+
+    this.duplicatedUnit = '';
+    return false;
+  }
+
   isAnswerValid(): boolean {
-    return this.isValid && this.answer !== '';
+    return this.isValid && this.answer !== '' && !this.hasDuplicatedUnit();
   }
 
   answerValueChanged(): void {

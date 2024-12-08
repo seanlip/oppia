@@ -315,6 +315,15 @@ export class NumberWithUnitsObjectFactory {
     }
 
     const unitsObj = this.unitsFactory.fromRawInputString(units);
+    let duplicatedUnit = this.unitsFactory.getDuplicatedUnit(units);
+    if (duplicatedUnit !== '') {
+      throw new Error(
+        ObjectsDomainConstants.NUMBER_WITH_UNITS_PARSING_ERROR_I18N_KEYS
+          .INVALID_DOUBLE_UNIT +
+          ' ' +
+          duplicatedUnit
+      );
+    }
     return new NumberWithUnits(type, real, fractionObj, unitsObj);
   }
 

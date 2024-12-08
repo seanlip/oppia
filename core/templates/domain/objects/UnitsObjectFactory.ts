@@ -264,6 +264,37 @@ export class UnitsObjectFactory {
     }
     return new Units(this.fromStringToList(units));
   }
+
+  getAllInstancesOfUnits(units: string[]): string[] {
+    // Returns a list with all the instances of unit in a units list.
+    var instancesOfUnits: string[] = [];
+    units.forEach(entry => {
+      if (entry.includes('^')) {
+        this.getAllInstancesOfUnits(entry.split('^')).forEach(entryWoutExp => {
+          instancesOfUnits.push(entryWoutExp);
+        });
+      } else if (this.isunit(entry) && entry.length > 0) {
+        instancesOfUnits.push(entry.replace(/[0-9]/g, ''));
+      }
+    });
+    return instancesOfUnits;
+  }
+
+  getDuplicatedUnit(units: string): string {
+    var inputList = this.getAllInstancesOfUnits(this.stringToLexical(units));
+    var unitsRead = [];
+
+    for (var i in inputList) {
+      var unit = inputList[i];
+      if (unitsRead.indexOf(unit) >= 0) {
+        // If index >= 0 then unit has already been seen.
+        return unit;
+      } else {
+        unitsRead.push(unit);
+      }
+    }
+    return '';
+  }
 }
 
 angular
