@@ -775,7 +775,7 @@ def managed_acceptance_tests_server(
         common.CURR_DIR, 'core', 'tests', 'puppeteer-acceptance-tests', 'specs')
 
     acceptance_tests_args = [
-        nodemodules_jest_bin_path, 
+        nodemodules_jest_bin_path,
         '%s' % os.path.join(puppeteer_acceptance_tests_dir_path, suite_name),
         '--config=./core/tests/puppeteer-acceptance-tests/jest.config.js'
     ]
