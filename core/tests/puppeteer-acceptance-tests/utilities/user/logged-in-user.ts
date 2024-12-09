@@ -176,6 +176,7 @@ export class LoggedInUser extends BaseUser {
    * Navigates to the learner dashboard.
    */
   async navigateToLearnerDashboard(): Promise<void> {
+    await this.page.reload();
     await this.goto(learnerDashboardUrl);
   }
 
