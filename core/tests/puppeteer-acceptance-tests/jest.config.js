@@ -22,11 +22,17 @@ module.exports = {
       tsconfig: './tsconfig.puppeteer-acceptance-tests.json',
     },
   },
-  rootDir: './specs',
+  // rootDir: './specs',
   testMatch: ['**/?(*.)+(spec).[t]s'],
   transform: {'^.+\\.ts?$': 'ts-jest'},
   preset: 'ts-jest',
   testEnvironment: 'node',
   testTimeout: 300000,
   bail: 0,
+  transformIgnorePatterns: ['node_modules/(?!expect/)'],
+  // Explicit module resolution for expect
+  moduleNameMapper: {
+    '^expect$': 'expect/build/index.js',
+    '^expect/(.*)$': 'expect/$1',
+  },
 };
