@@ -386,9 +386,7 @@ export class CurriculumAdmin extends BaseUser {
     await this.clickOn(photoBoxButton);
     await this.page.waitForSelector(photoUploadModal, {visible: true});
     await this.uploadFile(curriculumAdminThumbnailImage);
-    console.log('YOLO');
     await this.page.waitForSelector(`${uploadPhotoButton}:not([disabled])`);
-    console.log('YOLO2');
     await this.clickOn(uploadPhotoButton);
     await this.page.waitForSelector(photoUploadModal, {hidden: true});
     await this.clickOn(createTopicButton);
