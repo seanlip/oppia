@@ -208,7 +208,7 @@ jobs:
       max-parallel: 3
       matrix:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.suites }}
-    name: Acceptance (${{ matrix.suite.name }} -- old installation)
+    name: Acceptance (${{ matrix.suite.name }} -- Python installation)
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
