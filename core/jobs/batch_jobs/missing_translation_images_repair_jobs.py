@@ -325,7 +325,7 @@ class AuditMissingTranslationImagesJob(base_jobs.JobBase):
                 {
                     'dst': [],
                     'copy_info': [{
-                        'dst': ['exploration_suggestions/e1/assets/image/image2.png'],
+                        'dst': ['exploration_suggestions/.../image2.png'],
                         'src_exist': [False],
                         'dst_exist': [True]
                     }]

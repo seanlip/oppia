@@ -18,12 +18,11 @@
 
 from __future__ import annotations
 
+from core import feconf
 from core.jobs import job_test_utils
 from core.jobs.batch_jobs import missing_translation_images_repair_jobs
 from core.jobs.types import job_run_result
 from core.platform import models
-from core.tests import test_utils
-from core import feconf
 
 import result
 from typing import Iterable, Set
@@ -71,13 +70,12 @@ class MissingTranslationImagesJobTestsBase(job_test_utils.JobTestBase):
         return '\n'.join(tags)
 
     def _add_suggestion(
-        self, sugg_id: str, exp_id: str, image_filenames: Iterable[str],
-        make_dst: bool, make_src: bool
+        self, exp_id: str, image_filenames: Iterable[str], make_dst: bool,
+        make_src: bool
     ) -> None:
         """Add a translation suggestion.
 
         Args:
-            sugg_id: str. Suggestion ID
             exp_id: str. ID of the target exploration the suggestion is for.
             image_filenames: iterable(str). The images to include in the
                 translation suggestion.
@@ -138,7 +136,7 @@ class CopyMissingTranslationImagesJobTests(
 
     def test_copy_images_when_dst_missing(self) -> None:
         self._add_suggestion(
-            's1', 'e1', ['image1.png', 'image2.png'], False, True)
+            'e1', ['image1.png', 'image2.png'], False, True)
         self.assertSetEqual(
             self._gcs_ls('exploration/e1/assets/image'),
             {'image1.png', 'image2.png'}
@@ -171,7 +169,7 @@ class CopyMissingTranslationImagesJobTests(
 
     def test_do_not_copy_images_when_dst_present(self) -> None:
         self._add_suggestion(
-            's1', 'e1', ['image1.png', 'image2.png'], True, True)
+            'e1', ['image1.png', 'image2.png'], True, True)
         self.assertSetEqual(
             self._gcs_ls('exploration/e1/assets/image'),
             {'image1.png', 'image2.png'}
@@ -193,7 +191,7 @@ class CopyMissingTranslationImagesJobTests(
 
     def test_do_not_copy_images_when_src_missing(self) -> None:
         self._add_suggestion(
-            's1', 'e1', ['image1.png', 'image2.png'], True, False)
+            'e1', ['image1.png', 'image2.png'], True, False)
         self.assertSetEqual(
             self._gcs_ls('exploration/e1/assets/image'),
             set()
@@ -233,6 +231,7 @@ class CopyMissingTranslationImagesJobTests(
             set()
         )
 
+
 class AuditMissingTranslationImagesJobTests(
     MissingTranslationImagesJobTestsBase
 ):
@@ -243,7 +242,7 @@ class AuditMissingTranslationImagesJobTests(
 
     def test_copy_images_when_dst_missing(self) -> None:
         self._add_suggestion(
-            's1', 'e1', ['image1.png', 'image2.png'], False, True)
+            'e1', ['image1.png', 'image2.png'], False, True)
         self.assertSetEqual(
             self._gcs_ls('exploration/e1/assets/image'),
             {'image1.png', 'image2.png'}
@@ -288,7 +287,7 @@ class AuditMissingTranslationImagesJobTests(
 
     def test_do_not_copy_images_when_dst_present(self) -> None:
         self._add_suggestion(
-            's1', 'e1', ['image1.png', 'image2.png'], True, True)
+            'e1', ['image1.png', 'image2.png'], True, True)
         self.assertSetEqual(
             self._gcs_ls('exploration/e1/assets/image'),
             {'image1.png', 'image2.png'}
@@ -333,7 +332,7 @@ class AuditMissingTranslationImagesJobTests(
 
     def test_do_not_copy_images_when_src_missing(self) -> None:
         self._add_suggestion(
-            's1', 'e1', ['image1.png', 'image2.png'], True, False)
+            'e1', ['image1.png', 'image2.png'], True, False)
         self.assertSetEqual(
             self._gcs_ls('exploration/e1/assets/image'),
             set()

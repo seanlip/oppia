@@ -22,7 +22,7 @@ import heapq
 
 from core import utils
 
-from typing import Any, List, Tuple, Union # isort: skip
+from typing import Any, List, Tuple  # isort: skip
 
 # This is just to make sure that the output of the job have some reasonable
 # length. The maximum that model can hold is around 1 MB and this is much lower.
