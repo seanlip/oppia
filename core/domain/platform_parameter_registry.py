@@ -514,86 +514,75 @@ Registry.create_platform_parameter(
     ParamName.SYSTEM_EMAIL_ADDRESS,
     'Email address used for system issued actions.',
     platform_parameter_domain.DataTypes.STRING,
-    # TODO(release-scripts#130): Update post the first trial release.
-    default=feconf.SYSTEM_EMAIL_ADDRESS
+    default='system@example.com'
 )
 
 Registry.create_platform_parameter(
     ParamName.SYSTEM_EMAIL_NAME,
     'Email name for system issued actions.',
     platform_parameter_domain.DataTypes.STRING,
-    # TODO(release-scripts#130): Update post the first trial release.
-    default=feconf.SYSTEM_EMAIL_NAME
+    default='.'
 )
 
 Registry.create_platform_parameter(
     ParamName.ADMIN_EMAIL_ADDRESS,
     'Email address used for admin issued actions.',
     platform_parameter_domain.DataTypes.STRING,
-    # TODO(release-scripts#130): Update post the first trial release.
-    default=feconf.ADMIN_EMAIL_ADDRESS
+    default='testadmin@example.com'
 )
 
 Registry.create_platform_parameter(
     ParamName.NOREPLY_EMAIL_ADDRESS,
     'Email address used for mails sent by Oppia.',
     platform_parameter_domain.DataTypes.STRING,
-    # TODO(release-scripts#130): Update post the first trial release.
-    default=feconf.NOREPLY_EMAIL_ADDRESS
+    default='noreply@example.com'
 )
 
 Registry.create_platform_parameter(
     ParamName.MAILCHIMP_AUDIENCE_ID,
     'Audience ID of the mailing list for Oppia in Mailchimp.',
     platform_parameter_domain.DataTypes.STRING,
-    # TODO(release-scripts#134): Update post the first trial release.
-    default=feconf.MAILCHIMP_AUDIENCE_ID
+    default=''
 )
 
 Registry.create_platform_parameter(
     ParamName.MAILCHIMP_USERNAME,
     'Username of the mailing list for Oppia in Mailchimp.',
     platform_parameter_domain.DataTypes.STRING,
-    # TODO(release-scripts#134): Update post the first trial release.
-    default=feconf.MAILCHIMP_USERNAME
+    default=''
 )
 
 Registry.create_platform_parameter(
     ParamName.MAILGUN_DOMAIN_NAME,
     'Domain name for Mailgun email API.',
     platform_parameter_domain.DataTypes.STRING,
-    # TODO(release-scripts#134): Update post the first trial release.
-    default=feconf.MAILGUN_DOMAIN_NAME
+    default=''
 )
 
 Registry.create_platform_parameter(
     ParamName.ES_CLOUD_ID,
     'ID for elastic search service.',
     platform_parameter_domain.DataTypes.STRING,
-    # TODO(release-scripts#134): Update post the first trial release.
-    default=feconf.ES_CLOUD_ID
+    default=''
 )
 
 Registry.create_platform_parameter(
     ParamName.ES_USERNAME,
     'Username for elastic search service.',
     platform_parameter_domain.DataTypes.STRING,
-    # TODO(release-scripts#134): Update post the first trial release.
-    default=feconf.ES_USERNAME
+    default=''
 )
 
 Registry.create_platform_parameter(
     ParamName.OPPIA_PROJECT_ID,
     'Project ID of oppia server.',
     platform_parameter_domain.DataTypes.STRING,
-    # TODO(release-scripts#137): Update post the first trial release.
-    default=feconf.OPPIA_PROJECT_ID
+    default='dev-project-id'
 )
 
 Registry.create_platform_parameter(
     ParamName.OPPIA_SITE_URL_FOR_EMAILS,
     'Oppia site URL used in emails.',
     platform_parameter_domain.DataTypes.STRING,
-    # TODO(release-scripts#137): Update post the first trial release.
-    default=feconf.OPPIA_SITE_URL
+    default='http://localhost:8181'
 )
