@@ -142,4 +142,52 @@ class LearnerGroupFetchersUnitTests(test_utils.GenericTestBase):
             )
         )
         self.assertEqual(len(learner_groups), 1)
-        self.assertEqual(learner_groups[0].group_id, self.LEARNER_GROUP_ID)
+
+    def test_get_learner_group_by_ids_with_fake_user_no_exc(self) -> None:
+        with self.assertRaisesRegex(
+            Exception,
+            'No LearnerGroupsUserModel exists for the user_id: '
+            'fake_id'
+        ):
+            learner_group_fetchers.get_learner_group_models_by_ids(
+                ['fake_id'], strict=True
+            )
+
+    def test_get_learner_group_by_ids_not_strict_returns_list(self) -> None:
+        learner_group_services.add_learner_to_learner_group(
+            self.LEARNER_GROUP_ID, self.LEARNER_ID_1, True)
+        learner_group_services.add_learner_to_learner_group(
+            self.LEARNER_GROUP_ID, self.LEARNER_ID_2, False)
+        learner_groups = (
+            learner_group_fetchers.get_learner_group_models_by_ids(
+                [self.LEARNER_ID_1, self.LEARNER_ID_2], strict=False
+            )
+        )
+        self.assertEqual(len(learner_groups), 2)
+
+    def test_multi_learners_share_progress_learner_in_mult_groups(self) -> None:
+        # Making group 2.
+        group2_id = (
+            learner_group_fetchers.get_new_learner_group_id()
+        )
+        learner_group_services.create_learner_group(
+            group2_id, 'Learner Group Name', 'Description',
+            [self.FACILITATOR_ID], [self.LEARNER_ID_1],
+            ['subtopic_id_1'], ['story_id_1'])
+
+        # Adding learner to 2 groups.
+        learner_group_services.add_learner_to_learner_group(
+            group2_id, self.LEARNER_ID_1, True)
+        learner_group_services.add_learner_to_learner_group(
+            self.LEARNER_GROUP_ID, self.LEARNER_ID_1, True)
+
+        self.assertEqual(
+            learner_group_fetchers.can_multi_learners_share_progress(
+                [self.LEARNER_ID_1], self.LEARNER_GROUP_ID
+            ), [True])
+
+    def test_can_multi_learners_share_progress_learner_no_group(self) -> None:
+        self.assertEqual(
+            learner_group_fetchers.can_multi_learners_share_progress(
+                [self.LEARNER_ID_1], self.LEARNER_GROUP_ID
+            ), [])
