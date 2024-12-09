@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import os
 import textwrap
-from unittest.mock import patch, Mock
+from unittest import mock
 
 from core import feconf
 from core.platform import models
@@ -51,13 +51,13 @@ class EmailTests(test_utils.GenericTestBase):
             ]
         )
 
-    @patch('requests.post')
+    @mock.patch('requests.post')
     def test_send_email_to_mailgun_without_bcc_reply_to_and_recipients(
-        self, mock_post: Mock
+        self, mock_post: mock.Mock
     ) -> None:
         """Test for sending HTTP POST request."""
         # Test sending email without bcc, reply_to or recipient_variables.
-        mock_response = Mock()
+        mock_response = mock.Mock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
 
@@ -89,30 +89,30 @@ class EmailTests(test_utils.GenericTestBase):
         }
 
         mock_post.assert_called_once_with(
-            f'https://api.mailgun.net/v3/domain/messages',
+            'https://api.mailgun.net/v3/domain/messages',
             auth=('api', 'key'),
             data=expected_data,
             files=attachments
         )
         self.assertTrue(resp)
 
-    @patch("requests.post")
+    @mock.patch('requests.post')
     def test_send_email_to_mailgun_with_file_attachments(
-            self, mock_post: Mock) -> None:
-        mock_response = Mock()
+            self, mock_post: mock.Mock) -> None:
+        mock_response = mock.Mock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
 
-        sender_email = "sender@example.com"
-        recipient_emails = ["recipient@example.com"]
-        subject = "Test Email with attachment"
-        plaintext_body = "This is a test email with an attachment."
+        sender_email = 'sender@example.com'
+        recipient_emails = ['recipient@example.com']
+        subject = 'Test Email with attachment'
+        plaintext_body = 'This is a test email with an attachment.'
         html_body = 'Hi abc,<br> 😂'
-        file_path = "test_file.txt"
+        file_path = 'test_file.txt'
         attachments = [{'filename': 'test_file.txt', 'path': file_path}]
 
-        with open(file_path, 'w') as f:
-            f.write("This is a test file.")
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write('This is a test file.')
 
         swap_domain = self.swap(feconf, 'MAILGUN_DOMAIN_NAME', 'domain')
 
@@ -140,22 +140,22 @@ class EmailTests(test_utils.GenericTestBase):
         self.assertIn('files', kwargs)
         self.assertEqual(kwargs['files'][0][1][0], 'test_file.txt')
 
-    @patch("requests.post")
+    @mock.patch('requests.post')
     def test_send_email_to_mailgun_with_bcc_and_recipient(
-            self, mock_post:Mock) -> None:
+            self, mock_post: mock.Mock) -> None:
         # Test sending email with single bcc and single recipient email.
-        mock_response = Mock()
+        mock_response = mock.Mock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
 
-        sender_email = "a@example.com"
-        recipient_emails = ["b@example.com"]
-        subject = "Hola 😂 - invitation to collaborate"
-        plaintext_body = "plaintext_body 😂"
+        sender_email = 'a@example.com'
+        recipient_emails = ['b@example.com']
+        subject = 'Hola 😂 - invitation to collaborate'
+        plaintext_body = 'plaintext_body 😂'
         html_body = 'Hi abc,<br> 😂'
         recipient_variables = {'b@b.com': {'first': 'Bob', 'id': 1}}
         bcc = ['c@example.com']
-        reply_to='abc'
+        reply_to = 'abc'
         attachments = None
 
         swap_domain = self.swap(feconf, 'MAILGUN_DOMAIN_NAME', 'domain')
@@ -183,29 +183,30 @@ class EmailTests(test_utils.GenericTestBase):
         }
 
         mock_post.assert_called_once_with(
-            f'https://api.mailgun.net/v3/domain/messages',
+            'https://api.mailgun.net/v3/domain/messages',
             auth=('api', 'key'),
             data=expected_data,
             files=attachments
         )
         self.assertTrue(resp)
 
-    @patch("requests.post")
-    def test_send_email_to_mailgun_with_bcc_and_recipients(self, mock_post) -> None:
+    @mock.patch('requests.post')
+    def test_send_email_to_mailgun_with_bcc_and_recipients(
+            self, mock_post: mock.Mock) -> None:
         # Test sending email with single bcc, and multiple recipient emails
         # differentiated by recipient_variables ids.
-        mock_response = Mock()
+        mock_response = mock.Mock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
 
-        sender_email = "a@example.com"
-        recipient_emails = ["b@example.com"]
-        subject = "Hola 😂 - invitation to collaborate"
-        plaintext_body = "plaintext_body 😂"
+        sender_email = 'a@example.com'
+        recipient_emails = ['b@example.com']
+        subject = 'Hola 😂 - invitation to collaborate'
+        plaintext_body = 'plaintext_body 😂'
         html_body = 'Hi abc,<br> 😂'
         recipient_variables = {'b@example.com': {'first': 'Bob', 'id': 1}}
         bcc = ['c@example.com', 'd@example.com']
-        reply_to='abc'
+        reply_to = 'abc'
         attachments = None
 
         swap_domain = self.swap(feconf, 'MAILGUN_DOMAIN_NAME', 'domain')
@@ -234,24 +235,24 @@ class EmailTests(test_utils.GenericTestBase):
         }
 
         mock_post.assert_called_once_with(
-            f'https://api.mailgun.net/v3/domain/messages',
+            'https://api.mailgun.net/v3/domain/messages',
             auth=('api', 'key'),
             data=expected_data,
             files=attachments
         )
         self.assertTrue(resp)
 
-    @patch("requests.post")
+    @mock.patch('requests.post')
     def test_batch_send_to_mailgun(self, mock_post) -> None:
         """Test for sending HTTP POST request."""
-        mock_response = Mock()
+        mock_response = mock.Mock()
         mock_response.status_code = 200
         mock_post.return_value = mock_response
 
-        sender_email = "a@example.com"
-        recipient_emails = ["b@example.com", 'c@example.com', 'd@example.com']
-        subject = "Hola 😂 - invitation to collaborate"
-        plaintext_body = "plaintext_body 😂"
+        sender_email = 'a@example.com'
+        recipient_emails = ['b@example.com', 'c@example.com', 'd@example.com']
+        subject = 'Hola 😂 - invitation to collaborate'
+        plaintext_body = 'plaintext_body 😂'
         html_body = 'Hi abc,<br> 😂'
         attachments = None
 
@@ -276,7 +277,7 @@ class EmailTests(test_utils.GenericTestBase):
         }
 
         mock_post.assert_called_once_with(
-            f'https://api.mailgun.net/v3/domain/messages',
+            'https://api.mailgun.net/v3/domain/messages',
             auth=('api', 'key'),
             data=expected_data,
             files=attachments
@@ -362,16 +363,16 @@ class EmailTests(test_utils.GenericTestBase):
                     logs
                 )
 
-    @patch("requests.post")
+    @mock.patch('requests.post')
     def test_invalid_status_code_returns_false(self, mock_post) -> None:
-        mock_response = Mock()
+        mock_response = mock.Mock()
         mock_response.status_code = 500
         mock_post.return_value = mock_response
 
-        sender_email = "a@example.com"
-        recipient_emails = ["b@example.com", 'c@example.com', 'd@example.com']
-        subject = "Hola 😂 - invitation to collaborate"
-        plaintext_body = "plaintext_body 😂"
+        sender_email = 'a@example.com'
+        recipient_emails = ['b@example.com', 'c@example.com', 'd@example.com']
+        subject = 'Hola 😂 - invitation to collaborate'
+        plaintext_body = 'plaintext_body 😂'
         html_body = 'Hi abc,<br> 😂'
         attachments = None
 
@@ -396,7 +397,7 @@ class EmailTests(test_utils.GenericTestBase):
         }
 
         mock_post.assert_called_once_with(
-            f'https://api.mailgun.net/v3/domain/messages',
+            'https://api.mailgun.net/v3/domain/messages',
             auth=('api', 'key'),
             data=expected_data,
             files=attachments

@@ -18,16 +18,13 @@
 
 from __future__ import annotations
 
-import base64
-import urllib
-import requests
 import logging
 
 from core import feconf
-from core import utils
 from core.domain import email_services
 from core.platform import models
 
+import requests
 from typing import Dict, List, Optional, Union
 
 MYPY = False
@@ -35,6 +32,9 @@ if MYPY: # pragma: no cover
     from mypy_imports import secrets_services
 
 secrets_services = models.Registry.import_secrets_services()
+
+# Timeout in seconds for mailgun requests.
+TIMEOUT_SECS = 60
 
 
 def send_email_to_recipients(
@@ -47,7 +47,7 @@ def send_email_to_recipients(
     reply_to: Optional[str] = None,
     recipient_variables: Optional[
         Dict[str, Dict[str, Union[str, float]]]] = None,
-    attachments: Optional[List[str]] = None
+    attachments: Optional[List[Dict[str, str]]] = None
 ) -> bool:
     """Send POST HTTP request to mailgun api. This method is adopted from
     the requests library's post method.
@@ -74,12 +74,13 @@ def send_email_to_recipients(
                 recipient_variables =
                     {"bob@example.com": {"first":"Bob", "id":1},
                      "alice@example.com": {"first":"Alice", "id":2}}
-                subject = 'Hey, %recipient.first%’
+                subject = 'Hey, %recipient.first%'
             More info about this format at:
-            https://documentation.mailgun.com/en/
-                latest/user_manual.html#batch-sending.
-        attachments: list(str)|None. Optional argument. List of file paths
-            for attachments.
+                https://documentation.mailgun.com/en/latest/user_manual.html
+                #batch-sending.
+        attachments: list(dict)|None. Optional argument. A list of
+            dictionaries, where each dictionary includes the keys `filename`
+            and `path` with their corresponding values.
 
     Raises:
         Exception. The mailgun api key is not stored in
@@ -114,7 +115,7 @@ def send_email_to_recipients(
     # post data. Maximum limit of recipients per request is 1000.
     # For more detail check following link:
     # https://documentation.mailgun.com/docs/mailgun/user-manual/
-    # sending-messages/#batch-sending
+    # sending-messages/#batch-sending.
     recipient_email_lists = [
         recipient_emails[i:i + 1000]
         for i in range(0, len(recipient_emails), 1000)]
@@ -143,17 +144,18 @@ def send_email_to_recipients(
 
        # Adding attachments to the email.
         files = [(
-            "attachment",
-            (attachment["filename"], open(attachment["path"], "rb")))
+            'attachment',
+            (attachment['filename'], open(attachment['path'], 'rb')))
             for attachment in attachments
         ] if attachments else None
 
         try:
             response = requests.post(
                 server,
-                auth=("api", mailgun_api_key),
+                auth=('api', mailgun_api_key),
                 data=data,
-                files=files
+                files=files,
+                timeout=TIMEOUT_SECS
             )
 
             if files:
@@ -162,10 +164,10 @@ def send_email_to_recipients(
 
             if response.status_code != 200:
                 logging.error(
-                    "Failed to send email: %s - %s."
+                    'Failed to send email: %s - %s.'
                     % (response.status_code, response.text))
                 return False
         except requests.RequestException as e:
-            logging.error("Failed to send email: %s." %e)
+            logging.error('Failed to send email: %s.' % e)
             return False
     return True

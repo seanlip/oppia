@@ -34,7 +34,8 @@ def send_email_to_recipients(
         bcc: Optional[List[str]] = None,
         reply_to: Optional[str] = None,
         recipient_variables: Optional[
-            Dict[str, Dict[str, Union[str, float]]]] = None
+            Dict[str, Dict[str, Union[str, float]]]] = None,
+        attachments: Optional[List[Dict[str, str]]] = None
 ) -> bool:
     """Prints information about sent emails to the terminal console, in order
     to model sending an email in development mode.
@@ -65,8 +66,11 @@ def send_email_to_recipients(
                      "alice@example.com": {"first":"Alice", "id":2}}
                 subject = 'Hey, %recipient.first%’
             More info about this format at:
-            https://documentation.mailgun.com/en/
-                latest/user_manual.html#batch-sending
+                https://documentation.mailgun.com/en/latest/user_manual.html
+                #batch-sending.
+        attachments: list(dict)|None. Optional argument. A list of
+            dictionaries, where each dictionary includes the keys `filename`
+            and `path` with their corresponding values.
 
     Returns:
         bool. Whether the emails are "sent" successfully.
@@ -74,7 +78,7 @@ def send_email_to_recipients(
     logging.info(
         email_services.convert_email_to_loggable_string(
             sender_email, recipient_emails, subject, plaintext_body, html_body,
-            bcc, reply_to, recipient_variables
+            bcc, reply_to, recipient_variables, attachments
         )
     )
     logging.info(
