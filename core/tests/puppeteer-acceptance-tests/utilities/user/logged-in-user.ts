@@ -117,7 +117,7 @@ const mobileCompletedLessonSection = '.community-lessons-section';
 const currentGoalsSectionSelector = '.e2e-test-current-goals-section';
 const homeSectionGreetingElement = '.greeting';
 const LABEL_FOR_SUBMIT_BUTTON = 'Submit and start contributing';
-const preferencePageSaveButtonSelector = '.e2e-test-save-changes-button';
+const preferencePageBodySelector = 'body';
 
 export class LoggedInUser extends BaseUser {
   /**
@@ -811,7 +811,7 @@ export class LoggedInUser extends BaseUser {
     for (const interest of interests) {
       await this.page.click(subjectInterestsInputSelector);
       await this.type(subjectInterestsInputSelector, interest);
-      await this.page.click(preferencePageSaveButtonSelector);
+      await this.page.click(preferencePageBodySelector);
     }
   }
 
