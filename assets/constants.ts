@@ -5082,8 +5082,8 @@ export default {
     "Engineering": "#6f7a48",
     "Environment": "#747142",
     "Medicine": "#657030",
-    "Science": "#6f7a48",
     "Physics": "#58613a",
+    "Science": "#6f7a48",
 
     "Architecture": "#6e3466",
     "Art": "#895a83",
