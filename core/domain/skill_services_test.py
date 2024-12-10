@@ -919,6 +919,46 @@ class SkillServicesUnitTests(test_utils.GenericTestBase):
             skill_services.get_all_topic_assignments_for_skill('new_skill_id'))
         self.assertEqual(len(topic_assignments_dict), 2)
 
+    def test_replace_skill_id_in_all_topics_skips_topics_without_skill_id(self) -> None:
+        topic_id = topic_fetchers.get_new_topic_id()
+        topic_id_1 = topic_fetchers.get_new_topic_id()
+
+        self.save_new_skill(
+            self.SKILL_ID2, self.USER_ID, description='Description2',
+            misconceptions=[],
+            skill_contents=None
+        )
+
+        self.save_new_topic(
+            topic_id, self.USER_ID, name='Topic1',
+            abbreviated_name='topic-five', url_fragment='topic-five',
+            description='Description',
+            canonical_story_ids=[],
+            additional_story_ids=[],
+            uncategorized_skill_ids=[self.SKILL_ID],
+            subtopics=[], next_subtopic_id=1)
+        self.save_new_topic(
+            topic_id_1, self.USER_ID, name='Topic2',
+            abbreviated_name='topic-six', url_fragment='topic-six',
+            description='Description2', canonical_story_ids=[],
+            additional_story_ids=[],
+            uncategorized_skill_ids=[self.SKILL_ID2],
+            subtopics=[], next_subtopic_id=2)
+
+        topic_assignments_dict = (
+            skill_services.get_all_topic_assignments_for_skill('new_skill_id'))
+        self.assertEqual(len(topic_assignments_dict), 0)
+        skill_services.replace_skill_id_in_all_topics(
+            self.USER_ID, 'nonexistent_skill_id', 'new_skill_id')
+        topic_assignments_dict = (
+            skill_services.get_all_topic_assignments_for_skill('new_skill_id'))
+        self.assertEqual(len(topic_assignments_dict), 0)
+        skill_services.replace_skill_id_in_all_topics(
+            self.USER_ID, self.SKILL_ID, 'new_skill_id')
+        topic_assignments_dict = (
+            skill_services.get_all_topic_assignments_for_skill('new_skill_id'))
+        self.assertEqual(len(topic_assignments_dict), 1)
+        
     def test_failure_replace_skill_id_in_all_topics(self) -> None:
         topic_id = topic_fetchers.get_new_topic_id()
         self.save_new_topic(
