@@ -397,6 +397,7 @@ def main(args: Optional[List[str]] = None) -> None:
                     backend_test_cmds)
             if backend_status != 0:
                 print('Push aborted due to failing backend tests.')
+                sys.exit(1)
     return
 
 
