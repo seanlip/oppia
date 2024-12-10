@@ -5072,9 +5072,6 @@ export default {
     "Geometry": "#be5637",
     "Trigonometry": "#be5637",
 
-    "Science": "#6f7a48",
-    "Finance": "#387163",
-
     "Algorithms": "#9d6901",
     "Computing": "#927117",
     "Programming": "#886628",
@@ -5085,6 +5082,7 @@ export default {
     "Engineering": "#6f7a48",
     "Environment": "#747142",
     "Medicine": "#657030",
+    "Science": "#6f7a48",
     "Physics": "#58613a",
 
     "Architecture": "#6e3466",
@@ -5102,6 +5100,7 @@ export default {
 
     "Business": "#387163",
     "Economics": "#2f836d",
+    "Finance": "#387163",
     "Geography": "#3c6d62",
     "Government": "#507c6b",
     "History": "#3d6b52",
