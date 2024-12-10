@@ -738,6 +738,74 @@ class SkillServicesUnitTests(test_utils.GenericTestBase):
     def test_get_all_topic_assignments_for_skill(self) -> None:
         topic_id = topic_fetchers.get_new_topic_id()
         topic_id_1 = topic_fetchers.get_new_topic_id()
+        topic_id_2 = topic_fetchers.get_new_topic_id()
+        self.save_new_topic(
+            topic_id, self.USER_ID, name='Topic1',
+            abbreviated_name='topic-three', url_fragment='topic-three',
+            description='Description',
+            canonical_story_ids=[],
+            additional_story_ids=[],
+            uncategorized_skill_ids=[self.SKILL_ID],
+            subtopics=[], next_subtopic_id=1)
+
+        subtopic = topic_domain.Subtopic.from_dict({
+            'id': 1,
+            'title': 'subtopic1',
+            'skill_ids': [self.SKILL_ID],
+            'thumbnail_filename': None,
+            'thumbnail_bg_color': None,
+            'thumbnail_size_in_bytes': None,
+            'url_fragment': 'subtopic-one'
+        })
+        self.save_new_topic(
+            topic_id_1, self.USER_ID, name='Topic2',
+            abbreviated_name='topic-four', url_fragment='topic-four',
+            description='Description2', canonical_story_ids=[],
+            additional_story_ids=[],
+            uncategorized_skill_ids=[],
+            subtopics=[subtopic], next_subtopic_id=2)    
+        
+        # with skill assigned to topic but not subtopic
+        subtopic_1 = topic_domain.Subtopic.from_dict({
+            'id': 2,
+            'title': 'subtopic2',
+            'skill_ids': [],
+            'thumbnail_filename': None,
+            'thumbnail_bg_color': None,
+            'thumbnail_size_in_bytes': None,
+            'url_fragment': 'subtopic-two'
+        })
+        self.save_new_topic(
+            topic_id_2, self.USER_ID, name='Topic3',
+            abbreviated_name='topic-five', url_fragment='topic-five',
+            description='Description3', canonical_story_ids=[],
+            additional_story_ids=[],
+            uncategorized_skill_ids=[self.SKILL_ID],
+            subtopics=[subtopic_1], next_subtopic_id=3)
+        
+        topic_assignments = (
+            skill_services.get_all_topic_assignments_for_skill(self.SKILL_ID))
+        topic_assignments = sorted(
+            topic_assignments, key=lambda i: i.topic_name)
+        self.assertEqual(len(topic_assignments), 3)
+        self.assertEqual(topic_assignments[0].topic_name, 'Topic1')
+        self.assertEqual(topic_assignments[0].topic_id, topic_id)
+        self.assertEqual(topic_assignments[0].topic_version, 1)
+        self.assertIsNone(topic_assignments[0].subtopic_id)
+
+        self.assertEqual(topic_assignments[1].topic_name, 'Topic2')
+        self.assertEqual(topic_assignments[1].topic_id, topic_id_1)
+        self.assertEqual(topic_assignments[1].topic_version, 1)
+        self.assertEqual(topic_assignments[1].subtopic_id, 1)
+
+        self.assertEqual(topic_assignments[2].topic_name, 'Topic3')
+        self.assertEqual(topic_assignments[2].topic_id, topic_id_2)
+        self.assertEqual(topic_assignments[2].topic_version, 1)
+        self.assertIsNone(topic_assignments[2].subtopic_id)
+        
+    def test_get_all_topic_assignments_for_skill(self) -> None:
+        topic_id = topic_fetchers.get_new_topic_id()
+        topic_id_1 = topic_fetchers.get_new_topic_id()
         self.save_new_topic(
             topic_id, self.USER_ID, name='Topic1',
             abbreviated_name='topic-three', url_fragment='topic-three',
