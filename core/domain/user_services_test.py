@@ -177,6 +177,12 @@ class UserServicesUnitTests(test_utils.GenericTestBase):
             [feconf.SYSTEM_COMMITTER_ID],
             user_services.get_usernames([feconf.SYSTEM_COMMITTER_ID]))
 
+    def test_get_usernames_for_nonexistent_user_returns_none(self) -> None:
+        # Handle username that doesn't exist.
+        usernames = user_services.get_usernames(['dne'])
+        self.assertEqual(len(usernames), 1)
+        self.assertIsNone(usernames[0])
+
     def test_get_username_for_nonexistent_user(self) -> None:
         with self.assertRaisesRegex(
             Exception,
@@ -1276,6 +1282,11 @@ class UserServicesUnitTests(test_utils.GenericTestBase):
             self.BLOG_EDITOR_USERNAME, feconf.ROLE_ID_RELEASE_COORDINATOR)
         self.assertTrue(user_services.is_user_blog_post_author(blog_editor_id))
 
+    def test_get_user_roles_from_id_with_nonexistent_user(self) -> None:
+        self.assertEqual(
+            user_services.get_user_roles_from_id('dne'),
+            [feconf.ROLE_ID_GUEST])
+
     def test_removing_role_from_mobile_learner_user_raises_exception(
         self
     ) -> None:
@@ -2076,6 +2087,14 @@ class UserServicesUnitTests(test_utils.GenericTestBase):
         with self.assertRaisesRegex(Exception, 'User not found.'):
             user_services.get_human_readable_user_ids(['unregistered_id'])
 
+    def test_get_human_readable_user_ids_for_no_user_not_strict(
+        self
+    ) -> None:
+        usernames = user_services.get_human_readable_user_ids(
+            # Set strict = False to fail noisily (return empty list)
+            ['dne_1', 'dne_2'], strict=False)
+        self.assertEqual(len(usernames), 0)
+
     def test_record_user_started_state_editor_tutorial(self) -> None:
         user_id = user_services.create_new_user(
             'someUser',
@@ -2365,6 +2384,19 @@ class UserServicesUnitTests(test_utils.GenericTestBase):
             user_services.sync_logged_in_learner_checkpoint_progress_with_current_exp_version(   # pylint: disable=line-too-long
                 'invalid_user_id', 'exp_1', strict=True
             )
+
+    def test_none_default_outcome_dest_no_checkpoint_added(
+        self
+    ) -> None:
+        # Create state with default outcome.
+        state_1 = state_domain.State.create_default_state(
+            'state_1', 'content_1', 'default_outcome_1')
+        state_1.interaction.default_outcome = None
+        states = {'Introduction': state_1}
+        checkpoint_state_names = (
+            user_services.get_checkpoints_in_order('Introduction', states)
+        )
+        self.assertEqual(len(checkpoint_state_names), 0)
 
 
 class UserCheckpointProgressUpdateTests(test_utils.GenericTestBase):
@@ -2700,6 +2732,24 @@ title: Title
             exp_user_data.most_recently_reached_checkpoint_state_name,
             'Introduction')
 
+        exp_user_data = (
+            user_services.sync_logged_in_learner_checkpoint_progress_with_current_exp_version( # pylint: disable=line-too-long
+                self.viewer_id, self.EXP_ID
+            )
+        )
+
+        assert exp_user_data is not None
+        self.assertEqual(
+            exp_user_data.furthest_reached_checkpoint_exp_version, 1)
+        self.assertEqual(
+            exp_user_data.furthest_reached_checkpoint_state_name,
+            'Introduction')
+        self.assertEqual(
+            exp_user_data.most_recently_reached_checkpoint_exp_version, 1)
+        self.assertEqual(
+            exp_user_data.most_recently_reached_checkpoint_state_name,
+            'Introduction')
+
         # Change state name of 'Introduction' state.
         # Now version of exploration becomes 2.
         exp_services.update_exploration(
@@ -2736,6 +2786,103 @@ title: Title
             exp_user_data.most_recently_reached_checkpoint_exp_version, 2)
         self.assertIsNone(
             exp_user_data.most_recently_reached_checkpoint_state_name)
+
+    def test_clear_learner_checkpoint_prog_for_no_user(self) -> None:
+        self.login(self.VIEWER_EMAIL)
+        user_services.clear_learner_checkpoint_progress(
+            self.viewer_id, 'dne')
+        self.assertIsNone(
+            user_models.ExplorationUserDataModel.get(self.viewer_id, 'dne'))
+
+    def test_update_learner_checkpoint_furthest_exp_ver_gt_curr(self) -> None:
+        self.login(self.VIEWER_EMAIL)
+        exp_user_data = exp_fetchers.get_exploration_user_data(
+            self.viewer_id, self.EXP_ID)
+        self.assertIsNone(exp_user_data)
+
+        # First checkpoint reached.
+        user_services.update_learner_checkpoint_progress(
+            self.viewer_id, self.EXP_ID, 'Introduction', 1)
+        exp_user_data = exp_fetchers.get_exploration_user_data(
+            self.viewer_id, self.EXP_ID)
+        # Ruling out the possibility of None for mypy type checking.
+        assert exp_user_data is not None
+        self.assertEqual(
+            exp_user_data.furthest_reached_checkpoint_exp_version, 1)
+        self.assertEqual(
+            exp_user_data.furthest_reached_checkpoint_state_name,
+            'Introduction')
+        self.assertEqual(
+            exp_user_data.most_recently_reached_checkpoint_exp_version, 1)
+        self.assertEqual(
+            exp_user_data.most_recently_reached_checkpoint_state_name,
+            'Introduction')
+
+        # Make 'New state' a checkpoint.
+        # Now version of the exploration becomes 2.
+        change_list = _get_change_list(
+            'New state',
+            exp_domain.STATE_PROPERTY_CARD_IS_CHECKPOINT,
+            True)
+        exp_services.update_exploration(
+            self.owner_id, self.EXP_ID, change_list, '')
+
+        # Second checkpoint reached.
+        user_services.update_learner_checkpoint_progress(
+            self.viewer_id, self.EXP_ID, 'New state', 2)
+        exp_user_data = exp_fetchers.get_exploration_user_data(
+            self.viewer_id, self.EXP_ID)
+        # Ruling out the possibility of None for mypy type checking.
+        assert exp_user_data is not None
+        self.assertEqual(
+            exp_user_data.furthest_reached_checkpoint_exp_version, 2)
+        self.assertEqual(
+            exp_user_data.furthest_reached_checkpoint_state_name,
+            'New state')
+        self.assertEqual(
+            exp_user_data.most_recently_reached_checkpoint_exp_version, 2)
+        self.assertEqual(
+            exp_user_data.most_recently_reached_checkpoint_state_name,
+            'New state')
+
+        # Restart the exploration.
+        user_services.clear_learner_checkpoint_progress(
+            self.viewer_id, self.EXP_ID)
+        exp_user_data = exp_fetchers.get_exploration_user_data(
+            self.viewer_id, self.EXP_ID)
+        # Ruling out the possibility of None for mypy type checking.
+        assert exp_user_data is not None
+        self.assertEqual(
+            exp_user_data.furthest_reached_checkpoint_exp_version, 2)
+        self.assertEqual(
+            exp_user_data.furthest_reached_checkpoint_state_name, 'New state')
+        self.assertEqual(
+            exp_user_data.most_recently_reached_checkpoint_exp_version, None)
+        self.assertEqual(
+            exp_user_data.most_recently_reached_checkpoint_state_name, None)
+
+        # Start from first checkpoint and exploration again in version 1.
+        # Since the expl vers 2 of the furthest reached checkpoint 'New state'
+        # is greater than the current exploration version 1,
+        # 'New state' stays the new furthest reached checkpoint.
+        user_services.update_learner_checkpoint_progress(
+            self.viewer_id, self.EXP_ID, 'Introduction', 1)
+        exp_user_data = exp_fetchers.get_exploration_user_data(
+            self.viewer_id, self.EXP_ID)
+        # Ruling out the possibility of None for mypy type checking.
+        assert exp_user_data is not None
+        self.assertEqual(
+            exp_user_data.furthest_reached_checkpoint_exp_version, 2)
+        self.assertEqual(
+            exp_user_data.furthest_reached_checkpoint_state_name,
+            'New state')
+        self.assertEqual(
+            exp_user_data.most_recently_reached_checkpoint_exp_version, 1)
+        self.assertEqual(
+            exp_user_data.most_recently_reached_checkpoint_state_name,
+            'Introduction')
+
+        self.logout()
 
 
 class UpdateContributionMsecTests(test_utils.GenericTestBase):
@@ -3212,6 +3359,23 @@ class UserDashboardStatsTests(test_utils.GenericTestBase):
             ):
                 user_services.update_dashboard_stats_log(self.owner_id)
 
+    def test_migrate_dashboard_stats_to_latest_schema_no_exception(
+        self
+    ) -> None:
+        user_id = 'id_x'
+        user_stats_model = user_models.UserStatsModel.get_or_create(user_id)
+        user_stats_model.schema_version = 1
+        try:
+            user_services.migrate_dashboard_stats_to_latest_schema(
+                user_stats_model
+            )
+            result = None
+        except Exception as e:
+            result = e
+
+        # Assert that no exception was raised.
+        self.assertIsNone(result)
+
 
 class LastLoginIntegrationTests(test_utils.GenericTestBase):
     """Integration tests for testing that the last login time for a user updates
@@ -3410,6 +3574,10 @@ class LastExplorationCreatedIntegrationTests(test_utils.GenericTestBase):
         self.assertGreater(
             (owner_settings.last_created_an_exploration),
             previous_last_created_an_exploration)
+
+    def test_record_user_created_an_expl_for_no_user_no_update(self) -> None:
+        user_services.record_user_created_an_exploration('dne')
+        self.assertIsNone(user_services.get_user_settings('dne', strict=False))
 
 
 class CommunityContributionStatsUnitTests(test_utils.GenericTestBase):
@@ -3799,6 +3967,37 @@ class CommunityContributionStatsUnitTests(test_utils.GenericTestBase):
 
         self._assert_community_contribution_stats_is_in_default_state()
 
+    def test_update_reviewer_counts_by_removing_user_no_lang_removed(
+        self
+    ) -> None:
+        # Two users reviewing the same language.
+        user_services.allow_user_to_review_translation_in_language(
+            self.reviewer_2_id, 'hi')
+        user_services.allow_user_to_review_translation_in_language(
+            self.reviewer_1_id, 'hi')
+        stats = suggestion_services.get_community_contribution_stats()
+        self.assertEqual(stats.question_reviewer_count, 0)
+        self.assertEqual(stats.question_suggestion_count, 0)
+        self.assertDictEqual(
+            stats.translation_reviewer_counts_by_lang_code, {'hi': 2})
+        self.assertDictEqual(
+            stats.translation_suggestion_counts_by_lang_code, {})
+
+        # Assert that the translation reviewer counts decreased by one after
+        # reviewer 1 was removed.
+        # Tests:
+        # _update_reviewer_counts_in_community_contribution_stats_transactional
+        # to keep the language in the dict since the count does not reach 0.
+        user_services.remove_contribution_reviewer(self.reviewer_1_id)
+        self.assertDictEqual(
+            stats.translation_reviewer_counts_by_lang_code, {'hi': 1})
+
+    def test_remove_contribution_reviewer_with_none_user_contribution_rights(
+        self
+    ) -> None:
+        user_services.remove_contribution_reviewer(self.reviewer_1_id)
+        self._assert_community_contribution_stats_is_in_default_state()
+
 
 class UserContributionReviewRightsTests(test_utils.GenericTestBase):
 
@@ -4153,6 +4352,18 @@ class UserContributionReviewRightsTests(test_utils.GenericTestBase):
         user_contribution_rights = (
             user_services.get_user_contribution_rights(user_id))
         self.assertFalse(user_contribution_rights.can_submit_questions)
+
+    def test_allow_user_review_transl_with_no_lang_code(
+        self
+    ) -> None:
+        user_services.allow_user_to_review_translation_in_language(
+            self.translator_id, None)
+        user_contribution_rights = user_services.get_user_contribution_rights(
+            self.translator_id)
+        self.assertEqual(
+            len(
+                user_contribution_rights
+                .can_review_translation_for_language_codes), 0)
 
 
 class TranslationCoordinatorRightsTests(test_utils.GenericTestBase):
