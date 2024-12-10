@@ -371,7 +371,7 @@ def check_test_results(
                 total_failures += failures
                 print('FAILED    %s: %s errors, %s failures' % (
                     spec.test_target, errors, failures))
-            except Exception:
+            except Exception as e:
                 # There was an internal error, and the tests did not run (The
                 # error message did not match `tests_failed_regex_match`).
                 total_errors += 1
@@ -381,6 +381,7 @@ def check_test_results(
                 print('')
                 print('    This is most likely due to an import error.')
                 print('------------------------------------------------------')
+                raise task.exception from e
         else:
             try:
                 tests_run_regex_match = re.search(
