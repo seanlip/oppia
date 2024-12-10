@@ -346,6 +346,44 @@ class SkillServicesUnitTests(test_utils.GenericTestBase):
             }
         )
 
+    def test_get_rubrics_skips_nonevalue_skills(self) -> None:
+        skill_1 = self.save_new_skill(
+            'skill_id_1', self.user_id_admin, description='Description 1',
+            misconceptions=[],
+            skill_contents=None,
+            rubrics=[
+                skill_domain.Rubric(
+                    constants.SKILL_DIFFICULTIES[0], ['Explanation 1']),
+                skill_domain.Rubric(
+                    constants.SKILL_DIFFICULTIES[1], ['Explanation 2']),
+                skill_domain.Rubric(
+                    constants.SKILL_DIFFICULTIES[2], ['Explanation 3']),
+            ]
+        )
+        with self.swap(skill_fetchers, 'get_multi_skills', lambda skill_ids, strict=False: [None, skill_1]):
+            skill_rubrics, _ = skill_services.get_rubrics_of_skills(['skill_id_1'])
+            self.assertEqual(
+                skill_rubrics, {
+                    'skill_id_1': [
+                        skill_domain.Rubric(
+                            constants.SKILL_DIFFICULTIES[0], ['Explanation 1']
+                        ).to_dict(),
+                        skill_domain.Rubric(
+                            constants.SKILL_DIFFICULTIES[1], ['Explanation 2']
+                        ).to_dict(),
+                        skill_domain.Rubric(
+                            constants.SKILL_DIFFICULTIES[2], ['Explanation 3']
+                        ).to_dict()]
+                }
+            )
+        with self.swap(skill_fetchers, 'get_multi_skills', lambda skill_ids, strict=False: [None]):
+            skill_rubrics, _ = skill_services.get_rubrics_of_skills(['skill_id_1'])
+            self.assertEqual(
+                skill_rubrics, {
+                    'skill_id_1': None
+                }
+            )
+            
     def test_get_skill_from_model(self) -> None:
         skill_model = skill_models.SkillModel.get(self.SKILL_ID)
         skill = skill_fetchers.get_skill_from_model(skill_model)
