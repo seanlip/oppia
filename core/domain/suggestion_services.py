@@ -103,6 +103,7 @@ RECENT_REVIEW_OUTCOMES_LIMIT: Final = 100
 
 IMAGE_TAG_REGEX = r'<oppia-noninteractive-image\b[^>]*?filepath-with-value='
 
+
 @overload
 def create_suggestion(
     suggestion_type: Literal['add_question'],
