@@ -274,6 +274,25 @@ class SkillServicesUnitTests(test_utils.GenericTestBase):
             }
         )
 
+    def test_get_descriptions_of_skills_skips_nonevalue_skills(self) -> None:
+        skill_1 = self.save_new_skill(
+            'skill_id_1', self.user_id_admin, description='Description 1',
+            misconceptions=[],
+            skill_contents=None
+        )
+        with self.swap(skill_services, 'get_multi_skill_summaries', lambda skill_ids=False: [None, skill_1]):
+            skill_descriptions, _ = skill_services.get_descriptions_of_skills(['skill_id_1'])
+            self.assertEqual(
+                skill_descriptions, {
+                    'skill_id_1': 'Description 1'
+                }
+            )
+        with self.swap(skill_services, 'get_multi_skill_summaries', lambda skill_ids=False: [None]):
+            skill_descriptions, _ = skill_services.get_descriptions_of_skills(['skill_id_1'])
+            self.assertEqual(
+                skill_descriptions, {}
+            )
+
     def test_get_rubrics_of_linked_skills(self) -> None:
         example_1 = skill_domain.WorkedExample(
             state_domain.SubtitledHtml('2', '<p>Example Question 1</p>'),
