@@ -23,7 +23,6 @@ import logging
 import os
 import re
 import zipfile
-import time
 from core import feature_flag_list
 from core import feconf
 from core import utils
@@ -4660,31 +4659,38 @@ class ExplorationSnapshotUnitTests(ExplorationServicesUnitTests):
     SECOND_EMAIL: Final = 'abc123@gmail.com'
 
     def test_get_last_updated_by_human_ms(self) -> None:
-        """Test that get_last_updated_by_human_ms returns correct timestamps."""
-        # Create an exploration
-        self.save_new_valid_exploration(self.EXP_0_ID, self.owner_id)
-        
-        # Get initial timestamp
-        initial_time_ms = exp_services.get_last_updated_by_human_ms(self.EXP_0_ID)
+        """Test that get_last_updated_by_human_ms returns correct timestamps.
 
-        # Make a change to the exploration
+        Tests that human edits update the last_updated_by_human_ms 
+        timestamp while bot edits do not.
+        """
+        # Create an exploration.
+        self.save_new_valid_exploration(self.EXP_0_ID, self.owner_id)
+
+        # Get initial timestamp.
+        initial_time_ms = (
+            exp_services.get_last_updated_by_human_ms(self.EXP_0_ID))
+
+        # Make a change to the exploration.
+        change_cmd = exp_domain.ExplorationChange({
+            'cmd': 'edit_exploration_property',
+            'property_name': 'title',
+            'new_value': 'New Title'
+        })
         exp_services.update_exploration(
-            self.owner_id,  # Using human ID instead of bot
+            self.owner_id,
             self.EXP_0_ID,
-            [exp_domain.ExplorationChange({
-                'cmd': 'edit_exploration_property',
-                'property_name': 'title',
-                'new_value': 'New Title'
-            })], 
+            [change_cmd],
             'Update title'
         )
-        
-        # Get updated timestamp
-        updated_time_ms = exp_services.get_last_updated_by_human_ms(self.EXP_0_ID)
-        
-        # Verify timestamps are in correct order
+
+        # Get updated timestamp.
+        updated_time_ms = (
+            exp_services.get_last_updated_by_human_ms(self.EXP_0_ID))
+
+        # Verify timestamps are in correct order.
         self.assertGreater(
-            updated_time_ms, 
+            updated_time_ms,
             initial_time_ms,
             'Expected update time to be greater than creation time'
         )
