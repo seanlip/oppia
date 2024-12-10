@@ -84,7 +84,8 @@ def send_mail(
     subject: str,
     plaintext_body: str,
     html_body: str,
-    bcc_admin: bool = False
+    bcc_admin: bool = False,
+    attachments: Optional[List[Dict[str, str]]] = None
 ) -> None:
     """Sends an email.
 
@@ -103,6 +104,9 @@ def send_mail(
         html_body: str. The HTML body of the email. Must fit in a datastore
             entity. Format must be utf-8.
         bcc_admin: bool. Whether to bcc feconf.ADMIN_EMAIL_ADDRESS on the email.
+        attachments: list(dict)|None. Optional argument. A list of
+            dictionaries, where each dictionary includes the keys `filename`
+            and `path` with their corresponding values.
 
     Raises:
         Exception. The configuration in feconf.py forbids emails from being
@@ -131,7 +135,7 @@ def send_mail(
     bcc = [feconf.ADMIN_EMAIL_ADDRESS] if bcc_admin else None
     response = email_services.send_email_to_recipients(
         sender_email, [recipient_email], subject,
-        plaintext_body, html_body, bcc, '', None)
+        plaintext_body, html_body, bcc, '', None, attachments)
 
     if not response:
         raise Exception((
@@ -145,7 +149,8 @@ def send_bulk_mail(
     recipient_emails: List[str],
     subject: str,
     plaintext_body: str,
-    html_body: str
+    html_body: str,
+    attachments: Optional[List[Dict[str, str]]] = None
 ) -> None:
     """Sends emails to all recipients in recipient_emails.
 
@@ -163,6 +168,9 @@ def send_bulk_mail(
             utf-8.
         html_body: str. The HTML body of the email. Must fit in a datastore
             entity. Format must be utf-8.
+        attachments: list(dict)|None. Optional argument. A list of
+            dictionaries, where each dictionary includes the keys `filename`
+            and `path` with their corresponding values.
 
     Raises:
         Exception. The configuration in feconf.py forbids emails from being
@@ -191,7 +199,8 @@ def send_bulk_mail(
             'Malformed sender email address: %s' % sender_email)
 
     response = email_services.send_email_to_recipients(
-        sender_email, recipient_emails, subject, plaintext_body, html_body)
+        sender_email, recipient_emails, subject,
+        plaintext_body, html_body, attachments)
 
     if not response:
         raise Exception(
@@ -258,8 +267,9 @@ def convert_email_to_loggable_string(
             '... Total: %s emails.' % (str(len(recipient_emails))))
 
     filenames = []
-    for attachment in attachments:
-        filenames.append(attachment['filename'])
+    if attachments:
+        for attachment in attachments:
+            filenames.append(attachment['filename'])
 
     # Show the first 3 emails in bcc email list.
     if bcc:

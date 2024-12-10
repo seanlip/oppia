@@ -92,7 +92,8 @@ class EmailTests(test_utils.GenericTestBase):
             'https://api.mailgun.net/v3/domain/messages',
             auth=('api', 'key'),
             data=expected_data,
-            files=attachments
+            files=attachments,
+            timeout=mailgun_email_services.TIMEOUT_SECS
         )
         self.assertTrue(resp)
 
@@ -186,7 +187,8 @@ class EmailTests(test_utils.GenericTestBase):
             'https://api.mailgun.net/v3/domain/messages',
             auth=('api', 'key'),
             data=expected_data,
-            files=attachments
+            files=attachments,
+            timeout=mailgun_email_services.TIMEOUT_SECS
         )
         self.assertTrue(resp)
 
@@ -238,7 +240,8 @@ class EmailTests(test_utils.GenericTestBase):
             'https://api.mailgun.net/v3/domain/messages',
             auth=('api', 'key'),
             data=expected_data,
-            files=attachments
+            files=attachments,
+            timeout=mailgun_email_services.TIMEOUT_SECS
         )
         self.assertTrue(resp)
 
@@ -280,7 +283,8 @@ class EmailTests(test_utils.GenericTestBase):
             'https://api.mailgun.net/v3/domain/messages',
             auth=('api', 'key'),
             data=expected_data,
-            files=attachments
+            files=attachments,
+            timeout=mailgun_email_services.TIMEOUT_SECS
         )
         self.assertTrue(resp)
 
@@ -400,6 +404,7 @@ class EmailTests(test_utils.GenericTestBase):
             'https://api.mailgun.net/v3/domain/messages',
             auth=('api', 'key'),
             data=expected_data,
-            files=attachments
+            files=attachments,
+            timeout=mailgun_email_services.TIMEOUT_SECS
         )
         self.assertFalse(resp)

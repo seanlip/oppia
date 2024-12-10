@@ -66,8 +66,8 @@ def send_email_to_recipients(
                      "alice@example.com": {"first":"Alice", "id":2}}
                 subject = 'Hey, %recipient.first%’
             More info about this format at:
-                https://documentation.mailgun.com/en/latest/user_manual.html
-                #batch-sending.
+            https://documentation.mailgun.com/en/
+                latest/user_manual.html#batch-sending
         attachments: list(dict)|None. Optional argument. A list of
             dictionaries, where each dictionary includes the keys `filename`
             and `path` with their corresponding values.

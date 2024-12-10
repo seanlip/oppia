@@ -250,6 +250,8 @@ class EmailServicesTest(test_utils.EmailTestBase):
             Reply_to: None
             Recipient Variables:
                 Length: 0
+
+            Attachments: None
             """ % (
                 feconf.SYSTEM_EMAIL_ADDRESS, feconf.ADMIN_EMAIL_ADDRESS,
                 'subject', 4, 4))
