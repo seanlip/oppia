@@ -214,6 +214,7 @@ class CreateExplorationVoiceArtistLinkModelsJob(base_jobs.JobBase):
         # Collects all the debug logs.
         debug_logs: str = (
             'Exp ID: %s.\n' % exploration_model.id)
+        logging.info('Exp ID: %s.\n' % exploration_model.id)
 
         debug_logs += ('Snapshots: %s\n' % len(snapshot_models))
 
@@ -270,6 +271,8 @@ class CreateExplorationVoiceArtistLinkModelsJob(base_jobs.JobBase):
             debug_logs += (
                 'Iteration for snapshots: %s and %s\n' % (
                     old_snapshot_id, new_snapshot_id))
+            logging.info('Iteration for snapshots: %s and %s\n' % (
+                old_snapshot_id, new_snapshot_id))
 
             if old_snapshot_id not in snapshot_models_dict:
                 continue
