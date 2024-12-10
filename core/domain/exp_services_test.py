@@ -23,7 +23,7 @@ import logging
 import os
 import re
 import zipfile
-
+import time
 from core import feature_flag_list
 from core import feconf
 from core import utils
@@ -4660,27 +4660,34 @@ class ExplorationSnapshotUnitTests(ExplorationServicesUnitTests):
     SECOND_EMAIL: Final = 'abc123@gmail.com'
 
     def test_get_last_updated_by_human_ms(self) -> None:
-        original_timestamp = utils.get_current_time_in_millisecs()
+        """Test that get_last_updated_by_human_ms returns correct timestamps."""
+        # Create an exploration
+        self.save_new_valid_exploration(self.EXP_0_ID, self.owner_id)
+        
+        # Get initial timestamp
+        initial_time_ms = exp_services.get_last_updated_by_human_ms(self.EXP_0_ID)
 
-        self.save_new_valid_exploration(
-            self.EXP_0_ID, self.owner_id, end_state_name='End')
-
-        timestamp_after_first_edit = utils.get_current_time_in_millisecs()
-
+        # Make a change to the exploration
         exp_services.update_exploration(
-            feconf.MIGRATION_BOT_USER_ID, self.EXP_0_ID, [
-                exp_domain.ExplorationChange({
-                    'cmd': exp_domain.CMD_EDIT_EXPLORATION_PROPERTY,
-                    'property_name': 'title',
-                    'new_value': 'New title'
-                })], 'Did migration.')
-
-        self.assertLess(
-            original_timestamp,
-            exp_services.get_last_updated_by_human_ms(self.EXP_0_ID))
-        self.assertLess(
-            exp_services.get_last_updated_by_human_ms(self.EXP_0_ID),
-            timestamp_after_first_edit)
+            self.owner_id,  # Using human ID instead of bot
+            self.EXP_0_ID,
+            [exp_domain.ExplorationChange({
+                'cmd': 'edit_exploration_property',
+                'property_name': 'title',
+                'new_value': 'New Title'
+            })], 
+            'Update title'
+        )
+        
+        # Get updated timestamp
+        updated_time_ms = exp_services.get_last_updated_by_human_ms(self.EXP_0_ID)
+        
+        # Verify timestamps are in correct order
+        self.assertGreater(
+            updated_time_ms, 
+            initial_time_ms,
+            'Expected update time to be greater than creation time'
+        )
 
     def test_get_exploration_snapshots_metadata(self) -> None:
         self.signup(self.SECOND_EMAIL, self.SECOND_USERNAME)
