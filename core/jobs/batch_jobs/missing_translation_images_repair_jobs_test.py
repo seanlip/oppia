@@ -232,13 +232,13 @@ class CopyMissingTranslationImagesJobTests(
         )
 
 
-class AuditMissingTranslationImagesJobTests(
+class DebugMissingTranslationImagesJobTests(
     MissingTranslationImagesJobTestsBase
 ):
-    """Tests for CopyMissingTranslationImagesJob."""
+    """Tests for DebugMissingTranslationImagesJob."""
 
     JOB_CLASS = (
-        missing_translation_images_repair_jobs.AuditMissingTranslationImagesJob)
+        missing_translation_images_repair_jobs.DebugMissingTranslationImagesJob)
 
     def test_copy_images_when_dst_missing(self) -> None:
         self._add_suggestion(
@@ -365,6 +365,104 @@ class AuditMissingTranslationImagesJobTests(
                 }
             ))
         ])
+
+        self.assertSetEqual(
+            self._gcs_ls('exploration/e1/assets/image'),
+            set()
+        )
+        self.assertSetEqual(
+            self._gcs_ls('exploration_suggestions/e1/assets/image'),
+            {'image1.png', 'image2.png'}
+        )
+
+    def test_do_nothing_when_no_suggestions(self) -> None:
+        self.assertSetEqual(
+            self._gcs_ls('exploration/e1/assets/image'),
+            set()
+        )
+        self.assertSetEqual(
+            self._gcs_ls('exploration_suggestions/e1/assets/image'),
+            set()
+        )
+        self.assert_job_output_is([])
+
+        self.assertSetEqual(
+            self._gcs_ls('exploration/e1/assets/image'),
+            set()
+        )
+        self.assertSetEqual(
+            self._gcs_ls('exploration_suggestions/e1/assets/image'),
+            set()
+        )
+
+
+class AuditMissingTranslationImagesJobTests(
+    MissingTranslationImagesJobTestsBase
+):
+    """Tests for AuditMissingTranslationImagesJob."""
+
+    JOB_CLASS = (
+        missing_translation_images_repair_jobs.AuditMissingTranslationImagesJob)
+
+    def test_copy_images_when_dst_missing(self) -> None:
+        self._add_suggestion(
+            'e1', ['image1.png', 'image2.png'], False, True)
+        self.assertSetEqual(
+            self._gcs_ls('exploration/e1/assets/image'),
+            {'image1.png', 'image2.png'}
+        )
+        self.assertSetEqual(
+            self._gcs_ls('exploration_suggestions/e1/assets/image'),
+            set(),
+        )
+        self.assert_job_output_is([
+            job_run_result.JobRunResult.as_stdout((SRC1, DST1)),
+            job_run_result.JobRunResult.as_stdout((SRC2, DST2)),
+        ])
+
+        self.assertSetEqual(
+            self._gcs_ls('exploration/e1/assets/image'),
+            {'image1.png', 'image2.png'}
+        )
+        self.assertSetEqual(
+            self._gcs_ls('exploration_suggestions/e1/assets/image'),
+            set(),
+        )
+
+    def test_do_not_copy_images_when_dst_present(self) -> None:
+        self._add_suggestion(
+            'e1', ['image1.png', 'image2.png'], True, True)
+        self.assertSetEqual(
+            self._gcs_ls('exploration/e1/assets/image'),
+            {'image1.png', 'image2.png'}
+        )
+        self.assertSetEqual(
+            self._gcs_ls('exploration_suggestions/e1/assets/image'),
+            {'image1.png', 'image2.png'}
+        )
+        self.assert_job_output_is([])
+
+        self.assertSetEqual(
+            self._gcs_ls('exploration/e1/assets/image'),
+            {'image1.png', 'image2.png'}
+        )
+        self.assertSetEqual(
+            self._gcs_ls('exploration_suggestions/e1/assets/image'),
+            {'image1.png', 'image2.png'}
+        )
+
+    def test_do_not_copy_images_when_src_missing(self) -> None:
+        self._add_suggestion(
+            'e1', ['image1.png', 'image2.png'], True, False)
+        self.assertSetEqual(
+            self._gcs_ls('exploration/e1/assets/image'),
+            set()
+        )
+        self.assertSetEqual(
+            self._gcs_ls('exploration_suggestions/e1/assets/image'),
+            {'image1.png', 'image2.png'}
+        )
+        self.assert_job_output_is([])
 
         self.assertSetEqual(
             self._gcs_ls('exploration/e1/assets/image'),

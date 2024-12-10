@@ -311,8 +311,9 @@ class CopyMissingTranslationImagesJob(base_jobs.JobBase):
         )
 
 
-class AuditMissingTranslationImagesJob(base_jobs.JobBase):
-    """Return planned copy operations without making any changes."""
+class DebugMissingTranslationImagesJob(base_jobs.JobBase):
+    """Return debugging information about files to be copied without making any
+    changes."""
 
     def run(self) -> beam.PCollection[job_run_result.JobRunResult]:
         """List the copy operations to be performed along with debugging
@@ -356,5 +357,27 @@ class AuditMissingTranslationImagesJob(base_jobs.JobBase):
                 'copy_info': copy_info_by_src_path,
             }
             | 'Group outputs' >> beam.CoGroupByKey()
+            | 'Map as stdout' >> beam.Map(job_run_result.JobRunResult.as_stdout)
+        )
+
+
+class AuditMissingTranslationImagesJob(base_jobs.JobBase):
+    """Return planned copy operations without making any changes."""
+
+    def run(self) -> beam.PCollection[job_run_result.JobRunResult]:
+        """List the copy operations to be performed.
+
+        Returns:
+            PCollection. Job run results describing an ordered pair of the
+            source and destination files for each copy to be performed.
+        """
+        dst_to_copy_by_src, _ = (
+            self.pipeline
+            | 'Plan copy operations'
+            >> CopyMissingTranslationImages()
+        )
+
+        return (
+            dst_to_copy_by_src
             | 'Map as stdout' >> beam.Map(job_run_result.JobRunResult.as_stdout)
         )
