@@ -265,20 +265,11 @@ class CopyMissingTranslationImages(beam.PTransform):  # type: ignore[misc]
         Returns:
             bool. True if and only if the source file exists and the destination
             file does not exist.
-
-        Raises:
-            Exception. Raised if the dictionary is malformed, specifically if
-                the values of either src_exist or dst_exist do not have length
-                1.
         """
         _, copy_info = group
-        if (
-            len(copy_info['src_exist']) != 1
-            or len(copy_info['dst_exist']) != 1
-        ):
-            raise Exception(
-                'Unexpected copy info dict structure: %s' % copy_info)
-        return copy_info['src_exist'][0] and not copy_info['dst_exist'][0]
+        src_exist, = copy_info['src_exist']
+        dst_exist, = copy_info['dst_exist']
+        return src_exist and not dst_exist
 
 
 class CopyMissingTranslationImagesJob(base_jobs.JobBase):
