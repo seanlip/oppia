@@ -2832,16 +2832,12 @@ def update_learner_checkpoint_progress(
                 exp_version)
             exp_user_model.furthest_reached_checkpoint_state_name = state_name
         else:
-            # Index of the furthest reached checkpoint.
-            frc_index = checkpoints_in_current_exp.index(
-                furthest_reached_checkpoint_in_current_exp)
             # If furthest reached checkpoint is behind most recently
             # reached checkpoint.
-            if frc_index <= checkpoints_in_current_exp.index(state_name):
-                exp_user_model.furthest_reached_checkpoint_exp_version = (
-                    exp_version)
-                exp_user_model.furthest_reached_checkpoint_state_name = (
-                    state_name)
+            exp_user_model.furthest_reached_checkpoint_exp_version = (
+                exp_version)
+            exp_user_model.furthest_reached_checkpoint_state_name = (
+                state_name)
 
     exp_user_model.most_recently_reached_checkpoint_exp_version = exp_version
     exp_user_model.most_recently_reached_checkpoint_state_name = state_name
