@@ -1091,10 +1091,10 @@ export class LoggedOutUser extends BaseUser {
       target => target.opener() === pageTarget
     );
     const newTabPage = await newTarget.page();
+    await newTabPage?.waitForNetworkIdle();
     if (newTabPage === null) {
       throw new Error('The "create on here" link did not open a new tab');
     }
-    await newTabPage.waitForNetworkIdle();
     expect(newTabPage.url()).toBe(googleSignUpUrl);
     await newTabPage.close();
   }
