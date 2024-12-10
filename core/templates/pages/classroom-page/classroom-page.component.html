@@ -1,8 +1,6 @@
 <div class="oppia-classroom-page-container" *ngIf="classroomData">
   <div class="classroom-top breadcrumbs-container" aria-label="Classroom banner" [style.background-image]="'url(' + classroomBanner + ')'">
-    <div *ngIf="showPrivateClassroomBanner"
-         class="classroom-admin-banner"
-    >
+    <div *ngIf="showPrivateClassroomBanner" class="classroom-admin-banner">
       <span>{{'I18N_UNPUBLISHED_CLASSROOM_BANNER_TEXT' | translate}}</span>
     </div>
     <div class="classroom-breadcrumbs">
@@ -11,14 +9,26 @@
         <a *ngIf="publicClassroomsCount > 1" href="/learn">{{ 'I18N_CLASSROOM_TOP_NAV_CLASSROOMS_TEXT' | translate }}</a>
         <i class="fa fa-angle-right" *ngIf="!isLanguageRTL()"></i>
         <i class="fa fa-angle-left" *ngIf="isLanguageRTL()"></i>
+        <a href="/math">{{ 'Math' }}</a>
+        <i class="fa fa-angle-right" *ngIf="!isLanguageRTL()"></i>
+        <i class="fa fa-angle-left" *ngIf="isLanguageRTL()"></i>
+        <a href="/math/subject">{{ 'subjectName' }}</a>
+        <i class="fa fa-angle-right" *ngIf="!isLanguageRTL()"></i>
+        <i class="fa fa-angle-left" *ngIf="isLanguageRTL()"></i>
+        <a href="/math/subject/{{ topicName }}">{{ 'topicName' }}</a>
+        
+        <i class="fa fa-angle-right" *ngIf="!isLanguageRTL()"></i>
+        <i class="fa fa-angle-left" *ngIf="isLanguageRTL()"></i>
         <span *ngIf="!isHackyClassroomTranslationDisplayed('name')">{{classroomData.getName()}}</span>
         <span *ngIf="isHackyClassroomTranslationDisplayed('name')">{{classroomTranslationKeys.name | translate}}</span>
       </div>
       <div class="mobile-breadcrumbs">
         <i class="fa fa-angle-left" *ngIf="!isLanguageRTL()"></i>
         <i class="fa fa-angle-right" *ngIf="isLanguageRTL()"></i>
-        <a href="/" *ngIf="publicClassroomsCount <= 1">{{ 'I18N_BACK_TO_HOME_TEXT' | translate }}</a>
-        <a href="/learn" *ngIf="publicClassroomsCount > 1">{{ 'I18N_BACK_TO_CLASSROOMS' | translate }}</a>
+        <!-- <a *ngIf="isMathPage && !topicName" href="/">{{ 'Back to Home' }}</a>
+        <a *ngIf="isMathPage && topicName" href="/math">{{ 'Back to Math' }}</a>
+        <a *ngIf="isLibraryPage && !subjectName" href="/">{{ 'Back to Home' }}</a>
+        <a *ngIf="isLibraryPage && subjectName" href="/library">{{ 'Back to Library' }}</a> -->
       </div>
     </div>
     <div class="classroom-information-container">

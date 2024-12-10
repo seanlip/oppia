@@ -69,6 +69,8 @@ export class ClassroomPageComponent implements OnDestroy {
   classroomThumbnail = '';
   classroomBanner = '';
   classroomTranslationKeys!: ClassroomTranslationKeys;
+  subjectName: string;
+  topicName: string;
 
   constructor(
     private accessValidationBackendApiService: AccessValidationBackendApiService,
@@ -113,7 +115,9 @@ export class ClassroomPageComponent implements OnDestroy {
           '/classroom/default-classroom-background.png'
         );
   }
-
+  onTopicNameChange(newTopicName: string): void {
+    this.topicName = newTopicName;
+  }
   isLanguageRTL(): boolean {
     return this.i18nLanguageCodeService.isCurrentLanguageRTL();
   }
@@ -148,7 +152,9 @@ export class ClassroomPageComponent implements OnDestroy {
                 this.classroomTranslationKeys =
                   this.i18nLanguageCodeService.getClassroomTranslationKeys(
                     classroomData.getName()
-                  );
+                  ); 
+                // this.subjectName = classroomData.subjectName;
+                // this.topicName = classroomData.topicName;
                 this.setPageTitle();
                 this.subscribeToOnLangChange();
                 this.loaderService.hideLoadingScreen();
