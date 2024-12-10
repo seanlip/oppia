@@ -148,6 +148,19 @@ class SkillServicesUnitTests(test_utils.GenericTestBase):
         ]):
             skill_services.apply_change_list(
                 self.SKILL_ID, invalid_skill_change_list, self.user_id_a)
+
+    def test_apply_change_list_with_invalid_skill_property_name_ignores_cmd(self) -> None:
+        class MockSkillChange:
+            def __init__(self, cmd: str, property_name: str) -> None:
+                self.cmd = cmd
+                self.property_name = property_name
+        
+        invalid_skill_change_list = [MockSkillChange(
+            skill_domain.CMD_UPDATE_SKILL_PROPERTY, 'invalid_skill_property_name')]
+
+        with self.swap(skill_domain.SkillChange, "SKILL_PROPERTIES", ["invalid_skill_property_name"]):
+            skill_services.apply_change_list(
+                self.SKILL_ID, invalid_skill_change_list, self.user_id_a)
             
     def test_compute_summary(self) -> None:
         skill = skill_fetchers.get_skill_by_id(self.SKILL_ID)
