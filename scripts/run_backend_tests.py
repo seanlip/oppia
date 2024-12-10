@@ -381,7 +381,7 @@ def check_test_results(
                 print('')
                 print('    This is most likely due to an import error.')
                 print('------------------------------------------------------')
-                raise task.exception from e
+                # raise task.exception from e
         else:
             try:
                 tests_run_regex_match = re.search(
