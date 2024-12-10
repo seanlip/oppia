@@ -917,6 +917,44 @@ class SkillServicesUnitTests(test_utils.GenericTestBase):
         topic_assignments_dict = (
             skill_services.get_all_topic_assignments_for_skill(self.SKILL_ID2))
         self.assertEqual(len(topic_assignments_dict), 1)
+
+    def test_remove_skill_from_all_topics_skips_subtopics_without_skill_id(self) -> None:
+        topic_id = topic_fetchers.get_new_topic_id()
+        self.save_new_skill(
+            self.SKILL_ID2, self.USER_ID, description='Description2',
+            misconceptions=[],
+            skill_contents=None
+        )
+
+        subtopic = topic_domain.Subtopic.from_dict({
+            'id': 1,
+            'title': 'subtopic1',
+            'skill_ids': [self.SKILL_ID],
+            'thumbnail_filename': None,
+            'thumbnail_bg_color': None,
+            'thumbnail_size_in_bytes': None,
+            'url_fragment': 'subtopic-one'
+        })
+
+        self.save_new_topic(
+            topic_id, self.USER_ID, name='Topic1',
+            abbreviated_name='topic-three', url_fragment='topic-three',
+            description='Description',
+            canonical_story_ids=[],
+            additional_story_ids=[],
+            uncategorized_skill_ids=[self.SKILL_ID2],
+            subtopics=[subtopic], next_subtopic_id=2)
+        
+        topic_assignments_dict = (
+            skill_services.get_all_topic_assignments_for_skill(self.SKILL_ID2))
+        self.assertEqual(len(topic_assignments_dict), 1)
+        skill_services.remove_skill_from_all_topics(self.USER_ID, self.SKILL_ID2)
+        topic_assignments_dict = (
+            skill_services.get_all_topic_assignments_for_skill(self.SKILL_ID2))
+        self.assertEqual(len(topic_assignments_dict), 0)
+
+        topic = topic_fetchers.get_topic_by_id(topic_id)
+        self.assertEqual(topic.subtopics[0].skill_ids, [self.SKILL_ID])
         
     def test_successfully_replace_skill_id_in_all_topics(self) -> None:
         topic_id = topic_fetchers.get_new_topic_id()
