@@ -147,7 +147,7 @@ class SkillServicesUnitTests(test_utils.GenericTestBase):
             }
         ]):
             skill_services.apply_change_list(
-                self.SKILL_ID, invalid_skill_change_list, self.user_id_a)
+                self.SKILL_ID, invalid_skill_change_list, self.user_id_a) # type: ignore[arg-type]
 
     def test_apply_change_list_with_invalid_skill_property_name_ignores_cmd(self) -> None:
         class MockSkillChange:
@@ -160,7 +160,7 @@ class SkillServicesUnitTests(test_utils.GenericTestBase):
 
         with self.swap(skill_domain.SkillChange, "SKILL_PROPERTIES", ["invalid_skill_property_name"]):
             skill_services.apply_change_list(
-                self.SKILL_ID, invalid_skill_change_list, self.user_id_a)
+                self.SKILL_ID, invalid_skill_change_list, self.user_id_a) # type: ignore[arg-type]
             
     def test_compute_summary(self) -> None:
         skill = skill_fetchers.get_skill_by_id(self.SKILL_ID)
@@ -815,50 +815,6 @@ class SkillServicesUnitTests(test_utils.GenericTestBase):
         self.assertEqual(topic_assignments[2].topic_id, topic_id_2)
         self.assertEqual(topic_assignments[2].topic_version, 1)
         self.assertIsNone(topic_assignments[2].subtopic_id)
-        
-    def test_get_all_topic_assignments_for_skill(self) -> None:
-        topic_id = topic_fetchers.get_new_topic_id()
-        topic_id_1 = topic_fetchers.get_new_topic_id()
-        self.save_new_topic(
-            topic_id, self.USER_ID, name='Topic1',
-            abbreviated_name='topic-three', url_fragment='topic-three',
-            description='Description',
-            canonical_story_ids=[],
-            additional_story_ids=[],
-            uncategorized_skill_ids=[self.SKILL_ID],
-            subtopics=[], next_subtopic_id=1)
-
-        subtopic = topic_domain.Subtopic.from_dict({
-            'id': 1,
-            'title': 'subtopic1',
-            'skill_ids': [self.SKILL_ID],
-            'thumbnail_filename': None,
-            'thumbnail_bg_color': None,
-            'thumbnail_size_in_bytes': None,
-            'url_fragment': 'subtopic-one'
-        })
-        self.save_new_topic(
-            topic_id_1, self.USER_ID, name='Topic2',
-            abbreviated_name='topic-four', url_fragment='topic-four',
-            description='Description2', canonical_story_ids=[],
-            additional_story_ids=[],
-            uncategorized_skill_ids=[],
-            subtopics=[subtopic], next_subtopic_id=2)
-
-        topic_assignments = (
-            skill_services.get_all_topic_assignments_for_skill(self.SKILL_ID))
-        topic_assignments = sorted(
-            topic_assignments, key=lambda i: i.topic_name)
-        self.assertEqual(len(topic_assignments), 2)
-        self.assertEqual(topic_assignments[0].topic_name, 'Topic1')
-        self.assertEqual(topic_assignments[0].topic_id, topic_id)
-        self.assertEqual(topic_assignments[0].topic_version, 1)
-        self.assertIsNone(topic_assignments[0].subtopic_id)
-
-        self.assertEqual(topic_assignments[1].topic_name, 'Topic2')
-        self.assertEqual(topic_assignments[1].topic_id, topic_id_1)
-        self.assertEqual(topic_assignments[1].topic_version, 1)
-        self.assertEqual(topic_assignments[1].subtopic_id, 1)
 
     def test_remove_skill_from_all_topics(self) -> None:
         topic_id = topic_fetchers.get_new_topic_id()
