@@ -145,8 +145,8 @@ class DraftUpgradeUtilUnitTests(test_utils.GenericTestBase):
         # target_schema_version.
 
         # Here we use object because create_and_migrate_new_exploration
-        # Is called by other functions, and using a decorator would
-        # Require modifying all the functions that call it.
+        # is called by other functions, and using a decorator would
+        # require modifying all the functions that call it.
         with mock.patch.object(
             feconf, 'CURRENT_STATE_SCHEMA_VERSION',
             int(target_schema_version)
