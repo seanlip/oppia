@@ -160,12 +160,13 @@ class LearnerGroupFetchersUnitTests(test_utils.GenericTestBase):
             self.LEARNER_GROUP_ID, self.LEARNER_ID_2, False)
         learner_groups = (
             learner_group_fetchers.get_learner_group_models_by_ids(
+                # Set strict=False to fail noisily and return list.
                 [self.LEARNER_ID_1, self.LEARNER_ID_2], strict=False
             )
         )
         self.assertEqual(len(learner_groups), 2)
 
-    def test_multi_learners_share_progress_learner_in_mult_groups(self) -> None:
+    def test_can_multi_learners_share_prog_with_multi_learner(self) -> None:
         # Making group 2.
         group2_id = (
             learner_group_fetchers.get_new_learner_group_id()
@@ -186,8 +187,11 @@ class LearnerGroupFetchersUnitTests(test_utils.GenericTestBase):
                 [self.LEARNER_ID_1], self.LEARNER_GROUP_ID
             ), [True])
 
-    def test_can_multi_learners_share_progress_learner_no_group(self) -> None:
-        self.assertEqual(
+    def test_can_multi_learners_share_prog_with_learner_no_group(self) -> None:
+        # Learner is not in a group, returns empty list.
+        learner_groups = (
             learner_group_fetchers.can_multi_learners_share_progress(
                 [self.LEARNER_ID_1], self.LEARNER_GROUP_ID
-            ), [])
+            )
+        )
+        self.assertEqual(len(learner_groups), 0)
