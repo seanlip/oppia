@@ -1090,7 +1090,7 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
         self.assertIn(
             '<oppia-noninteractive-image',
             suggestion.change_cmd.translation_html,
-            msg="Initial translation suggestion should contain an image."
+            msg='Initial translation suggestion should contain an image.'
         )
 
         updated_translation_without_image = (
@@ -1106,7 +1106,9 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
                 updated_translation_without_image
             )
 
-    def test_update_translation_suggestion_allows_adding_single_image(self) -> None:
+    def test_update_translation_suggestion_allows_adding_single_image(
+        self
+    ) -> None:
         translation_html_with_image = (
             '<p>Translation for original content.</p>'
             '<oppia-noninteractive-image '
@@ -1115,7 +1117,9 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             'filepath-with-value="img.svg"> '
             '</oppia-noninteractive-image>'
         )
-        suggestion = self.create_translation_suggestion(translation_html_with_image)
+        suggestion = self.create_translation_suggestion(
+            translation_html_with_image
+        )
 
         new_translation_html_with_image = (
             '<p><oppia-noninteractive-image '
@@ -1138,7 +1142,9 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             new_translation_html_with_image
         )
 
-    def test_update_translation_suggestion_rejects_image_count_reduction(self) -> None:
+    def test_update_translation_suggestion_rejects_image_count_reduction(
+            self
+        ) -> None:
         translation_html_with_multiple_images = (
             '<p>Translation with multiple images.</p>'
             '<oppia-noninteractive-image '
@@ -1189,7 +1195,9 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             original_image_count, 2
         )
 
-    def test_update_translation_suggestion_allows_adding_multiple_images(self) -> None:
+    def test_update_translation_suggestion_allows_adding_multiple_images(
+            self
+        ) -> None:
         translation_html_with_image = (
             '<p>Translation with one image.</p>'
             '<oppia-noninteractive-image '
