@@ -1793,6 +1793,43 @@ class SkillServicesUnitTests(test_utils.GenericTestBase):
             untriaged_skill_summary_dicts,
             expected_untriaged_skill_summary_dicts)
 
+    def test_get_untriaged_skill_summaries_with_merged_skills_and_assigned_topics(self) -> None:
+        topic_id = topic_fetchers.get_new_topic_id()
+        
+        self.save_new_skill(
+            self.SKILL_ID2, self.USER_ID, description='Description 2')
+        self.save_new_topic(
+            topic_id, self.USER_ID, name='Topic1',
+            abbreviated_name='topic-three', url_fragment='topic-three',
+            description='Description1', canonical_story_ids=[],
+            additional_story_ids=[],
+            uncategorized_skill_ids=[self.SKILL_ID],
+            subtopics=[], next_subtopic_id=1)
+        # merge skillid
+        change_list = [
+            skill_domain.SkillChange({
+                'cmd': skill_domain.CMD_UPDATE_SKILL_PROPERTY,
+                'property_name': (skill_domain.SKILL_PROPERTY_SUPERSEDING_SKILL_ID),
+                'old_value': '',
+                'new_value': 'TestSkillId'
+            })
+        ]
+        skill_services.update_skill(
+            self.USER_ID, self.SKILL_ID, change_list, 'Merging skill.')
+        
+        skill_summaries = skill_services.get_all_skill_summaries()
+        skill_ids_assigned_to_some_topic = (
+            topic_fetchers.get_all_skill_ids_assigned_to_some_topic())
+        merged_skill_ids = skill_services.get_merged_skill_ids()
+
+        untriaged_skill_summaries = (
+            skill_services.get_untriaged_skill_summaries(
+                skill_summaries, skill_ids_assigned_to_some_topic,
+                merged_skill_ids))
+        
+        self.assertEqual(len(untriaged_skill_summaries), 1)
+        self.assertEqual(untriaged_skill_summaries[0].id, self.SKILL_ID2)
+        
     def test_get_categorized_skill_ids_and_descriptions(self) -> None:
         topic_id = topic_fetchers.get_new_topic_id()
         linked_skill_id = skill_services.get_new_skill_id()
