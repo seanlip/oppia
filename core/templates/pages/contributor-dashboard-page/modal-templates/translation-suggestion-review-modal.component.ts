@@ -23,7 +23,6 @@ import {
   ViewChild,
   ElementRef,
   Input,
-  Renderer2,
 } from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {AlertsService} from 'services/alerts.service';
@@ -166,7 +165,7 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   isUndoFeatureEnabled: boolean = false;
   initialImageCount: number = 0;
   private readonly IMAGE_TAG_REGEX =
-    /<oppia-noninteractive-image\b[^>]*?filepath-with-value="(?:&quot;|&amp;quot;|")([^"&]*?)(?:&quot;|&amp;quot;|")[^>]*?>/g;
+    /<oppia-noninteractive-image\b[^>]*?filepath-with-value=/g;
 
   @Input() altTextIsDisplayed: boolean = false;
 
@@ -211,8 +210,7 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     private userService: UserService,
     private validatorsService: ValidatorsService,
     private snackBar: MatSnackBar,
-    private platformFeatureService: PlatformFeatureService,
-    private renderer: Renderer2
+    private platformFeatureService: PlatformFeatureService
   ) {}
 
   ngOnInit(): void {
@@ -383,6 +381,10 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
 
   get isUpdateDisabled(): boolean {
     return this.startedEditing && this.isImageRemoved();
+  }
+
+  public getImageTagRegex(): RegExp {
+    return this.IMAGE_TAG_REGEX;
   }
 
   updateSuggestion(): void {

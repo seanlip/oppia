@@ -2806,15 +2806,19 @@ describe('Translation Suggestion Review Modal Component', function () {
       spyOn(renderer, 'setProperty').and.callThrough();
     });
 
+    it('should return the correct IMAGE_TAG_REGEX from the getter', () => {
+      const regexFromGetter = component.getImageTagRegex();
+      const matches = htmlWithImage.match(regexFromGetter);
+
+      expect(matches?.length).toBe(1);
+    });
+
     it('should set the initial image count based on the translation HTML', () => {
       component.ngOnInit();
-      expect(component.initialImageCount).toBe(1);
+      const imageTags = htmlWithImage.match(component.getImageTagRegex());
+      const expectedImageCount = imageTags ? imageTags.length : 0;
 
-      expect(renderer.setProperty).toHaveBeenCalledWith(
-        jasmine.any(Object),
-        'innerHTML',
-        component.translationHtml || ''
-      );
+      expect(component.initialImageCount).toBe(expectedImageCount);
     });
 
     it('should correctly detect when an image is removed', () => {
@@ -2851,6 +2855,7 @@ describe('Translation Suggestion Review Modal Component', function () {
       component.editedContent = {
         html: htmlWithoutImage,
       };
+
       expect(component.isUpdateDisabled).toBeFalse();
     });
 
