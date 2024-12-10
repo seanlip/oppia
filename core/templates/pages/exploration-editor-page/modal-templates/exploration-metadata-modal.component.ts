@@ -143,7 +143,7 @@ export class ExplorationMetadataModalComponent
     this.explorationTagsService.displayed = this.explorationTags;
   }
 
-  save(): void {
+  async save(): Promise<void> {
     if (!this.areRequiredFieldsFilled()) {
       return;
     }
@@ -166,22 +166,23 @@ export class ExplorationMetadataModalComponent
       metadataList.push('tags');
     }
 
-    // Save all the displayed values.
-    this.explorationTitleService.saveDisplayedValue();
-    this.explorationObjectiveService.saveDisplayedValue();
-    this.explorationCategoryService.saveDisplayedValue();
-    this.explorationLanguageCodeService.saveDisplayedValue();
-    this.explorationTagsService.saveDisplayedValue();
-
-    // TODO(#20338): Get rid of the $timeout here.
-    // It's currently used because there is a race condition: the
-    // saveDisplayedValue() calls above result in autosave calls.
-    // These race with the discardDraft() call that
-    // will be called when the draft changes entered here
-    // are properly saved to the backend.
-    setTimeout(() => {
+    try {
+      // Save all the displayed values.
+      await Promise.all([
+        this.explorationTitleService.saveDisplayedValue();
+        this.explorationObjectiveService.saveDisplayedValue();
+        this.explorationCategoryService.saveDisplayedValue();
+        this.explorationLanguageCodeService.saveDisplayedValue();
+        this.explorationTagsService.saveDisplayedValue();
+      ]);
+      //Close modal after all saves are complete
       this.ngbActiveModal.close(metadataList);
-    }, 500);
+    } catch (error) {
+      this.alertService.addWarning(
+        'An error occurred while saving changes.'
+      );
+      this.ngbActiveModal.close(metadataList);
+    }
   }
 
   areRequiredFieldsFilled(): boolean {
