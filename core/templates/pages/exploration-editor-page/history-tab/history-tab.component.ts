@@ -112,7 +112,7 @@ export class HistoryTabComponent implements OnInit, OnDestroy {
     private versionTreeService: VersionTreeService,
     private windowRef: WindowRef,
     private loggerService: LoggerService,
-    private changeDetectorRef: ChangeDetectorRef,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   // Compares the two selected versions and displays the comparison
