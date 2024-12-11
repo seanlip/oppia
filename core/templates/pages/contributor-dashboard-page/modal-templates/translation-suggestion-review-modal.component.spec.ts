@@ -26,12 +26,7 @@ import {
   waitForAsync,
 } from '@angular/core/testing';
 import {TranslationSuggestionReviewModalComponent} from './translation-suggestion-review-modal.component';
-import {
-  ChangeDetectorRef,
-  ElementRef,
-  NO_ERRORS_SCHEMA,
-  Renderer2,
-} from '@angular/core';
+import {ChangeDetectorRef, ElementRef, NO_ERRORS_SCHEMA} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConstants} from 'app.constants';
 import {AlertsService} from 'services/alerts.service';
@@ -88,7 +83,6 @@ describe('Translation Suggestion Review Modal Component', function () {
   let snackBarSpy: jasmine.Spy;
   let snackBar: MatSnackBar;
   let mockPlatformFeatureService = new MockPlatformFeatureService();
-  let renderer: Renderer2;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -132,7 +126,6 @@ describe('Translation Suggestion Review Modal Component', function () {
     userService = TestBed.inject(UserService);
     contributionAndReviewService = TestBed.inject(ContributionAndReviewService);
     languageUtilService = TestBed.inject(LanguageUtilService);
-    renderer = fixture.componentRef.injector.get(Renderer2);
 
     spyOn(
       siteAnalyticsService,
@@ -2801,9 +2794,6 @@ describe('Translation Suggestion Review Modal Component', function () {
           },
         },
       };
-      component.translationHtml = htmlWithImage;
-      component.initialImageCount = 1;
-      spyOn(renderer, 'setProperty').and.callThrough();
     });
 
     it('should return the correct IMAGE_TAG_REGEX from the getter', () => {
@@ -2882,6 +2872,77 @@ describe('Translation Suggestion Review Modal Component', function () {
       };
 
       expect(component.isUpdateDisabled).toBeFalse();
+    });
+
+    it('should show an error and prevent update if an image is removed during translation update', () => {
+      component.translationHtml = htmlWithImage;
+      component.ngOnInit();
+      component.startedEditing = true;
+
+      component.editedContent = {
+        html: htmlWithoutImage,
+      };
+
+      component.updateSuggestion();
+
+      expect(component.errorMessage).toBe(
+        'Removing images from the translation is not allowed.'
+      );
+      expect(component.errorFound).toBeTrue();
+      expect(component.isUpdateDisabled).toBeTrue();
+    });
+
+    it('should return IMAGE_TAG_REGEX when getImageTagRegex is called', () => {
+      const regex = component.getImageTagRegex();
+      const matching_regex =
+        /<oppia-noninteractive-image\b[^>]*?filepath-with-value=/g;
+      expect(regex).toEqual(matching_regex);
+    });
+
+    it('should detect image removal correctly when images are present', () => {
+      component.translationHtml = htmlWithImage;
+      component.ngOnInit();
+
+      component.editedContent = {
+        html: htmlWithoutImage,
+      };
+      expect(component.isImageRemoved()).toBeTrue();
+    });
+
+    it('should return false for image removal when no images are present initially', () => {
+      component.initialSuggestionId = 'suggestion_2';
+      component.translationHtml = htmlWithoutImage;
+      component.ngOnInit();
+
+      component.editedContent = {
+        html: htmlWithoutImage,
+      };
+      expect(component.isImageRemoved()).toBeFalse();
+    });
+
+    it('should return false for image removal if the number of images remains the same', () => {
+      component.translationHtml = htmlWithImage;
+      component.ngOnInit();
+
+      component.editedContent = {
+        html: htmlWithImage,
+      };
+      expect(component.isImageRemoved()).toBeFalse();
+    });
+
+    it('should set initialImageCount to 0 when no image tags are found', () => {
+      component.initialSuggestionId = 'suggestion_2';
+      component.translationHtml = htmlWithoutImage;
+      component.ngOnInit();
+
+      expect(component.initialImageCount).toBe(0);
+    });
+
+    it('should set initialImageCount to the number of image tags found', () => {
+      component.translationHtml = htmlWithImage;
+      component.ngOnInit();
+
+      expect(component.initialImageCount).toBe(1);
     });
   });
 });
