@@ -265,7 +265,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: generated-test-to-angular-module-mapping-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
-          path: /home/runner/work/oppia/oppia/core/tests/test-modules-mappings/acceptance/${{ matrix.suite.name }}.txt
+          path: /home/runner/work/oppia/oppia/core/tests/test-modules-mappings/acceptance/${{ steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME }}.txt
       - name: Run Mobile Acceptance Test ${{ matrix.suite.name }}
         run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" python -m scripts.run_acceptance_tests --skip-build --suite=${{ matrix.suite.name }} --prod_env --mobile
       - name: Uploading webpack bundles as an artifact
@@ -274,6 +274,12 @@ jobs:
         with:
           name: webpack-bundles-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
           path: /home/runner/work/oppia/oppia/build
+      - name: Uploading diff screenshots as an artifact
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: diff-snapshots-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
+          path: /home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots-${{ steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME }}.txt
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{
           failure() &&
@@ -332,6 +338,12 @@ jobs:
           path: /home/runner/work/oppia/oppia/core/tests/test-modules-mappings/acceptance/${{ matrix.suite.name }}.txt
       - name: Run Mobile Acceptance Test ${{ matrix.suite.name }}
         run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" make run_tests.acceptance suite=${{ matrix.suite.name }} MOBILE=true
+      - name: Uploading diff screenshots as an artifact
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: diff-snapshots-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
+          path: /home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots-${{ steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME }}.txt
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{
           failure() &&
