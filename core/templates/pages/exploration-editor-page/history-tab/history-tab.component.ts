@@ -39,7 +39,6 @@ import {
 import {CompareVersionsService} from './services/compare-versions.service';
 import {ExplorationMetadata} from 'domain/exploration/ExplorationMetadataObjectFactory';
 import {LoggerService} from 'services/contextual/logger.service';
-import {Router} from '@angular/router';
 
 interface VersionMetadata {
   versionNumber: number;
@@ -114,7 +113,6 @@ export class HistoryTabComponent implements OnInit, OnDestroy {
     private windowRef: WindowRef,
     private loggerService: LoggerService,
     private changeDetectorRef: ChangeDetectorRef,
-    private router: Router
   ) {}
 
   // Compares the two selected versions and displays the comparison
