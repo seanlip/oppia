@@ -2894,9 +2894,9 @@ describe('Translation Suggestion Review Modal Component', function () {
 
     it('should return IMAGE_TAG_REGEX when getImageTagRegex is called', () => {
       const regex = component.getImageTagRegex();
-      const matching_regex =
+      const matchingRegex =
         /<oppia-noninteractive-image\b[^>]*?filepath-with-value=/g;
-      expect(regex).toEqual(matching_regex);
+      expect(regex).toEqual(matchingRegex);
     });
 
     it('should detect image removal correctly when images are present', () => {
