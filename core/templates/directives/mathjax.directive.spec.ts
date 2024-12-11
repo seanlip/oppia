@@ -46,6 +46,7 @@ describe('MathJax directive', () => {
   beforeEach(waitForAsync(() => {
     mockInsertScriptService = jasmine.createSpyObj('InsertScriptService', [
       'loadScript',
+      'isScriptLoaded',
     ]);
     TestBed.configureTestingModule({
       declarations: [MockCompA, MathJaxDirective],
