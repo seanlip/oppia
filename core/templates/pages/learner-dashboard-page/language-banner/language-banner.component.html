@@ -1,211 +1,167 @@
 <div class="language-banner" *ngIf="isVisible">
-    <div class="banner-content-outer">
-        <div class="banner-content-inner">
-            <div class="banner-text">
-                <div class="icon">
-                    <img src="assets/images/learner_dashboard/info.svg" alt="info">
-                </div>
-                <div class="banner-info">
-                    You can now change the language of your lessons in the navigation bar.
-                </div>
-
-            </div>
-            <div class="banner-checkbox">
-                <input type="checkbox" class="checkbox" [(ngModel)]="isChecked">
-                <span class="checkbox-text">Don't show again</span>
-            </div>
+  <div class="banner-content-outer">
+    <div class="banner-content-inner">
+      <div class="banner-text">
+        <div class="icon">
+          <img src="assets/images/learner_dashboard/info.svg" alt="info">
         </div>
+        <div class="banner-info">
+          You can now change the language of your lessons in the navigation bar.
+        </div>
+      </div>
+      <div class="banner-checkbox">
+        <input type="checkbox" class="checkbox" [(ngModel)]="isChecked">
+        <span class="checkbox-text">Don't show again</span>
+      </div>
     </div>
-    <button class="banner-button" (click)="onButtonClick()">
-        <span class="button-text"> Got it! </span>
-    </button>
+  </div>
+  <button class="banner-button" (click)="onButtonClick()">
+    <span class="button-text"> Got it! </span>
+  </button>
 </div>
 
 
 
 <style>
-    .language-banner {
+  .language-banner {
+    align-items: center;
+    background: #fdfbf1;
+    border: 1px solid #000;
+    border-radius: 0 0 8px 8px;
+    box-shadow: -2px 2px 12px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    height: 64px;
+    left: 0;
+    padding: 8px 24px;
+    position: absolute;
+    top: 56px;
+    width: 100%;
+    z-index: 1000;
+  }
 
-        box-sizing: border-box;
+  .banner-content-outer {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: none;
+    flex-direction: row;
+    flex-grow: 1;
+    gap: 342px;
+    height: 48px;
+    justify-content: space-between;
+    order: 0;
+    padding: 8px 20px;
+    width: 1096px;
+  }
 
-        /* Auto layout */
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        padding: 8px 24px;
-        gap: 16px;
+  .banner-content-inner {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: none;
+    flex-direction: row;
+    flex-grow: 1;
+    gap: 16px;
+    height: 32px;
+    margin: 0 auto;
+    order: 0;
+    padding: 0px;
+    width: 1056px;
+  }
 
-        position: absolute;
-        width: 100%;
-        height: 64px;
-        left: 0;
-        top: 56px;
-        z-index: 1000;
+  .banner-text {
+    align-content: flex-start;
+    align-items: center;
+    display: flex;
+    flex: none;
+    flex-direction: row;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    gap: 8px;
+    height: 24px;
+    order: 0;
+    padding: 0;
+    width: 878px;
 
-        background: #FDFBF1;
-        border: 1px solid #000000;
+    /* Auto layout */
+    /* Inside auto layout */
+  }
 
-        box-shadow: -2px 2px 12px rgba(0, 0, 0, 0.2);
-        border-radius: 0px 0px 8px 8px;
+  .icon {
+    flex: none;
+    flex-grow: 0;
+    height: 24px;
+    order: 0;
+    width: 24px;
+  }
 
-    }
+  .banner-info {
+    color: #000;
+    flex: none;
+    flex-grow: 1;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    height: 24px;
+    line-height: 24px;
+    order: 1;
+    width: 846px;
+  }
 
-    .banner-content-outer {
+  .banner-checkbox {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex: none;
+    flex-direction: row;
+    flex-grow: 0;
+    gap: 16px;
+    height: 32px;
+    order: 1;
+    padding: 0;
+    width: 162px;
 
-        /* Auto layout */
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 20px;
-        gap: 342px;
+    /* Auto layout */
+    /* Inside auto layout */
+  }
 
-        width: 1096px;
-        height: 48px;
+  .banner-button {
+    align-items: center;
+    background: #00645c;
+    border-radius: 4px;
+    display: flex;
+    flex: none;
+    flex-direction: row;
+    flex-grow: 0;
+    gap: 10px;
+    height: 44px;
+    justify-content: center;
+    order: 1;
+    padding: 10px;
+    width: 120px;
 
+    /* Auto layout */
+    /* Inside auto layout */
+  }
 
-        /* Inside auto layout */
-        flex: none;
-        order: 0;
-        align-self: stretch;
-        flex-grow: 1;
+  .button-text {
+    color: #fff;
+    flex: none;
+    flex-grow: 0;
+    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    height: 22px;
+    line-height: 120%;
+    order: 0;
+    width: 49px;
 
-    }
-
-    .banner-content-inner {
-
-        /* Auto layout */
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        padding: 0px;
-        gap: 16px;
-
-        margin: 0 auto;
-        width: 1056px;
-        height: 32px;
-
-
-        /* Inside auto layout */
-        flex: none;
-        order: 0;
-        align-self: stretch;
-        flex-grow: 1;
-
-    }
-
-    .banner-text {
-
-        /* Auto layout */
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        align-content: flex-start;
-        padding: 0px;
-        gap: 8px;
-
-        width: 878px;
-        height: 24px;
-
-
-        /* Inside auto layout */
-        flex: none;
-        order: 0;
-        flex-grow: 1;
-
-    }
-
-    .icon {
-        width: 24px;
-        height: 24px;
-
-        flex: none;
-        order: 0;
-        flex-grow: 0;
-
-    }
-
-    .banner-info {
-
-        width: 846px;
-        height: 24px;
-
-        font-family: 'Roboto';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 16px;
-        line-height: 24px;
-        /* identical to box height, or 150% */
-
-        color: #000000;
-
-        flex: none;
-        order: 1;
-        flex-grow: 1;
-
-    }
-
-    .banner-checkbox {
-
-        /* Auto layout */
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        padding: 0px;
-        gap: 16px;
-
-        width: 162px;
-        height: 32px;
-
-
-        /* Inside auto layout */
-        flex: none;
-        order: 1;
-        align-self: stretch;
-        flex-grow: 0;
-
-    }
-
-    .banner-button {
-
-        /* Auto layout */
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        padding: 10px;
-        gap: 10px;
-
-        width: 120px;
-        height: 44px;
-
-        background: #00645C;
-        border-radius: 4px;
-
-        /* Inside auto layout */
-        flex: none;
-        order: 1;
-        flex-grow: 0;
-    }
-
-    .button-text {
-
-        width: 49px;
-        height: 22px;
-
-        font-family: 'Roboto';
-        font-style: normal;
-        font-weight: 700;
-        font-size: 18px;
-        line-height: 120%;
-        /* identical to box height, or 22px */
-
-        color: #FFFFFF;
-
-        /* Inside auto layout */
-        flex: none;
-        order: 0;
-        flex-grow: 0;
-    }
+    /* identical to box height, or 22px */
+    /* Inside auto layout */
+  }
 </style>
