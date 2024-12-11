@@ -51,6 +51,17 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
                 counter: int = 0,
                 print_karma_logs: bool = False
             ) -> None:
+                """Mock File for testing.
+
+                Args:
+                    flakes: int. The number of times to re-run the task.
+                        Defaults to 0.
+                    counter: int. The number of lines that have been read.
+                        Defaults to 0.
+                    print_karma_logs: bool. Whether to simulate printing a log
+                        from the karma web-server for testing that those logs
+                        are ignored. Defaults to False.
+                """
                 self.counter = counter
                 self.run_counter = 0
                 self.flakes = flakes

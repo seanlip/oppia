@@ -675,7 +675,7 @@ class PrePushHookTests(test_utils.GenericTestBase):
         self
     ) -> None:
         """check_output is used to switch branches with git checkout when there
-        are modified files that need to be linted; when there are not, and the
+        are modified files that need to be linted. When there are not, and the
         ChangedBranch new-branch points to the branch you are already on,
         check_output should be called only once: for git symbolic-ref -q
         --short HEAD.

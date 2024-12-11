@@ -18,6 +18,7 @@
 from __future__ import annotations
 
 import contextlib
+import io
 import subprocess
 import sys
 import time
@@ -31,7 +32,7 @@ from scripts import run_e2e_tests
 from scripts import scripts_test_utils
 from scripts import servers
 
-from typing import ContextManager, Final, Optional, Tuple
+from typing import ContextManager, Final, Optional, Tuple, Union
 
 CHROME_DRIVER_VERSION: Final = '77.0.3865.40'
 
@@ -60,6 +61,13 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
             print('mock_set_constants_to_default')
         self.swap_mock_set_constants_to_default = self.swap(
             common, 'set_constants_to_default', mock_constants)
+
+        self.output_lines: list[bytes] = []
+        def mock_safe_print(string: Union[str, bytes]) -> None:
+            self.output_lines.append(
+                string.encode('utf-8') if isinstance(string, str) else string)
+        self.swap_write_stdout_safe = self.swap_with_checks(
+            common, 'write_stdout_safe', mock_safe_print)
 
     def tearDown(self) -> None:
         try:
@@ -361,7 +369,7 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
         with self.swap_mock_set_constants_to_default:
             run_e2e_tests.main(args=['--debug_mode'])
 
-    def test_skip_firebase_and_datastore_emulator_when_not_in_emulator_mode(
+    def test_firebase_and_datastore_emulator_skipped_when_not_in_emulator_mode(
         self
     ) -> None:
         self.exit_stack.enter_context(self.swap_with_checks(
@@ -382,18 +390,29 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
             servers, 'managed_portserver', mock_managed_process))
 
         self.exit_stack.enter_context(self.swap_with_checks(
-            servers, 'managed_webdriverio_server', mock_managed_process,
-            expected_kwargs=[
-                {
-                    'suite_name': 'full',
-                    'chrome_version': None,
-                    'dev_mode': True,
-                    'mobile': False,
-                    'sharding_instances': 3,
-                    'debug_mode': False,
-                    'stdout': subprocess.PIPE,
-                },
-            ]))
+            servers,
+            'managed_firebase_auth_emulator',
+            mock_managed_process,
+            called=False))
+        self.exit_stack.enter_context(self.swap_with_checks(
+            servers,
+            'managed_cloud_datastore_emulator',
+            mock_managed_process,
+            called=False))
+
+        self.exit_stack.enter_context(self.swap_with_checks(
+            servers,
+            'managed_webdriverio_server',
+            mock_managed_process,
+            expected_kwargs=[{
+                'suite_name': 'full',
+                'chrome_version': None,
+                'dev_mode': True,
+                'mobile': False,
+                'sharding_instances': 3,
+                'debug_mode': False,
+                'stdout': subprocess.PIPE,
+            }]))
         self.exit_stack.enter_context(self.swap_with_checks(
             sys, 'exit', lambda _: None, expected_args=[(0,)]))
 
@@ -403,10 +422,11 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
             with emulator_mode_swap:
                 run_e2e_tests.main(args=[])
 
-    def test_loop_invocation_continues_while_poll_is_none(
+    def test_run_tests_loop_invocation_continues_while_process_is_ongoing(
         self
     ) -> None:
-        process_stub = scripts_test_utils.PopenStub(alive=False)
+        process_stub = scripts_test_utils.PopenStub(
+            alive=True, stdout=b'foo\nbar')
 
         def mock_managed_webdriverio_server(
             **unused_kwargs: str
@@ -416,7 +436,10 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
         def poll_mock() -> Optional[int]:
             if process_stub.poll_count == 0:
                 process_stub.poll_count += 1
+                process_stub.stdout = io.BytesIO(b'spamalot')
                 return None
+            process_stub.poll_count += 1
+            process_stub.alive = False
             return 0
 
         poll_swap = self.swap(process_stub, 'poll', poll_mock)
@@ -460,8 +483,10 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
             sys, 'exit', lambda _: None, expected_args=[(0,)]))
 
         with self.swap_mock_set_constants_to_default:
-            with poll_swap:
+            with poll_swap, self.swap_write_stdout_safe:
                 run_e2e_tests.main(args=[])
+        self.assertEqual(self.output_lines, [b'foo\n', b'bar', b'spamalot'])
+        self.assertEqual(process_stub.poll_count, 2)
 
     def test_start_tests_in_with_chromedriver_flag(self) -> None:
         self.exit_stack.enter_context(self.swap_with_checks(
