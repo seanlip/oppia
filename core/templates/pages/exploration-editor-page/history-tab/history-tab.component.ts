@@ -39,7 +39,7 @@ import {
 import {CompareVersionsService} from './services/compare-versions.service';
 import {ExplorationMetadata} from 'domain/exploration/ExplorationMetadataObjectFactory';
 import {LoggerService} from 'services/contextual/logger.service';
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 
 interface VersionMetadata {
   versionNumber: number;
@@ -378,9 +378,9 @@ export class HistoryTabComponent implements OnInit, OnDestroy {
         };
         this.historyTabBackendApiService.postData(data).then(
           () => {
-              const currentUrl = this.windowRef.nativeWindow.location.href;
-              this.windowRef.nativeWindow.location.href = `${currentUrl}#/history`;
-              this.windowRef.nativeWindow.location.reload();
+            const currentUrl = this.windowRef.nativeWindow.location.href;
+            this.windowRef.nativeWindow.location.href = `${currentUrl}#/history`;
+            this.windowRef.nativeWindow.location.reload();
           },
           () => {
             // Note to developers:
