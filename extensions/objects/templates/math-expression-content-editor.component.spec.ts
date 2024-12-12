@@ -30,7 +30,6 @@ import {HttpClientTestingModule} from '@angular/common/http/testing';
 import 'mathjaxConfig.ts';
 import {ExternalRteSaveService} from 'services/external-rte-save.service';
 import {ImageUploadHelperService} from 'services/image-upload-helper.service';
-import {InsertScriptService} from 'services/insert-script.service';
 import {AlertsService} from 'services/alerts.service';
 import {SimpleChanges} from '@angular/core';
 import {KNOWN_SCRIPTS} from 'services/insert-script.service';
@@ -80,10 +79,6 @@ describe('MathExpressionContentEditorComponent', () => {
     },
   };
 
-  const mockInsertScriptService = {
-    isScriptLoaded: jasmine.createSpy('isScriptLoaded').and.returnValue(true),
-  };
-
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -92,10 +87,6 @@ describe('MathExpressionContentEditorComponent', () => {
         {
           provide: ImageUploadHelperService,
           useValue: mockImageUploadHelperService,
-        },
-        {
-          provide: InsertScriptService,
-          useValue: mockInsertScriptService,
         },
       ],
       schemas: [NO_ERRORS_SCHEMA],
@@ -498,7 +489,10 @@ describe('MathExpressionContentEditorComponent', () => {
   );
 
   it('should update raw latex when the user is typing', () => {
-    component.loaded = true;
+    // eslint-disable-next-line dot-notation
+    spyOn(component['insertScriptService'], 'isScriptLoaded').and.returnValue(
+      true
+    );
     const changes: SimpleChanges = {
       value: {
         previousValue: {

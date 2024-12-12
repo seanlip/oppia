@@ -64,7 +64,7 @@ describe('MathJax directive', () => {
       // Simulate script loaded.
       callback();
     });
-
+    mockInsertScriptService.isScriptLoaded.and.returnValue(true);
     // Trigger Angular's change detection.
     fixture.detectChanges();
   }));
