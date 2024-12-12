@@ -19,7 +19,6 @@ from __future__ import annotations
 import json
 import os
 
-import copy
 from core import feconf
 from core import utils
 from core.constants import constants
@@ -265,15 +264,22 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
                 self.public_topic_id_1
             ).to_dict()
         )
-        public_topic_1_summary_dict = copy.deepcopy(topic_summary_dict)
-        public_topic_1_summary_dict['is_published'] = True
+        public_topic_1_summary_dict_is_published = {'is_published': True}
+        public_topic_1_summary_dict = dict(
+            topic_summary_dict,
+            **public_topic_1_summary_dict_is_published
+        )
+
         topic_summary_dict = (
             topic_fetchers.get_topic_summary_by_id(
                 self.private_topic_id
             ).to_dict()
         )
-        private_topic_summary_dict = copy.deepcopy(topic_summary_dict)
-        private_topic_summary_dict['is_published'] = False
+        private_topic_summary_dict_is_published = {'is_published': False}
+        private_topic_summary_dict = dict(
+            topic_summary_dict,
+            **private_topic_summary_dict_is_published
+        )
 
         # Skips 'no_summary_topic'.
         expected_dict = {
@@ -327,15 +333,22 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
                 self.public_topic_id_1
             ).to_dict()
         )
-        public_topic_1_summary_dict = copy.deepcopy(topic_summary_dict)
-        public_topic_1_summary_dict['is_published'] = True
+        public_topic_1_summary_dict_is_published = {'is_published': True}
+        public_topic_1_summary_dict = dict(
+            topic_summary_dict,
+            **public_topic_1_summary_dict_is_published
+        )
+
         topic_summary_dict = (
             topic_fetchers.get_topic_summary_by_id(
                 self.private_topic_id
             ).to_dict()
         )
-        private_topic_summary_dict = copy.deepcopy(topic_summary_dict)
-        private_topic_summary_dict['is_published'] = False
+        private_topic_summary_dict_is_published = {'is_published': False}
+        private_topic_summary_dict = dict(
+            topic_summary_dict,
+            **private_topic_summary_dict_is_published
+        )
 
         # Should return 'test_id' class, but count all public_classrooms,
         # 'science' and 'test_id'.
