@@ -323,7 +323,7 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
             self.assertFalse(response['more'])
             self.assertIsInstance(response['next_cursor'], str)
 
-    def test_get_skill_opportunity_data_pagination_null_from_beginning(
+    def test_get_skill_opportunity_with_zero_pagination_no_opportunity_return(
         self) -> None:
         # Unassign topic 0 from the classroom.
         classroom_config_services.delete_classroom(self.classroom_id)
@@ -347,7 +347,7 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
             }
         )
 
-        # Test when no opportunities are returned from the beginning.
+        # Test when no opportunities are returned.
         with self.swap(constants, 'OPPORTUNITIES_PAGE_SIZE', 0):
             response = self.get_json(
                 '%s/skill' % feconf.CONTRIBUTOR_OPPORTUNITIES_DATA_URL,
@@ -531,7 +531,7 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
         self.assertItemsEqual(
             response['opportunities'], [])
 
-    def test_get_reviewable_translation_opportunities_with_null_items( # pylint: disable=line-too-long
+    def test_get_reviewable_translation_opportunities_with_some_opportunities_set_to_none( # pylint: disable=line-too-long
             self
         ) -> None:
         # Create a translation suggestion in Hindi.
@@ -600,7 +600,7 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
         }
 
         # Here we use object because we need to return mock_exp_opp_summaries
-        # where some items in the list is null.
+        # where some items in the list is None.
         with unittest.mock.patch.object(
             opportunity_services,
             'get_exploration_opportunity_summaries_by_ids',
@@ -633,7 +633,9 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
 
             # Assert that only valid summaries are included in the response.
             self.assertItemsEqual(
-                response['opportunities'], [expected_opp_dict_1, expected_opp_dict_2])
+                response['opportunities'], 
+                [expected_opp_dict_1, expected_opp_dict_2]
+            )
 
     def test_get_reviewable_translation_opportunities_with_pinned_opportunity( # pylint: disable=line-too-long
             self
@@ -775,7 +777,10 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
                 csrf_token=csrf_token,
                 expected_status_int=200)
 
-    def test_pin_translation_opportunity_none_language(self) -> None:
+    def test_pin_translation_opportunity_with_language_code_set_to_none(
+            self
+        ) -> None:
+
         self.login(self.OWNER_EMAIL)
         topic_id = ''
         language_code = ''
@@ -1255,7 +1260,9 @@ class TranslatableTextHandlerTest(test_utils.GenericTestBase):
 
         self.logout()
 
-    def test_handler_translatable_item_is_data_format_list(self) -> None:
+    def test_handler_with_translatable_contents_in_list_format_should_be_skipped( # pylint: disable=line-too-long
+        self
+    ) -> None:
         mock_get_translatable_text_return_value = {
             'Introduction': {
                 'content_01': translation_domain.TranslatableContent(

@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 import os
 
+from copy import deepcopy
 from core import feconf
 from core import utils
 from core.constants import constants
@@ -231,7 +232,7 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
         }
         self.assertDictContainsSubset(expected_dict, json_response)
 
-    def test_get_skip_no_summary_or_topic_rights(self) -> None:
+    def test_get_classroom_data_with_topic_without_summary_skips_topic(self) -> None:
 
         no_summary_topic_id = topic_fetchers.get_new_topic_id()
         no_summary_topic = topic_domain.Topic.create_default_topic(
@@ -262,71 +263,17 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
                 self.public_topic_id_1
             ).to_dict()
         )
-        public_topic_1_summary_dict = {
-            'id': topic_summary_dict['id'],
-            'name': topic_summary_dict['name'],
-            'url_fragment': topic_summary_dict['url_fragment'],
-            'language_code': topic_summary_dict['language_code'],
-            'description': topic_summary_dict['description'],
-            'version': topic_summary_dict['version'],
-            'canonical_story_count': (
-                topic_summary_dict['canonical_story_count']),
-            'additional_story_count': (
-                topic_summary_dict['additional_story_count']),
-            'uncategorized_skill_count': (
-                topic_summary_dict['uncategorized_skill_count']),
-            'subtopic_count': topic_summary_dict['subtopic_count'],
-            'total_skill_count': (
-                topic_summary_dict['total_skill_count']),
-            'total_published_node_count': (
-                topic_summary_dict['total_published_node_count']),
-            'thumbnail_filename': (
-                topic_summary_dict['thumbnail_filename']),
-            'thumbnail_bg_color': (
-                topic_summary_dict['thumbnail_bg_color']),
-            'published_story_exploration_mapping': (
-                topic_summary_dict['published_story_exploration_mapping']),
-            'topic_model_created_on': (
-                topic_summary_dict['topic_model_created_on']),
-            'topic_model_last_updated': (
-                topic_summary_dict['topic_model_last_updated']),
-            'is_published': True
-        }
+        public_topic_1_summary_dict = deepcopy(topic_summary_dict)
+        public_topic_1_summary_dict['is_published'] = True
         topic_summary_dict = (
             topic_fetchers.get_topic_summary_by_id(
                 self.private_topic_id
             ).to_dict()
         )
-        private_topic_summary_dict = {
-            'id': topic_summary_dict['id'],
-            'name': topic_summary_dict['name'],
-            'url_fragment': topic_summary_dict['url_fragment'],
-            'language_code': topic_summary_dict['language_code'],
-            'description': topic_summary_dict['description'],
-            'version': topic_summary_dict['version'],
-            'canonical_story_count': (
-                topic_summary_dict['canonical_story_count']),
-            'additional_story_count': (
-                topic_summary_dict['additional_story_count']),
-            'uncategorized_skill_count': (
-                topic_summary_dict['uncategorized_skill_count']),
-            'subtopic_count': topic_summary_dict['subtopic_count'],
-            'total_skill_count': (
-                topic_summary_dict['total_skill_count']),
-            'total_published_node_count': (
-                topic_summary_dict['total_published_node_count']),
-            'thumbnail_filename': (
-                topic_summary_dict['thumbnail_filename']),
-            'thumbnail_bg_color': (
-                topic_summary_dict['thumbnail_bg_color']),
-            'published_story_exploration_mapping': (
-                topic_summary_dict['published_story_exploration_mapping']),
-            'topic_model_created_on': (
-                topic_summary_dict['topic_model_created_on']),
-            'topic_model_last_updated': (
-                topic_summary_dict['topic_model_last_updated']),
-            'is_published': False
-        }
+        private_topic_summary_dict = deepcopy(topic_summary_dict)
+        private_topic_summary_dict['is_published'] = False
+
+        #skips 'no_summary_topic'.
         expected_dict = {
             'classroom_id': 'test_id',
             'name': 'math',
@@ -344,7 +291,7 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
         }
         self.assertDictContainsSubset(expected_dict, json_response)
 
-    def test_get_multiple_classrooms(self) -> None:
+    def test_get_multiple_classrooms_count_all_published_unmatching_classrooms(self) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         self.save_new_valid_classroom(
             classroom_id='test_id',
@@ -372,72 +319,19 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
             topic_fetchers.get_topic_summary_by_id(
                 self.public_topic_id_1
             ).to_dict()
-        )
-        public_topic_1_summary_dict = {
-            'id': topic_summary_dict['id'],
-            'name': topic_summary_dict['name'],
-            'url_fragment': topic_summary_dict['url_fragment'],
-            'language_code': topic_summary_dict['language_code'],
-            'description': topic_summary_dict['description'],
-            'version': topic_summary_dict['version'],
-            'canonical_story_count': (
-                topic_summary_dict['canonical_story_count']),
-            'additional_story_count': (
-                topic_summary_dict['additional_story_count']),
-            'uncategorized_skill_count': (
-                topic_summary_dict['uncategorized_skill_count']),
-            'subtopic_count': topic_summary_dict['subtopic_count'],
-            'total_skill_count': (
-                topic_summary_dict['total_skill_count']),
-            'total_published_node_count': (
-                topic_summary_dict['total_published_node_count']),
-            'thumbnail_filename': (
-                topic_summary_dict['thumbnail_filename']),
-            'thumbnail_bg_color': (
-                topic_summary_dict['thumbnail_bg_color']),
-            'published_story_exploration_mapping': (
-                topic_summary_dict['published_story_exploration_mapping']),
-            'topic_model_created_on': (
-                topic_summary_dict['topic_model_created_on']),
-            'topic_model_last_updated': (
-                topic_summary_dict['topic_model_last_updated']),
-            'is_published': True
-        }
+        ) 
+        public_topic_1_summary_dict = deepcopy(topic_summary_dict)
+        public_topic_1_summary_dict['is_published'] = True
         topic_summary_dict = (
             topic_fetchers.get_topic_summary_by_id(
                 self.private_topic_id
             ).to_dict()
         )
-        private_topic_summary_dict = {
-            'id': topic_summary_dict['id'],
-            'name': topic_summary_dict['name'],
-            'url_fragment': topic_summary_dict['url_fragment'],
-            'language_code': topic_summary_dict['language_code'],
-            'description': topic_summary_dict['description'],
-            'version': topic_summary_dict['version'],
-            'canonical_story_count': (
-                topic_summary_dict['canonical_story_count']),
-            'additional_story_count': (
-                topic_summary_dict['additional_story_count']),
-            'uncategorized_skill_count': (
-                topic_summary_dict['uncategorized_skill_count']),
-            'subtopic_count': topic_summary_dict['subtopic_count'],
-            'total_skill_count': (
-                topic_summary_dict['total_skill_count']),
-            'total_published_node_count': (
-                topic_summary_dict['total_published_node_count']),
-            'thumbnail_filename': (
-                topic_summary_dict['thumbnail_filename']),
-            'thumbnail_bg_color': (
-                topic_summary_dict['thumbnail_bg_color']),
-            'published_story_exploration_mapping': (
-                topic_summary_dict['published_story_exploration_mapping']),
-            'topic_model_created_on': (
-                topic_summary_dict['topic_model_created_on']),
-            'topic_model_last_updated': (
-                topic_summary_dict['topic_model_last_updated']),
-            'is_published': False
-        }
+        private_topic_summary_dict = deepcopy(topic_summary_dict)
+        private_topic_summary_dict['is_published'] = False
+
+        # should return 'test_id' class, but count all public_classrooms, 
+        # 'science' and 'test_id'.
         expected_dict = {
             'classroom_id': 'test_id',
             'name': 'math',
@@ -605,7 +499,7 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
 
         self.logout()
 
-    def test_update_classroom_thumbnail_data_only(self) -> None:
+    def test_update_classroom_thumbnail_data_only_should_not_return_error(self) -> None:   #It's not clear what this is testing and how it relates to the test below. Can you use a better name to clarify?
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         classroom_handler_url = '%s/%s' % (
             feconf.CLASSROOM_HANDLER_URL, self.physics_classroom_id)
@@ -624,22 +518,24 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
             'rb', encoding=None
         ) as f:
             raw_banner_image = f.read()
+
         params = {'payload': json.dumps({
             'classroom_dict': self.physics_classroom_dict
         })}
         params['csrf_token'] = csrf_token
+
         thumbnail = (
             'thumbnail_image', 'thumbnail_filename1', raw_thumbnail_image)
         banner = ('banner_image', 'banner_filename1', raw_banner_image)
         self.testapp.put(
-                    classroom_handler_url,
-                    params=params, expect_errors=False,
-                    upload_files=[thumbnail, banner]
+            classroom_handler_url,
+            params=params, expect_errors=False,
+            upload_files=[thumbnail, banner]
         )
 
         self.logout()
 
-    def test_update_classroom_banner_data_only(self) -> None:
+    def test_update_classroom_banner_data_only_should_not_return_error(self) -> None:  #same as above
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         classroom_handler_url = '%s/%s' % (
             feconf.CLASSROOM_HANDLER_URL, self.physics_classroom_id)
@@ -666,9 +562,9 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
             'thumbnail_image', 'thumbnail_filename1', raw_thumbnail_image)
         banner = ('banner_image', 'banner_filename1', raw_banner_image)
         self.testapp.put(
-                    classroom_handler_url,
-                    params=params, expect_errors=False,
-                    upload_files=[thumbnail, banner]
+            classroom_handler_url,
+            params=params, expect_errors=False,
+            upload_files=[thumbnail, banner]
         )
 
         self.logout()
