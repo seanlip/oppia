@@ -85,21 +85,17 @@
   </ng-container>
 
   <div *ngIf="redesignFeatureFlag">
-    <div class="oppia-learner-dash-section" *ngIf="isNonemptyObject(untrackedTopics) || continueWhereYouLeftOffList.length !== 0">
+     <!--TODO(#18384): Only checks if there are lessons in-progress, hiding recommendations otherwise (isNonemptyObject(untrackedTopics) not sure what this does)-->
+    <div class="oppia-learner-dash-section" *ngIf="continueWhereYouLeftOffList.length !== 0">
       <p class="oppia-learner-dash-section-heading">
-        {{ (continueWhereYouLeftOffList.length !== 0 ?
-            'I18N_LEARNER_DASHBOARD_CONTINUE_WHERE_YOU_LEFT_OFF_SECTION'
-          :
-            'I18N_LEARNER_DASHBOARD_EMPTY_CONTINUE_WHERE_YOU_LEFT_OFF_SECTION_HEADING'
-          ) | translate
-        }}
+        {{ 'I18N_LEARNER_DASHBOARD_CONTINUE_WHERE_YOU_LEFT_OFF_SECTION' | translate }}
       </p>
       <div class="d-flex flex-wrap justify-content-between w-100">
         <!--TODO(#18384): Replace with all lessons in progress data (only contains classroom cards); affects ngIf, numCards, ng-content-->
         <oppia-card-display *ngIf="continueWhereYouLeftOffList.length !== 0" [headingI18n]="'I18N_LEARNER_DASHBOARD_HOME_PROGRESS_SECTION'" [numCards]="1" [displayMaxWidth]="'fit-content'">
           <ng-container *ngFor="let topicSummaryTile of partiallyLearntTopicsList">
             <ng-container *ngFor="let storySummaryTile of topicSummaryTile.canonicalStorySummaryDicts">
-              <lesson-card [story]="storySummaryTile" [topic]="topicSummaryTile.name"> </lesson-card>
+              <lesson-card [story]="storySummaryTile" [topic]="topicSummaryTile.name" [isGoal]="currentGoalIds.has(topicSummaryTile.id)"> </lesson-card>
             </ng-container>
           </ng-container>
         </oppia-card-display>

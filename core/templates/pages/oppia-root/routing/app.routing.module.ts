@@ -80,6 +80,14 @@ const routes: Route[] = [
     canActivate: [IsLoggedInGuard],
   },
   {
+    path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.CREATOR_DASHBOARD.ROUTE,
+    loadChildren: () =>
+      import('pages/creator-dashboard-page/creator-dashboard-page.module').then(
+        m => m.CreatorDashboardPageModule
+      ),
+    canActivate: [IsLoggedInGuard],
+  },
+  {
     path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.TOPIC_VIEWER.ROUTE,
     loadChildren: () =>
       import('pages/topic-viewer-page/topic-viewer-page.module').then(
@@ -486,6 +494,13 @@ for (let key in AppConstants.AVAILABLE_LANDING_PAGES) {
 
 // Error routes.
 routes.push(
+  {
+    path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.ERROR_IFRAMED.ROUTE,
+    loadChildren: () =>
+      import(
+        'pages/error-pages/error-iframed-page/error-iframed-page.module'
+      ).then(m => m.ErrorIframedPageModule),
+  },
   // Route to register all the custom error pages on oppia.
   {
     path: `${AppConstants.PAGES_REGISTERED_WITH_FRONTEND.ERROR.ROUTE}/:status_code`,
