@@ -611,23 +611,23 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
                 params={'language_code': 'hi'})
 
             expected_opp_dict_1 = {
-                'id': '0', 
-                'topic_name': 'topic', 
-                'story_title': 'title story_id_0', 
-                'chapter_title': 'Node1', 
-                'content_count': 2, 
-                'translation_counts': {}, 
-                'translation_in_review_counts': {}, 
+                'id': '0',
+                'topic_name': 'topic',
+                'story_title': 'title story_id_0',
+                'chapter_title': 'Node1',
+                'content_count': 2,
+                'translation_counts': {},
+                'translation_in_review_counts': {},
                 'is_pinned': False
             }
             expected_opp_dict_2 = {
-                'id': '2', 
-                'topic_name': 'topic2', 
-                'story_title': 'title story_id_2', 
-                'chapter_title': 'Node1', 
-                'content_count': 2, 
-                'translation_counts': {}, 
-                'translation_in_review_counts': {}, 
+                'id': '2',
+                'topic_name': 'topic2',
+                'story_title': 'title story_id_2',
+                'chapter_title': 'Node1',
+                'content_count': 2,
+                'translation_counts': {},
+                'translation_in_review_counts': {},
                 'is_pinned': False
             }
 

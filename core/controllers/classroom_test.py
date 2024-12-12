@@ -233,7 +233,7 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
         self.assertDictContainsSubset(expected_dict, json_response)
 
     def test_get_classroom_data_with_topic_without_summary_skips_topic(self) -> None:
-
+        # Create a prerequisite topic for a classroom and delete its summary.
         no_summary_topic_id = topic_fetchers.get_new_topic_id()
         no_summary_topic = topic_domain.Topic.create_default_topic(
             no_summary_topic_id, 'no_summary_topic',
@@ -273,7 +273,7 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
         private_topic_summary_dict = deepcopy(topic_summary_dict)
         private_topic_summary_dict['is_published'] = False
 
-        #skips 'no_summary_topic'.
+        # Skips 'no_summary_topic'.
         expected_dict = {
             'classroom_id': 'test_id',
             'name': 'math',
@@ -291,8 +291,11 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
         }
         self.assertDictContainsSubset(expected_dict, json_response)
 
-    def test_get_multiple_classrooms_count_all_published_unmatching_classrooms(self) -> None:
+    def test_get_multiple_classrooms_count_all_published_unmatching_classrooms(
+        self
+    ) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
+        # Create a published classroom with matching url_fragment with 'math'.
         self.save_new_valid_classroom(
             classroom_id='test_id',
             topic_id_to_prerequisite_topic_ids={
@@ -302,11 +305,13 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
             course_details='Course details for classroom.',
             topic_list_intro='Topics covered for classroom'
         )
+        # Create a unpublished classroom with unmatching url_fragment 'math'.
         self.save_new_valid_classroom(
             classroom_id='history', name='history', url_fragment='history',
             topic_id_to_prerequisite_topic_ids={self.public_topic_id_2: []},
             is_published=False
         )
+        # Create a published classroom with unmatching url_fragment 'math'.
         self.save_new_valid_classroom(
             classroom_id='science', name='science', url_fragment='science',
             topic_id_to_prerequisite_topic_ids={self.public_topic_id_2: []}
@@ -330,7 +335,7 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
         private_topic_summary_dict = deepcopy(topic_summary_dict)
         private_topic_summary_dict['is_published'] = False
 
-        # should return 'test_id' class, but count all public_classrooms, 
+        # Should return 'test_id' class, but count all public_classrooms, 
         # 'science' and 'test_id'.
         expected_dict = {
             'classroom_id': 'test_id',
