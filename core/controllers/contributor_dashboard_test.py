@@ -633,7 +633,7 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
 
             # Assert that only valid summaries are included in the response.
             self.assertItemsEqual(
-                response['opportunities'], 
+                response['opportunities'],
                 [expected_opp_dict_1, expected_opp_dict_2]
             )
 

@@ -19,7 +19,7 @@ from __future__ import annotations
 import json
 import os
 
-from copy import deepcopy
+import copy
 from core import feconf
 from core import utils
 from core.constants import constants
@@ -232,7 +232,9 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
         }
         self.assertDictContainsSubset(expected_dict, json_response)
 
-    def test_get_classroom_data_with_topic_without_summary_skips_topic(self) -> None:
+    def test_get_classroom_data_with_topic_without_summary_skips_topic(
+        self
+    ) -> None:
         # Create a prerequisite topic for a classroom and delete its summary.
         no_summary_topic_id = topic_fetchers.get_new_topic_id()
         no_summary_topic = topic_domain.Topic.create_default_topic(
@@ -263,14 +265,14 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
                 self.public_topic_id_1
             ).to_dict()
         )
-        public_topic_1_summary_dict = deepcopy(topic_summary_dict)
+        public_topic_1_summary_dict = copy.deepcopy(topic_summary_dict)
         public_topic_1_summary_dict['is_published'] = True
         topic_summary_dict = (
             topic_fetchers.get_topic_summary_by_id(
                 self.private_topic_id
             ).to_dict()
         )
-        private_topic_summary_dict = deepcopy(topic_summary_dict)
+        private_topic_summary_dict = copy.deepcopy(topic_summary_dict)
         private_topic_summary_dict['is_published'] = False
 
         # Skips 'no_summary_topic'.
@@ -324,18 +326,18 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
             topic_fetchers.get_topic_summary_by_id(
                 self.public_topic_id_1
             ).to_dict()
-        ) 
-        public_topic_1_summary_dict = deepcopy(topic_summary_dict)
+        )
+        public_topic_1_summary_dict = copy.deepcopy(topic_summary_dict)
         public_topic_1_summary_dict['is_published'] = True
         topic_summary_dict = (
             topic_fetchers.get_topic_summary_by_id(
                 self.private_topic_id
             ).to_dict()
         )
-        private_topic_summary_dict = deepcopy(topic_summary_dict)
+        private_topic_summary_dict = copy.deepcopy(topic_summary_dict)
         private_topic_summary_dict['is_published'] = False
 
-        # Should return 'test_id' class, but count all public_classrooms, 
+        # Should return 'test_id' class, but count all public_classrooms,
         # 'science' and 'test_id'.
         expected_dict = {
             'classroom_id': 'test_id',
@@ -504,7 +506,9 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
 
         self.logout()
 
-    def test_update_classroom_thumbnail_data_only_should_not_return_error(self) -> None:   #It's not clear what this is testing and how it relates to the test below. Can you use a better name to clarify?
+    def test_update_classroom_thumbnail_data_only_should_not_return_error(
+        self
+    ) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         classroom_handler_url = '%s/%s' % (
             feconf.CLASSROOM_HANDLER_URL, self.physics_classroom_id)
@@ -540,7 +544,9 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
 
         self.logout()
 
-    def test_update_classroom_banner_data_only_should_not_return_error(self) -> None:  #same as above
+    def test_update_classroom_banner_data_only_should_not_return_error(
+        self
+    ) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         classroom_handler_url = '%s/%s' % (
             feconf.CLASSROOM_HANDLER_URL, self.physics_classroom_id)
