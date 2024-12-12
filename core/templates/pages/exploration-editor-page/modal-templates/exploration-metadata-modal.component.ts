@@ -179,9 +179,13 @@ export class ExplorationMetadataModalComponent
     // These race with the discardDraft() call that
     // will be called when the draft changes entered here
     // are properly saved to the backend.
-    setTimeout(() => {
+        // Replace $timeout with Promise-based approach.
+    new Promise(resolve => {
+      // Wait for autosave calls to complete.
+      setTimeout(resolve, 500); // Simulate async operation completion.
+    }).then(() => {
       this.ngbActiveModal.close(metadataList);
-    }, 500);
+    });
   }
 
   areRequiredFieldsFilled(): boolean {
