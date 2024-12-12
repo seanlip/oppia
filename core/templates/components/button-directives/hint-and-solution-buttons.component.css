@@ -14,6 +14,14 @@ oppia-hint-and-solution-buttons .close {
   position: relative;
 }
 
+.hint-box-close {
+  background: none;
+  border: none;
+  color: #2d4a9d;
+  font-size: 18px;
+  cursor: pointer;
+}
+
 oppia-hint-and-solution-buttons .hint-box-add-ons {
   left: -5.5px;
 }
@@ -120,8 +128,19 @@ oppia-hint-and-solution-buttons .hint-box::before {
     position: fixed;
   }
 
+  .hint-box {
+    font-size: 14px;
+    padding: 8px 10px;
+    max-width: 300px;
+  }
+  .hint-box-close {
+    font-size: 16px;
+  }
+
   oppia-hint-and-solution-buttons .hint-box-add-ons {
-    left: 25px;
+    left: 282px;
+    right: 0px;
+    top: 0px;
   }
 
   oppia-hint-and-solution-buttons .hint-box-add-ons::before {
@@ -139,7 +158,10 @@ oppia-hint-and-solution-buttons .hint-box::before {
   }
 
   oppia-hint-and-solution-buttons .hint-container {
-    position: absolute;
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
     right: 0;
     width: 100%;
   }
