@@ -2,14 +2,13 @@ FROM node:16.13.0-slim AS frontend
 
 WORKDIR /app/oppia
 
-RUN apt-get update -y && apt-get install -y --no-install-recommends \
+# Update and upgrade packages
+RUN apt-get update -y && apt-get upgrade -y && apt-get install -y \
     chromium \
     curl \
     git \
     ca-certificates && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN git config --global http.sslVerify "true"
 
 # Installing packages from the package.json file.
 COPY package.json .
