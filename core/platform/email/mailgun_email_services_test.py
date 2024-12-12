@@ -27,7 +27,7 @@ from core.platform import models
 from core.platform.email import mailgun_email_services
 from core.tests import test_utils
 
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union
 
 secrets_services = models.Registry.import_secrets_services()
 
@@ -154,7 +154,8 @@ class EmailTests(test_utils.GenericTestBase):
         subject = 'Hola 😂 - invitation to collaborate'
         plaintext_body = 'plaintext_body 😂'
         html_body = 'Hi abc,<br> 😂'
-        recipient_variables = {'b@b.com': {'first': 'Bob', 'id': 1}}
+        recipient_variables: Dict[str, Dict[str, Union[str, float]]] = {
+            'b@b.com': {'first': 'Bob', 'id': 1}}
         bcc = ['c@example.com']
         reply_to = 'abc'
         attachments = None
@@ -168,9 +169,9 @@ class EmailTests(test_utils.GenericTestBase):
                 subject,
                 plaintext_body,
                 html_body,
-                bcc=bcc,
-                reply_to=reply_to,
-                recipient_variables=recipient_variables)
+                bcc,
+                reply_to,
+                recipient_variables)
 
         expected_data = {
             'from': sender_email,
@@ -206,7 +207,8 @@ class EmailTests(test_utils.GenericTestBase):
         subject = 'Hola 😂 - invitation to collaborate'
         plaintext_body = 'plaintext_body 😂'
         html_body = 'Hi abc,<br> 😂'
-        recipient_variables = {'b@example.com': {'first': 'Bob', 'id': 1}}
+        recipient_variables: Dict[str, Dict[str, Union[str, float]]] = {
+            'b@example.com': {'first': 'Bob', 'id': 1}}
         bcc = ['c@example.com', 'd@example.com']
         reply_to = 'abc'
         attachments = None
@@ -222,7 +224,7 @@ class EmailTests(test_utils.GenericTestBase):
                 html_body,
                 bcc,
                 reply_to,
-                recipient_variables=(recipient_variables)
+                recipient_variables
             )
 
         expected_data = {
@@ -246,7 +248,7 @@ class EmailTests(test_utils.GenericTestBase):
         self.assertTrue(resp)
 
     @mock.patch('requests.post')
-    def test_batch_send_to_mailgun(self, mock_post) -> None:
+    def test_batch_send_to_mailgun(self, mock_post: mock.Mock) -> None:
         """Test for sending HTTP POST request."""
         mock_response = mock.Mock()
         mock_response.status_code = 200
@@ -368,7 +370,8 @@ class EmailTests(test_utils.GenericTestBase):
                 )
 
     @mock.patch('requests.post')
-    def test_invalid_status_code_returns_false(self, mock_post) -> None:
+    def test_invalid_status_code_returns_false(
+            self, mock_post: mock.Mock) -> None:
         mock_response = mock.Mock()
         mock_response.status_code = 500
         mock_post.return_value = mock_response

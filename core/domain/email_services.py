@@ -200,7 +200,7 @@ def send_bulk_mail(
 
     response = email_services.send_email_to_recipients(
         sender_email, recipient_emails, subject,
-        plaintext_body, html_body, attachments)
+        plaintext_body, html_body, attachments=attachments)
 
     if not response:
         raise Exception(

@@ -206,7 +206,7 @@ class EmailServicesTest(test_utils.EmailTestBase):
             ' contact us to report a bug at https://www.oppia.org/contact.')
         swap_send_email_to_recipients = self.swap(
             platform_email_services, 'send_email_to_recipients',
-            lambda *_: False)
+            lambda *_, **__: False)
         recipients = [feconf.ADMIN_EMAIL_ADDRESS]
 
         with email_exception, swap_send_email_to_recipients:

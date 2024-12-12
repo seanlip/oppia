@@ -630,7 +630,7 @@ def _send_bulk_mail(
 
         email_services.send_bulk_mail(
             sender_name_email, recipient_emails, email_subject,
-            cleaned_plaintext_body, cleaned_html_body, attachments=attachments)
+            cleaned_plaintext_body, cleaned_html_body, attachments)
 
         email_models.BulkEmailModel.create(
             instance_id, sender_id, sender_name_email, intent,
