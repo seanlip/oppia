@@ -100,6 +100,16 @@ import 'third-party-imports/skulpt.import';
         path: '',
         component: ExplorationEditorPageRootComponent,
         canActivate: [ExplorationEditorPageAuthGuard],
+        children: [
+          {path: '', redirectTo: 'gui', pathMatch: 'full'},
+          {path: 'gui/:stateName', component: ExplorationEditorPageComponent},
+          {path: 'translation/:stateName', component: TranslationTabComponent},
+          {path: 'preview/:stateName', component: PreviewTabComponent},
+          {path: 'settings', component: SettingsTabComponent},
+          {path: 'stats', component: StatisticsTabComponent},
+          {path: 'history', component: HistoryTabComponent},
+          {path: 'feedback', component: FeedbackTabComponent}
+        ]
       },
     ]),
     NgbModule,
