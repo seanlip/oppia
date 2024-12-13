@@ -19,6 +19,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {CookieService} from 'ngx-cookie';
+import {AppConstants} from 'app.constants';
 
 @Component({
   selector: 'language-banner',
@@ -26,12 +27,23 @@ import {CookieService} from 'ngx-cookie';
   styleUrls: ['./language-banner.component.scss'],
 })
 export class LanguageBannerComponent implements OnInit {
+  COOKIE_NAME_COOKIES_ACKNOWLEDGED = 'OPPIA_COOKIES_ACKNOWLEDGED';
+  COOKIE_NAME_DO_NOT_SHOW_LANGUAGE_BANNER = 'DO_NOT_SHOW_LANGUAGE_BANNER';
   isVisible: boolean;
   isChecked: boolean = false;
   constructor(private cookieService: CookieService) {}
 
   ngOnInit(): void {
-    if (this.cookieService.get('doNotShowLanguageBanner') !== 'true') {
+    let cookieSetDateMsecs = this.cookieService.get(
+      this.COOKIE_NAME_COOKIES_ACKNOWLEDGED
+    );
+    if (
+      !cookieSetDateMsecs ||
+      Number(cookieSetDateMsecs) < AppConstants.COOKIE_POLICY_LAST_UPDATED_MSECS
+    ) {
+      return;
+    }
+    if (!this.cookieService.get(this.COOKIE_NAME_DO_NOT_SHOW_LANGUAGE_BANNER)) {
       this.isVisible = navigator.language.slice(0, 2) !== 'en';
     }
   }
@@ -39,7 +51,10 @@ export class LanguageBannerComponent implements OnInit {
   onButtonClick(): void {
     this.isVisible = false;
     if (this.isChecked) {
-      this.cookieService.put('doNotShowLanguageBanner', 'true');
+      this.cookieService.put(
+        this.COOKIE_NAME_DO_NOT_SHOW_LANGUAGE_BANNER,
+        'true'
+      );
     }
   }
 }
