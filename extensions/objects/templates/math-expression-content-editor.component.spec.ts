@@ -490,7 +490,7 @@ describe('MathExpressionContentEditorComponent', () => {
 
   it('should update raw latex when the user is typing', () => {
     // eslint-disable-next-line dot-notation
-    spyOn(component['insertScriptService'], 'isScriptLoaded').and.returnValue(
+    spyOn(component['insertScriptService'], 'hasScriptLoaded').and.returnValue(
       true
     );
     const changes: SimpleChanges = {

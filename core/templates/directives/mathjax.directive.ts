@@ -52,7 +52,7 @@ export class MathJaxDirective implements OnChanges, OnInit {
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (
-      this.insertScriptService.isScriptLoaded(KNOWN_SCRIPTS.MATHJAX) &&
+      this.insertScriptService.hasScriptLoaded(KNOWN_SCRIPTS.MATHJAX) &&
       changes.texExpression &&
       changes.texExpression.currentValue !== changes.texExpression.previousValue
     ) {

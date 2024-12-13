@@ -39,16 +39,13 @@ export class InsertScriptService {
     this.renderer = rendererFactory.createRenderer(null, null);
   }
 
-  isScriptLoaded(script: KNOWN_SCRIPTS): boolean {
-    if (this.fullyLoadedScripts.has(script)) {
-      return true;
-    }
-    return false;
+  hasScriptLoaded(script: KNOWN_SCRIPTS): boolean {
+    return (this.fullyLoadedScripts.has(script));
   }
 
   loadScript(script: KNOWN_SCRIPTS, onLoadCb?: () => void): boolean {
     // If the script is already loaded, it does not load again.
-    if (this.isScriptLoaded(script)) {
+    if (this.hasScriptLoaded(script)) {
       Promise.resolve().then(onLoadCb);
       return false;
     }

@@ -46,7 +46,7 @@ describe('MathJax directive', () => {
   beforeEach(waitForAsync(() => {
     mockInsertScriptService = jasmine.createSpyObj('InsertScriptService', [
       'loadScript',
-      'isScriptLoaded',
+      'hasScriptLoaded',
     ]);
     TestBed.configureTestingModule({
       declarations: [MockCompA, MathJaxDirective],
@@ -64,7 +64,7 @@ describe('MathJax directive', () => {
       // Simulate script loaded.
       callback();
     });
-    mockInsertScriptService.isScriptLoaded.and.returnValue(true);
+    mockInsertScriptService.hasScriptLoaded.and.returnValue(true);
     // Trigger Angular's change detection.
     fixture.detectChanges();
   }));
