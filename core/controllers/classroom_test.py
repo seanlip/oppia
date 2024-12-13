@@ -24,6 +24,7 @@ from core import utils
 from core.constants import constants
 from core.domain import classroom_config_domain
 from core.domain import classroom_config_services
+from core.domain import fs_services
 from core.domain import topic_domain
 from core.domain import topic_fetchers
 from core.domain import topic_services
@@ -264,10 +265,9 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
                 self.public_topic_id_1
             ).to_dict()
         )
-        public_topic_1_summary_dict_is_published = {'is_published': True}
         public_topic_1_summary_dict = dict(
             topic_summary_dict,
-            **public_topic_1_summary_dict_is_published
+            **{'is_published': True}
         )
 
         topic_summary_dict = (
@@ -275,12 +275,10 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
                 self.private_topic_id
             ).to_dict()
         )
-        private_topic_summary_dict_is_published = {'is_published': False}
         private_topic_summary_dict = dict(
             topic_summary_dict,
-            **private_topic_summary_dict_is_published
+            **{'is_published': False}
         )
-
         # Skips 'no_summary_topic'.
         expected_dict = {
             'classroom_id': 'test_id',
@@ -303,7 +301,7 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
         self
     ) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
-        # Create a published classroom with matching url_fragment with 'math'.
+        # Create a published classroom with a url_fragment matching 'math'.
         self.save_new_valid_classroom(
             classroom_id='test_id',
             topic_id_to_prerequisite_topic_ids={
@@ -313,13 +311,15 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
             course_details='Course details for classroom.',
             topic_list_intro='Topics covered for classroom'
         )
-        # Create a unpublished classroom with unmatching url_fragment 'math'.
+        # Create an unpublished classroom with a url_fragment that does not
+        # match 'math'.
         self.save_new_valid_classroom(
             classroom_id='history', name='history', url_fragment='history',
             topic_id_to_prerequisite_topic_ids={self.public_topic_id_2: []},
             is_published=False
         )
-        # Create a published classroom with unmatching url_fragment 'math'.
+        # Create a published classroom with a url_fragment that does not match
+        # 'math'.
         self.save_new_valid_classroom(
             classroom_id='science', name='science', url_fragment='science',
             topic_id_to_prerequisite_topic_ids={self.public_topic_id_2: []}
@@ -333,10 +333,9 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
                 self.public_topic_id_1
             ).to_dict()
         )
-        public_topic_1_summary_dict_is_published = {'is_published': True}
         public_topic_1_summary_dict = dict(
             topic_summary_dict,
-            **public_topic_1_summary_dict_is_published
+            **{'is_published': True}
         )
 
         topic_summary_dict = (
@@ -344,10 +343,9 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
                 self.private_topic_id
             ).to_dict()
         )
-        private_topic_summary_dict_is_published = {'is_published': False}
         private_topic_summary_dict = dict(
             topic_summary_dict,
-            **private_topic_summary_dict_is_published
+            **{'is_published': False}
         )
 
         # Should return 'test_id' class, but count all public_classrooms,
@@ -519,7 +517,7 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
 
         self.logout()
 
-    def test_update_classroom_thumbnail_data_only_should_not_return_error(
+    def test_update_classroom_thumbnail_data_only(
         self
     ) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
@@ -527,7 +525,6 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
             feconf.CLASSROOM_HANDLER_URL, self.physics_classroom_id)
         csrf_token = self.get_new_csrf_token()
 
-        self.physics_classroom_dict['name'] = 'Quantum physics'
         self.physics_classroom_dict['thumbnail_data']['filename'] = 'update.svg'
 
         with utils.open_file(
@@ -555,9 +552,29 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
             upload_files=[thumbnail, banner]
         )
 
+        # Check physics classroom data updated correctly.
+        physics_classroom = classroom_config_services.get_classroom_by_id(
+            self.physics_classroom_id
+        )
+        self.assertEqual(
+            physics_classroom.to_dict(), self.physics_classroom_dict)
+
+        # Check new thumbnail image uploaded correctly.
+        fs = fs_services.GcsFileSystem(
+            feconf.ENTITY_TYPE_CLASSROOM, self.physics_classroom_id)
+        self.assertTrue(fs.isfile('thumbnail/%s' % 'update.svg'))
+        self.assertTrue(fs.isfile('thumbnail/%s' % 'update_compressed.svg'))
+        self.assertTrue(fs.isfile('thumbnail/%s' % 'update_micro.svg'))
+
+        updated_thumbnail_img = fs.get('thumbnail/%s' % 'update.svg')
+        self.assertEqual(raw_thumbnail_image, updated_thumbnail_img)
+
+        # Check new banner image is not uploaded.
+        self.assertFalse(fs.isfile('image/%s' % 'update.png'))
+
         self.logout()
 
-    def test_update_classroom_banner_data_only_should_not_return_error(
+    def test_update_classroom_banner_data_only(
         self
     ) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
@@ -565,7 +582,6 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
             feconf.CLASSROOM_HANDLER_URL, self.physics_classroom_id)
         csrf_token = self.get_new_csrf_token()
 
-        self.physics_classroom_dict['name'] = 'Quantum physics'
         self.physics_classroom_dict['banner_data']['filename'] = 'update.png'
 
         with utils.open_file(
@@ -590,6 +606,26 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
             params=params, expect_errors=False,
             upload_files=[thumbnail, banner]
         )
+
+        # Check physics classroom data updated correctly.
+        physics_classroom = classroom_config_services.get_classroom_by_id(
+            self.physics_classroom_id
+        )
+        self.assertEqual(
+            physics_classroom.to_dict(), self.physics_classroom_dict)
+
+        # Check new banner image uploaded correctly.
+        fs = fs_services.GcsFileSystem(
+            feconf.ENTITY_TYPE_CLASSROOM, self.physics_classroom_id)
+        self.assertTrue(fs.isfile('image/%s' % 'update.png'))
+        self.assertTrue(fs.isfile('image/%s' % 'update_compressed.png'))
+        self.assertTrue(fs.isfile('image/%s' % 'update_micro.png'))
+
+        updated_banner_img = fs.get('image/%s' % 'update.png')
+        self.assertEqual(raw_banner_image, updated_banner_img)
+
+        # Check new thumbnail image is not uploaded.
+        self.assertFalse(fs.isfile('thumbnail/%s' % 'update.svg'))
 
         self.logout()
 
