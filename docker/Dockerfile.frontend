@@ -2,7 +2,6 @@ FROM node:16.13.0-slim AS frontend
 
 WORKDIR /app/oppia
 
-# Update and upgrade packages
 RUN apt-get update -y && apt-get install -y \
     chromium \
     curl \
