@@ -40,7 +40,7 @@ export class InsertScriptService {
   }
 
   hasScriptLoaded(script: KNOWN_SCRIPTS): boolean {
-    return (this.fullyLoadedScripts.has(script));
+    return this.fullyLoadedScripts.has(script);
   }
 
   loadScript(script: KNOWN_SCRIPTS, onLoadCb?: () => void): boolean {
