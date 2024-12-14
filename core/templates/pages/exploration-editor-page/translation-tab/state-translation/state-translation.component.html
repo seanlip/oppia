@@ -188,11 +188,11 @@
               </span>
             </div>
             <div class="oppia-editor-card-section" *ngIf="caContent.content._unicode">
-              <span *ngIf="!caContent.content.unicode" class="oppia-placeholder" tabindex="0">
+              <span *ngIf="!caContent.content._unicode" class="oppia-placeholder" tabindex="0">
                 {{ getEmptyContentMessage() }}
               </span>
               <span>
-                <p tabindex="0">{{ caContent.content.unicode }}</p>
+                <p tabindex="0">{{ getRequiredUnicode(caContent.content) }}</p>
               </span>
             </div>
           </div>
@@ -247,8 +247,7 @@
                                      [numRules]="answerGroup.rules.length"
                                      [isResponse]="true"
                                      [showWarning]="contentIdNeedUpdates(answerGroup.outcome.feedback.contentId)"
-                                     (navigateToState)="navigateToState($event)"
-                                     [correctnessFeedbackEnabled]="explorationCorrectnessFeedbackService.isEnabled()">
+                                     (navigateToState)="navigateToState($event)">
               </oppia-response-header>
             </a>
             <div *ngIf="activeAnswerGroupIndex === index">
@@ -290,8 +289,7 @@
                                      [defaultOutcome]="true"
                                      [isResponse]="true"
                                      [showWarning]="contentIdNeedUpdates(stateDefaultOutcome.feedback.contentId)"
-                                     (navigateToState)="navigateToState($event)"
-                                     [correctnessFeedbackEnabled]="explorationCorrectnessFeedbackService.isEnabled()">
+                                     (navigateToState)="navigateToState($event)">
               </oppia-response-header>
             </a>
             <div *ngIf="activeAnswerGroupIndex === stateAnswerGroups.length">
@@ -363,7 +361,16 @@
   <div joyrideStep="translationTabReRecordingOverview" [stepContent]="TranslationTabReRecordingOverview"></div>
   <div joyrideStep="translationTabTutorialComplete" [stepContent]="TranslationTabTutorialComplete"></div>
   <div *ngIf="isVoiceoverModeActive()" id="tutorialTranslationAudioBar" class="oppia-audio-translation-bar">
-    <oppia-audio-translation-bar [isTranslationTabBusy]="isTranslationTabBusy"></oppia-audio-translation-bar>
+    <div *ngIf="!isVoiceoverContributionEnabled()">
+      <p class="voiceover-disabled-text-class">
+        The functionality for adding voiceovers is temporarily disabled due to maintenance. Try again later.
+      </p>
+    </div>
+    <div *ngIf="isVoiceoverContributionEnabled()">
+      <oppia-audio-translation-bar *ngIf="!isVoiceoverContributionWithAccentEnabled()" [isTranslationTabBusy]="isTranslationTabBusy">
+      </oppia-audio-translation-bar>
+      <oppia-voiceover-card *ngIf="isVoiceoverContributionWithAccentEnabled()"></oppia-voiceover-card>
+    </div>
   </div>
   <div *ngIf="!isVoiceoverModeActive()">
     <oppia-state-translation-editor></oppia-state-translation-editor>
@@ -375,7 +382,14 @@
   .oppia-translation-preview-list {
     display: block;
   }
-
+  .voiceover-disabled-text-class {
+    max-width: 90%;
+    overflow-wrap: break-word;
+    padding: 5px;
+    text-align: center;
+    white-space: normal;
+    word-wrap: break-word;
+  }
   .oppia-translation-preview {
     list-style: none;
     margin-bottom: 0;
@@ -420,11 +434,34 @@
     cursor: pointer;
     display: flex;
     margin-bottom: 5px;
-    width: -webkit-calc(100% / 4);
-    width: -moz-calc(100% / 4);
-    width: -o-calc(100% / 4);
-    width: calc(100% / 4);
+    width: -webkit-calc(100% / 5);
+    width: -moz-calc(100% / 5);
+    width: -o-calc(100% / 5);
+    width: calc(100% / 5);
   }
+
+  @media screen and (max-width: 768px) {
+    .oppia-state-translation-page {
+      margin-left: auto;
+    }
+    .oppia-translation-tabs {
+      flex-wrap: wrap;
+      height: 100px;
+    }
+
+    .oppia-translation-tabs li {
+      height: 50px;
+    }
+
+    .oppia-audio-recording-bar {
+      flex-wrap: wrap;
+    }
+
+    .oppia-slider-section {
+      margin-bottom: 5px;
+    }
+  }
+
   .oppia-active-translation-tab div {
     background-color: white;
     border-bottom: 0;
@@ -443,7 +480,8 @@
     border-bottom-width: 2px;
     border-top-width: 3px;
     color: #009688;
-    padding: 10px;
+    font-size: 1.2rem;
+    padding: 10px 10px 20px 2px;
     text-decoration: none;
     width: 100%;
   }
@@ -466,7 +504,8 @@
     padding: 20px 30px 20px 30px;
   }
   .oppia-audio-translation-bar {
-    height: 50px;
+    flex-direction: column;
+    padding: 15px;
   }
   .oppia-rte-editor-focused:focus > p {
     outline: solid 2px #009688;

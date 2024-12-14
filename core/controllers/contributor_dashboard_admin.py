@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Controllers for the contributor dashboard page."""
+"""Controllers for the contributor dashboard admin page."""
 
 from __future__ import annotations
 import datetime
@@ -48,19 +48,6 @@ class TranslationContributionStatsDict(TypedDict):
     topic_name: str
     contribution_months: List[str]
     language: str
-
-
-class ContributorDashboardAdminPage(
-    base.BaseHandler[Dict[str, str], Dict[str, str]]
-):
-    """Handler for the contributor dashboard admin page."""
-
-    URL_PATH_ARGS_SCHEMAS: Dict[str, str] = {}
-    HANDLER_ARGS_SCHEMAS: Dict[str, Dict[str, str]] = {'GET': {}}
-
-    @acl_decorators.can_access_contributor_dashboard_admin_page
-    def get(self) -> None:
-        self.render_template('contributor-dashboard-admin-page.mainpage.html')
 
 
 class ContributionRightsHandlerNormalizedPayloadDict(TypedDict):

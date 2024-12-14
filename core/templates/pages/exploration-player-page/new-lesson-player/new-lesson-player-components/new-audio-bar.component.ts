@@ -16,18 +16,12 @@
  * @fileoverview Component for the new audio bar
  */
 
-import { Component } from '@angular/core';
-import { downgradeComponent } from '@angular/upgrade/static';
+import {Component} from '@angular/core';
 import './new-audio-bar.component.css';
 
 @Component({
   selector: 'oppia-new-audio-bar',
   templateUrl: './new-audio-bar.component.html',
-  styleUrls: ['./new-audio-bar.component.css']
+  styleUrls: ['./new-audio-bar.component.css'],
 })
-export class NewAudioBarComponent { }
-
-angular.module('oppia').directive('oppiaNewAudioBar',
-  downgradeComponent({
-    component: NewAudioBarComponent
-  }) as angular.IDirectiveFactory);
+export class NewAudioBarComponent {}

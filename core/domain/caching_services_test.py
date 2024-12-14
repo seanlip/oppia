@@ -49,7 +49,7 @@ class CachingServicesUnitTests(test_utils.GenericTestBase):
         'objective': '',
         'init_state_name': 'Introduction',
         'author_notes': '',
-        'states_schema_version': 53,
+        'states_schema_version': 56,
         'param_specs': {},
         'param_changes': [],
         'id': 'h51Bu72rDIqO',
@@ -76,6 +76,7 @@ class CachingServicesUnitTests(test_utils.GenericTestBase):
                     'html': '<p>Unicode Characters 😍😍😍😍</p>'
                 },
                 'linked_skill_id': None,
+                'inapplicable_skill_misconception_ids': [],
                 'interaction': {
                     'hints': [{
                         'hint_content': {
@@ -140,7 +141,6 @@ class CachingServicesUnitTests(test_utils.GenericTestBase):
                 }
             }
         },
-        'correctness_feedback_enabled': False,
         'next_content_id_index': 7,
         'edits_allowed': True,
         'language_code': 'en',
@@ -153,9 +153,10 @@ class CachingServicesUnitTests(test_utils.GenericTestBase):
     json_encoded_string_representing_an_exploration = (
         '{"param_changes": [], "category": "", "auto_tts_enabled": true, '
         '"next_content_id_index": 7, "tags"'
-        ': [], "states_schema_version": 53, "title": "", "param_specs": {}, "id'
+        ': [], "states_schema_version": 56, "title": "", "param_specs": {}, "id'
         '": "h51Bu72rDIqO", "states": {"Introduction": {"param_changes": [], "c'
-        'ard_is_checkpoint": true, "interaction": {"solution": null, "answer_gr'
+        'ard_is_checkpoint": true, "inapplicable_skill_misconception_ids": [], '
+        '"interaction": {"solution": null, "answer_gr'
         'oups": [{"tagged_skill_misconception_id": null, "outcome": {"param_cha'
         'nges": [], "feedback": {"content_id": "feedback_4", "html": "<p>This i'
         's great! \\u00ae\\u00ae</p>"}, "dest": "Introduction", "dest_if_really'
@@ -180,7 +181,7 @@ class CachingServicesUnitTests(test_utils.GenericTestBase):
         '{"content_id": "content_0", "html": "<p>Unicode Characters '
         '\\ud83d\\ude0d\\ud83d\\ude0d\\ud83d\\ude0d\\ud83d\\ude0d</p>"}, '
         '"solicit_answer_details": false}}, "version": 0, '
-        '"correctness_feedback_enabled": false, "edits_allowed": true, "l'
+        '"edits_allowed": true, "l'
         'anguage_code": "en", "objective": "", "init_state_name": "Introduction'
         '", "blurb": "", "author_notes": ""}'
     )
@@ -880,9 +881,7 @@ class CachingServicesUnitTests(test_utils.GenericTestBase):
             ],
             'rule_schema_version': (
                 feconf.CURRENT_PLATFORM_PARAMETER_RULE_SCHEMA_VERSION),
-            'default_value': False,
-            'is_feature': True,
-            'feature_stage': 'test 😍',
+            'default_value': False
         })
 
         caching_services.set_multi(

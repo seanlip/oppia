@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import hashlib
 
-from core import platform_feature_list
+from core import feature_flag_list
 from core.domain import feature_flag_domain
 from core.domain import feature_flag_registry as registry
 from core.platform import models
@@ -30,13 +30,16 @@ from typing import Dict, List, Mapping, Optional, Set
 MYPY = False
 if MYPY: # pragma: no cover
     from mypy_imports import config_models
+    from mypy_imports import user_models
 
-(config_models,) = models.Registry.import_models([models.Names.CONFIG])
+(config_models, user_models) = models.Registry.import_models(
+    [models.Names.CONFIG, models.Names.USER])
 
-ALL_FEATURE_FLAGS: List[platform_feature_list.FeatureNames] = (
-    platform_feature_list.DEV_FEATURES_LIST +
-    platform_feature_list.TEST_FEATURES_LIST +
-    platform_feature_list.PROD_FEATURES_LIST
+
+ALL_FEATURE_FLAGS: List[feature_flag_list.FeatureNames] = (
+    feature_flag_list.DEV_FEATURES_LIST +
+    feature_flag_list.TEST_FEATURES_LIST +
+    feature_flag_list.PROD_FEATURES_LIST
 )
 
 ALL_FEATURES_NAMES_SET: Set[str] = set(
@@ -44,7 +47,7 @@ ALL_FEATURES_NAMES_SET: Set[str] = set(
 )
 
 FEATURE_FLAG_NAME_TO_DESCRIPTION_AND_FEATURE_STAGE = (
-    platform_feature_list.FEATURE_FLAG_NAME_TO_DESCRIPTION_AND_FEATURE_STAGE
+    feature_flag_list.FEATURE_FLAG_NAME_TO_DESCRIPTION_AND_FEATURE_STAGE
 )
 
 
@@ -69,7 +72,7 @@ def update_feature_flag(
         rollout_percentage: int. The percentage of logged-in users for which
             the feature will be enabled. This value is ignored if the
             force_enable_for_all_users property is set to True.
-        user_group_ids: List[str]. The list of ids of UserGroup objects.
+        user_group_ids: List[str]. The list of ids of UserGroupModel.
 
     Raises:
         FeatureFlagNotFoundException. Feature flag trying to update does
@@ -199,17 +202,19 @@ def load_feature_flags_from_storage(
 
 
 def is_feature_flag_enabled(
-    user_id: Optional[str],
     feature_flag_name: str,
-    feature_flag: Optional[feature_flag_domain.FeatureFlag] = None
+    user_id: Optional[str],
+    feature_flag: Optional[feature_flag_domain.FeatureFlag] = None,
 ) -> bool:
     """Returns True if feature is enabled for the given user else False.
 
     Args:
-        user_id: str|None. The id of the user, if logged-out user then None.
         feature_flag_name: str. The name of the feature flag that needs to
             be evaluated.
-        feature_flag: FeatureFlag. The feature flag domain model.
+        user_id: str|None. The id of the user, if logged-out user then None.
+        feature_flag: FeatureFlag|None. The feature flag domain object.
+            If None, then this function is responsible for fetching the
+            feature flag.
 
     Returns:
         bool. True if the feature is enabled for the given user else False.
@@ -236,7 +241,20 @@ def is_feature_flag_enabled(
 
     if feature_flag.feature_flag_config.force_enable_for_all_users:
         return True
+
     if user_id is not None:
+        user_group_models: List[user_models.UserGroupModel] = list(
+            user_models.UserGroupModel.query(
+                user_models.UserGroupModel.user_ids == user_id
+            ).fetch())
+
+        user_group_models_ids: Set[str] = set(
+            user_group_model.id for user_group_model in user_group_models)
+
+        for user_group_id in feature_flag.feature_flag_config.user_group_ids:
+            if user_group_id in user_group_models_ids:
+                return True
+
         salt = feature_flag_name.encode('utf-8')
         hashed_user_id = hashlib.sha256(
             user_id.encode('utf-8') + salt).hexdigest()
@@ -264,7 +282,7 @@ def evaluate_all_feature_flag_configs(
     feature_flags = get_all_feature_flags()
     for feature_flag in feature_flags:
         feature_flag_status = is_feature_flag_enabled(
-            user_id, feature_flag.name, feature_flag)
+            feature_flag.name, user_id, feature_flag=feature_flag)
         # Ruling out the possibility of any other type for mypy type checking.
         assert isinstance(feature_flag_status, bool)
         result_dict[feature_flag.name] = feature_flag_status

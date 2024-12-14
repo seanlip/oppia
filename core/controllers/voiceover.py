@@ -24,18 +24,6 @@ from core.domain import voiceover_services
 from typing import Dict, TypedDict
 
 
-class VoiceoverAdminPage(base.BaseHandler[Dict[str, str], Dict[str, str]]):
-    """Renders the voiceover admin page."""
-
-    URL_PATH_ARGS_SCHEMAS: Dict[str, str] = {}
-    HANDLER_ARGS_SCHEMAS: Dict[str, Dict[str, str]] = {'GET': {}}
-
-    @acl_decorators.can_access_voiceover_admin_page
-    def get(self) -> None:
-        """Renders the voiceover admin page."""
-        self.render_template('voiceover-admin-page.mainpage.html')
-
-
 class VoiceoverAdminDataHandler(
     base.BaseHandler[Dict[str, str], Dict[str, str]]
 ):
@@ -45,7 +33,7 @@ class VoiceoverAdminDataHandler(
     URL_PATH_ARGS_SCHEMAS: Dict[str, str] = {}
     HANDLER_ARGS_SCHEMAS: Dict[str, Dict[str, str]] = {'GET': {}}
 
-    @acl_decorators.can_access_voiceover_admin_page
+    @acl_decorators.open_access
     def get(self) -> None:
         """Retrieves relevant data for the voiceover admin page."""
 
@@ -121,4 +109,167 @@ class VoiceoverLanguageCodesMappingHandler(
 
         voiceover_services.save_language_accent_support(
             language_codes_mapping)
+        self.render_json(self.values)
+
+
+class PutVoiceArtistMetadataHandlerNormalizedPayloadDict(TypedDict):
+    """Dict representation of VoiceArtistMetadataHandler's normalized_payload
+    dictionary.
+    """
+
+    voice_artist_id: str
+    language_code: str
+    language_accent_code: str
+
+
+class VoiceArtistMetadataHandler(
+    base.BaseHandler[
+        PutVoiceArtistMetadataHandlerNormalizedPayloadDict,
+        Dict[str, str]
+    ]
+):
+    """Handler class to manage voice artist data for the voiceover admin page.
+    """
+
+    GET_HANDLER_ERROR_RETURN_TYPE = feconf.HANDLER_TYPE_JSON
+    URL_PATH_ARGS_SCHEMAS: Dict[str, str] = {}
+    HANDLER_ARGS_SCHEMAS = {
+        'GET': {},
+        'PUT': {
+            'voice_artist_id': {
+                'schema': {
+                    'type': 'basestring'
+                }
+            },
+            'language_code': {
+                'schema': {
+                    'type': 'basestring'
+                }
+            },
+            'language_accent_code': {
+                'schema': {
+                    'type': 'basestring'
+                }
+            }
+        }
+    }
+
+    @acl_decorators.can_access_voiceover_admin_page
+    def get(self) -> None:
+        """Retrieves voice artist data for the voiceover admin page."""
+        voice_artist_id_to_language_mapping = (
+            voiceover_services.get_all_voice_artist_language_accent_mapping())
+        voice_artist_id_to_voice_artist_name = (
+            voiceover_services.get_voice_artist_ids_to_voice_artist_names())
+
+        self.values.update({
+            'voice_artist_id_to_language_mapping':
+                voice_artist_id_to_language_mapping,
+            'voice_artist_id_to_voice_artist_name':
+                voice_artist_id_to_voice_artist_name
+        })
+        self.render_json(self.values)
+
+    @acl_decorators.can_access_voiceover_admin_page
+    def put(self) -> None:
+        """Updates voice artist data from the voiceover admin page."""
+        assert self.normalized_payload is not None
+        voice_artist_id = self.normalized_payload['voice_artist_id']
+        language_code = self.normalized_payload['language_code']
+        language_accent_code = self.normalized_payload['language_accent_code']
+
+        voiceover_services.update_voice_artist_language_mapping(
+            voice_artist_id, language_code, language_accent_code)
+        self.render_json(self.values)
+
+
+class GetSampleVoiceoversForGivenVoiceArtistHandler(
+    base.BaseHandler[Dict[str, str], Dict[str, str]]
+):
+    """Handler class to get sample contributed voiceovers of a voice artist in
+    a given language.
+    """
+
+    GET_HANDLER_ERROR_RETURN_TYPE = feconf.HANDLER_TYPE_JSON
+    URL_PATH_ARGS_SCHEMAS = {
+        'voice_artist_id': {
+            'schema': {
+                'type': 'basestring'
+            }
+        },
+        'language_code': {
+            'schema': {
+                'type': 'basestring'
+            }
+        }
+    }
+    HANDLER_ARGS_SCHEMAS: Dict[str, Dict[str, str]] = {'GET': {}}
+
+    @acl_decorators.can_access_voiceover_admin_page
+    def get(self, voice_artist_id: str, language_code: str) -> None:
+        exploration_id_to_filenames = (
+            voiceover_services.get_voiceover_filenames(
+                voice_artist_id=voice_artist_id,
+                language_code=language_code
+            )
+        )
+
+        self.values.update({
+            'exploration_id_to_filenames': exploration_id_to_filenames,
+        })
+        self.render_json(self.values)
+
+
+class EntityVoiceoversBulkHandler(
+    base.BaseHandler[Dict[str, str], Dict[str, str]]
+):
+    """Handler class to get entity voiceovers data for a given language code
+    of an exploration.
+    """
+
+    GET_HANDLER_ERROR_RETURN_TYPE = feconf.HANDLER_TYPE_JSON
+    URL_PATH_ARGS_SCHEMAS = {
+        'entity_type': {
+            'schema': {
+                'type': 'basestring'
+            }
+        },
+        'entity_id': {
+            'schema': {
+                'type': 'basestring'
+            }
+        },
+        'entity_version': {
+            'schema': {
+                'type': 'int'
+            }
+        },
+        'language_code': {
+            'schema': {
+                'type': 'basestring'
+            }
+        }
+    }
+    HANDLER_ARGS_SCHEMAS: Dict[str, Dict[str, str]] = {'GET': {}}
+
+    @acl_decorators.open_access
+    def get(
+        self,
+        entity_type: str,
+        entity_id: str,
+        entity_version: int,
+        language_code: str,
+    ) -> None:
+        entity_voiceovers_objects = (
+            voiceover_services.fetch_entity_voiceovers_by_language_code(
+                entity_id, entity_type, entity_version, language_code)
+        )
+        entity_voiceovers_dicts = []
+
+        for entity_voiceovers in entity_voiceovers_objects:
+            entity_voiceovers_dicts.append(entity_voiceovers.to_dict())
+
+        self.values.update({
+            'entity_voiceovers_list': entity_voiceovers_dicts
+        })
         self.render_json(self.values)

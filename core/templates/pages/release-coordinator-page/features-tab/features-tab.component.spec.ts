@@ -16,28 +16,35 @@
  * @fileoverview Unit tests for the feature tab in release coordinator page.
  */
 
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, fakeAsync, async, TestBed, flushMicrotasks, tick } from
-  '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
+import {NO_ERRORS_SCHEMA, ElementRef, QueryList} from '@angular/core';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  async,
+  TestBed,
+  flushMicrotasks,
+  tick,
+} from '@angular/core/testing';
+import {FormsModule} from '@angular/forms';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatInputModule} from '@angular/material/input';
+import {MatFormFieldModule} from '@angular/material/form-field';
 
 import cloneDeep from 'lodash/cloneDeep';
 
-import { FeatureFlagsResponse } from
-  'domain/platform_feature/platform-feature-admin-backend-api.service';
-import { FeaturesTabComponent } from
-  'pages/release-coordinator-page/features-tab/features-tab.component';
-import { PlatformFeatureAdminBackendApiService } from
-  'domain/platform_feature/platform-feature-admin-backend-api.service';
-import { FeatureFlagDummyBackendApiService } from
-  'domain/feature-flag/feature-flag-dummy-backend-api.service';
-import { WindowRef } from 'services/contextual/window-ref.service';
-import { FeatureStage } from 'domain/platform_feature/platform-parameter.model';
-import { FeatureFlag } from 'domain/feature-flag/feature-flag.model';
-import { PlatformFeatureService } from 'services/platform-feature.service';
-import { HttpErrorResponse } from '@angular/common/http';
-
+import {FeaturesTabComponent} from 'pages/release-coordinator-page/features-tab/features-tab.component';
+import {FeatureFlagDummyBackendApiService} from 'domain/feature-flag/feature-flag-dummy-backend-api.service';
+import {
+  FeatureFlagBackendApiService,
+  FeatureFlagsResponse,
+} from 'domain/feature-flag/feature-flag-backend-api.service';
+import {UserGroup} from 'domain/release_coordinator/user-group.model';
+import {WindowRef} from 'services/contextual/window-ref.service';
+import {FeatureStage} from 'domain/platform-parameter/platform-parameter.model';
+import {FeatureFlag} from 'domain/feature-flag/feature-flag.model';
+import {PlatformFeatureService} from 'services/platform-feature.service';
+import {HttpErrorResponse} from '@angular/common/http';
 
 let dummyFeatureStatus = false;
 const mockDummyFeatureFlagForE2ETestsStatus = (status: boolean) => {
@@ -50,16 +57,16 @@ class MockPlatformFeatureService {
       DummyFeatureFlagForE2ETests: {
         get isEnabled() {
           return dummyFeatureStatus;
-        }
-      }
+        },
+      },
     };
   }
 }
 
-describe('Release coordinator page feature tab', function() {
+describe('Release coordinator page feature tab', function () {
   let component: FeaturesTabComponent;
   let fixture: ComponentFixture<FeaturesTabComponent>;
-  let featureApiService: PlatformFeatureAdminBackendApiService;
+  let featureApiService: FeatureFlagBackendApiService;
   let windowRef: WindowRef;
 
   let updateApiSpy: jasmine.Spy;
@@ -67,23 +74,27 @@ describe('Release coordinator page feature tab', function() {
   let mockConfirmResult: (val: boolean) => void;
 
   beforeEach(async(() => {
-    TestBed
-      .configureTestingModule({
-        imports: [FormsModule, HttpClientTestingModule],
-        declarations: [FeaturesTabComponent],
-        providers: [
-          {
-            provide: PlatformFeatureService,
-            useClass: MockPlatformFeatureService
-          }
-        ],
-        schemas: [NO_ERRORS_SCHEMA]
-      })
-      .compileComponents();
+    TestBed.configureTestingModule({
+      imports: [
+        FormsModule,
+        HttpClientTestingModule,
+        MatAutocompleteModule,
+        MatInputModule,
+        MatFormFieldModule,
+      ],
+      declarations: [FeaturesTabComponent],
+      providers: [
+        {
+          provide: PlatformFeatureService,
+          useClass: MockPlatformFeatureService,
+        },
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FeaturesTabComponent);
     component = fixture.componentInstance;
-    featureApiService = TestBed.get(PlatformFeatureAdminBackendApiService);
+    featureApiService = TestBed.get(FeatureFlagBackendApiService);
     windowRef = TestBed.get(WindowRef);
 
     let confirmResult = true;
@@ -91,9 +102,9 @@ describe('Release coordinator page feature tab', function() {
     spyOnProperty(windowRef, 'nativeWindow').and.returnValue({
       confirm: () => confirmResult,
       prompt: () => promptResult,
-      alert: () => null
+      alert: () => null,
     } as unknown as Window);
-    mockConfirmResult = val => confirmResult = val;
+    mockConfirmResult = val => (confirmResult = val);
 
     spyOn(featureApiService, 'getFeatureFlags').and.resolveTo({
       featureFlags: [
@@ -104,27 +115,324 @@ describe('Release coordinator page feature tab', function() {
           force_enable_for_all_users: false,
           rollout_percentage: 0,
           user_group_ids: [],
-          last_updated: null
-        })
+          last_updated: null,
+        }),
       ],
-      serverStage: 'dev'
+      serverStage: 'dev',
+      userGroups: [
+        UserGroup.createFromBackendDict({
+          user_group_id: 'userGroupId1',
+          name: 'UserGroup1',
+          member_usernames: ['User1', 'User2', 'User3'],
+        }),
+        UserGroup.createFromBackendDict({
+          user_group_id: 'userGroupId2',
+          name: 'UserGroup2',
+          member_usernames: ['User4', 'User5'],
+        }),
+      ],
     } as FeatureFlagsResponse);
 
-    updateApiSpy = spyOn(featureApiService, 'updateFeatureFlag')
-      .and.resolveTo();
+    updateApiSpy = spyOn(
+      featureApiService,
+      'updateFeatureFlag'
+    ).and.resolveTo();
 
     component.ngOnInit();
   }));
 
   it('should load feature flags on init', () => {
-    expect(component.featureFlags.length).toBe(1);
-    expect(component.featureFlags[0].name).toEqual(
-      'dummy_feature_flag_for_e2e_tests');
+    expect(component.featureFlagViewModels.length).toBe(1);
+    expect(component.featureFlagViewModels[0].name).toEqual(
+      'dummy_feature_flag_for_e2e_tests'
+    );
+  });
+
+  it('should filter user groups based on search query', () => {
+    let featureFlagVM = component.featureFlagViewModels[0];
+    component.filterUserGroups(featureFlagVM);
+    expect(featureFlagVM.filteredUserGroups).toEqual(component.allUserGroups);
+
+    featureFlagVM.searchQuery = 'UserGroup1';
+    component.filterUserGroups(featureFlagVM);
+    expect(featureFlagVM.filteredUserGroups[0].name).toEqual('UserGroup1');
+
+    featureFlagVM.searchQuery = 'XYZ';
+    component.filterUserGroups(featureFlagVM);
+    expect(featureFlagVM.filteredUserGroups).toEqual([]);
+  });
+
+  it('should get user group name from user group id', fakeAsync(() => {
+    component.ngOnInit();
+    tick();
+    expect(component.getUserGroupName('userGroupId1')).toEqual('UserGroup1');
+  }));
+
+  it('should do nothing when reset usergroup search is not found', fakeAsync(() => {
+    component.ngOnInit();
+    tick();
+    component.userGroupInputs = new QueryList<ElementRef>();
+    component.userGroupInputs.reset([
+      {
+        nativeElement: {
+          value: 'UserGroup1',
+          getAttribute: (_: string) => 'random_feature_flag',
+        },
+      } as ElementRef,
+    ]);
+
+    let featureFlagVM = component.featureFlagViewModels[0];
+    component.resetUserGroupSearch(featureFlagVM);
+
+    expect(component.userGroupInputs._results[0].nativeElement.value).toEqual(
+      'UserGroup1'
+    );
+    expect(featureFlagVM.filteredUserGroups).toEqual(component.allUserGroups);
+  }));
+
+  describe('adding user group to feature flag', () => {
+    it('should add user group to feature flag', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+      component.userGroupInputs = new QueryList<ElementRef>();
+      component.userGroupInputs.reset([
+        {
+          nativeElement: {
+            value: 'UserGroup1',
+            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests',
+          },
+        } as ElementRef,
+      ]);
+
+      let featureFlagVM = component.featureFlagViewModels[0];
+      spyOn(component, 'resetUserGroupSearch').and.callThrough();
+
+      component.addUserGroupToFeatureFlagViewModel(
+        {value: 'UserGroup1'},
+        featureFlagVM
+      );
+
+      expect(featureFlagVM.userGroupIds).toContain('userGroupId1');
+      expect(featureFlagVM.userGroupIds.length).toBe(1);
+      expect(component.resetUserGroupSearch).toHaveBeenCalledWith(
+        featureFlagVM
+      );
+    }));
+
+    it('should not add user group if value is empty', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+      component.userGroupInputs = new QueryList<ElementRef>();
+      component.userGroupInputs.reset([
+        {
+          nativeElement: {
+            value: 'UserGroup1',
+            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests',
+          },
+        } as ElementRef,
+      ]);
+
+      let featureFlagVM = component.featureFlagViewModels[0];
+      spyOn(component, 'resetUserGroupSearch');
+
+      component.addUserGroupToFeatureFlagViewModel({value: ''}, featureFlagVM);
+
+      expect(featureFlagVM.userGroupIds.length).toBe(0);
+      expect(component.resetUserGroupSearch).not.toHaveBeenCalled();
+    }));
+
+    it('should not add user group if already in userGroupIds', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+      component.userGroupInputs = new QueryList<ElementRef>();
+      component.userGroupInputs.reset([
+        {
+          nativeElement: {
+            value: 'UserGroup1',
+            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests',
+          },
+        } as ElementRef,
+      ]);
+
+      let featureFlagVM = component.featureFlagViewModels[0];
+      spyOn(component, 'resetUserGroupSearch').and.callThrough();
+
+      component.addUserGroupToFeatureFlagViewModel(
+        {value: 'UserGroup1'},
+        featureFlagVM
+      );
+
+      expect(featureFlagVM.userGroupIds.length).toBe(1);
+      expect(component.resetUserGroupSearch).toHaveBeenCalledWith(
+        featureFlagVM
+      );
+    }));
+
+    it('should not add user group if not found in allUserGroups', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+      component.userGroupInputs = new QueryList<ElementRef>();
+      component.userGroupInputs.reset([]);
+
+      let featureFlagVM = component.featureFlagViewModels[0];
+
+      component.addUserGroupToFeatureFlagViewModel(
+        {value: 'Nonexistent Group'},
+        featureFlagVM
+      );
+
+      expect(featureFlagVM.userGroupIds.length).toBe(0);
+    }));
+
+    it('should not add user group if validUserGroupInput returns false', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+      component.userGroupInputs = new QueryList<ElementRef>();
+      component.userGroupInputs.reset([
+        {
+          nativeElement: {
+            value: 'UserGroup1',
+            getAttribute: (_: string) => 'dummy_feature_flag_for_e2e_tests',
+          },
+        } as ElementRef,
+      ]);
+
+      let featureFlagVM = component.featureFlagViewModels[0];
+      spyOn(component, 'validUserGroupInput').and.returnValue(false);
+      spyOn(component, 'resetUserGroupSearch').and.callThrough();
+
+      component.addUserGroupToFeatureFlagViewModel(
+        {value: 'UserGroup1'},
+        featureFlagVM
+      );
+
+      expect(featureFlagVM.userGroupIds.length).toBe(0);
+      expect(component.resetUserGroupSearch).toHaveBeenCalledWith(
+        featureFlagVM
+      );
+    }));
+  });
+
+  describe('removing user group from feature flag', () => {
+    it('should remove user group from feature flag', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+
+      let featureFlagVM = component.featureFlagViewModels[0];
+      featureFlagVM.userGroupIds = ['userGroupId1', 'userGroupId2'];
+      expect(featureFlagVM.userGroupIds).toEqual([
+        'userGroupId1',
+        'userGroupId2',
+      ]);
+
+      component.removeUserGroupFromFeatureFlagViewModel(
+        'userGroupId2',
+        featureFlagVM
+      );
+      expect(featureFlagVM.userGroupIds).toEqual(['userGroupId1']);
+    }));
+
+    it('should not modify userGroupIds if user group ID does not exist', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+
+      let featureFlagVM = component.featureFlagViewModels[0];
+      featureFlagVM.userGroupIds = ['userGroupId1', 'userGroupId2'];
+      expect(featureFlagVM.userGroupIds).toEqual([
+        'userGroupId1',
+        'userGroupId2',
+      ]);
+
+      component.removeUserGroupFromFeatureFlagViewModel(
+        'userGroupId3',
+        featureFlagVM
+      );
+      expect(featureFlagVM.userGroupIds).toEqual([
+        'userGroupId1',
+        'userGroupId2',
+      ]);
+    }));
+  });
+
+  describe('selecting user group from dropdown', () => {
+    it('should select user group', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+      component.userGroupInputs = new QueryList<ElementRef>();
+      component.userGroupInputs.reset([
+        {
+          nativeElement: {value: 'group1', getAttribute: () => 'UserGroup1'},
+        } as ElementRef,
+      ]);
+
+      let featureFlagVM = component.featureFlagViewModels[0];
+
+      component.selectUserGroup({option: {value: 'UserGroup1'}}, featureFlagVM);
+
+      expect(featureFlagVM.userGroupIds).toEqual(['userGroupId1']);
+    }));
+
+    it('should not do anything when user group is not found', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+      component.userGroupInputs = new QueryList<ElementRef>();
+      component.userGroupInputs.reset([
+        {
+          nativeElement: {value: 'group1', getAttribute: () => 'UserGroup1'},
+        } as ElementRef,
+      ]);
+      let setStatusSpy = spyOn(component.setStatusMessage, 'emit');
+
+      let featureFlagVM = component.featureFlagViewModels[0];
+      component.selectUserGroup(
+        {option: {value: 'UserGroupRandom'}},
+        featureFlagVM
+      );
+
+      expect(setStatusSpy).toHaveBeenCalled();
+    }));
+
+    it('should deselect user group', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+      component.userGroupInputs = new QueryList<ElementRef>();
+      component.userGroupInputs.reset([
+        {
+          nativeElement: {value: 'group1', getAttribute: () => 'UserGroup1'},
+        } as ElementRef,
+      ]);
+
+      let featureFlagVM = component.featureFlagViewModels[0];
+
+      component.selectUserGroup({option: {value: 'UserGroup1'}}, featureFlagVM);
+      expect(featureFlagVM.userGroupIds).toEqual(['userGroupId1']);
+
+      component.selectUserGroup({option: {value: 'UserGroup1'}}, featureFlagVM);
+      expect(featureFlagVM.userGroupIds).toEqual([]);
+    }));
+
+    it('should reset user group search after selecting', fakeAsync(() => {
+      component.ngOnInit();
+      tick();
+      component.userGroupInputs = new QueryList<ElementRef>();
+      component.userGroupInputs.reset([
+        {
+          nativeElement: {value: 'group1', getAttribute: () => 'UserGroup1'},
+        } as ElementRef,
+      ]);
+
+      let featureFlagVM = component.featureFlagViewModels[0];
+
+      component.selectUserGroup({option: {value: 'UserGroup1'}}, featureFlagVM);
+
+      expect(featureFlagVM.searchQuery).toBe('');
+      expect(featureFlagVM.filteredUserGroups).toEqual(component.allUserGroups);
+    }));
   });
 
   describe('.clearChanges', () => {
     it('should clear changes', () => {
-      const featureFlag = component.featureFlags[0];
+      const featureFlag = component.featureFlagViewModels[0];
 
       featureFlag.forceEnableForAllUsers = true;
       component.clearChanges(featureFlag);
@@ -132,9 +440,9 @@ describe('Release coordinator page feature tab', function() {
       expect(featureFlag.forceEnableForAllUsers).toBeFalse();
     });
 
-    it('should not proceed if the user doesn\'t confirm', () => {
+    it("should not proceed if the user doesn't confirm", () => {
       mockConfirmResult(false);
-      const featureFlag = component.featureFlags[0];
+      const featureFlag = component.featureFlagViewModels[0];
 
       expect(featureFlag.forceEnableForAllUsers).toBeFalse();
 
@@ -147,51 +455,58 @@ describe('Release coordinator page feature tab', function() {
 
   describe('.getSchema', () => {
     it('should return the schema for rollout-percentage', () => {
-      expect(component.getSchema()).toEqual(
-        {
-          type: 'int',
-          validators: [{
+      expect(component.getSchema()).toEqual({
+        type: 'int',
+        validators: [
+          {
             id: 'is_at_least',
-            min_value: 1
-          }, {
+            min_value: 1,
+          },
+          {
             id: 'is_at_most',
-            max_value: 100
-          }]
-        }
-      );
+            max_value: 100,
+          },
+        ],
+      });
     });
   });
 
   describe('.getLastUpdatedDate', () => {
-    it('should return the string when the feature has not been ' +
-    'updated yet', (() => {
-      expect(component.getLastUpdatedDate(
-        component.featureFlags[0])).toEqual(
-        'The feature has not been updated yet.');
-    }));
+    it(
+      'should return the string when the feature has not been ' + 'updated yet',
+      () => {
+        expect(
+          component.getLastUpdatedDate(component.featureFlagViewModels[0])
+        ).toEqual('The feature has not been updated yet.');
+      }
+    );
 
-    it('should return the human readable last updated string from date-time ' +
-    'object string', () => {
-      let featureFlag = FeatureFlag.createFromBackendDict({
-        description: 'This is a dummy feature flag.',
-        feature_stage: FeatureStage.PROD,
-        name: 'dummy_feature_flag_for_e2e_tests',
-        force_enable_for_all_users: false,
-        rollout_percentage: 0,
-        user_group_ids: [],
-        last_updated: '08/17/2023, 15:30:45:123456'
-      });
+    it(
+      'should return the human readable last updated string from date-time ' +
+        'object string',
+      () => {
+        let featureFlag = FeatureFlag.createFromBackendDict({
+          description: 'This is a dummy feature flag.',
+          feature_stage: FeatureStage.PROD,
+          name: 'dummy_feature_flag_for_e2e_tests',
+          force_enable_for_all_users: false,
+          rollout_percentage: 0,
+          user_group_ids: [],
+          last_updated: '08/17/2023, 15:30:45:123456',
+        });
 
-      expect(component.getLastUpdatedDate(featureFlag)).toEqual(
-        'Aug 17, 2023');
-    });
+        expect(component.getLastUpdatedDate(featureFlag)).toEqual(
+          'Aug 17, 2023'
+        );
+      }
+    );
   });
 
   describe('.getFeatureStageString()', () => {
     it('should return text for dev feature stage', () => {
-      expect(component.getFeatureStageString(
-        component.featureFlags[0])).toBe(
-        'Dev (can only be enabled on dev server).');
+      expect(
+        component.getFeatureStageString(component.featureFlagViewModels[0])
+      ).toBe('Dev (can only be enabled on dev server).');
     });
 
     it('should return text for test feature stage', () => {
@@ -202,11 +517,11 @@ describe('Release coordinator page feature tab', function() {
         force_enable_for_all_users: false,
         rollout_percentage: 0,
         user_group_ids: [],
-        last_updated: null
+        last_updated: null,
       });
-      expect(component.getFeatureStageString(
-        featureFlagTestStage)).toBe(
-        'Test (can only be enabled on dev and test server).');
+      expect(component.getFeatureStageString(featureFlagTestStage)).toBe(
+        'Test (can only be enabled on dev and test server).'
+      );
     });
 
     it('should return text for prod feature stage', () => {
@@ -217,11 +532,11 @@ describe('Release coordinator page feature tab', function() {
         force_enable_for_all_users: false,
         rollout_percentage: 0,
         user_group_ids: [],
-        last_updated: null
+        last_updated: null,
       });
-      expect(component.getFeatureStageString(
-        featureFlagProdStage)).toBe(
-        'Prod (can only be enabled on dev, test and prod server).');
+      expect(component.getFeatureStageString(featureFlagProdStage)).toBe(
+        'Prod (can only be enabled on dev, test and prod server).'
+      );
     });
   });
 
@@ -233,7 +548,7 @@ describe('Release coordinator page feature tab', function() {
       force_enable_for_all_users: false,
       rollout_percentage: 0,
       user_group_ids: [],
-      last_updated: null
+      last_updated: null,
     });
 
     let featureFlagProdStage = FeatureFlag.createFromBackendDict({
@@ -243,62 +558,83 @@ describe('Release coordinator page feature tab', function() {
       force_enable_for_all_users: false,
       rollout_percentage: 0,
       user_group_ids: [],
-      last_updated: null
+      last_updated: null,
     });
 
     afterEach(() => {
       component.serverStage = '';
     });
 
-    it('should return true when the server in dev stage and feature ' +
-    'stage is dev too', (() => {
-      component.serverStage = 'dev';
+    it(
+      'should return true when the server in dev stage and feature ' +
+        'stage is dev too',
+      () => {
+        component.serverStage = 'dev';
 
-      expect(component.getFeatureValidOnCurrentServer(
-        featureFlagDevStage)).toBe(true);
-    }));
+        expect(
+          component.getFeatureValidOnCurrentServer(featureFlagDevStage)
+        ).toBe(true);
+      }
+    );
 
-    it('should return false when the server in test stage and feature ' +
-    'stage is dev', (() => {
-      component.serverStage = 'test';
+    it(
+      'should return false when the server in test stage and feature ' +
+        'stage is dev',
+      () => {
+        component.serverStage = 'test';
 
-      expect(component.getFeatureValidOnCurrentServer(
-        featureFlagDevStage)).toBe(false);
-    }));
+        expect(
+          component.getFeatureValidOnCurrentServer(featureFlagDevStage)
+        ).toBe(false);
+      }
+    );
 
-    it('should return true when the server in test stage and feature ' +
-    'stage is prod', (() => {
-      component.serverStage = 'test';
+    it(
+      'should return true when the server in test stage and feature ' +
+        'stage is prod',
+      () => {
+        component.serverStage = 'test';
 
-      expect(component.getFeatureValidOnCurrentServer(
-        featureFlagProdStage)).toBe(true);
-    }));
+        expect(
+          component.getFeatureValidOnCurrentServer(featureFlagProdStage)
+        ).toBe(true);
+      }
+    );
 
-    it('should return true when the server in prod stage and feature ' +
-    'stage is prod', (() => {
-      component.serverStage = 'prod';
+    it(
+      'should return true when the server in prod stage and feature ' +
+        'stage is prod',
+      () => {
+        component.serverStage = 'prod';
 
-      expect(component.getFeatureValidOnCurrentServer(
-        featureFlagProdStage)).toBe(true);
-    }));
+        expect(
+          component.getFeatureValidOnCurrentServer(featureFlagProdStage)
+        ).toBe(true);
+      }
+    );
 
-    it('should return false when the server in prod stage and feature ' +
-    'stage is dev', (() => {
-      component.serverStage = 'prod';
+    it(
+      'should return false when the server in prod stage and feature ' +
+        'stage is dev',
+      () => {
+        component.serverStage = 'prod';
 
-      expect(component.getFeatureValidOnCurrentServer(
-        featureFlagDevStage)).toBe(false);
-    }));
+        expect(
+          component.getFeatureValidOnCurrentServer(featureFlagDevStage)
+        ).toBe(false);
+      }
+    );
 
-    it('should return false when the server stage is unknown', (() => {
+    it('should return false when the server stage is unknown', () => {
       component.serverStage = 'unknown';
 
-      expect(component.getFeatureValidOnCurrentServer(
-        featureFlagDevStage)).toBe(false);
-    }));
+      expect(
+        component.getFeatureValidOnCurrentServer(featureFlagDevStage)
+      ).toBe(false);
+    });
   });
 
-  describe('.updateFeatureFlag', () => {
+  describe('.updateFeatureFlagViewModel', () => {
     let setStatusSpy: jasmine.Spy;
 
     beforeEach(() => {
@@ -309,16 +645,18 @@ describe('Release coordinator page feature tab', function() {
     it('should update the feature', fakeAsync(() => {
       mockConfirmResult(true);
 
-      const featureFlag = component.featureFlags[0];
+      const featureFlag = component.featureFlagViewModels[0];
 
       featureFlag.userGroupIds = ['user_group_1'];
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
       expect(updateApiSpy).toHaveBeenCalledWith(
-        featureFlag.name, featureFlag.forceEnableForAllUsers,
-        featureFlag.rolloutPercentage, featureFlag.userGroupIds
+        featureFlag.name,
+        featureFlag.forceEnableForAllUsers,
+        featureFlag.rolloutPercentage,
+        featureFlag.userGroupIds
       );
       expect(setStatusSpy).toHaveBeenCalledWith('Saved successfully.');
     }));
@@ -326,15 +664,16 @@ describe('Release coordinator page feature tab', function() {
     it('should update feature backup after update succeeds', fakeAsync(() => {
       mockConfirmResult(true);
 
-      const featureFlag = component.featureFlags[0];
+      const featureFlag = component.featureFlagViewModels[0];
 
       featureFlag.userGroupIds = ['user_group_1'];
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
-      expect(component.featureFlagNameToBackupMap.get(featureFlag.name))
-        .toEqual(featureFlag);
+      expect(
+        component.featureFlagNameToBackupMap.get(featureFlag.name)
+      ).toEqual(featureFlag);
     }));
 
     it('should not update feature backup if update fails', fakeAsync(() => {
@@ -342,45 +681,44 @@ describe('Release coordinator page feature tab', function() {
       const errorResponse = new HttpErrorResponse({
         error: 'Error loading exploration 1.',
         status: 500,
-        statusText: 'Internal Server Error'
+        statusText: 'Internal Server Error',
       });
       updateApiSpy.and.rejectWith(errorResponse);
 
-      const featureFlag = component.featureFlags[0];
+      const featureFlag = component.featureFlagViewModels[0];
       const originalFeatureFlag = cloneDeep(featureFlag);
 
       featureFlag.userGroupIds = ['user_group_1'];
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
-      expect(component.featureFlagNameToBackupMap.get(featureFlag.name))
-        .toEqual(originalFeatureFlag);
+      expect(
+        component.featureFlagNameToBackupMap.get(featureFlag.name)
+      ).toEqual(originalFeatureFlag);
     }));
 
-    it('should not proceed if the user cancels the prompt', fakeAsync(
-      () => {
-        mockConfirmResult(false);
+    it('should not proceed if the user cancels the prompt', fakeAsync(() => {
+      mockConfirmResult(false);
 
-        const featureFlag = component.featureFlags[0];
+      const featureFlag = component.featureFlagViewModels[0];
 
-        featureFlag.userGroupIds = ['user_group_1'];
-        component.updateFeatureFlag(featureFlag);
+      featureFlag.userGroupIds = ['user_group_1'];
+      component.updateFeatureFlagViewModel(featureFlag);
 
-        flushMicrotasks();
+      flushMicrotasks();
 
-        expect(updateApiSpy).not.toHaveBeenCalled();
-        expect(setStatusSpy).not.toHaveBeenCalled();
-      })
-    );
+      expect(updateApiSpy).not.toHaveBeenCalled();
+      expect(setStatusSpy).not.toHaveBeenCalled();
+    }));
 
     it('should not proceed if there is any validation issue', fakeAsync(() => {
       mockConfirmResult(true);
 
-      const featureFlag = component.featureFlags[0];
+      const featureFlag = component.featureFlagViewModels[0];
 
       featureFlag.rolloutPercentage = 110;
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
@@ -394,13 +732,13 @@ describe('Release coordinator page feature tab', function() {
       const errorResponse = new HttpErrorResponse({
         error: 'Error loading exploration 1.',
         status: 500,
-        statusText: 'Internal Server Error'
+        statusText: 'Internal Server Error',
       });
       updateApiSpy.and.rejectWith(errorResponse);
-      const featureFlag = component.featureFlags[0];
+      const featureFlag = component.featureFlagViewModels[0];
 
       featureFlag.userGroupIds = ['user_group_1'];
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
@@ -413,58 +751,52 @@ describe('Release coordinator page feature tab', function() {
 
       const errorResponse = new HttpErrorResponse({
         error: {
-          error: 'validation error.'
+          error: 'validation error.',
         },
         status: 500,
-        statusText: 'Internal Server Error'
+        statusText: 'Internal Server Error',
       });
       updateApiSpy.and.rejectWith(errorResponse);
-      const featureFlag = component.featureFlags[0];
+      const featureFlag = component.featureFlagViewModels[0];
 
       featureFlag.userGroupIds = ['user_group_1'];
-      component.updateFeatureFlag(featureFlag);
+      component.updateFeatureFlagViewModel(featureFlag);
 
       flushMicrotasks();
 
       expect(updateApiSpy).toHaveBeenCalled();
       expect(setStatusSpy).toHaveBeenCalledWith(
-        'Update failed: validation error.');
+        'Update failed: validation error.'
+      );
     }));
 
     it('should throw error if error resonse is unexpected', fakeAsync(() => {
       mockConfirmResult(true);
 
       updateApiSpy.and.rejectWith('Error');
-      const featureFlag = component.featureFlags[0];
+      const featureFlag = component.featureFlagViewModels[0];
 
       expect(() => {
-        component.updateFeatureFlag(featureFlag);
+        component.updateFeatureFlagViewModel(featureFlag);
         tick();
       }).toThrowError();
     }));
   });
 
-  describe('.isFeatureFlagChanged', () => {
-    it('should return false if the feature is the same as the backup instance',
-      () => {
-        const featureFlag = component.featureFlags[0];
+  describe('.isFeatureFlagViewModelChanged', () => {
+    it('should return false if the feature is the same as the backup instance', () => {
+      const featureFlag = component.featureFlagViewModels[0];
 
-        expect(component.isFeatureFlagChanged(featureFlag))
-          .toBeFalse();
-      }
-    );
+      expect(component.isFeatureFlagViewModelChanged(featureFlag)).toBeFalse();
+    });
 
-    it(
-      'should return true if the feature is different from the backup instance',
-      () => {
-        const featureFlag = component.featureFlags[0];
+    it('should return true if the feature is different from the backup instance', () => {
+      const featureFlag = component.featureFlagViewModels[0];
 
-        featureFlag.userGroupIds = ['user_group_1'];
+      featureFlag.userGroupIds = ['user_group_1'];
 
-        expect(component.isFeatureFlagChanged(featureFlag))
-          .toBeTrue();
-      }
-    );
+      expect(component.isFeatureFlagViewModelChanged(featureFlag)).toBeTrue();
+    });
 
     it('should throw error if the feature name is not found', () => {
       const featureFlag = FeatureFlag.createFromBackendDict({
@@ -474,18 +806,18 @@ describe('Release coordinator page feature tab', function() {
         force_enable_for_all_users: false,
         rollout_percentage: 0,
         user_group_ids: [],
-        last_updated: null
+        last_updated: null,
       });
 
       expect(() => {
-        component.isFeatureFlagChanged(featureFlag);
+        component.isFeatureFlagViewModelChanged(featureFlag);
       }).toThrowError();
     });
   });
 
-  describe('.validateFeatureFlag', () => {
+  describe('.validateFeatureFlagViewModel', () => {
     it('should return empty array if no issue', () => {
-      const issues = component.validateFeatureFlag(
+      const issues = component.validateFeatureFlagViewModel(
         FeatureFlag.createFromBackendDict({
           description: 'This is a dummy feature flag.',
           feature_stage: FeatureStage.DEV,
@@ -493,30 +825,30 @@ describe('Release coordinator page feature tab', function() {
           force_enable_for_all_users: false,
           rollout_percentage: 0,
           user_group_ids: [],
-          last_updated: null
+          last_updated: null,
         })
       );
 
       expect(issues).toEqual([]);
     });
 
-    it('should return issues if rollout percentage is not between 10 and 100',
-      () => {
-        const issues = component.validateFeatureFlag(
-          FeatureFlag.createFromBackendDict({
-            description: 'This is a dummy feature flag.',
-            feature_stage: FeatureStage.DEV,
-            name: 'dummy_feature_flag_for_e2e_tests',
-            force_enable_for_all_users: false,
-            rollout_percentage: 110,
-            user_group_ids: [],
-            last_updated: null
-          })
-        );
+    it('should return issues if rollout percentage is not between 10 and 100', () => {
+      const issues = component.validateFeatureFlagViewModel(
+        FeatureFlag.createFromBackendDict({
+          description: 'This is a dummy feature flag.',
+          feature_stage: FeatureStage.DEV,
+          name: 'dummy_feature_flag_for_e2e_tests',
+          force_enable_for_all_users: false,
+          rollout_percentage: 110,
+          user_group_ids: [],
+          last_updated: null,
+        })
+      );
 
-        expect(issues).toEqual(
-          ['Rollout percentage should be between 0 to 100.']);
-      });
+      expect(issues).toEqual([
+        'Rollout percentage should be between 0 to 100.',
+      ]);
+    });
   });
 
   describe('.dummyFeatureFlagForE2eTestsIsEnabled', () => {
@@ -539,32 +871,27 @@ describe('Release coordinator page feature tab', function() {
     beforeEach(() => {
       dummyApiService = TestBed.get(FeatureFlagDummyBackendApiService);
 
-      dummyApiSpy = spyOn(dummyApiService, 'isHandlerEnabled')
-        .and.resolveTo();
+      dummyApiSpy = spyOn(dummyApiService, 'isHandlerEnabled').and.resolveTo();
     });
 
-    it('should not request dummy handler if the dummy feature is disabled',
-      fakeAsync(() => {
-        mockDummyFeatureFlagForE2ETestsStatus(false);
+    it('should not request dummy handler if the dummy feature is disabled', fakeAsync(() => {
+      mockDummyFeatureFlagForE2ETestsStatus(false);
 
-        component.reloadDummyHandlerStatusAsync();
+      component.reloadDummyHandlerStatusAsync();
 
-        flushMicrotasks();
+      flushMicrotasks();
 
-        expect(dummyApiSpy).not.toHaveBeenCalled();
-      })
-    );
+      expect(dummyApiSpy).not.toHaveBeenCalled();
+    }));
 
-    it('should request dummy handler if the dummy feature is enabled',
-      fakeAsync(() => {
-        mockDummyFeatureFlagForE2ETestsStatus(true);
+    it('should request dummy handler if the dummy feature is enabled', fakeAsync(() => {
+      mockDummyFeatureFlagForE2ETestsStatus(true);
 
-        component.reloadDummyHandlerStatusAsync();
+      component.reloadDummyHandlerStatusAsync();
 
-        flushMicrotasks();
+      flushMicrotasks();
 
-        expect(dummyApiSpy).toHaveBeenCalled();
-      })
-    );
+      expect(dummyApiSpy).toHaveBeenCalled();
+    }));
   });
 });

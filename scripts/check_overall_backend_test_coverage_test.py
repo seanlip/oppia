@@ -40,7 +40,8 @@ class CheckOverallBackendTestCoverageTests(test_utils.GenericTestBase):
         self.cmd = [
             sys.executable, '-m', 'coverage', 'report',
             '--omit="%s*","third_party/*","/usr/share/*"'
-            % common.OPPIA_TOOLS_DIR, '--show-missing']
+            % common.OPPIA_TOOLS_DIR, '--show-missing',
+            '--skip-covered', '--skip-empty']
 
     def test_no_data_in_coverage_report_throws_error(self) -> None:
         class MockProcess:
@@ -61,7 +62,7 @@ class CheckOverallBackendTestCoverageTests(test_utils.GenericTestBase):
 
         with swap_subprocess_run, self.assertRaisesRegex(
             RuntimeError,
-            'Run backend tests before running this script. ' +
+            'Run backend tests before running this script. '
             '\nOUTPUT: No data to report.\nERROR: None'
         ):
             check_overall_backend_test_coverage.main()
@@ -85,7 +86,7 @@ class CheckOverallBackendTestCoverageTests(test_utils.GenericTestBase):
 
         with swap_subprocess_run, self.assertRaisesRegex(
             RuntimeError,
-            'Failed to calculate coverage because subprocess failed. ' +
+            'Failed to calculate coverage because subprocess failed. '
             '\nOUTPUT: Some error occured.\nERROR: Some error.'
         ):
             check_overall_backend_test_coverage.main()

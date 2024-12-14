@@ -37,7 +37,7 @@ RELEASE_TEST_DIR: Final = os.path.join('core', 'tests', 'release_sources', '')
 MOCK_TMP_UNTAR_PATH: Final = os.path.join(RELEASE_TEST_DIR, 'tmp_unzip.tar.gz')
 TEST_DATA_DIR: Final = os.path.join('core', 'tests', 'data', '')
 MOCK_YARN_PATH: Final = os.path.join(
-    TEST_DATA_DIR, 'yarn-v' + common.YARN_VERSION
+    TEST_DATA_DIR, 'yarn-v%s' % common.YARN_VERSION
 )
 
 
@@ -122,19 +122,8 @@ class SetupTests(test_utils.GenericTestBase):
         self.cd_swap = self.swap(common, 'CD', MockCD)
         version_info = collections.namedtuple(
             'version_info', ['major', 'minor', 'micro'])
-        self.version_info_py38_swap = self.swap(
-            sys, 'version_info', version_info(major=3, minor=8, micro=15)
-        )
-        self.python2_print_swap = self.swap_with_checks(
-            builtins,
-            'print',
-            lambda *x: None,
-            expected_args=[(
-                '\033[91mThe Oppia server needs Python 2 to be installed. '
-                'Please follow the instructions at https://github.com/oppia/'
-                'oppia/wiki/Troubleshooting#python-2-is-not-available to fix '
-                'this.\033[0m',
-            )]
+        self.version_info_py39_swap = self.swap(
+            sys, 'version_info', version_info(major=3, minor=9, micro=20)
         )
 
     def test_create_directory_tree_with_missing_dir(self) -> None:
@@ -161,7 +150,7 @@ class SetupTests(test_utils.GenericTestBase):
         self.assertFalse(check_function_calls['makedirs_is_called'])
 
     def test_python_version_testing_with_correct_version(self) -> None:
-        with self.version_info_py38_swap:
+        with self.version_info_py39_swap:
             setup.test_python_version()
 
     def test_python_version_testing_with_incorrect_version_and_linux_os(
@@ -221,13 +210,6 @@ class SetupTests(test_utils.GenericTestBase):
                 'https://stackoverflow.com/questions/3701646/how-to-add-to-the-'
                 'pythonpath-in-windows-7'])
 
-    def test_python_version_testing_with_python2_wrong_code(self) -> None:
-        check_call_swap = self.swap_to_always_return(subprocess, 'call', 1)
-
-        with self.python2_print_swap, self.version_info_py38_swap:
-            with check_call_swap, self.assertRaisesRegex(SystemExit, '1'):
-                setup.test_python_version()
-
     def test_download_and_install_package(self) -> None:
         check_function_calls = {
             'url_retrieve_is_called': False,
@@ -272,9 +254,11 @@ class SetupTests(test_utils.GenericTestBase):
         # Creates a dummy yarn folder and then checks if `v` was removed
         # upon function call.
         os.mkdir(MOCK_YARN_PATH)
-        setup.rename_yarn_folder('yarn-v' + common.YARN_VERSION, TEST_DATA_DIR)
+        setup.rename_yarn_folder(
+            'yarn-v%s' % common.YARN_VERSION, TEST_DATA_DIR
+        )
         target = os.path.join(
-            TEST_DATA_DIR, 'yarn-' + common.YARN_VERSION)
+            TEST_DATA_DIR, 'yarn-%s' % common.YARN_VERSION)
         self.assertTrue(os.path.exists(target))
         os.rmdir(target)
 
@@ -355,9 +339,8 @@ class SetupTests(test_utils.GenericTestBase):
             self.assertTrue(item)
         self.assertEqual(
             self.urls, [
-                'https://nodejs.org/dist/v%s/node-v%s' % (
-                    common.NODE_VERSION, common.NODE_VERSION) +
-                '-linux-x64.tar.gz',
+                'https://nodejs.org/dist/v%s/node-v%s-linux-x64.tar.gz' % (
+                    common.NODE_VERSION, common.NODE_VERSION),
                 'https://github.com/yarnpkg/yarn/releases/download/'
                 'v%s/yarn-v%s.tar.gz' % (
                     common.YARN_VERSION, common.YARN_VERSION)])

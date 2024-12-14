@@ -19,12 +19,13 @@
 var FirebaseAdmin = require('firebase-admin');
 const process = require('process');
 const puppeteer = require('puppeteer');
-const { PuppeteerScreenRecorder } = require('puppeteer-screen-recorder');
-
+const {PuppeteerScreenRecorder} = require('puppeteer-screen-recorder');
+const fs = require('fs');
 
 const ADMIN_URL = 'http://localhost:8181/admin';
 const CREATOR_DASHBOARD_URL = 'http://localhost:8181/creator-dashboard';
-const TOPIC_AND_SKILLS_DASHBOARD_URL = 'http://localhost:8181/topics-and-skills-dashboard';
+const TOPIC_AND_SKILLS_DASHBOARD_URL =
+  'http://localhost:8181/topics-and-skills-dashboard';
 // Read more about networkidle0
 // https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#pagegotourl-options
 const networkIdle = 'networkidle0';
@@ -33,6 +34,11 @@ var explorationEditorUrl = 'Exploration editor not loaded';
 var topicEditorUrl = 'Topic editor not loaded';
 var skillEditorUrl = 'Skill editor not loaded';
 var storyEditorUrl = 'Story editor not loaded';
+
+var explorationId = 'Exploration editor not loaded';
+var topicId = 'Topic editor not loaded';
+var skillId = 'Skill editor not loaded';
+var storyId = 'Story editor not loaded';
 
 var emailInput = '.e2e-test-sign-in-email-input';
 var signInButton = '.e2e-test-sign-in-button';
@@ -66,31 +72,27 @@ var topicThumbnailButton = '.e2e-test-photo-button';
 var topicUploadButton = '.e2e-test-photo-upload-input';
 var topicPhotoSubmit = '.e2e-test-photo-upload-submit';
 var thumbnailContainer = '.e2e-test-thumbnail-container';
-var confirmTopicCreationButton =
-  '.e2e-test-confirm-topic-creation-button';
+var confirmTopicCreationButton = '.e2e-test-confirm-topic-creation-button';
 var createdTopicLink = '.e2e-test-topic-name';
 
 var createStoryButtonSelector = '.e2e-test-create-story-button';
 var storyNameField = '.e2e-test-new-story-title-field';
 var storyUrlFragmentField = '.e2e-test-new-story-url-fragment-field';
 var storyDescriptionField = '.e2e-test-new-story-description-field';
-var storyThumbnailButton = (
-  'oppia-create-new-story-modal .e2e-test-photo-button');
+var storyThumbnailButton =
+  'oppia-create-new-story-modal .e2e-test-photo-button';
 var storyUploadButton = '.e2e-test-photo-upload-input';
 var storyPhotoSubmit = '.e2e-test-photo-upload-submit';
-var confirmStoryCreationButton =
-  '.e2e-test-confirm-story-creation-button';
+var confirmStoryCreationButton = '.e2e-test-confirm-story-creation-button';
 
 var createSkillButtonSelector = '.puppeteer-test-add-skill-button';
 var skillDescriptionField = '.e2e-test-new-skill-description-field';
 var skillOpenConceptCard = '.e2e-test-open-concept-card';
-var confirmSkillCreationButton =
-  '.e2e-test-confirm-skill-creation-button';
+var confirmSkillCreationButton = '.e2e-test-confirm-skill-creation-button';
 var skillReviewMaterialInput = '.oppia-rte';
 var skillCkEditor = '.e2e-test-ck-editor';
 
-var usernameInputFieldForRolesEditing = (
-  '.e2e-test-username-for-role-editor');
+var usernameInputFieldForRolesEditing = '.e2e-test-username-for-role-editor';
 var editUserRoleButton = '.e2e-test-role-edit-button';
 var roleEditorContainer = '.e2e-test-roles-editor-card-container';
 var addNewRoleButton = '.e2e-test-add-new-role-button';
@@ -102,14 +104,12 @@ var topicMetaTagInput = '.e2e-test-topic-meta-tag-content-field';
 var saveTopicButton = '.e2e-test-save-topic-button';
 var topicCommitMessageInput = '.e2e-test-commit-message-input';
 var publishChangesButton = '.e2e-test-close-save-modal-button';
-var cookieBannerAcceptButton = (
-  '.e2e-test-oppia-cookie-banner-accept-button');
+var cookieBannerAcceptButton = '.e2e-test-oppia-cookie-banner-accept-button';
 
-const login = async function(browser, page) {
+const login = async function (browser, page) {
   try {
     // eslint-disable-next-line dot-notation
-    await page.goto(
-      ADMIN_URL, { waitUntil: networkIdle});
+    await page.goto(ADMIN_URL, {waitUntil: networkIdle});
     await page.waitForSelector(emailInput, {visible: true});
     await page.type(emailInput, 'testadmin@example.com');
     await page.click(signInButton);
@@ -138,11 +138,12 @@ const login = async function(browser, page) {
   }
 };
 
-const setRole = async function(browser, page, role) {
+const setRole = async function (browser, page, role) {
   try {
     // eslint-disable-next-line dot-notation
-    await page.goto(
-      'http://localhost:8181/admin#/roles', { waitUntil: networkIdle });
+    await page.goto('http://localhost:8181/admin#/roles', {
+      waitUntil: networkIdle,
+    });
     await page.waitForSelector(usernameInputFieldForRolesEditing);
     await page.type(usernameInputFieldForRolesEditing, 'username1');
     await page.waitForSelector(editUserRoleButton);
@@ -163,15 +164,13 @@ const setRole = async function(browser, page, role) {
   }
 };
 
-const getExplorationEditorUrl = async function(browser, page) {
+const getExplorationEditorUrl = async function (browser, page) {
   try {
     // eslint-disable-next-line dot-notation
-    await page.goto(
-      CREATOR_DASHBOARD_URL, { waitUntil: networkIdle });
+    await page.goto(CREATOR_DASHBOARD_URL, {waitUntil: networkIdle});
     await page.waitForSelector(createButtonSelector, {visible: true});
     await page.click(createButtonSelector);
-    await page.waitForSelector(
-      dismissWelcomeModalSelector, {visible: true});
+    await page.waitForSelector(dismissWelcomeModalSelector, {visible: true});
 
     await page.click(dismissWelcomeModalSelector);
     await page.waitForTimeout(3000);
@@ -200,10 +199,12 @@ const getExplorationEditorUrl = async function(browser, page) {
     do {
       await new Promise(r => setTimeout(r, 1000));
       statusMessage = await page.evaluate(() => {
-        const statusMessageElement = document
-          .querySelector('.e2e-test-toast-message');
-        return statusMessageElement ? statusMessageElement
-          .textContent.trim() : '';
+        const statusMessageElement = document.querySelector(
+          '.e2e-test-toast-message'
+        );
+        return statusMessageElement
+          ? statusMessageElement.textContent.trim()
+          : '';
       });
     } while (statusMessage !== successMessage);
 
@@ -235,6 +236,7 @@ const getExplorationEditorUrl = async function(browser, page) {
     await page.click(explorationConfirmPublish);
 
     explorationEditorUrl = await page.url();
+    explorationId = explorationEditorUrl.split('/')[4];
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -242,11 +244,10 @@ const getExplorationEditorUrl = async function(browser, page) {
   }
 };
 
-const getTopicEditorUrl = async function(browser, page) {
+const getTopicEditorUrl = async function (browser, page) {
   try {
     // eslint-disable-next-line dot-notation
-    await page.goto(
-      TOPIC_AND_SKILLS_DASHBOARD_URL, { waitUntil: networkIdle });
+    await page.goto(TOPIC_AND_SKILLS_DASHBOARD_URL, {waitUntil: networkIdle});
     await page.waitForSelector(createTopicButtonSelector, {visible: true});
     await page.click(createTopicButtonSelector);
 
@@ -273,13 +274,13 @@ const getTopicEditorUrl = async function(browser, page) {
 
     // Refresh page and click on topic link.
     // eslint-disable-next-line dot-notation
-    await page.goto(
-      TOPIC_AND_SKILLS_DASHBOARD_URL, { waitUntil: networkIdle });
+    await page.goto(TOPIC_AND_SKILLS_DASHBOARD_URL, {waitUntil: networkIdle});
     await page.waitForSelector(createdTopicLink, {visible: true});
     await page.click(createdTopicLink);
     await page.waitForSelector(createStoryButtonSelector);
 
     topicEditorUrl = await page.url();
+    topicId = topicEditorUrl.split('/')[4];
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -287,10 +288,10 @@ const getTopicEditorUrl = async function(browser, page) {
   }
 };
 
-const getStoryEditorUrl = async function(browser, page) {
+const getStoryEditorUrl = async function (browser, page) {
   try {
     // eslint-disable-next-line dot-notation
-    await page.goto(topicEditorUrl, { waitUntil: networkIdle });
+    await page.goto(topicEditorUrl, {waitUntil: networkIdle});
     await page.waitForSelector(createStoryButtonSelector, {visible: true});
     await page.click(createStoryButtonSelector);
 
@@ -312,6 +313,7 @@ const getStoryEditorUrl = async function(browser, page) {
     await page.click(confirmStoryCreationButton);
     await page.waitForTimeout(15000);
     storyEditorUrl = await page.url();
+    storyId = storyEditorUrl.split('/')[4];
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(e);
@@ -319,10 +321,10 @@ const getStoryEditorUrl = async function(browser, page) {
   }
 };
 
-const getSkillEditorUrl = async function(browser, page) {
+const getSkillEditorUrl = async function (browser, page) {
   try {
     // eslint-disable-next-line dot-notation
-    await page.goto(topicEditorUrl, { waitUntil: networkIdle });
+    await page.goto(topicEditorUrl, {waitUntil: networkIdle});
     await page.waitForSelector(createSkillButtonSelector, {visible: true});
     await page.click(createSkillButtonSelector);
 
@@ -343,6 +345,7 @@ const getSkillEditorUrl = async function(browser, page) {
     skillEditorUrl = await pages[2].url();
     if (await skillEditorUrl.includes('topic_editor')) {
       skillEditorUrl = await pages[3].url();
+      skillId = skillEditorUrl.split('/')[4];
     }
   } catch (e) {
     // eslint-disable-next-line no-console
@@ -351,10 +354,12 @@ const getSkillEditorUrl = async function(browser, page) {
   }
 };
 
-const generateDataForTopicAndStoryPlayer = async function(browser, page) {
+const generateDataForTopicAndStoryPlayer = async function (browser, page) {
   try {
     // eslint-disable-next-line dot-notation
-    await page.goto('http://localhost:8181/admin#/activities', { waitUntil: networkIdle });
+    await page.goto('http://localhost:8181/admin#/activities', {
+      waitUntil: networkIdle,
+    });
 
     await page.waitForSelector(generateTopicButton);
     await page.click(generateTopicButton);
@@ -364,10 +369,12 @@ const generateDataForTopicAndStoryPlayer = async function(browser, page) {
     do {
       await new Promise(r => setTimeout(r, 1000));
       statusMessage = await page.evaluate(() => {
-        const statusMessageElement = document
-          .querySelector('.oppia-status-message-container');
-        return statusMessageElement ? statusMessageElement
-          .textContent.trim() : '';
+        const statusMessageElement = document.querySelector(
+          '.oppia-status-message-container'
+        );
+        return statusMessageElement
+          ? statusMessageElement.textContent.trim()
+          : '';
       });
     } while (statusMessage !== successMessage);
   } catch (e) {
@@ -377,10 +384,12 @@ const generateDataForTopicAndStoryPlayer = async function(browser, page) {
   }
 };
 
-const generateDataForClassroom = async function(browser, page) {
+const generateDataForClassroom = async function (browser, page) {
   try {
     // eslint-disable-next-line dot-notation
-    await page.goto('http://localhost:8181/admin#/activities', { waitUntil: networkIdle });
+    await page.goto('http://localhost:8181/admin#/activities', {
+      waitUntil: networkIdle,
+    });
 
     await page.waitForSelector(generateClassroomButton);
     await page.click(generateClassroomButton);
@@ -390,10 +399,12 @@ const generateDataForClassroom = async function(browser, page) {
     do {
       await new Promise(r => setTimeout(r, 1000));
       statusMessage = await page.evaluate(() => {
-        const statusMessageElement = document
-          .querySelector('.oppia-status-message-container');
-        return statusMessageElement ? statusMessageElement
-          .textContent.trim() : '';
+        const statusMessageElement = document.querySelector(
+          '.oppia-status-message-container'
+        );
+        return statusMessageElement
+          ? statusMessageElement.textContent.trim()
+          : '';
       });
     } while (statusMessage !== successMessage);
 
@@ -409,9 +420,9 @@ const generateDataForClassroom = async function(browser, page) {
   }
 };
 
-const addThumbnailToTopic = async function(page, topicName) {
+const addThumbnailToTopic = async function (page, topicName) {
   try {
-    await page.goto(TOPIC_AND_SKILLS_DASHBOARD_URL, { waitUntil: networkIdle });
+    await page.goto(TOPIC_AND_SKILLS_DASHBOARD_URL, {waitUntil: networkIdle});
 
     const topicLinkXPath = `//a[contains(text(), "${topicName}")]`;
     await page.waitForXPath(topicLinkXPath);
@@ -425,12 +436,12 @@ const addThumbnailToTopic = async function(page, topicName) {
     await page.waitForSelector(topicThumbnailResetButton);
     await page.click(topicThumbnailResetButton);
 
-    await page.waitForSelector(topicUploadButton, { visible: true });
+    await page.waitForSelector(topicUploadButton, {visible: true});
 
     const elementHandle = await page.$(topicUploadButton);
     await elementHandle.uploadFile('core/tests/data/test2_svg.svg');
 
-    await page.waitForSelector(thumbnailContainer, { visible: true });
+    await page.waitForSelector(thumbnailContainer, {visible: true});
     await page.click(topicPhotoSubmit);
     await page.waitForTimeout(3000);
 
@@ -455,21 +466,27 @@ const addThumbnailToTopic = async function(page, topicName) {
   }
 };
 
-const main = async function() {
-  process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099';
+const main = async function () {
+  process.env.FIREBASE_AUTH_EMULATOR_HOST = 'firebase:9099';
   FirebaseAdmin.initializeApp({projectId: 'dev-project-id'});
   // Change headless to false to see the puppeteer actions.
-  const browser = await puppeteer.launch({headless: true});
+  const browser = await puppeteer.launch({
+    headless: true,
+    // Sandbox requires a non-root user, and we use a root user in docker.
+    // Thus, we need to disable the sandbox.
+    args: ['--no-sandbox'],
+  });
   const page = await browser.newPage();
   await page.setViewport({
     width: 1920,
-    height: 1080
+    height: 1080,
   });
 
   var recorder = null;
   let record = process.argv[2] && process.argv[2] === '-record';
   let videoPath = process.argv[3];
-  if (record && videoPath) { // Start recording via puppeteer-screen-recorder.
+  if (record && videoPath) {
+    // Start recording via puppeteer-screen-recorder.
     const Config = {
       followNewTab: true,
       fps: 25,
@@ -503,13 +520,19 @@ const main = async function() {
   await getSkillEditorUrl(browser, page);
   await generateDataForTopicAndStoryPlayer(browser, page);
   await generateDataForClassroom(browser, page);
+
+  fs.writeFileSync(
+    'core/tests/puppeteer/.env',
+    `exploration_id=${explorationId}\n` +
+      `story_id=${storyId}\n` +
+      `topic_id=${topicId}\n` +
+      `skill_id=${skillId}\n`
+  );
+
   await process.stdout.write(
-    [
-      explorationEditorUrl,
-      topicEditorUrl,
-      storyEditorUrl,
-      skillEditorUrl,
-    ].join('\n')
+    [explorationEditorUrl, topicEditorUrl, storyEditorUrl, skillEditorUrl].join(
+      '\n'
+    )
   );
   if (record) {
     await recorder.stop();

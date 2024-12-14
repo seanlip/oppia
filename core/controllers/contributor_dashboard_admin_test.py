@@ -38,66 +38,21 @@ if MYPY:  # pragma: no cover
     [models.Names.SUGGESTION, models.Names.USER])
 
 
-class ContributorDashboardAdminPageTest(test_utils.GenericTestBase):
-    """Test for ContributorDashboardAdminPage."""
-
-    USER_A_EMAIL: Final = 'userA@example.com'
-    QUESTION_REVIEWER_EMAIL: Final = 'questionreviewer@example.com'
-    TRANSLATION_ADMIN_EMAIL: Final = 'translationadmin@example.com'
-    QUESTION_ADMIN_EMAIL: Final = 'questionadmin@example.com'
-
-    def setUp(self) -> None:
-        super().setUp()
-        self.signup(self.USER_A_EMAIL, 'userA')
-        self.signup(self.TRANSLATION_ADMIN_EMAIL, 'translationExpert')
-        self.signup(self.QUESTION_ADMIN_EMAIL, 'questionExpert')
-
-        user_services.add_user_role(
-            self.get_user_id_from_email(self.QUESTION_ADMIN_EMAIL),
-            feconf.ROLE_ID_QUESTION_ADMIN)
-        user_services.add_user_role(
-            self.get_user_id_from_email(self.TRANSLATION_ADMIN_EMAIL),
-            feconf.ROLE_ID_TRANSLATION_ADMIN)
-
-    def test_non_admin_access_page_raise_404(self) -> None:
-        self.login(self.USER_A_EMAIL)
-        self.get_html_response(
-            '/contributor-dashboard-admin', expected_status_int=401)
-        self.logout()
-
-    def test_question_admin_can_access_page(self) -> None:
-        self.login(self.QUESTION_ADMIN_EMAIL)
-        response = self.get_html_response('/contributor-dashboard-admin')
-        response.mustcontain(
-            '<contributor-dashboard-admin-page>'
-            '</contributor-dashboard-admin-page>')
-        self.logout()
-
-    def test_translation_admin_can_access_page(self) -> None:
-        self.login(self.TRANSLATION_ADMIN_EMAIL)
-        response = self.get_html_response('/contributor-dashboard-admin')
-        response.mustcontain(
-            '<contributor-dashboard-admin-page>'
-            '</contributor-dashboard-admin-page>')
-        self.logout()
-
-
 class ContributionRightsHandlerTest(test_utils.GenericTestBase):
     """Tests related to reviewers for contributor's
     suggestion/application.
     """
 
     TRANSLATION_REVIEWER_EMAIL: Final = 'translationreviewer@example.com'
-    QUESTION_REVIEWER_EMAIL: Final = 'questionreviewer@example.com'
     TRANSLATION_ADMIN_EMAIL: Final = 'translationadmin@example.com'
-    QUESTION_ADMIN_EMAIL: Final = 'questionadmin@example.com'
 
     def setUp(self) -> None:
         super().setUp()
-        self.signup(self.QUESTION_REVIEWER_EMAIL, 'question')
+        self.signup(
+            self.QUESTION_REVIEWER_EMAIL, self.QUESTION_REVIEWER_USERNAME)
         self.signup(self.TRANSLATION_REVIEWER_EMAIL, 'translator')
         self.signup(self.TRANSLATION_ADMIN_EMAIL, 'translationExpert')
-        self.signup(self.QUESTION_ADMIN_EMAIL, 'questionExpert')
+        self.signup(self.QUESTION_ADMIN_EMAIL, self.QUESTION_ADMIN_USERNAME)
 
         self.translation_reviewer_id = self.get_user_id_from_email(
             self.TRANSLATION_REVIEWER_EMAIL)
@@ -401,16 +356,16 @@ class ContributorUsersListHandlerTest(test_utils.GenericTestBase):
     """Tests ContributorUsersListHandler."""
 
     TRANSLATION_REVIEWER_EMAIL: Final = 'translationreviewer@example.com'
-    QUESTION_REVIEWER_EMAIL: Final = 'questionreviewer@example.com'
     TRANSLATION_ADMIN_EMAIL: Final = 'translationadmin@example.com'
-    QUESTION_ADMIN_EMAIL: Final = 'questionadmin@example.com'
 
     def setUp(self) -> None:
         super().setUp()
         self.signup(self.TRANSLATION_REVIEWER_EMAIL, 'translator')
-        self.signup(self.QUESTION_REVIEWER_EMAIL, 'question')
+        self.signup(
+            self.QUESTION_REVIEWER_EMAIL,
+            self.QUESTION_REVIEWER_USERNAME)
         self.signup(self.TRANSLATION_ADMIN_EMAIL, 'translationAdmen')
-        self.signup(self.QUESTION_ADMIN_EMAIL, 'questionAdmen')
+        self.signup(self.QUESTION_ADMIN_EMAIL, self.QUESTION_ADMIN_USERNAME)
 
         self.translation_reviewer_id = self.get_user_id_from_email(
             self.TRANSLATION_REVIEWER_EMAIL)
@@ -592,6 +547,8 @@ class TranslationContributionStatsHandlerTest(test_utils.GenericTestBase):
 
         self.assertEqual(
             response['error'],
+            'At \'http://localhost/translationcontributionstatshandler\' these '
+            'errors are happening:\n'
             'Missing key in handler args: username.')
 
     def test_get_stats_with_invalid_username_raises_error(self) -> None:

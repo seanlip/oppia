@@ -1170,8 +1170,8 @@ class UserSubscriptionsModelTests(test_utils.GenericTestBase):
         for creator_id in self.CREATOR_IDS:
             user_models.UserSettingsModel(
                 id=creator_id,
-                username='username' + creator_id,
-                email=creator_id + '@example.com'
+                username='username%s' % creator_id,
+                email='%s@example.com' % creator_id
             ).put()
             user_models.UserSubscriptionsModel(id=creator_id).put()
 
@@ -2588,6 +2588,100 @@ class UserBulkEmailsModelTests(test_utils.GenericTestBase):
         )
 
 
+class UserGroupModelTests(test_utils.GenericTestBase):
+    """Tests for UserGroupModel."""
+
+    USER_1_ID: Final = 'user_1_id'
+    USER_2_ID: Final = 'user_2_id'
+    USER_3_ID: Final = 'user_3_id'
+    NONEXISTENT_USER_ID: Final = 'random_user_id'
+    USER_GROUP_1: Final = 'user_group_1'
+    USER_GROUP_2: Final = 'user_group_2'
+
+    def setUp(self) -> None:
+        super().setUp()
+        user_models.UserGroupModel(
+            name=self.USER_GROUP_1,
+            user_ids=[self.USER_1_ID, self.USER_2_ID]
+        ).put()
+        user_models.UserGroupModel(
+            name=self.USER_GROUP_2,
+            user_ids=[self.USER_2_ID, self.USER_3_ID]).put()
+
+    def test_get_deletion_policy(self) -> None:
+        self.assertEqual(
+            user_models.UserGroupModel.get_deletion_policy(),
+            base_models.DELETION_POLICY.LOCALLY_PSEUDONYMIZE)
+
+    def test_get_model_association_to_user(self) -> None:
+        self.assertEqual(
+            user_models.UserGroupModel.get_model_association_to_user(),
+            base_models.MODEL_ASSOCIATION_TO_USER.MULTIPLE_INSTANCES_PER_USER)
+
+    def test_get_export_policy(self) -> None:
+        self.assertEqual(
+            user_models.UserGroupModel.get_export_policy(), {
+                'created_on': base_models.EXPORT_POLICY.NOT_APPLICABLE,
+                'deleted': base_models.EXPORT_POLICY.NOT_APPLICABLE,
+                'name': base_models.EXPORT_POLICY.EXPORTED,
+                'user_ids': base_models.EXPORT_POLICY.EXPORTED,
+                'last_updated': base_models.EXPORT_POLICY.NOT_APPLICABLE
+            }
+        )
+
+    def test_apply_deletion_policy(self) -> None:
+        user_models.UserGroupModel.apply_deletion_policy(self.USER_1_ID)
+        self.assertIsNone(
+            user_models.UserGroupModel.query(
+                user_models.UserGroupModel.user_ids == self.USER_1_ID
+            ).get()
+        )
+        # Test that calling apply_deletion_policy with no existing model
+        # doesn't fail.
+        user_models.UserSkillMasteryModel.apply_deletion_policy(
+            'random_id')
+
+    def test_has_reference_to_user_id(self) -> None:
+        self.assertTrue(
+            user_models.UserGroupModel.has_reference_to_user_id(
+                self.USER_1_ID)
+        )
+        self.assertTrue(
+            user_models.UserGroupModel.has_reference_to_user_id(
+                self.USER_2_ID)
+        )
+        self.assertFalse(
+            user_models.UserGroupModel.has_reference_to_user_id(
+                self.NONEXISTENT_USER_ID)
+        )
+
+    def test_export_data_trivial(self) -> None:
+        user_data = user_models.UserGroupModel.export_data(
+            self.NONEXISTENT_USER_ID)
+        test_data: Dict[str, Dict[str, str]] = {}
+        self.assertEqual(user_data, test_data)
+
+    def test_export_data_nontrivial(self) -> None:
+        user_data = user_models.UserGroupModel.export_data(
+            self.USER_2_ID)
+        user_data_keys = list(user_data.keys())
+
+        expected_data_for_key_1 = {
+            'name': self.USER_GROUP_1,
+            'user_ids': self.USER_2_ID
+        }
+
+        expected_data_for_key_2 = {
+            'name': self.USER_GROUP_2,
+            'user_ids': self.USER_2_ID
+        }
+
+        self.assertEqual(
+            user_data[user_data_keys[0]], expected_data_for_key_1)
+        self.assertEqual(
+            user_data[user_data_keys[1]], expected_data_for_key_2)
+
+
 class UserSkillMasteryModelTests(test_utils.GenericTestBase):
     """Tests for UserSkillMasteryModel."""
 
@@ -3593,7 +3687,7 @@ class PinnedOpportunityModelTest(test_utils.GenericTestBase):
 
     def test_create_raises_exception_for_existing_instance(self) -> None:
         with self.assertRaisesRegex(
-            Exception, 'There is already a pinned opportunity' +
+            Exception, 'There is already a pinned opportunity'
             ' with the given id:'):
             user_models.PinnedOpportunityModel.create(
                 user_id=self.user_id,

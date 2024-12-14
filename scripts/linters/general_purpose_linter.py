@@ -33,7 +33,7 @@ from .. import concurrent_task_utils
 
 MYPY = False
 if MYPY:  # pragma: no cover
-    from scripts.linters import pre_commit_linter
+    from scripts.linters import run_lint_checks
 
 
 class BadPatternRegexpDict(TypedDict):
@@ -83,7 +83,9 @@ EXCLUDED_PATHS: Final = (
     'core/templates/combined-tests.spec.ts',
     'core/templates/css/oppia-material.css',
     'core/templates/google-analytics.initializer.ts',
-    'extensions/classifiers/proto/*',
+    'core/tests/puppeteer-acceptance-tests/build/*',
+    '.mypy_cache/*',
+    'docker/patched_wsgi_server.py',
     '%s/*' % js_ts_linter.COMPILED_TYPESCRIPT_TMP_PATH)
 
 GENERATED_FILE_PATHS: Final = (
@@ -190,7 +192,6 @@ BAD_LINE_PATTERNS_HTML_REGEXP: List[BadPatternRegexpDict] = [
         'excluded_files': (),
         'excluded_dirs': (
             'extensions/answer_summarizers/',
-            'extensions/classifiers/',
             'extensions/objects/',
             'extensions/value_generators/')
     },
@@ -202,8 +203,8 @@ BAD_LINE_PATTERNS_HTML_REGEXP: List[BadPatternRegexpDict] = [
     },
     {
         'regexp': re.compile(r'\$parent'),
-        'message': 'Please do not access parent properties ' +
-                   'using $parent. Use the scope object ' +
+        'message': 'Please do not access parent properties '
+                   'using $parent. Use the scope object '
                    'for this purpose.',
         'excluded_files': (),
         'excluded_dirs': ()
@@ -378,7 +379,7 @@ class GeneralPurposeLinter(linter_utils.BaseLinter):
     """
 
     def __init__(
-        self, files_to_lint: List[str], file_cache: pre_commit_linter.FileCache
+        self, files_to_lint: List[str], file_cache: run_lint_checks.FileCache
     ) -> None:
         """Constructs a GeneralPurposeLinter object.
 
@@ -639,7 +640,7 @@ class GeneralPurposeLinter(linter_utils.BaseLinter):
 
 
 def get_linters(
-    files_to_lint: List[str], file_cache: pre_commit_linter.FileCache
+    files_to_lint: List[str], file_cache: run_lint_checks.FileCache
 ) -> Tuple[GeneralPurposeLinter, None]:
     """Creates GeneralPurposeLinter object and returns it.
 

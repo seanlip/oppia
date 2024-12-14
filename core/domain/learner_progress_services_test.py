@@ -23,7 +23,6 @@ import datetime
 from core.constants import constants
 from core.domain import collection_domain
 from core.domain import collection_services
-from core.domain import config_domain
 from core.domain import exp_fetchers
 from core.domain import exp_services
 from core.domain import learner_goals_services
@@ -114,23 +113,19 @@ class LearnerProgressTests(test_utils.GenericTestBase):
         self.publish_exploration(self.owner_id, self.EXP_ID_3)
         self.save_new_valid_exploration(
             self.EXP_ID_4, self.owner_id, title='A title',
-            category='Art', language_code='en',
-            correctness_feedback_enabled=True)
+            category='Art', language_code='en')
         self.publish_exploration(self.owner_id, self.EXP_ID_4)
         self.save_new_valid_exploration(
             self.EXP_ID_5, self.owner_id, title='Title',
-            category='Art', language_code='en',
-            correctness_feedback_enabled=True)
+            category='Art', language_code='en')
         self.publish_exploration(self.owner_id, self.EXP_ID_5)
         self.save_new_valid_exploration(
             self.EXP_ID_6, self.owner_id, title='A title',
-            category='Art', language_code='en',
-            correctness_feedback_enabled=True)
+            category='Art', language_code='en')
         self.publish_exploration(self.owner_id, self.EXP_ID_6)
         self.save_new_valid_exploration(
             self.EXP_ID_7, self.owner_id, title='A title',
-            category='Art', language_code='en',
-            correctness_feedback_enabled=True)
+            category='Art', language_code='en')
         self.publish_exploration(self.owner_id, self.EXP_ID_7)
 
         # Save a few collections.
@@ -1601,26 +1596,18 @@ class LearnerProgressTests(test_utils.GenericTestBase):
 
     def test_get_all_and_untracked_topic_ids(self) -> None:
         # Add topics to config_domain.
-        self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
-
-        csrf_token = self.get_new_csrf_token()
-        new_config_value = [{
-            'name': 'math',
-            'url_fragment': 'math',
-            'topic_ids': [self.TOPIC_ID_0, self.TOPIC_ID_1],
-            'course_details': '',
-            'topic_list_intro': ''
-        }]
-
-        payload = {
-            'action': 'save_config_properties',
-            'new_config_property_values': {
-                config_domain.CLASSROOM_PAGES_DATA.name: (
-                    new_config_value),
+        self.save_new_valid_classroom(
+            topic_id_to_prerequisite_topic_ids={
+                self.TOPIC_ID_0: [],
+                self.TOPIC_ID_1: []
             }
-        }
-        self.post_json('/adminhandler', payload, csrf_token=csrf_token)
-        self.logout()
+        )
+        self.save_new_valid_classroom(
+            is_published=False,
+            name='History',
+            url_fragment='history',
+            classroom_id='historyid'
+        )
 
         self.login(self.USER_EMAIL)
         partially_learnt_topic_ids = (
@@ -1674,6 +1661,14 @@ class LearnerProgressTests(test_utils.GenericTestBase):
             learner_progress_services.get_all_and_untracked_topic_ids_for_user(
                 partially_learnt_topic_ids, learnt_topic_ids,
                 topic_ids_to_learn))
+        untracked_topic_summary_dicts = (
+            learner_progress_services
+            .get_displayable_untracked_topic_summary_dicts(
+                self.user_id,
+                topic_fetchers.get_all_topic_summaries()
+            )
+        )
+        self.assertEqual(len(untracked_topic_summary_dicts), 1)
         self.assertEqual(len(all_topics), 2)
         self.assertEqual(len(untracked_topics), 0)
 
@@ -2125,26 +2120,11 @@ class LearnerProgressTests(test_utils.GenericTestBase):
 
     def test_get_all_activity_progress(self) -> None:
         # Add topics to config_domain.
-        self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
-
-        csrf_token = self.get_new_csrf_token()
-        new_config_value = [{
-            'name': 'math',
-            'url_fragment': 'math',
-            'topic_ids': [self.TOPIC_ID_3],
-            'course_details': '',
-            'topic_list_intro': ''
-        }]
-
-        payload = {
-            'action': 'save_config_properties',
-            'new_config_property_values': {
-                config_domain.CLASSROOM_PAGES_DATA.name: (
-                    new_config_value),
+        self.save_new_valid_classroom(
+            topic_id_to_prerequisite_topic_ids={
+                self.TOPIC_ID_3: []
             }
-        }
-        self.post_json('/adminhandler', payload, csrf_token=csrf_token)
-        self.logout()
+        )
 
         # Add activities to the completed section.
         learner_progress_services.mark_exploration_as_completed(

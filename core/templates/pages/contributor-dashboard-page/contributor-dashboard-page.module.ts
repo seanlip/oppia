@@ -16,38 +16,36 @@
  * @fileoverview Module for the contributor dashboard page.
  */
 
-import { NgModule } from '@angular/core';
-import { SharedComponentsModule } from 'components/shared-component.module';
-import { RouterModule } from '@angular/router';
-import { InteractionExtensionsModule } from 'interactions/interactions.module';
-import { NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
-import { OppiaCkEditorCopyToolBarModule } from 'components/ck-editor-helpers/ck-editor-copy-toolbar/ck-editor-copy-toolbar.module';
-import { SharedFormsModule } from 'components/forms/shared-forms.module';
-import { ToastrModule } from 'ngx-toastr';
+import {NgModule} from '@angular/core';
+import {SharedComponentsModule} from 'components/shared-component.module';
+import {RouterModule} from '@angular/router';
+import {InteractionExtensionsModule} from 'interactions/interactions.module';
+import {NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
+import {OppiaCkEditorCopyToolBarModule} from 'components/ck-editor-helpers/ck-editor-copy-toolbar/ck-editor-copy-toolbar.module';
+import {SharedFormsModule} from 'components/forms/shared-forms.module';
+import {ToastrModule} from 'ngx-toastr';
 
-import { TranslationLanguageSelectorComponent } from
-  './translation-language-selector/translation-language-selector.component';
-import { ReviewTranslationLanguageSelectorComponent } from './translation-language-selector/review-translation-language-selector.component';
-import { TranslationTopicSelectorComponent } from
-  './translation-topic-selector/translation-topic-selector.component';
-import { LoginRequiredMessageComponent } from './login-required-message/login-required-message.component';
-import { LoginRequiredModalContent } from './modal-templates/login-required-modal.component';
-import { OpportunitiesListItemComponent } from './opportunities-list-item/opportunities-list-item.component';
-import { OpportunitiesListComponent } from './opportunities-list/opportunities-list.component';
-import { TranslationSuggestionReviewModalComponent } from './modal-templates/translation-suggestion-review-modal.component';
-import { TranslationModalComponent } from './modal-templates/translation-modal.component';
-import { TranslationOpportunitiesComponent } from './translation-opportunities/translation-opportunities.component';
-import { toastrConfig } from 'pages/oppia-root/app.module';
-import { ContributionsAndReview } from './contributions-and-review/contributions-and-review.component';
-import { QuestionOpportunitiesComponent } from './question-opportunities/question-opportunities.component';
-import { ContributorDashboardPageComponent } from './contributor-dashboard-page.component';
-import { ContributorStatsComponent } from './contributor-stats/contributor-stats.component';
-import { CertificateDownloadModalComponent } from './modal-templates/certificate-download-modal.component';
-import { ContributorBadgesComponent } from './contributor-badges/contributor-badges.component';
-import { BadgeComponent } from './badge/badge.component';
-import { ContributorDashboardPageRootComponent } from './contributor-dashboard-page-root.component';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { RteHelperService } from 'services/rte-helper.service';
+import {TranslationLanguageSelectorComponent} from './translation-language-selector/translation-language-selector.component';
+import {ReviewTranslationLanguageSelectorComponent} from './translation-language-selector/review-translation-language-selector.component';
+import {TranslationTopicSelectorComponent} from './translation-topic-selector/translation-topic-selector.component';
+import {LoginRequiredMessageComponent} from './login-required-message/login-required-message.component';
+import {LoginRequiredModalContent} from './modal-templates/login-required-modal.component';
+import {OpportunitiesListItemComponent} from './opportunities-list-item/opportunities-list-item.component';
+import {OpportunitiesListComponent} from './opportunities-list/opportunities-list.component';
+import {TranslationSuggestionReviewModalComponent} from './modal-templates/translation-suggestion-review-modal.component';
+import {TranslationModalComponent} from './modal-templates/translation-modal.component';
+import {TranslationOpportunitiesComponent} from './translation-opportunities/translation-opportunities.component';
+import {toastrConfig} from 'pages/oppia-root/app.module';
+import {ContributionsAndReview} from './contributions-and-review/contributions-and-review.component';
+import {QuestionOpportunitiesComponent} from './question-opportunities/question-opportunities.component';
+import {ContributorDashboardPageComponent} from './contributor-dashboard-page.component';
+import {ContributorStatsComponent} from './contributor-stats/contributor-stats.component';
+import {CertificateDownloadModalComponent} from './modal-templates/certificate-download-modal.component';
+import {ContributorBadgesComponent} from './contributor-badges/contributor-badges.component';
+import {BadgeComponent} from './badge/badge.component';
+import {ContributorDashboardPageRootComponent} from './contributor-dashboard-page-root.component';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {RteHelperService} from 'services/rte-helper.service';
 
 @NgModule({
   imports: [
@@ -60,10 +58,10 @@ import { RteHelperService } from 'services/rte-helper.service';
     RouterModule.forChild([
       {
         path: '',
-        component: ContributorDashboardPageRootComponent
-      }
+        component: ContributorDashboardPageRootComponent,
+      },
     ]),
-    MatSnackBarModule
+    MatSnackBarModule,
   ],
   declarations: [
     CertificateDownloadModalComponent,
@@ -79,12 +77,11 @@ import { RteHelperService } from 'services/rte-helper.service';
     TranslationOpportunitiesComponent,
     TranslationSuggestionReviewModalComponent,
     TranslationTopicSelectorComponent,
-    TranslationModalComponent,
     ContributionsAndReview,
     QuestionOpportunitiesComponent,
     ContributorDashboardPageComponent,
     ContributorBadgesComponent,
-    ContributorDashboardPageRootComponent
+    ContributorDashboardPageRootComponent,
   ],
   entryComponents: [
     CertificateDownloadModalComponent,
@@ -100,11 +97,10 @@ import { RteHelperService } from 'services/rte-helper.service';
     TranslationOpportunitiesComponent,
     TranslationSuggestionReviewModalComponent,
     TranslationTopicSelectorComponent,
-    TranslationModalComponent,
     ContributionsAndReview,
     QuestionOpportunitiesComponent,
-    ContributorDashboardPageComponent
+    ContributorDashboardPageComponent,
   ],
-  providers: [RteHelperService]
+  providers: [RteHelperService],
 })
 export class ContributorDashboardPageModule {}

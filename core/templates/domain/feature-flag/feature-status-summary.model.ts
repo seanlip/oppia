@@ -26,20 +26,26 @@ export enum FeatureNames {
   DummyFeatureFlagForE2ETests = 'dummy_feature_flag_for_e2e_tests',
   EndChapterCelebration = 'end_chapter_celebration',
   CheckpointCelebration = 'checkpoint_celebration',
-  ContributorDashboardAccomplishments = 'contributor_dashboard_accomplishments',
   DiagnosticTest = 'diagnostic_test',
-  SerialChapterLaunchCurriculumAdminView =
-  'serial_chapter_launch_curriculum_admin_view',
-  SerialChapterLaunchLearnerView =
-  'serial_chapter_launch_learner_view',
+  SerialChapterLaunchCurriculumAdminView = 'serial_chapter_launch_curriculum_admin_view',
+  SerialChapterLaunchLearnerView = 'serial_chapter_launch_learner_view',
   ShowTranslationSize = 'show_translation_size',
-  ShowFeedbackUpdatesInProfilePicDropdownMenu =
-  'show_feedback_updates_in_profile_pic_dropdown',
+  ShowFeedbackUpdatesInProfilePicDropdownMenu = 'show_feedback_updates_in_profile_pic_dropdown',
   ShowRedesignedLearnerDashboard = 'show_redesigned_learner_dashboard',
   IsImprovementsTabEnabled = 'is_improvements_tab_enabled',
   LearnerGroupsAreEnabled = 'learner_groups_are_enabled',
   CdAdminDashboardNewUi = 'cd_admin_dashboard_new_ui',
-  NewLessonPlayer = 'new_lesson_player'
+  NewLessonPlayer = 'new_lesson_player',
+  AddVoiceoverWithAccent = 'add_voiceover_with_accent',
+  CdAllowUndoingTranslationReview = 'cd_allow_undoing_translation_review',
+  EnableVoiceoverContribution = 'enable_voiceover_contribution',
+  AutoUpdateExpVoiceArtistLink = 'auto_update_exp_voice_artist_link',
+  ExplorationEditorCanModifyTranslations = 'exploration_editor_can_modify_translations',
+  ExplorationEditorCanTagMisconceptions = 'exploration_editor_can_tag_misconceptions',
+  EnableMultipleClassrooms = 'enable_multiple_classrooms',
+  RedesignedTopicViewerPage = 'redesigned_topic_viewer_page',
+  AutomaticVoiceoverRegenerationFromExp = 'automatic_voiceover_regeneration_from_exp',
+  LabelAccentToVoiceArtist = 'label_accent_to_voice_artist',
 }
 
 export interface FeatureStatusSummaryBackendDict {
@@ -54,8 +60,8 @@ export interface FeatureStatusSummaryBackendDict {
  */
 export type FeatureStatusChecker = {
   [name in keyof typeof FeatureNames]: {
-      isEnabled: boolean;
-  }
+    isEnabled: boolean;
+  };
 };
 
 export type FeatureNamesKeys = (keyof typeof FeatureNames)[];
@@ -96,7 +102,8 @@ export class FeatureStatusSummary {
   }
 
   static createFromBackendDict(
-      backendDict: FeatureStatusSummaryBackendDict): FeatureStatusSummary {
+    backendDict: FeatureStatusSummaryBackendDict
+  ): FeatureStatusSummary {
     return new FeatureStatusSummary(backendDict);
   }
 
@@ -110,8 +117,7 @@ export class FeatureStatusSummary {
   static createDefault(): FeatureStatusSummary {
     const defaultDict: FeatureStatusSummaryBackendDict = {};
     const featureNamesKeys = Object.keys(FeatureNames) as FeatureNamesKeys;
-    featureNamesKeys.forEach(
-      name => defaultDict[FeatureNames[name]] = false);
+    featureNamesKeys.forEach(name => (defaultDict[FeatureNames[name]] = false));
     return this.createFromBackendDict(defaultDict);
   }
 
@@ -139,9 +145,9 @@ export class FeatureStatusSummary {
     const featureNamesKeys = Object.keys(FeatureNames) as FeatureNamesKeys;
     featureNamesKeys.forEach(name => {
       Object.defineProperty(checker, name, {
-        value: new FeatureStatusCheckerItem(
-          () => this.isFeatureEnabled(FeatureNames[name])
-        )
+        value: new FeatureStatusCheckerItem(() =>
+          this.isFeatureEnabled(FeatureNames[name])
+        ),
       });
     });
     return checker;

@@ -31,8 +31,8 @@ from core.domain import exp_services
 from core.domain import fs_services
 from core.domain import html_cleaner
 from core.domain import opportunity_services
-from core.domain import platform_feature_services
 from core.domain import platform_parameter_list
+from core.domain import platform_parameter_services
 from core.domain import question_domain
 from core.domain import question_services
 from core.domain import skill_domain
@@ -46,8 +46,8 @@ from core.platform import models
 from extensions import domain
 
 from typing import (
-    Any, Callable, Dict, List, Mapping, Optional, Set, Type, TypedDict, Union,
-    cast)
+    Any, Callable, Dict, List, Mapping, Optional, Set, Type,
+    TypedDict, Union, cast)
 
 MYPY = False
 if MYPY:  # pragma: no cover
@@ -407,8 +407,8 @@ class SuggestionEditStateContent(BaseSuggestion):
         score_category: str,
         language_code: Optional[str],
         edited_by_reviewer: bool,
-        last_updated: Optional[datetime.datetime] = None,
-        created_on: Optional[datetime.datetime] = None
+        last_updated: datetime.datetime,
+        created_on: datetime.datetime
     ) -> None:
         """Initializes an object of type SuggestionEditStateContent
         corresponding to the SUGGESTION_TYPE_EDIT_STATE_CONTENT choice.
@@ -432,22 +432,8 @@ class SuggestionEditStateContent(BaseSuggestion):
         # well. So, due to this conflict in types MyPy throws an `Incompatible
         # types in assignment` error. Thus to avoid the error, we used ignore.
         self.language_code = language_code  # type: ignore[assignment]
-        # TODO(#16048): Here we use MyPy ignore because in BaseSuggestion,
-        # last_updated is defined with only datetime type but here
-        # last_updated is of Optional[datetime] type because while creating
-        # 'SuggestionEditStateContent' through create_suggestion() method, we
-        # are not providing 'last_updated' and just using None default value.
-        # So, once this suggestion_services.create_suggestion() method is
-        # fixed, we can remove both todo and MyPy ignore from here.
-        self.last_updated = last_updated  # type: ignore[assignment]
-        # TODO(#16048): Here we use MyPy ignore because in BaseSuggestion,
-        # created_on is defined with only datetime type but here
-        # created_on is of Optional[datetime] type because while creating
-        # 'SuggestionEditStateContent' through create_suggestion() method, we
-        # are not providing 'created_on' and just using None default value.
-        # So, once this suggestion_services.create_suggestion() method is
-        # fixed, we can remove both todo and MyPy ignore from here.
-        self.created_on = created_on  # type: ignore[assignment]
+        self.last_updated = last_updated
+        self.created_on = created_on
         self.edited_by_reviewer = edited_by_reviewer
         # Here we use MyPy ignore because in BaseSuggestion, image_context
         # is defined as string type attribute but currently, we don't
@@ -643,8 +629,8 @@ class SuggestionTranslateContent(BaseSuggestion):
         score_category: str,
         language_code: str,
         edited_by_reviewer: bool,
-        last_updated: Optional[datetime.datetime] = None,
-        created_on: Optional[datetime.datetime] = None
+        last_updated: datetime.datetime,
+        created_on: datetime.datetime
     ) -> None:
         """Initializes an object of type SuggestionTranslateContent
         corresponding to the SUGGESTION_TYPE_TRANSLATE_CONTENT choice.
@@ -663,22 +649,8 @@ class SuggestionTranslateContent(BaseSuggestion):
         )
         self.score_category = score_category
         self.language_code = language_code
-        # TODO(#16048): Here we use MyPy ignore because in BaseSuggestion,
-        # last_updated is defined with only datetime type but here
-        # last_updated is of Optional[datetime] type because while creating
-        # 'SuggestionTranslateContent' through create_suggestion() method, we
-        # are not providing 'last_updated' and just using None default value.
-        # So, once this suggestion_services.create_suggestion() method is
-        # fixed, we can remove both todo and MyPy ignore from here.
-        self.last_updated = last_updated  # type: ignore[assignment]
-        # TODO(#16048): Here we use MyPy ignore because in BaseSuggestion,
-        # created_on is defined with only datetime type but here
-        # created_on is of Optional[datetime] type because while creating
-        # 'SuggestionTranslateContent' through create_suggestion() method, we
-        # are not providing 'created_on' and just using None default value.
-        # So, once this suggestion_services.create_suggestion() method is
-        # fixed, we can remove both todo and MyPy ignore from here.
-        self.created_on = created_on  # type: ignore[assignment]
+        self.last_updated = last_updated
+        self.created_on = created_on
         self.edited_by_reviewer = edited_by_reviewer
         self.image_context = feconf.IMAGE_CONTEXT_EXPLORATION_SUGGESTIONS
 
@@ -895,8 +867,8 @@ class SuggestionAddQuestion(BaseSuggestion):
         score_category: str,
         language_code: str,
         edited_by_reviewer: bool,
-        last_updated: Optional[datetime.datetime] = None,
-        created_on: Optional[datetime.datetime] = None
+        last_updated: datetime.datetime,
+        created_on: datetime.datetime
     ) -> None:
         """Initializes an object of type SuggestionAddQuestion
         corresponding to the SUGGESTION_TYPE_ADD_QUESTION choice.
@@ -915,22 +887,8 @@ class SuggestionAddQuestion(BaseSuggestion):
         )
         self.score_category = score_category
         self.language_code = language_code
-        # TODO(#16048): Here we use MyPy ignore because in BaseSuggestion,
-        # last_updated is defined with only datetime type but here
-        # last_updated is of Optional[datetime] type because while creating
-        # 'SuggestionAddQuestion' through create_suggestion() method, we
-        # are not providing 'last_updated' and just using None default value.
-        # So, once this suggestion_services.create_suggestion() method is
-        # fixed, we can remove both todo and MyPy ignore from here.
-        self.last_updated = last_updated  # type: ignore[assignment]
-        # TODO(#16048): Here we use MyPy ignore because in BaseSuggestion,
-        # created_on is defined with only datetime type but here
-        # created_on is of Optional[datetime] type because while creating
-        # 'SuggestionAddQuestion' through create_suggestion() method, we
-        # are not providing 'created_on' and just using None default value.
-        # So, once this suggestion_services.create_suggestion() method is
-        # fixed, we can remove both todo and MyPy ignore from here.
-        self.created_on = created_on  # type: ignore[assignment]
+        self.last_updated = last_updated
+        self.created_on = created_on
         self.image_context = feconf.IMAGE_CONTEXT_QUESTION_SUGGESTIONS
         self._update_change_to_latest_state_schema_version()
         self.edited_by_reviewer = edited_by_reviewer
@@ -1379,7 +1337,7 @@ class CommunityContributionStats:
         suggestions in a given language need more reviewers if the number of
         translation suggestions in that language divided by the number of
         translation reviewers in that language is greater than
-        ParamNames.MAX_NUMBER_OF_SUGGESTIONS_PER_REVIEWER.
+        ParamName.MAX_NUMBER_OF_SUGGESTIONS_PER_REVIEWER.
 
         Args:
             lang_code: str. The language code of the translation
@@ -1400,8 +1358,8 @@ class CommunityContributionStats:
         number_of_suggestions = (
             self.translation_suggestion_counts_by_lang_code[lang_code])
         max_number_of_suggestions_per_reviewer = (
-            platform_feature_services.get_platform_parameter_value(
-                platform_parameter_list.ParamNames.
+            platform_parameter_services.get_platform_parameter_value(
+                platform_parameter_list.ParamName.
                 MAX_NUMBER_OF_SUGGESTIONS_PER_REVIEWER.value
             )
         )
@@ -1418,7 +1376,7 @@ class CommunityContributionStats:
         given language need more reviewers if the number of translation
         suggestions in that language divided by the number of translation
         reviewers in that language is greater than
-        ParamNames.MAX_NUMBER_OF_SUGGESTIONS_PER_REVIEWER.
+        ParamName.MAX_NUMBER_OF_SUGGESTIONS_PER_REVIEWER.
 
         Returns:
             set. A set of of the language codes where more translation reviewers
@@ -1435,7 +1393,7 @@ class CommunityContributionStats:
         """Returns whether or not more reviewers are needed to review question
         suggestions. Question suggestions need more reviewers if the number of
         question suggestions divided by the number of question reviewers is
-        greater than ParamNames.MAX_NUMBER_OF_SUGGESTIONS_PER_REVIEWER.
+        greater than ParamName.MAX_NUMBER_OF_SUGGESTIONS_PER_REVIEWER.
 
         Returns:
             bool. Whether or not more reviewers are needed to review
@@ -1448,8 +1406,8 @@ class CommunityContributionStats:
             return True
 
         max_number_of_suggestions_per_reviewer = (
-            platform_feature_services.get_platform_parameter_value(
-                platform_parameter_list.ParamNames.
+            platform_parameter_services.get_platform_parameter_value(
+                platform_parameter_list.ParamName.
                 MAX_NUMBER_OF_SUGGESTIONS_PER_REVIEWER.value
             )
         )
@@ -2139,8 +2097,8 @@ class TranslationSubmitterTotalContributionStats:
                 self.rejected_translation_word_count),
             'first_contribution_date': (
                 self.first_contribution_date.strftime('%b %d, %Y')),
-            'last_contributed_in_days': int(
-                (datetime.date.today() - self.last_contribution_date).days)
+            'last_contributed_in_days': utils.get_number_of_days_since_date(
+                self.last_contribution_date)
         }
 
 
@@ -2220,8 +2178,8 @@ class TranslationReviewerTotalContributionStats:
             'rejected_translations_count': self.rejected_translations_count,
             'first_contribution_date': (
                 self.first_contribution_date.strftime('%b %d, %Y')),
-            'last_contributed_in_days': int(
-                (datetime.date.today() - self.last_contribution_date).days)
+            'last_contributed_in_days': utils.get_number_of_days_since_date(
+                self.last_contribution_date)
         }
 
 
@@ -2302,8 +2260,8 @@ class QuestionSubmitterTotalContributionStats:
             'rejected_questions_count': self.rejected_questions_count,
             'first_contribution_date': (
                 self.first_contribution_date.strftime('%b %d, %Y')),
-            'last_contributed_in_days': int(
-                (datetime.date.today() - self.last_contribution_date).days)
+            'last_contributed_in_days': utils.get_number_of_days_since_date(
+                self.last_contribution_date)
         }
 
 
@@ -2374,6 +2332,6 @@ class QuestionReviewerTotalContributionStats:
             'rejected_questions_count': self.rejected_questions_count,
             'first_contribution_date': (
                 self.first_contribution_date.strftime('%b %d, %Y')),
-            'last_contributed_in_days': int(
-                (datetime.date.today() - self.last_contribution_date).days)
+            'last_contributed_in_days': utils.get_number_of_days_since_date(
+                self.last_contribution_date)
         }

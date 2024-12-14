@@ -19,15 +19,12 @@
 
 export default {
   // The term 'staging' is used instead of the classroom url fragment field
-  // in the URL for topics that are not yet attached to a classroom.
+  // in the URL and classroom name for topics that are not yet attached to a classroom.
   "CLASSROOM_URL_FRAGMENT_FOR_UNATTACHED_TOPICS": "staging",
+  "CLASSROOM_NAME_FOR_UNATTACHED_TOPICS": "staging",
 
   // Acceptable URL schemes for links.
   "ACCEPTABLE_SCHEMES": ["https", ""],
-
-  // The default classroom URL fragment to use when the provided classroom URL
-  // fragment in the controller is invalid.
-  "DEFAULT_CLASSROOM_URL_FRAGMENT": "math",
 
   "FEATURED_TRANSLATION_LANGUAGES": [
     {
@@ -71,15 +68,15 @@ export default {
   "LIST_OF_DEFAULT_TAGS_FOR_BLOG_POST": [
     "News", "International", "Educators", "Learners", "Community",
     "Partnerships", "Volunteer", "Stories", "Languages", "New features",
-    "New lessons", "Software development", "Content"],
+    "New lessons", "Software development", "Content", "Teacher story"],
 
   "ALL_CATEGORIES": ["Algebra", "Algorithms", "Architecture", "Arithmetic",
     "Art", "Astronomy", "Biology", "Business", "Calculus", "Chemistry",
     "Combinatorics", "Computing", "Economics", "Education", "Engineering",
-    "English", "Environment", "Gaulish", "Geography", "Geometry", "Government",
+    "English", "Environment", "Finance", "Gaulish", "Geography", "Geometry", "Government",
     "Graph Theory", "History", "Languages", "Latin", "Law", "Logic",
     "Mathematics", "Medicine", "Music", "Philosophy", "Physics", "Poetry",
-    "Probability", "Programming", "Puzzles", "Reading", "Spanish", "Sport",
+    "Probability", "Programming", "Puzzles", "Reading", "Science", "Spanish", "Sport",
     "Statistics", "Trigonometry", "Welcome"],
   "ACTIVITY_TYPE_EXPLORATION": "exploration",
   "ACTIVITY_TYPE_EXPLORATION_TRANSLATIONS": "exp_translations",
@@ -144,9 +141,9 @@ export default {
   // These categories are shown in the library navbar. The categories should
   // be in sorted order.
   "SEARCH_DROPDOWN_CATEGORIES": ["Algorithms", "Architecture", "Art",
-    "Biology", "Business", "Chemistry", "Economics", "English", "Geography",
+    "Biology", "Business", "Chemistry", "Economics", "English", "Finance", "Geography",
     "History", "Mathematics", "Medicine", "Music", "Physics", "Programming",
-    "Reading", "Statistics"],
+    "Reading", "Science", "Statistics"],
 
   // These classrooms are shown in the add learner group syllabus filters.
   "SEARCH_DROPDOWN_CLASSROOMS": ["math"],
@@ -163,7 +160,8 @@ export default {
   // previous one is deleted.
   // TODO(#14645): Remove these keys once translation service is extended.
   "HACKY_TRANSLATION_KEYS": [
-    "I18N_CLASSROOM_MATH_TITLE",
+    "I18N_CLASSROOM_MATH_NAME",
+    "I18N_CLASSROOM_MATH_COURSE_DETAILS",
     "I18N_TOPIC_iX9kYCjnouWN_TITLE",
     "I18N_TOPIC_sWBXKH4PZcK6_TITLE",
     "I18N_TOPIC_C4fqwrvqWpRm_TITLE",
@@ -416,6 +414,7 @@ export default {
 
   "ALLOWED_THUMBNAIL_BG_COLORS": {
     "chapter": ["#F8BF74", "#D68F78", "#8EBBB6", "#B3D8F1"],
+    "classroom": ["transparent", "#C8F5CD", "#AED2E9"],
     "topic": ["#C6DCDA"],
     "subtopic": ["#FFFFFF"],
     "story": ["#F8BF74", "#D68F78", "#8EBBB6", "#B3D8F1"]
@@ -5084,6 +5083,7 @@ export default {
     "Environment": "#747142",
     "Medicine": "#657030",
     "Physics": "#58613a",
+    "Science": "#6f7a48",
 
     "Architecture": "#6e3466",
     "Art": "#895a83",
@@ -5100,6 +5100,7 @@ export default {
 
     "Business": "#387163",
     "Economics": "#2f836d",
+    "Finance": "#387163",
     "Geography": "#3c6d62",
     "Government": "#507c6b",
     "History": "#3d6b52",
@@ -5136,11 +5137,11 @@ export default {
     "decimal_separator": ".",
     "ariaLabelInEnglish": "English"
   }, {
-    "code": "ar",
-    "description": "العربية (Arabic)",
-    "direction": "rtl",
-    "decimal_separator": ",",
-    "ariaLabelInEnglish": "Arabic"
+    "code": "ak",
+    "description": "Ákán (Akan)",
+    "direction": "ltr",
+    "decimal_separator": ".",
+    "ariaLabelInEnglish": "Akan"
   }, {
     "code": "sq",
     "description": "shqip (Albanian)",
@@ -5153,6 +5154,12 @@ export default {
     "direction": "ltr",
     "decimal_separator": ".",
     "ariaLabelInEnglish": "Amharic"
+  }, {
+    "code": "ar",
+    "description": "العربية (Arabic)",
+    "direction": "rtl",
+    "decimal_separator": ",",
+    "ariaLabelInEnglish": "Arabic"
   }, {
     "code": "az",
     "description": "Azeri (Azerbaijani)",
@@ -5171,6 +5178,12 @@ export default {
     "direction": "ltr",
     "decimal_separator": ".",
     "ariaLabelInEnglish": "Bangla"
+  }, {
+    "code": "ms",
+    "description": "بهاس ملايو (Bahasa Melayu)",
+    "direction": "ltr",
+    "decimal_separator": ".",
+    "ariaLabelInEnglish": "Bahasa Melayu"
   }, {
     "code": "ca",
     "description": "català (Catalan)",
@@ -5202,11 +5215,23 @@ export default {
     "decimal_separator": ",",
     "ariaLabelInEnglish": "Danish"
   }, {
+    "code": "prs",
+    "description": "دری (Dari)",
+    "direction": "rtl",
+    "decimal_separator": ",",
+    "ariaLabelInEnglish": "Dari"
+  }, {
     "code": "nl",
     "description": "Nederlands (Dutch)",
     "direction": "ltr",
     "decimal_separator": ",",
     "ariaLabelInEnglish": "Dutch"
+  }, {
+    "code": "ee",
+    "description": "Eʋegbe (Ewe)",
+    "direction": "ltr",
+    "decimal_separator": ",",
+    "ariaLabelInEnglish": "Ewe"
   }, {
     "code": "fat",
     "description": "Fanti",
@@ -5245,10 +5270,16 @@ export default {
     "ariaLabelInEnglish": "German"
   }, {
     "code": "el",
-    "description": "ελληνικά (Greek)",
+    "description": "Ελληνικά (Greek)",
     "direction": "ltr",
     "decimal_separator": ",",
     "ariaLabelInEnglish": "Greek"
+  }, {
+    "code": "gaa",
+    "description": "Gã (Ga)",
+    "direction": "ltr",
+    "decimal_separator": ",",
+    "ariaLabelInEnglish": "Ga"
   }, {
     "code": "ha",
     "description": "Harshen Hausa (Hausa)",
@@ -5358,17 +5389,17 @@ export default {
     "decimal_separator": ",",
     "ariaLabelInEnglish": "Polish"
   }, {
-    "code": "prs",
-    "description": "دری (Dari)",
-    "direction": "rtl",
-    "decimal_separator": ".",
-    "ariaLabelInEnglish": "Dari"
-  }, {
     "code": "pt",
     "description": "português (Portuguese)",
     "direction": "ltr",
     "decimal_separator": ",",
     "ariaLabelInEnglish": "Portuguese"
+  }, {
+    "code": "ps",
+    "description": "پښتو (Pashto)",
+    "direction": "rtl",
+    "decimal_separator": ",",
+    "ariaLabelInEnglish": "Pashto"
   }, {
     "code": "ro",
     "description": "română (Romanian)",
@@ -5423,6 +5454,12 @@ export default {
     "direction": "ltr",
     "decimal_separator": ".",
     "ariaLabelInEnglish": "Tamil"
+  }, {
+    "code": "te",
+    "description": "తెలుగు (Telugu)",
+    "direction": "ltr",
+    "decimal_separator": ".",
+    "ariaLabelInEnglish": "Telugu"
   }, {
     "code": "th",
     "description": "ภาษาไทย (Thai)",
@@ -5568,6 +5605,12 @@ export default {
     "direction": "ltr",
     "decimal_separator": ".",
     "ariaLabelInEnglish": "Traditional Chinese"
+  }, {
+    "id": "el",
+    "text": "Ελληνικά",
+    "direction": "ltr",
+    "decimal_separator": ",",
+    "ariaLabelInEnglish": "Greek"
   }],
 
   // List of supported audio languages in which we have audio and translations
@@ -6148,8 +6191,6 @@ export default {
 
   "ENABLE_PREREQUISITE_SKILLS": false,
 
-  "ENABLE_NEW_STRUCTURE_VIEWER_UPDATES": true,
-
   "ENABLE_SOLICIT_ANSWER_DETAILS_FEATURE": true,
 
   "MAX_SKILLS_PER_QUESTION": 3,
@@ -6190,6 +6231,9 @@ export default {
   // 'math' is the 'classroom URL fragment'.
   "MAX_CHARS_IN_CLASSROOM_URL_FRAGMENT": 20,
   "MAX_CHARS_IN_CLASSROOM_NAME": 39,
+  "MAX_CHARS_IN_CLASSROOM_TEASER_TEXT": 68,
+  "MAX_CHARS_IN_CLASSROOM_COURSE_DETAILS": 720,
+  "MAX_CHARS_IN_CLASSROOM_TOPIC_LIST_INTRO": 240,
   "MAX_CHARS_IN_TOPIC_NAME": 39,
   "MAX_CHARS_IN_ABBREV_TOPIC_NAME": 12,
   // This represents the maximum number of characters in the URL fragment for
@@ -6239,6 +6283,7 @@ export default {
       "html": "",
       "content_id": "content"
     },
+    "inapplicable_skill_misconception_ids": null,
     "interaction": {
       "id": null,
       "customization_args": {},
@@ -6484,7 +6529,7 @@ export default {
   // fields must be at most 1500 bytes, and UTF-8 encoded characters can be
   // up to 4 bytes long.
   "MAX_COMMIT_MESSAGE_LENGTH": 375,
-  "MAX_REVIEW_MESSAGE_LENGTH": 10000,
+  "MAX_REVIEW_MESSAGE_LENGTH": 2000,
 
   "EMAIL_DASHBOARD_PREDICATE_DEFINITION": [
     {
@@ -6602,6 +6647,107 @@ export default {
         }
       ]
     },
+    "REVIEW_TEST": {
+      "ROUTE": "learn/:classroom_url_fragment/:topic_url_fragment/review-test/:story_url_fragment",
+      "TITLE": "Oppia",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
+    "SUBTOPIC_VIEWER": {
+      "ROUTE": "learn/:classroom_url_fragment/:topic_url_fragment/revision/:subtopic_url_fragment",
+      "TITLE": "Oppia",
+      "MANUALLY_REGISTERED_WITH_BACKEND": true,
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
+    "COLLECTION_EDITOR": {
+      "ROUTE": "collection_editor/create/:collection_id",
+      "TITLE": "Collection Editor Page",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
+    "STORY_EDITOR": {
+      "ROUTE": "story_editor/:story_id",
+      "TITLE": "Story Editor Page",
+      "MANUALLY_REGISTERED_WITH_BACKEND": true,
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
+    "COLLECTION_PLAYER": {
+      "ROUTE": "collection/:collection_id",
+      "TITLE": "",
+      // Some routes contain url fragments, as syntax for url fragments are
+      // different for angular router and backend. They have to be registered
+      // manually in the backend. Please use angular router syntax here.
+      "MANUALLY_REGISTERED_WITH_BACKEND": true,
+      "META": []
+    },
+    "CREATOR_DASHBOARD": {
+      "ROUTE": "creator-dashboard",
+      "TITLE": "Creator Dashboard | Oppia",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
     "CONTRIBUTOR_DASHBOARD": {
       "ROUTE": "contributor-dashboard",
       "TITLE": "Contributor Dashboard | Oppia",
@@ -6623,6 +6769,42 @@ export default {
     "EMAIL_DASHBOARD": {
       "ROUTE": "emaildashboard",
       "TITLE": "Email Dashboard - Oppia",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
+    "DIAGNOSTIC_TEST_PLAYER": {
+      "ROUTE": "diagnostic-test-player",
+      "TITLE": "Diagnostic Test Player - Oppia",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
+    "FACILITATOR_DASHBOARD": {
+      "ROUTE": "facilitator-dashboard",
+      "TITLE": "Facilitator Dashboard - Oppia",
       "META": [
         {
           "PROPERTY_TYPE": "itemprop",
@@ -6674,15 +6856,26 @@ export default {
         }
       ]
     },
-    "ABOUT_FOUNDATION": {
-      "ROUTE": "about-foundation",
-      "TITLE": "About the Oppia Foundation | Oppia",
-      "META": []
-    },
     "ERROR": {
       "ROUTE": "error",
       "TITLE": "I18N_ERROR_PAGE_ROOT_BROWSER_TAB_TITLE",
       "META": []
+    },
+    "ERROR_IFRAMED": {
+      "ROUTE": "error/iframed",
+      "TITLE": "Error Iframed - Oppia",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          "CONTENT": "Error Iframed Page"
+        },
+        {
+          "PROPERTY_TYPE": "property",
+          "PROPERTY_VALUE": "og:description",
+          "CONTENT": "Error Iframed Page"
+        }
+      ]
     },
     "EXPLORATION_PLAYER": {
       "ROUTE": "explore/:exploration_id",
@@ -6714,6 +6907,24 @@ export default {
     "ANDROID": {
       "ROUTE": "android",
       "TITLE": "Android | Oppia",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
+    "CONTRIBUTOR_DASHBOARD_ADMIN": {
+      "ROUTE": "contributor-admin-dashboard",
+      "TITLE": "Contributor Dashboard Admin",
       "META": [
         {
           "PROPERTY_TYPE": "itemprop",
@@ -6796,6 +7007,27 @@ export default {
           "PROPERTY_TYPE": "property",
           "PROPERTY_VALUE": "og:description",
           "CONTENT": "Learn how to get started using Oppia."
+        }
+      ]
+    },
+    "TOPIC_VIEWER": {
+      "ROUTE": "learn/:classroom_url_fragment/:topic_url_fragment",
+      "TITLE": "Topic Viewer Page",
+      // Some routes contain url fragments, as syntax for url fragments are
+      // different for angular router and backend. They have to be registered
+      // manually in the backend. Please use angular router syntax here.
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
         }
       ]
     },
@@ -6999,6 +7231,24 @@ export default {
         }
       ]
     },
+    "BLOG_DASHBOARD": {
+      "ROUTE": "blog-dashboard",
+      "TITLE": "Blog Dashboard - Oppia",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
     "LIBRARY_TOP_RATED": {
       "ROUTE": "community-library/top-rated",
       "TITLE": "Oppia",
@@ -7119,6 +7369,24 @@ export default {
         }
       ]
     },
+    "CLASSROOMS": {
+      "ROUTE": "learn",
+      "TITLE": "Oppia Classrooms",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
     "BLOG_HOMEPAGE": {
       "ROUTE": "blog",
       "TITLE": "I18N_BLOG_HOME_PAGE_TITLE",
@@ -7199,6 +7467,60 @@ export default {
     "BLOG_ADMIN": {
       "ROUTE": "blog-admin",
       "TITLE": "Oppia Blog Admin Panel",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
+    "VOICEOVER_ADMIN": {
+      "ROUTE": "voiceover-admin",
+      "TITLE": "Voiceover Admin Panel",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
+    "LEARNER_GROUP_CREATOR": {
+      "ROUTE": "create-learner-group",
+      "TITLE": "Create Learner Group | Oppia",
+      "META": [
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        },
+        {
+          "PROPERTY_TYPE": "itemprop",
+          "PROPERTY_VALUE": "og:description",
+          // eslint-disable-next-line max-len
+          "CONTENT": "With Oppia, you can access free lessons on math, physics, statistics, chemistry, music, history and more from anywhere in the world. Oppia is a nonprofit with the mission of providing high-quality education to those who lack access to it."
+        }
+      ]
+    },
+    "LEARNER_GROUP_EDITOR": {
+      "ROUTE": "edit-learner-group/:learner_group_id",
+      "TITLE": "Edit Learner Group | Oppia",
       "META": [
         {
           "PROPERTY_TYPE": "itemprop",
@@ -7310,7 +7632,7 @@ export default {
   "METADATA_PROPERTIES": [
     "title", "category", "objective", "language_code", "tags", "blurb",
     "author_notes", "states_schema_version", "init_state_name", "param_specs",
-    "param_changes", "auto_tts_enabled", "correctness_feedback_enabled",
+    "param_changes", "auto_tts_enabled",
     "edits_allowed"
   ],
   "NON_METADATA_PROPERTIES": [

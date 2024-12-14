@@ -112,40 +112,6 @@ class ValidateSuggestionChangeTests(test_utils.GenericTestBase):
         domain_objects_validator.validate_suggestion_change(correct_change_dict)
 
 
-class ValidateNewConfigPropertyValuesTests(test_utils.GenericTestBase):
-    """Tests to validate config properties dict coming from API."""
-
-    def test_invalid_object_raises_exception(self) -> None:
-        config_properties = {'some_config_property': 20, }
-        with self.assertRaisesRegex(
-            Exception, 'some_config_property do not have any schema.'):
-            domain_objects_validator.validate_new_config_property_values(
-                config_properties)
-
-        # TODO(#13059): Here we use MyPy ignore because after we fully type the
-        # codebase we plan to get rid of the tests that intentionally test wrong
-        # inputs that we can normally catch by typing.
-        config_properties = {1234: 20, } # type: ignore[dict-item]
-        with self.assertRaisesRegex(
-            Exception, 'config property name should be a string, received'
-            ': %s' % 1234):
-            domain_objects_validator.validate_new_config_property_values(
-                config_properties)
-
-    def test_valid_object_raises_no_exception(self) -> None:
-        config_properties = {
-            'classroom_pages_data': [{
-                'name': 'math',
-                'url_fragment': 'math',
-                'topic_ids': [],
-                'course_details': 'Detailed math classroom.',
-                'topic_list_intro': ''
-            }]
-        }
-        domain_objects_validator.validate_new_config_property_values(
-            config_properties)
-
-
 class ValidateNewPlatformParamsValueForBlogAdminTests(
     test_utils.GenericTestBase):
     """Tests to validate platform parameters dict coming from API."""
@@ -426,7 +392,8 @@ class ValidateStateDictInStateYamlHandler(test_utils.GenericTestBase):
             },
             'classifier_model_id': None,
             'card_is_checkpoint': False,
-            'solicit_answer_details': False
+            'solicit_answer_details': False,
+            'inapplicable_skill_misconception_ids': []
         }
         domain_objects_validator.validate_state_dict(state_dict)
 
@@ -530,7 +497,8 @@ class ValidateQuestionStateDict(test_utils.GenericTestBase):
                 }
             },
             'solicit_answer_details': False,
-            'card_is_checkpoint': False
+            'card_is_checkpoint': False,
+            'inapplicable_skill_misconception_ids': []
         }
         domain_objects_validator.validate_question_state_dict(
             question_state_dict)

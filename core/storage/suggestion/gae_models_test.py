@@ -21,10 +21,10 @@ from __future__ import annotations
 import datetime
 
 from core import feconf
+from core import utils
 from core.constants import constants
 from core.platform import models
 from core.tests import test_utils
-
 from typing import Dict, Final, List, Mapping
 
 MYPY = False
@@ -43,8 +43,10 @@ class SuggestionModelUnitTests(test_utils.GenericTestBase):
     """Tests for the suggestionModel class."""
 
     score_category: str = (
-        suggestion_models.SCORE_TYPE_TRANSLATION +
-        suggestion_models.SCORE_CATEGORY_DELIMITER + 'English')
+        '%s%sEnglish' % (
+            suggestion_models.SCORE_TYPE_TRANSLATION,
+            suggestion_models.SCORE_CATEGORY_DELIMITER
+        ))
 
     topic_name = 'topic'
     target_id = 'exp1'
@@ -869,6 +871,71 @@ class SuggestionModelUnitTests(test_utils.GenericTestBase):
         self.assertEqual(sorted_results[1].id, suggestion_1_id)
         self.assertEqual(offset_4, 3)
 
+    def test_get_target_ids_of_translation_suggestions_in_review(self) -> None:
+        user_id = 'author1'
+        language_codes = [self.translation_language_code, 'fr']
+        suggestion_models.GeneralSuggestionModel.create(
+            feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT,
+            feconf.ENTITY_TYPE_EXPLORATION,
+            'exp1', self.target_version_at_submission,
+            suggestion_models.STATUS_IN_REVIEW, 'author_2',
+            'reviewer_2', self.change_cmd, self.score_category,
+            'matched_en_1', self.translation_language_code)
+        suggestion_models.GeneralSuggestionModel.create(
+            feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT,
+            feconf.ENTITY_TYPE_EXPLORATION,
+            'exp2', self.target_version_at_submission,
+            suggestion_models.STATUS_IN_REVIEW, 'author_2',
+            'reviewer_2', self.change_cmd, self.score_category,
+            'matched_en_2', self.translation_language_code)
+        suggestion_models.GeneralSuggestionModel.create(
+            feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT,
+            feconf.ENTITY_TYPE_EXPLORATION,
+            'exp2', self.target_version_at_submission,
+            suggestion_models.STATUS_IN_REVIEW, 'author_3',
+            'reviewer_2', self.change_cmd, self.score_category,
+            'matched_en_2_duplicate', self.translation_language_code)
+        suggestion_models.GeneralSuggestionModel.create(
+            feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT,
+            feconf.ENTITY_TYPE_EXPLORATION,
+            'exp3', self.target_version_at_submission,
+            suggestion_models.STATUS_IN_REVIEW, 'author_3',
+            'reviewer_2', self.change_cmd, self.score_category,
+            'matched_fr_1', 'fr')
+        suggestion_models.GeneralSuggestionModel.create(
+            feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT,
+            feconf.ENTITY_TYPE_EXPLORATION,
+            'exp4', self.target_version_at_submission,
+            suggestion_models.STATUS_IN_REVIEW, 'author_3',
+            'reviewer_2', self.change_cmd, self.score_category,
+            'not_matched_since_language_not_in_codes', 'na')
+        suggestion_models.GeneralSuggestionModel.create(
+            feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT,
+            feconf.ENTITY_TYPE_EXPLORATION,
+            'exp5', self.target_version_at_submission,
+            suggestion_models.STATUS_ACCEPTED, 'author_4',
+            'reviewer_2', self.change_cmd, self.score_category,
+            'not_matched_since_not_in_review',
+            self.translation_language_code)
+        suggestion_models.GeneralSuggestionModel.create(
+            feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT,
+            feconf.ENTITY_TYPE_EXPLORATION,
+            'exp6', self.target_version_at_submission,
+            suggestion_models.STATUS_IN_REVIEW, user_id,
+            'reviewer_2', self.change_cmd, self.score_category,
+            'not_matched_since_reviewer_is_author',
+            self.translation_language_code)
+
+        target_ids = (
+            suggestion_models.GeneralSuggestionModel
+            .get_in_review_translation_suggestion_target_ids(
+                user_id,
+                language_codes
+            )
+        )
+
+        self.assertCountEqual(target_ids, ['exp1', 'exp2', 'exp3'])
+
     def test_get_in_review_question_suggestions_by_offset(self) -> None:
         suggestion_1_id = 'skill1.thread1'
         suggestion_2_id = 'skill1.thread2'
@@ -1282,6 +1349,33 @@ class SuggestionModelUnitTests(test_utils.GenericTestBase):
                     suggestion_models.GeneralSuggestionModel
                     .get_suggestions_waiting_too_long_for_review()
                 )
+
+    def test_get_new_suggestions_waiting_for_review(self) -> None:
+        suggestion_type = feconf.SUGGESTION_TYPE_TRANSLATE_CONTENT
+        max_suggestions = 1
+        creation_time = datetime.datetime(2020, 6, 14, 5)
+        creation_time_in_millisecs = int(creation_time.timestamp() * 1000)
+        mock_value = creation_time_in_millisecs
+
+        mock_get_current_time_in_millisecs = lambda: mock_value
+
+        with self.swap(
+            utils, 'get_current_time_in_millisecs',
+            mock_get_current_time_in_millisecs):
+            with self.mock_datetime_utcnow(self.mocked_datetime_utcnow):
+                suggestion_models.GeneralSuggestionModel.create(
+                    suggestion_type, feconf.ENTITY_TYPE_EXPLORATION,
+                    self.target_id, self.target_version_at_submission,
+                    suggestion_models.STATUS_IN_REVIEW, 'author_3',
+                    'reviewer_2', self.change_cmd, self.score_category,
+                    's.thread1', None)
+
+            with self.mock_datetime_utcnow(self.mocked_datetime_utcnow):
+                results = (
+                    suggestion_models.GeneralSuggestionModel.
+                        get_new_suggestions_waiting_for_review())
+
+        self.assertEqual(len(results), max_suggestions)
 
     def test_get_suggestions_waiting_too_long_if_not_contributor_suggestion(
         self
@@ -5255,9 +5349,7 @@ class QuestionSubmitterTotalContributionStatsModelUnitTests(
                 page_size=1,
                 offset=0,
                 sort_by=None,
-                topic_ids=[
-                    'non_existent_topic'
-                ],
+                topic_ids=['non_existent_topic'],
                 max_days_since_last_activity=7
             ))
         self.assertEqual(len(sorted_results), 0)

@@ -16,7 +16,6 @@
 
 from __future__ import annotations
 
-import abc
 import base64
 import datetime
 import functools
@@ -35,7 +34,6 @@ from core import utils
 from core.controllers import payload_validator
 from core.domain import auth_domain
 from core.domain import auth_services
-from core.domain import classifier_domain
 from core.domain import user_services
 
 from typing import (
@@ -132,8 +130,8 @@ class UserFacingExceptions:
 
         pass
 
-    class PageNotFoundException(Exception):
-        """Error class for a page not found error (error code 404)."""
+    class NotFoundException(Exception):
+        """Error class for resource not found error (error code 404)."""
 
         pass
 
@@ -523,7 +521,11 @@ class BaseHandler(
             'Use self.normalized_payload instead of self.payload.')
 
         if errors:
-            raise self.InvalidInputException('\n'.join(errors))
+            raise self.InvalidInputException(
+                'At \'%s\' these errors are happening:\n%s' % (
+                    self.request.uri, '\n'.join(errors)
+                )
+            )
 
     @property
     def current_user_is_site_maintainer(self) -> bool:
@@ -556,7 +558,7 @@ class BaseHandler(
         logging.warning('Invalid URL requested: %s', self.request.uri)
         self.error(404)
         values: ResponseValueDict = {
-            'error': 'Could not find the page %s.' % self.request.uri,
+            'error': 'Could not find the resource %s.' % self.request.uri,
             'status_code': 404
         }
         self._render_exception(values)
@@ -567,9 +569,9 @@ class BaseHandler(
         """Base method to handle POST requests.
 
         Raises:
-            PageNotFoundException. Page not found error (error code 404).
+            NotFoundException. Resource not found error (error code 404).
         """
-        raise self.PageNotFoundException
+        raise self.NotFoundException
 
     # Here we use type Any because the sub-classes of 'Basehandler' can have
     # 'put' method with different number of arguments and types.
@@ -577,9 +579,9 @@ class BaseHandler(
         """Base method to handle PUT requests.
 
         Raises:
-            PageNotFoundException. Page not found error (error code 404).
+            NotFoundException. Resource not found error (error code 404).
         """
-        raise self.PageNotFoundException
+        raise self.NotFoundException
 
     # Here we use type Any because the sub-classes of 'Basehandler' can have
     # 'delete' method with different number of arguments and types.
@@ -587,9 +589,9 @@ class BaseHandler(
         """Base method to handle DELETE requests.
 
         Raises:
-            PageNotFoundException. Page not found error (error code 404).
+            NotFoundException. Resource not found error (error code 404).
         """
-        raise self.PageNotFoundException
+        raise self.NotFoundException
 
     # Here we use type Any because the sub-classes of 'Basehandler' can have
     # 'head' method with different number of arguments and types.
@@ -682,7 +684,6 @@ class BaseHandler(
             'max-age=31536000; includeSubDomains')
         self.response.headers['X-Content-Type-Options'] = 'nosniff'
         self.response.headers['X-Xss-Protection'] = '1; mode=block'
-
         if iframe_restriction is not None:
             if iframe_restriction in ['SAMEORIGIN', 'DENY']:
                 self.response.headers['X-Frame-Options'] = (
@@ -711,10 +712,7 @@ class BaseHandler(
 
         if return_type == feconf.HANDLER_TYPE_HTML and method == 'GET':
             self.values.update(values)
-            if self.iframed:
-                self.render_template(
-                    'error-iframed.mainpage.html', iframe_restriction=None)
-            elif values['status_code'] == 404:
+            if values['status_code'] == 404:
                 # Only 404 routes can be handled with angular router as it only
                 # has access to the path, not to the status code.
                 # That's why 404 status code is treated differently.
@@ -739,7 +737,7 @@ class BaseHandler(
         """
         # The error codes here should be in sync with the error pages
         # generated via webpack.common.config.ts.
-        assert values['status_code'] in [400, 401, 404, 500]
+        assert values['status_code'] in [400, 401, 404, 405, 500]
         method = self.request.environ['REQUEST_METHOD']
 
         if method == 'GET':
@@ -770,6 +768,8 @@ class BaseHandler(
             unused_debug_mode: bool. True if the web application is running
                 in debug mode.
         """
+        handler_class_name = self.__class__.__name__
+        request_method = self.request.environ['REQUEST_METHOD']
         if isinstance(exception, self.NotLoggedInException):
             # This checks if the response should be JSON or HTML.
             # For GET requests, there is no payload, so we check against
@@ -799,20 +799,18 @@ class BaseHandler(
                 self.redirect(user_services.create_login_url(self.request.uri))
             return
 
-        logging.exception(
-            'Exception raised at %s: %s', self.request.uri, exception)
-
-        if isinstance(exception, self.PageNotFoundException):
+        if isinstance(exception, self.NotFoundException):
             logging.warning('Invalid URL requested: %s', self.request.uri)
             self.error(404)
             values = {
-                'error': 'Could not find the page %s.' % self.request.uri,
+                'error': 'Could not find the resource %s.' % self.request.uri,
                 'status_code': 404
             }
             self._render_exception(values)
             return
 
-        logging.exception('Exception raised: %s', exception)
+        logging.exception(
+            'Exception raised at %s: %s', self.request.uri, exception)
 
         if isinstance(exception, self.UnauthorizedUserException):
             self.error(401)
@@ -841,6 +839,16 @@ class BaseHandler(
             self._render_exception(values)
             return
 
+        if isinstance(exception, TypeError):
+            self.error(405)
+            values = {
+                'error': 'Invalid method %s for %s' % (
+                    request_method, handler_class_name),
+                'status_code': 405
+            }
+            self._render_exception(values)
+            return
+
         self.error(500)
         values = {
             'error': str(exception),
@@ -851,7 +859,7 @@ class BaseHandler(
     InternalErrorException = UserFacingExceptions.InternalErrorException
     InvalidInputException = UserFacingExceptions.InvalidInputException
     NotLoggedInException = UserFacingExceptions.NotLoggedInException
-    PageNotFoundException = UserFacingExceptions.PageNotFoundException
+    NotFoundException = UserFacingExceptions.NotFoundException
     UnauthorizedUserException = UserFacingExceptions.UnauthorizedUserException
 
 
@@ -1007,40 +1015,3 @@ class CsrfTokenHandler(BaseHandler[Dict[str, str], Dict[str, str]]):
         self.render_json({
             'token': csrf_token,
         })
-
-
-class OppiaMLVMHandler(
-    BaseHandler[_NormalizedPayloadDictType, _NormalizedRequestDictType]
-):
-    """Base class for the handlers that communicate with Oppia-ML VM instances.
-    """
-
-    GET_HANDLER_ERROR_RETURN_TYPE = feconf.HANDLER_TYPE_JSON
-    # Here we use type Any because the sub-classes of OppiaMLVMHandler can
-    # contain different schemas with different types of values, like str,
-    # complex Dicts and etc.
-    URL_PATH_ARGS_SCHEMAS: Dict[str, Any] = {}
-    # Here we use type Any because the sub-classes of OppiaMLVMHandler can
-    # contain different schemas with different types of values, like str,
-    # complex Dicts and etc.
-    HANDLER_ARGS_SCHEMAS: Dict[str, Any] = {}
-
-    @abc.abstractmethod
-    def extract_request_message_vm_id_and_signature(
-        self
-    ) -> classifier_domain.OppiaMLAuthInfo:
-        """Returns the OppiaMLAuthInfo domain object containing
-        information from the incoming request that is necessary for
-        authentication.
-
-        Since incoming request can be either a protobuf serialized binary or
-        a JSON object, the derived classes must implement the necessary
-        logic to decode the incoming request and return a tuple of size 3
-        where message is at index 0, vm_id is at index 1 and signature is at
-        index 2.
-
-        Raises:
-            NotImplementedError. The derived child classes must implement the
-                necessary logic as described above.
-        """
-        raise NotImplementedError

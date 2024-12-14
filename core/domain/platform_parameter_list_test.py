@@ -18,7 +18,6 @@
 
 from __future__ import annotations
 
-from core.domain import platform_feature_services as feature_services
 from core.domain import platform_parameter_registry
 from core.tests import test_utils
 
@@ -28,18 +27,16 @@ class ExistingPlatformParameterValidityTests(test_utils.GenericTestBase):
     core/domain/platform_parameter_list.py.
     """
 
-    EXPECTED_PARAM_NAMES = ['always_ask_learners_for_answer_details',
-                            'cd_admin_dashboard_new_ui',
-                            'checkpoint_celebration',
-                            'contributor_dashboard_accomplishments',
+    EXPECTED_PARAM_NAMES = [
+                            'admin_email_address',
+                            'always_ask_learners_for_answer_details',
                             'contributor_dashboard_reviewer_emails_is_enabled',
-                            'diagnostic_test',
-                            'dummy_feature_flag_for_e2e_tests',
                             'dummy_parameter',
                             'email_footer',
                             'email_sender_name',
                             'enable_admin_notifications_for_reviewer_shortage',
-                            'end_chapter_celebration',
+                            'es_cloud_id',
+                            'es_username',
                             'high_bounce_rate_task_minimum_exploration_starts',
                             (
                                 'high_bounce_rate_task_state_bounce_'
@@ -49,26 +46,27 @@ class ExistingPlatformParameterValidityTests(test_utils.GenericTestBase):
                                 'high_bounce_rate_task_state_bounce_rate_'
                                 'obsoletion_threshold'
                             ),
-                            'is_improvements_tab_enabled',
-                            'learner_groups_are_enabled',
+                            'mailchimp_audience_id',
+                            'mailchimp_username',
+                            'mailgun_domain_name',
                             'max_number_of_suggestions_per_reviewer',
                             'max_number_of_tags_assigned_to_blog_post',
                             (
                                 'notify_admins_suggestions_waiting_too_long_'
                                 'is_enabled'
                             ),
+                            'noreply_email_address',
+                            'oppia_project_id',
+                            'oppia_site_url_for_emails',
                             'promo_bar_enabled',
                             'promo_bar_message',
                             'record_playthrough_probability',
-                            'serial_chapter_launch_curriculum_admin_view',
-                            'serial_chapter_launch_learner_view',
-                            'show_feedback_updates_in_profile_pic_dropdown',
-                            'show_redesigned_learner_dashboard',
-                            'show_translation_size',
+                            'server_can_send_emails',
                             'signup_email_body_content',
                             'signup_email_subject_content',
-                            'unpublish_exploration_email_html_body',
-                            'new_lesson_player']
+                            'system_email_address',
+                            'system_email_name',
+                            'unpublish_exploration_email_html_body']
 
     def test_all_defined_parameters_are_valid(self) -> None:
         all_names = (
@@ -144,27 +142,3 @@ class ExistingPlatformParameterValidityTests(test_utils.GenericTestBase):
             unexpected_names,
             msg='Unexpected platform parameters: %s.' % list(unexpected_names)
         )
-
-    def test_all_feature_flags_are_of_bool_type(self) -> None:
-        feature_flags = feature_services.get_all_feature_flag_dicts()
-        self.assertGreater(len(feature_flags), 0)
-        for feature in feature_flags:
-            self.assertEqual(
-                feature['data_type'],
-                'bool',
-                'We expect all the feature-flags to be of type boolean '
-                'but "%s" feature-flag is of type "%s".' % (
-                    feature['name'], feature['data_type'])
-            )
-
-    def test_all_feature_flags_have_default_value_as_false(self) -> None:
-        feature_flags = feature_services.get_all_feature_flag_dicts()
-        self.assertGreater(len(feature_flags), 0)
-        for feature in feature_flags:
-            self.assertEqual(
-                feature['default_value'],
-                False,
-                'We expect all the feature-flags default_value to be False '
-                'but "%s" feature-flag has "%s".' % (
-                    feature['name'], feature['default_value'])
-            )

@@ -37,7 +37,6 @@ from urllib import request as urlrequest
 from core import feconf
 from core import utils
 from core.tests import test_utils
-from scripts import install_python_dev_dependencies
 from scripts import servers
 
 from typing import Generator, List, Literal, NoReturn
@@ -166,22 +165,6 @@ class CommonTests(test_utils.GenericTestBase):
             yield server.server_address[1]
         finally:
             server.server_close()
-
-    def test_protoc_version_matches_protobuf(self) -> None:
-        """Check that common.PROTOC_VERSION matches the version of protobuf in
-        requirements.in.
-        """
-        with open(
-            install_python_dev_dependencies.REQUIREMENTS_DEV_FILE_PATH,
-            'r',
-            encoding='utf-8',
-        ) as f:
-            for line in f:
-                if line.startswith('protobuf'):
-                    line = line.strip()
-                    protobuf_version = line.split('==')[1]
-                    break
-        self.assertEqual(common.PROTOC_VERSION, protobuf_version)
 
     def test_is_x64_architecture_in_x86(self) -> None:
         maxsize_swap = self.swap(sys, 'maxsize', 1)
@@ -1257,67 +1240,70 @@ class CommonTests(test_utils.GenericTestBase):
             common, 'CONSTANTS_FILE_PATH', mock_constants_path)
         feconf_path_swap = self.swap(common, 'FECONF_PATH', mock_feconf_path)
 
-        def mock_check_output(
-            unused_cmd_tokens: List[str], encoding: str = 'utf-8'  # pylint: disable=unused-argument
-        ) -> str:
-            return 'test'
-        check_output_swap = self.swap(
-            subprocess, 'check_output', mock_check_output
-        )
+        with self.swap(feconf, 'OPPIA_IS_DOCKERIZED', False):
+            def mock_check_output(
+                unused_cmd_tokens: List[str], encoding: str = 'utf-8'  # pylint: disable=unused-argument
+            ) -> str:
+                return 'test'
+            check_output_swap = self.swap(
+                subprocess, 'check_output', mock_check_output
+            )
 
-        constants_temp_file = tempfile.NamedTemporaryFile()
-        # Here MyPy assumes that the 'name' attribute is read-only. In order to
-        # silence the MyPy complaints `setattr` is used to set the attribute.
-        setattr(
-            constants_temp_file, 'name', mock_constants_path)
-        with utils.open_file(mock_constants_path, 'w') as tmp:
-            tmp.write('export = {\n')
-            tmp.write('  "DEV_MODE": true,\n')
-            tmp.write('  "EMULATOR_MODE": false,\n')
-            tmp.write('  "BRANCH_NAME": "",\n')
-            tmp.write('  "SHORT_COMMIT_HASH": ""\n')
-            tmp.write('};')
+            constants_temp_file = tempfile.NamedTemporaryFile()
+            # Here MyPy assumes that the 'name' attribute is read-only.
+            # In order to silence the MyPy complaints `setattr` is used
+            # to set the attribute.
+            setattr(
+                constants_temp_file, 'name', mock_constants_path)
+            with utils.open_file(mock_constants_path, 'w') as tmp:
+                tmp.write('export = {\n')
+                tmp.write('  "DEV_MODE": true,\n')
+                tmp.write('  "EMULATOR_MODE": false,\n')
+                tmp.write('  "BRANCH_NAME": "",\n')
+                tmp.write('  "SHORT_COMMIT_HASH": ""\n')
+                tmp.write('};')
 
-        feconf_temp_file = tempfile.NamedTemporaryFile()
-        # Here MyPy assumes that the 'name' attribute is read-only. In order to
-        # silence the MyPy complaints `setattr` is used to set the attribute.
-        setattr(feconf_temp_file, 'name', mock_feconf_path)
-        with utils.open_file(mock_feconf_path, 'w') as tmp:
-            tmp.write(u'ENABLE_MAINTENANCE_MODE = False')
+            feconf_temp_file = tempfile.NamedTemporaryFile()
+            # Here MyPy assumes that the 'name' attribute is read-only.
+            # In order to silence the MyPy complaints `setattr` is used
+            # to set the attribute.
+            setattr(feconf_temp_file, 'name', mock_feconf_path)
+            with utils.open_file(mock_feconf_path, 'w') as tmp:
+                tmp.write(u'ENABLE_MAINTENANCE_MODE = False')
 
-        with constants_path_swap, feconf_path_swap, check_output_swap:
-            common.modify_constants(prod_env=True, maintenance_mode=False)
-            with utils.open_file(
-                mock_constants_path, 'r') as constants_file:
-                self.assertEqual(
-                    constants_file.read(),
-                    'export = {\n'
-                    '  "DEV_MODE": false,\n'
-                    '  "EMULATOR_MODE": true,\n'
-                    '  "BRANCH_NAME": "test",\n'
-                    '  "SHORT_COMMIT_HASH": "test"\n'
-                    '};')
-            with utils.open_file(mock_feconf_path, 'r') as feconf_file:
-                self.assertEqual(
-                    feconf_file.read(), 'ENABLE_MAINTENANCE_MODE = False')
+            with constants_path_swap, feconf_path_swap, check_output_swap:
+                common.modify_constants(prod_env=True, maintenance_mode=False)
+                with utils.open_file(
+                    mock_constants_path, 'r') as constants_file:
+                    self.assertEqual(
+                        constants_file.read(),
+                        'export = {\n'
+                        '  "DEV_MODE": false,\n'
+                        '  "EMULATOR_MODE": true,\n'
+                        '  "BRANCH_NAME": "test",\n'
+                        '  "SHORT_COMMIT_HASH": "test"\n'
+                        '};')
+                with utils.open_file(mock_feconf_path, 'r') as feconf_file:
+                    self.assertEqual(
+                        feconf_file.read(), 'ENABLE_MAINTENANCE_MODE = False')
 
-            common.modify_constants(prod_env=False, maintenance_mode=True)
-            with utils.open_file(
-                mock_constants_path, 'r') as constants_file:
-                self.assertEqual(
-                    constants_file.read(),
-                    'export = {\n'
-                    '  "DEV_MODE": true,\n'
-                    '  "EMULATOR_MODE": true,\n'
-                    '  "BRANCH_NAME": "test",\n'
-                    '  "SHORT_COMMIT_HASH": "test"\n'
-                    '};')
-            with utils.open_file(mock_feconf_path, 'r') as feconf_file:
-                self.assertEqual(
-                    feconf_file.read(), 'ENABLE_MAINTENANCE_MODE = True')
+                common.modify_constants(prod_env=False, maintenance_mode=True)
+                with utils.open_file(
+                    mock_constants_path, 'r') as constants_file:
+                    self.assertEqual(
+                        constants_file.read(),
+                        'export = {\n'
+                        '  "DEV_MODE": true,\n'
+                        '  "EMULATOR_MODE": true,\n'
+                        '  "BRANCH_NAME": "test",\n'
+                        '  "SHORT_COMMIT_HASH": "test"\n'
+                        '};')
+                with utils.open_file(mock_feconf_path, 'r') as feconf_file:
+                    self.assertEqual(
+                        feconf_file.read(), 'ENABLE_MAINTENANCE_MODE = True')
 
-        constants_temp_file.close()
-        feconf_temp_file.close()
+            constants_temp_file.close()
+            feconf_temp_file.close()
 
         # Clean up spare files.
         os.remove(mock_constants_path)
@@ -1350,21 +1336,22 @@ class CommonTests(test_utils.GenericTestBase):
         with utils.open_file(mock_feconf_path, 'w') as tmp:
             tmp.write(u'ENABLE_MAINTENANCE_MODE = True')
         self.contextManager.__exit__(None, None, None)
-        with constants_path_swap, feconf_path_swap:
-            common.set_constants_to_default()
-            with utils.open_file(
-                mock_constants_path, 'r') as constants_file:
-                self.assertEqual(
-                    constants_file.read(),
-                    'export = {\n'
-                    '  "DEV_MODE": true,\n'
-                    '  "EMULATOR_MODE": true,\n'
-                    '  "BRANCH_NAME": "",\n'
-                    '  "SHORT_COMMIT_HASH": ""\n'
-                    '};')
-            with utils.open_file(mock_feconf_path, 'r') as feconf_file:
-                self.assertEqual(
-                    feconf_file.read(), 'ENABLE_MAINTENANCE_MODE = False')
+        with self.swap(feconf, 'OPPIA_IS_DOCKERIZED', False):
+            with constants_path_swap, feconf_path_swap:
+                common.set_constants_to_default()
+                with utils.open_file(
+                    mock_constants_path, 'r') as constants_file:
+                    self.assertEqual(
+                        constants_file.read(),
+                        'export = {\n'
+                        '  "DEV_MODE": true,\n'
+                        '  "EMULATOR_MODE": true,\n'
+                        '  "BRANCH_NAME": "",\n'
+                        '  "SHORT_COMMIT_HASH": ""\n'
+                        '};')
+                with utils.open_file(mock_feconf_path, 'r') as feconf_file:
+                    self.assertEqual(
+                        feconf_file.read(), 'ENABLE_MAINTENANCE_MODE = False')
         constants_temp_file.close()
         feconf_temp_file.close()
 
@@ -1388,3 +1375,17 @@ class CommonTests(test_utils.GenericTestBase):
                 lambda port: port == common.GAE_PORT_FOR_E2E_TESTING))
 
             self.assertTrue(common.is_oppia_server_already_running())
+
+    def test_start_subprocess_for_result(self) -> None:
+        process = subprocess.Popen(
+            ['echo', 'test'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        def mock_popen( # pylint: disable=unused-argument
+            cmd_tokens: List[str], stdout: int, stderr: int
+        ) -> subprocess.Popen[bytes]:
+            return process
+        popen_swap = self.swap(subprocess, 'Popen', mock_popen)
+
+        with popen_swap:
+            self.assertEqual(
+                common.start_subprocess_for_result(['cmd']),
+                (b'test\n', b''))

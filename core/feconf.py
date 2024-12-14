@@ -83,7 +83,6 @@ check_dev_mode_is_true()
 
 # TODO(#18260): Remove this when we permanently move to the Dockerized Setup.
 OPPIA_IS_DOCKERIZED = bool(os.environ.get('OPPIA_IS_DOCKERIZED', False))
-CLASSIFIERS_DIR = os.path.join('extensions', 'classifiers')
 TESTS_DATA_DIR = os.path.join('core', 'tests', 'data')
 SAMPLE_EXPLORATIONS_DIR = os.path.join('data', 'explorations')
 SAMPLE_COLLECTIONS_DIR = os.path.join('data', 'collections')
@@ -146,7 +145,6 @@ class ValidModelNames(enum.Enum):
     BEAM_JOB = 'beam_job'
     BLOG = 'blog'
     BLOG_STATISTICS = 'blog_statistics'
-    CLASSIFIER = 'classifier'
     CLASSROOM = 'classroom'
     COLLECTION = 'collection'
     CONFIG = 'CONFIG'
@@ -171,42 +169,6 @@ class ValidModelNames(enum.Enum):
     VOICEOVER = 'voiceover'
 
 
-# A mapping of interaction ids to classifier properties.
-# TODO(#10217): As of now we support only one algorithm per interaction.
-# However, we do have the necessary storage infrastructure to support multiple
-# algorithms per interaction. Hence, whenever we find a secondary algorithm
-# candidate for any of the supported interactions, the logical functions to
-# support multiple algorithms need to be implemented.
-
-
-class ClassifierDict(TypedDict):
-    """Representing INTERACTION_CLASSIFIER_MAPPING dict values."""
-
-    algorithm_id: str
-    algorithm_version: int
-
-
-INTERACTION_CLASSIFIER_MAPPING: Dict[str, ClassifierDict] = {
-    'TextInput': {
-        'algorithm_id': 'TextClassifier',
-        'algorithm_version': 1
-    },
-}
-
-# Classifier job time to live (in mins).
-CLASSIFIER_JOB_TTL_MINS = 5
-TRAINING_JOB_STATUS_COMPLETE = 'COMPLETE'
-TRAINING_JOB_STATUS_FAILED = 'FAILED'
-TRAINING_JOB_STATUS_NEW = 'NEW'
-TRAINING_JOB_STATUS_PENDING = 'PENDING'
-
-ALLOWED_TRAINING_JOB_STATUSES: List[str] = [
-    TRAINING_JOB_STATUS_COMPLETE,
-    TRAINING_JOB_STATUS_FAILED,
-    TRAINING_JOB_STATUS_NEW,
-    TRAINING_JOB_STATUS_PENDING
-]
-
 # Allowed formats of how HTML is present in rule specs.
 HTML_RULE_VARIABLE_FORMAT_SET = 'set'
 HTML_RULE_VARIABLE_FORMAT_STRING = 'string'
@@ -230,14 +192,6 @@ MAX_CHARS_IN_BLOG_POST_URL = (
     + constants.BLOG_POST_ID_LENGTH
 )
 
-ALLOWED_TRAINING_JOB_STATUS_CHANGES: Dict[str, List[str]] = {
-    TRAINING_JOB_STATUS_COMPLETE: [],
-    TRAINING_JOB_STATUS_NEW: [TRAINING_JOB_STATUS_PENDING],
-    TRAINING_JOB_STATUS_PENDING: [TRAINING_JOB_STATUS_COMPLETE,
-                                  TRAINING_JOB_STATUS_FAILED],
-    TRAINING_JOB_STATUS_FAILED: [TRAINING_JOB_STATUS_NEW]
-}
-
 # Allowed formats of how HTML is present in rule specs.
 HTML_RULE_VARIABLE_FORMAT_SET = 'set'
 HTML_RULE_VARIABLE_FORMAT_STRING = 'string'
@@ -259,6 +213,7 @@ ENTITY_TYPE_SKILL = 'skill'
 ENTITY_TYPE_STORY = 'story'
 ENTITY_TYPE_QUESTION = 'question'
 ENTITY_TYPE_USER = 'user'
+ENTITY_TYPE_CLASSROOM = 'classroom'
 
 DIAGNOSTIC_TEST_QUESTION_TYPE_MAIN = 'main_question'
 DIAGNOSTIC_TEST_QUESTION_TYPE_BACKUP = 'backup_question'
@@ -277,15 +232,6 @@ MAX_LEARNER_PLAYLIST_ACTIVITY_COUNT = 10
 
 # The maximum number of goals allowed in the learner goals of the learner.
 MAX_CURRENT_GOALS_COUNT = 5
-
-# The minimum number of training samples required for training a classifier.
-MIN_TOTAL_TRAINING_EXAMPLES = 50
-
-# The minimum number of assigned labels required for training a classifier.
-MIN_ASSIGNED_LABELS = 2
-
-# Default label for classification algorithms.
-DEFAULT_CLASSIFIER_LABEL = '_default'
 
 # The maximum number of results to retrieve in a datastore query.
 DEFAULT_QUERY_LIMIT = 1000
@@ -344,7 +290,7 @@ EARLIEST_SUPPORTED_STATE_SCHEMA_VERSION = 41
 # incompatible changes are made to the states blob schema in the data store,
 # this version number must be changed and the exploration migration job
 # executed.
-CURRENT_STATE_SCHEMA_VERSION = 55
+CURRENT_STATE_SCHEMA_VERSION = 56
 
 # The current version of the all collection blob schemas (such as the nodes
 # structure within the Collection domain object). If any backward-incompatible
@@ -420,14 +366,12 @@ DEFAULT_EXPLANATION_CONTENT_ID = 'explanation'
 # customization argument choices.
 INVALID_CONTENT_ID = 'invalid_content_id'
 # The default content text for the initial state of an exploration.
-DEFAULT_INIT_STATE_CONTENT_STR = ''
+DEFAULT_STATE_CONTENT_STR = ''
 
 # Whether new explorations should have automatic text-to-speech enabled
 # by default.
 DEFAULT_AUTO_TTS_ENABLED = False
-# Whether new explorations should have correctness-feedback enabled
-# by default.
-DEFAULT_CORRECTNESS_FEEDBACK_ENABLED = True
+
 # Default value for next_content_id_index in exploration/question.
 DEFUALT_NEXT_CONTENT_ID_INDEX = 0
 
@@ -461,11 +405,6 @@ DEFAULT_ABBREVIATED_TOPIC_NAME = ''
 # Default content id for the subtopic page's content.
 DEFAULT_SUBTOPIC_PAGE_CONTENT_ID = 'content'
 
-# Default ID of VM which is used for training classifier.
-DEFAULT_VM_ID = 'vm_default'
-# Shared secret key for default VM.
-DEFAULT_VM_SHARED_SECRET = '1a2b3c4e'
-
 IMAGE_FORMAT_JPEG = 'jpeg'
 IMAGE_FORMAT_PNG = 'png'
 IMAGE_FORMAT_GIF = 'gif'
@@ -496,7 +435,7 @@ XSSI_PREFIX = b')]}\'\n'
 ALPHANUMERIC_REGEX = r'^[A-Za-z0-9]+$'
 
 # A regular expression for language accent code.
-LANGUAGE_ACCENT_CODE_REGEX = r'^(([a-z]+)-)+([A-Z]+)$'
+LANGUAGE_ACCENT_CODE_REGEX = r'^(([a-zA-Z]+)-)+([a-zA-Z]+)$'
 
 # These are here rather than in rating_services.py to avoid import
 # circularities with exp_services.
@@ -505,11 +444,23 @@ _EMPTY_RATINGS = {'1': 0, '2': 0, '3': 0, '4': 0, '5': 0}
 
 
 def get_empty_ratings() -> Dict[str, int]:
-    """Returns a copy of the empty ratings object.
+    """Returns a deep copy of the empty ratings dictionary.
+    This function is used to obtain a fresh copy of the empty ratings
+    dictionary. This can be useful in scenarios where a new ratings
+    dictionary is needed without any pre-existing data.
 
     Returns:
-        dict. Copy of the '_EMPTY_RATINGS' dict object which contains the empty
-        ratings.
+        dict. A deep copy of the _EMPTY_RATINGS dictionary. The structure
+        of this dictionary is as follows:
+        {
+            '5': 0,
+            '4': 0,
+            '3': 0,
+            '2': 0,
+            '1': 0
+        }
+        Each key represents a rating value, and the corresponding value
+        represents the count of ratings for that value, initialized to 0.
     """
     return copy.deepcopy(_EMPTY_RATINGS)
 
@@ -574,7 +525,7 @@ ENV_IS_OPPIA_ORG_PRODUCTION_SERVER = bool(OPPIA_PROJECT_ID == 'oppiaserver')
 DATAFLOW_TEMP_LOCATION = 'gs://todo/todo'
 DATAFLOW_STAGING_LOCATION = 'gs://todo/todo'
 
-OPPIA_VERSION = '3.3.5'
+OPPIA_VERSION = '3.4.3'
 OPPIA_PYTHON_PACKAGE_PATH = './build/oppia-beam-job-%s.tar.gz' % OPPIA_VERSION
 
 # Committer id for system actions. The username for the system committer
@@ -585,19 +536,7 @@ SYSTEM_EMAIL_ADDRESS = 'system@example.com'
 SYSTEM_EMAIL_NAME = '.'
 ADMIN_EMAIL_ADDRESS = 'testadmin@example.com'
 NOREPLY_EMAIL_ADDRESS = 'noreply@example.com'
-# Ensure that SYSTEM_EMAIL_ADDRESS and ADMIN_EMAIL_ADDRESS are both valid and
-# correspond to owners of the app before setting this to True. If
-# SYSTEM_EMAIL_ADDRESS is not that of an app owner, email messages from this
-# address cannot be sent. If True then emails can be sent to any user.
-CAN_SEND_EMAILS = False
-# If you want to turn on this facility please check the email templates in the
-# send_role_notification_email() function in email_manager.py and modify them
-# accordingly.
-CAN_SEND_EDITOR_ROLE_EMAILS = False
-# If enabled then emails will be sent to creators for feedback messages.
-CAN_SEND_FEEDBACK_MESSAGE_EMAILS = False
-# If enabled subscription emails will be sent to that user.
-CAN_SEND_SUBSCRIPTION_EMAILS = False
+CAN_SEND_TRANSACTIONAL_EMAILS = True
 # Time to wait before sending feedback message emails (currently set to 1
 # hour).
 DEFAULT_FEEDBACK_MESSAGE_EMAIL_COUNTDOWN_SECS = 3600
@@ -614,12 +553,10 @@ DEFAULT_FEEDBACK_NOTIFICATIONS_MUTED_PREFERENCE = False
 # when the user has not specified a preference.
 DEFAULT_SUGGESTION_NOTIFICATIONS_MUTED_PREFERENCE = False
 # Whether to send email updates to a user who has not specified a preference.
-DEFAULT_EMAIL_UPDATES_PREFERENCE = False
+DEFAULT_EMAIL_UPDATES_PREFERENCE = True
 # Whether to send an invitation email when the user is granted
 # new role permissions in an exploration.
 DEFAULT_EDITOR_ROLE_EMAIL_PREFERENCE = True
-# Whether to require an email to be sent, following a moderator action.
-REQUIRE_EMAIL_ON_MODERATOR_ACTION = False
 # Timespan in minutes before allowing duplicate emails.
 DUPLICATE_EMAIL_INTERVAL_MINS = 2
 # Number of digits after decimal to which the average ratings value in the
@@ -683,9 +620,7 @@ BULK_EMAIL_INTENT_IMPROVE_EXPLORATION = 'bulk_email_improve_exploration'
 BULK_EMAIL_INTENT_CREATE_EXPLORATION = 'bulk_email_create_exploration'
 BULK_EMAIL_INTENT_CREATOR_REENGAGEMENT = 'bulk_email_creator_reengagement'
 BULK_EMAIL_INTENT_LEARNER_REENGAGEMENT = 'bulk_email_learner_reengagement'
-BULK_EMAIL_INTENT_ML_JOB_FAILURE = 'bulk_email_ml_job_failure'
 BULK_EMAIL_INTENT_TEST = 'bulk_email_test'
-EMAIL_INTENT_ML_JOB_FAILURE = 'email_ml_job_failure'
 
 MESSAGE_TYPE_FEEDBACK = 'feedback'
 MESSAGE_TYPE_SUGGESTION = 'suggestion'
@@ -839,8 +774,6 @@ DEMO_EXPLORATIONS = {
     # NumericInput interaction.
     u'3': 'root_linear_coefficient_theorem',
     u'4': 'three_balls',
-    # TODO(bhenning): Replace demo exploration '5' with a new exploration
-    # described in #1376.
     u'6': 'boot_verbs.yaml',
     u'7': 'hola.yaml',
     # Exploration with ID 8 was removed as it contained string values inside
@@ -902,12 +835,10 @@ TASK_URL_DEFERRED = (
     '%s/deferredtaskshandler' % TASKQUEUE_URL_PREFIX)
 
 # TODO(sll): Add all other URLs here.
-ABOUT_FOUNDATION_PAGE_URL = '/about-foundation'
 ADMIN_URL = '/admin'
 ADMIN_ROLE_HANDLER_URL = '/adminrolehandler'
 BLOG_ADMIN_ROLE_HANDLER_URL = '/blogadminrolehandler'
 BLOG_DASHBOARD_DATA_URL = '/blogdashboardhandler/data'
-BLOG_DASHBOARD_URL = '/blog-dashboard'
 DIAGNOSTIC_TEST_PLAYER_PAGE_URL = '/diagnostic-test-player'
 BLOG_EDITOR_DATA_URL_PREFIX = '/blogeditorhandler/data'
 BULK_EMAIL_WEBHOOK_ENDPOINT = '/bulk_email_webhook_endpoint'
@@ -931,7 +862,7 @@ CONTRIBUTOR_DASHBOARD_URL = '/contributor-dashboard'
 CONTRIBUTOR_STATS_SUMMARIES_URL = '/contributorstatssummaries'
 CONTRIBUTOR_ALL_STATS_SUMMARIES_URL = '/contributorallstatssummaries'
 CONTRIBUTOR_CERTIFICATE_URL = '/contributorcertificate'
-CONTRIBUTOR_DASHBOARD_ADMIN_URL = '/contributor-dashboard-admin'
+CONTRIBUTOR_DASHBOARD_ADMIN_URL = '/contributor-admin-dashboard'
 CONTRIBUTOR_DASHBOARD_ADMIN_STATS_URL_PREFIX = (
     '/contributor-dashboard-admin-stats')
 COMMUNITY_CONTRIBUTION_STATS_URL = '/community-contribution-stats'
@@ -1021,6 +952,7 @@ QUESTION_COUNT_URL_PREFIX = '/question_count_handler'
 QUESTIONS_URL_PREFIX = '/question_player_handler'
 RECENT_COMMITS_DATA_URL = '/recentcommitshandler/recent_commits'
 RECENT_FEEDBACK_MESSAGES_DATA_URL = '/recent_feedback_messages'
+REGENERATE_TOPIC_SUMMARIES_URL = '/regenerate_topic_summaries_handler'
 DELETE_ACCOUNT_URL = '/delete-account'
 DELETE_ACCOUNT_HANDLER_URL = '/delete-account-handler'
 EXPORT_ACCOUNT_HANDLER_URL = '/export-account-handler'
@@ -1063,6 +995,7 @@ UPDATE_TRANSLATION_SUGGESTION_URL_PREFIX = (
     '/updatetranslationsuggestionhandler')
 UPDATE_QUESTION_SUGGESTION_URL_PREFIX = (
     '/updatequestionsuggestionhandler')
+USER_GROUPS_HANDLER_URL = '/user_groups_handler'
 SUBSCRIBE_URL_PREFIX = '/subscribehandler'
 SUBTOPIC_PAGE_EDITOR_DATA_URL_PREFIX = '/subtopic_page_editor_handler/data'
 TOPIC_VIEWER_URL_PREFIX = (
@@ -1093,16 +1026,23 @@ LEARNER_DASHBOARD_LEARNER_GROUPS_HANDLER = (
     '/learner_dashboard_learner_groups_handler')
 CREATE_LEARNER_GROUP_PAGE_URL = '/create-learner-group'
 EDIT_LEARNER_GROUP_PAGE_URL = '/edit-learner-group'
-CLASSROOM_ADMIN_DATA_HANDLER_URL = '/classroom_admin_data_handler'
+CLASSROOM_DISPLAY_INFO_HANDLER_URL = '/classroom_display_info_handler'
+UPDATE_CLASSROOMS_ORDER_HANDLER_URL = '/update_classrooms_order'
 UNUSED_TOPICS_HANDLER_URL = '/unused_topics'
 NEW_CLASSROOM_ID_HANDLER_URL = '/new_classroom_id_handler'
+NEW_CLASSROOM_HANDLER_URL = '/classroom_admin/create_new'
+TOPICS_TO_CLASSROOM_RELATION_HANDLER_URL = (
+    '/topics_to_classrooms_relation'
+)
+ALL_CLASSROOMS_SUMMARY_HANDLER_URL = '/all_classrooms_summary'
 CLASSROOM_HANDLER_URL = '/classroom'
 CLASSROOM_URL_FRAGMENT_HANDLER = '/classroom_url_fragment_handler'
 CLASSROOM_ID_HANDLER_URL = '/classroom_id_handler'
-VOICEOVER_ADMIN_PAGE_URL = '/voiceover-admin'
 VOICEOVER_ADMIN_DATA_HANDLER_URL = '/voiceover_admin_data_handler'
 VOICEOVER_LANGUAGE_CODES_MAPPING_HANDLER_URL = (
     '/voiceover_language_codes_mapping')
+VOICE_ARTIST_METADATA_HANDLER = '/voice_artist_metadata_handler'
+GET_SAMPLE_VOICEOVERS_FOR_VOICE_ARTIST = '/get_sample_voiceovers'
 
 # Event types.
 EVENT_TYPE_ALL_STATS = 'all_stats'
@@ -1143,8 +1083,6 @@ MAX_PLAYTHROUGHS_FOR_ISSUE = 5
 TOP_UNRESOLVED_ANSWERS_COUNT_DASHBOARD = 3
 # Number of open feedback to be displayed in the dashboard for each exploration.
 OPEN_FEEDBACK_COUNT_DASHBOARD = 3
-# NOTE TO DEVELOPERS: This should be synchronized with app.constants.ts.
-ENABLE_ML_CLASSIFIERS = False
 
 # The regular expression used to identify whether a string contains float value.
 # The regex must match with regex that is stored in vmconf.py file of Oppia-ml.
@@ -1683,6 +1621,8 @@ COMPOSITE_ENTITY_ID_TEMPLATE = '%s.%s.%d'
 ContentValueType = Union[str, List[str]]
 
 MIN_ALLOWED_MISSING_OR_UPDATE_NEEDED_WRITTEN_TRANSLATIONS = 10
+
+DEFAULT_CLASSROOM_PUBLICATION_STATUS = False
 
 
 class TranslatableEntityType(enum.Enum):
