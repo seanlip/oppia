@@ -20,7 +20,10 @@ import {Component, Input} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConstants} from 'app.constants';
-import {ContributorCertificateResponse} from '../services/contribution-and-review-backend-api.service';
+import {
+  ContributorCertificateResponse,
+  ContributorCertificateInfo,
+} from '../services/contribution-and-review-backend-api.service';
 import {ContributionAndReviewService} from '../services/contribution-and-review.service';
 
 interface CertificateContentData {
