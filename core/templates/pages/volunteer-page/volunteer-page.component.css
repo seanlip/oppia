@@ -135,8 +135,8 @@
 .volunteer-page .mat-tab-label-container {
   display: flex;
   gap: 12px;
-  white-space: nowrap;
   -ms-overflow-style: none;
+  white-space: nowrap;
   overflow-x: auto;
   padding: 8px;
 }
@@ -154,8 +154,8 @@
 .volunteer-page .mat-tab-header {
   position: sticky;
   top: 0;
-  z-index: 10;
   background-color: #fff;
+  z-index: 10; 
 }
 
 .volunteer-page .mat-tab-label {
@@ -231,10 +231,10 @@
   top: 10px;
   z-index: 999;
   background-color: #fff;
-  padding: 8px;
   height: 48px;
-  width: 48px;
+  padding: 8px;
   cursor: pointer;
+  width: 48px; 
 }
 
 .volunteer-page .mat-ink-bar {
