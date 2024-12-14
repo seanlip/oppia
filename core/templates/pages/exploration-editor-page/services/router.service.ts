@@ -70,6 +70,7 @@ export class RouterService {
     this._changeTab(this.windowRef.nativeWindow.location.hash.split('#')[1]);
 
     this.location.onPopState(() => {
+      console.log(window.location.hash);
       if (window.location.hash === '') {
         window.history.go(-1);
       }
@@ -187,7 +188,6 @@ export class RouterService {
                 pathType === this.SLUG_GUI &&
                 this._activeTabName === this.TABS.MAIN.name
               ) {
-                this.windowRef.nativeWindow.location.hash = path;
                 this.stateEditorRefreshService.onRefreshStateEditor.emit();
               }
             } else {
