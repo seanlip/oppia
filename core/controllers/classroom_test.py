@@ -297,16 +297,18 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
         }
         self.assertDictContainsSubset(expected_dict, json_response)
 
-    def test_get_multiple_classrooms_count_all_published_unmatching_classrooms(
+    def test_get_multiple_classrooms_counts_all_published_unmatching_classrooms(
         self
     ) -> None:
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         # Create a published classroom with a url_fragment matching 'math'.
         self.save_new_valid_classroom(
             classroom_id='test_id',
+            name='math',
+            url_fragment='math',
             topic_id_to_prerequisite_topic_ids={
-                        self.public_topic_id_1: [],
-                        self.private_topic_id: []
+                self.public_topic_id_1: [],
+                self.private_topic_id: []
             },
             course_details='Course details for classroom.',
             topic_list_intro='Topics covered for classroom'
@@ -348,8 +350,8 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
             **{'is_published': False}
         )
 
-        # Should return 'test_id' class, but count all public_classrooms,
-        # 'science' and 'test_id'.
+        # Should return classroom with 'test_id', but count all
+        # public_classrooms('science' and 'test_id').
         expected_dict = {
             'classroom_id': 'test_id',
             'name': 'math',
@@ -562,15 +564,15 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
         # Check new thumbnail image uploaded correctly.
         fs = fs_services.GcsFileSystem(
             feconf.ENTITY_TYPE_CLASSROOM, self.physics_classroom_id)
-        self.assertTrue(fs.isfile('thumbnail/%s' % 'update.svg'))
-        self.assertTrue(fs.isfile('thumbnail/%s' % 'update_compressed.svg'))
-        self.assertTrue(fs.isfile('thumbnail/%s' % 'update_micro.svg'))
+        self.assertTrue(fs.isfile('thumbnail/update.svg'))
+        self.assertTrue(fs.isfile('thumbnail/update_compressed.svg'))
+        self.assertTrue(fs.isfile('thumbnail/update_micro.svg'))
 
-        updated_thumbnail_img = fs.get('thumbnail/%s' % 'update.svg')
+        updated_thumbnail_img = fs.get('thumbnail/update.svg')
         self.assertEqual(raw_thumbnail_image, updated_thumbnail_img)
 
         # Check new banner image is not uploaded.
-        self.assertFalse(fs.isfile('image/%s' % 'update.png'))
+        self.assertFalse(fs.isfile('image/update.png'))
 
         self.logout()
 
@@ -617,15 +619,15 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
         # Check new banner image uploaded correctly.
         fs = fs_services.GcsFileSystem(
             feconf.ENTITY_TYPE_CLASSROOM, self.physics_classroom_id)
-        self.assertTrue(fs.isfile('image/%s' % 'update.png'))
-        self.assertTrue(fs.isfile('image/%s' % 'update_compressed.png'))
-        self.assertTrue(fs.isfile('image/%s' % 'update_micro.png'))
+        self.assertTrue(fs.isfile('image/update.png'))
+        self.assertTrue(fs.isfile('image/update_compressed.png'))
+        self.assertTrue(fs.isfile('image/update_micro.png'))
 
-        updated_banner_img = fs.get('image/%s' % 'update.png')
+        updated_banner_img = fs.get('image/update.png')
         self.assertEqual(raw_banner_image, updated_banner_img)
 
         # Check new thumbnail image is not uploaded.
-        self.assertFalse(fs.isfile('thumbnail/%s' % 'update.svg'))
+        self.assertFalse(fs.isfile('thumbnail/update.svg'))
 
         self.logout()
 
