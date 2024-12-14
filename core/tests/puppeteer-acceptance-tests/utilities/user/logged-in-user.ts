@@ -182,7 +182,7 @@ export class LoggedInUser extends BaseUser {
   }
 
   /**
-   * Navigates to the learner dashboard using profile button in the navbar.
+   * Navigates to the learner dashboard using profile dropdown in the navbar.
    */
   async navigateToLearnerDashboardUsingprofileDropdown(): Promise<void> {
     await this.clickOn(profileDropdown);
