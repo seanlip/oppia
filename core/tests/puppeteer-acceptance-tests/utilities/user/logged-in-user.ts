@@ -47,8 +47,8 @@ const signUpUsernameField = 'input.e2e-test-username-input';
 const invalidEmailErrorContainer = '#mat-error-1';
 const invalidUsernameErrorContainer = '.oppia-warning-text';
 const optionText = '.mat-option-text';
-const profileButton = '.e2e-test-profile-dropdown';
-const learnerDashboardDropdown = '.e2e-test-learner-dashboard-link';
+const profileDropdown = '.e2e-test-profile-dropdown';
+const learnerDashboardMenuLink = '.e2e-test-learner-dashboard-link';
 const confirmUsernameField = '.e2e-test-confirm-username-field';
 const confirmAccountDeletionButton = '.e2e-test-confirm-deletion-button';
 const agreeToTermsCheckbox = 'input.e2e-test-agree-to-terms-checkbox';
@@ -178,21 +178,15 @@ export class LoggedInUser extends BaseUser {
    * Navigates to the learner dashboard.
    */
   async navigateToLearnerDashboard(): Promise<void> {
-    // Reloading the page to ensure the latest state is reflected.
-    // await this.page.reload();
     await this.goto(learnerDashboardUrl);
   }
 
   /**
    * Navigates to the learner dashboard using profile button in the navbar.
    */
-  async navigateToLearnerDashboardUsingProfileButton(): Promise<void> {
-    await this.clickOn(profileButton);
-    await this.clickOn(learnerDashboardDropdown);
-
-    // // Reloading the page to ensure the latest state is reflected.
-    // await this.page.reload();
-    // await this.goto(learnerDashboardUrl);
+  async navigateToLearnerDashboardUsingprofileDropdown(): Promise<void> {
+    await this.clickOn(profileDropdown);
+    await this.clickOn(learnerDashboardMenuLink);
   }
 
   /**
