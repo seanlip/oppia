@@ -323,7 +323,7 @@ class ContributionOpportunitiesHandlerTest(test_utils.GenericTestBase):
             self.assertFalse(response['more'])
             self.assertIsInstance(response['next_cursor'], str)
 
-    def test_get_skill_opportunity_with_zero_page_size_returns_empty(
+    def test_get_skill_opportunity_with_zero_page_size_returns_no_opportunity(
         self) -> None:
         # Unassign topic 0 from the classroom.
         classroom_config_services.delete_classroom(self.classroom_id)
