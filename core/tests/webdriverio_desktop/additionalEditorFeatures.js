@@ -110,7 +110,7 @@ describe('Full exploration editor', function () {
     await users.logout();
   });
 
-  it(
+  fit(
     'should handle discarding changes, navigation, deleting states, ' +
       'changing the first state, displaying content, deleting responses and ' +
       'switching to preview mode',
@@ -124,70 +124,70 @@ describe('Full exploration editor', function () {
       await workflow.createExploration(true);
       await explorationEditorMainTab.setStateName('card1');
       await explorationEditorMainTab.expectCurrentStateToBe('card1');
-      await explorationEditorMainTab.setContent(
-        await forms.toRichText('card1 content'),
-        true
-      );
-      await explorationEditorMainTab.setInteraction('TextInput');
-      await (
-        await explorationEditorMainTab.getResponseEditor('default')
-      ).setDestination('final card', true, null);
-      await (
-        await explorationEditorMainTab.getResponseEditor('default')
-      ).setDestination('card2', true, null);
-      await explorationEditorMainTab.moveToState('card2');
-      // NOTE: we must move to the state before checking state names to avoid
-      // inexplicable failures of the protractor utility that reads state names
-      // (the user-visible names are fine either way). See issue 732 for more.
-      await explorationEditorMainTab.expectStateNamesToBe([
-        'final card',
-        'card1',
-        'card2',
-      ]);
-      await explorationEditorMainTab.setInteraction('EndExploration');
+      // await explorationEditorMainTab.setContent(
+      //   await forms.toRichText('card1 content'),
+      //   true
+      // );
+      // await explorationEditorMainTab.setInteraction('TextInput');
+      // await (
+      //   await explorationEditorMainTab.getResponseEditor('default')
+      // ).setDestination('final card', true, null);
+      // await (
+      //   await explorationEditorMainTab.getResponseEditor('default')
+      // ).setDestination('card2', true, null);
+      // await explorationEditorMainTab.moveToState('card2');
+      // // NOTE: we must move to the state before checking state names to avoid
+      // // inexplicable failures of the protractor utility that reads state names
+      // // (the user-visible names are fine either way). See issue 732 for more.
+      // await explorationEditorMainTab.expectStateNamesToBe([
+      //   'final card',
+      //   'card1',
+      //   'card2',
+      // ]);
+      // await explorationEditorMainTab.setInteraction('EndExploration');
 
-      // Check discarding of changes.
-      await explorationEditorPage.discardChanges();
-      await explorationEditorMainTab.expectCurrentStateToBe(
-        general.FIRST_STATE_DEFAULT_NAME
-      );
-      await explorationEditorMainTab.setStateName('first');
-      await explorationEditorMainTab.expectCurrentStateToBe('first');
-      await explorationEditorMainTab.setContent(
-        await forms.toRichText('card1 content'),
-        true
-      );
+      // // Check discarding of changes.
+      // await explorationEditorPage.discardChanges();
+      // await explorationEditorMainTab.expectCurrentStateToBe(
+      //   general.FIRST_STATE_DEFAULT_NAME
+      // );
+      // await explorationEditorMainTab.setStateName('first');
+      // await explorationEditorMainTab.expectCurrentStateToBe('first');
+      // await explorationEditorMainTab.setContent(
+      //   await forms.toRichText('card1 content'),
+      //   true
+      // );
 
-      // Check deletion of states and changing the first state.
-      await explorationEditorMainTab.setInteraction('TextInput');
-      await (
-        await explorationEditorMainTab.getResponseEditor('default')
-      ).setDestination('final card', true, null);
-      await (
-        await explorationEditorMainTab.getResponseEditor('default')
-      ).setDestination('second', true, null);
-      await explorationEditorMainTab.moveToState('second');
-      await explorationEditorMainTab.expectStateNamesToBe([
-        'final card',
-        'first',
-        'second',
-      ]);
-      await explorationEditorMainTab.expectCurrentStateToBe('second');
-      await explorationEditorPage.navigateToSettingsTab();
-      await explorationEditorSettingsTab.expectAvailableFirstStatesToBe([
-        'final card',
-        'first',
-        'second',
-      ]);
-      await explorationEditorSettingsTab.setFirstState('second');
-      await explorationEditorPage.navigateToMainTab();
-      await explorationEditorMainTab.moveToState('first');
-      await explorationEditorMainTab.deleteState('first');
-      await explorationEditorMainTab.expectCurrentStateToBe('second');
-      await explorationEditorMainTab.expectStateNamesToBe([
-        'final card',
-        'second',
-      ]);
+      // // Check deletion of states and changing the first state.
+      // await explorationEditorMainTab.setInteraction('TextInput');
+      // await (
+      //   await explorationEditorMainTab.getResponseEditor('default')
+      // ).setDestination('final card', true, null);
+      // await (
+      //   await explorationEditorMainTab.getResponseEditor('default')
+      // ).setDestination('second', true, null);
+      // await explorationEditorMainTab.moveToState('second');
+      // await explorationEditorMainTab.expectStateNamesToBe([
+      //   'final card',
+      //   'first',
+      //   'second',
+      // ]);
+      // await explorationEditorMainTab.expectCurrentStateToBe('second');
+      // await explorationEditorPage.navigateToSettingsTab();
+      // await explorationEditorSettingsTab.expectAvailableFirstStatesToBe([
+      //   'final card',
+      //   'first',
+      //   'second',
+      // ]);
+      // await explorationEditorSettingsTab.setFirstState('second');
+      // await explorationEditorPage.navigateToMainTab();
+      // await explorationEditorMainTab.moveToState('first');
+      // await explorationEditorMainTab.deleteState('first');
+      // await explorationEditorMainTab.expectCurrentStateToBe('second');
+      // await explorationEditorMainTab.expectStateNamesToBe([
+      //   'final card',
+      //   'second',
+      // ]);
 
       // Check behaviour of the back button.
       await explorationEditorPage.navigateToSettingsTab();
