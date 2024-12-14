@@ -153,9 +153,10 @@
 
 .volunteer-page .mat-tab-header {
   position: sticky;
-  top: 0;
   background-color: #fff;
-  z-index: 10; 
+  top: 0;
+  z-index: 10;
+
 }
 
 .volunteer-page .mat-tab-label {
@@ -229,12 +230,14 @@
 .oppia-volunteer-tab-next-btn {
   position: sticky;
   top: 10px;
-  z-index: 999;
   background-color: #fff;
-  height: 48px;
+  z-index: 999;
   padding: 8px;
+  height: 48px;
   cursor: pointer;
-  width: 48px; 
+  padding: 8px;
+  width: 48px;
+  
 }
 
 .volunteer-page .mat-ink-bar {
