@@ -40,7 +40,6 @@ export class MathJaxDirective implements OnChanges, OnInit {
   // https://github.com/oppia/oppia/wiki/Guide-on-defining-types#ts-7-1 .
   @Input('oppiaMathJax') texExpression!: string;
 
-  loaded = false;
   constructor(
     private el: ElementRef,
     private insertScriptService: InsertScriptService
@@ -48,14 +47,12 @@ export class MathJaxDirective implements OnChanges, OnInit {
 
   ngOnInit(): void {
     this.insertScriptService.loadScript(KNOWN_SCRIPTS.MATHJAX, () => {
-      this.loaded = true;
       this.renderExpression();
     });
   }
-
   ngOnChanges(changes: SimpleChanges): void {
     if (
-      this.loaded &&
+      this.insertScriptService.hasScriptLoaded(KNOWN_SCRIPTS.MATHJAX) &&
       changes.texExpression &&
       changes.texExpression.currentValue !== changes.texExpression.previousValue
     ) {

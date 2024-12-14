@@ -39,7 +39,6 @@ class MockRendererFactory {
 describe('InsertScriptService', () => {
   let insertScriptService: InsertScriptService;
   let rendererFactory: RendererFactory2;
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [

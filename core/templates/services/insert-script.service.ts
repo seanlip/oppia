@@ -39,13 +39,16 @@ export class InsertScriptService {
     this.renderer = rendererFactory.createRenderer(null, null);
   }
 
+  hasScriptLoaded(script: KNOWN_SCRIPTS): boolean {
+    return this.fullyLoadedScripts.has(script);
+  }
+
   loadScript(script: KNOWN_SCRIPTS, onLoadCb?: () => void): boolean {
     // If the script is already loaded, it does not load again.
-    if (this.fullyLoadedScripts.has(script)) {
+    if (this.hasScriptLoaded(script)) {
       Promise.resolve().then(onLoadCb);
       return false;
     }
-
     // The loading method continues only if the script is not in partiallyLoadedScripts.
     // This is to prevent the same script from creating multiple promises to load. This can
     // happen for both the MATHJAX and DONORBOX scripts.
@@ -72,7 +75,6 @@ export class InsertScriptService {
         default:
           return false;
       }
-
       const scriptLoadPromise = new Promise<void>((resolve, reject) => {
         scriptElement.onerror = (error: ErrorEvent) => {
           this.partiallyLoadedScripts.delete(script);
@@ -96,7 +98,6 @@ export class InsertScriptService {
     this.partiallyLoadedScripts.get(script)?.then(onLoadCb, () => {
       console.error('Script loading failed:', script);
     });
-
     return true;
   }
 }

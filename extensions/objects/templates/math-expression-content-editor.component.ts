@@ -83,7 +83,6 @@ export class MathExpressionContentEditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.insertScriptService.loadScript(KNOWN_SCRIPTS.MATHJAX, () => {
-      this.loaded = true;
       this.init();
     });
   }
@@ -250,7 +249,7 @@ export class MathExpressionContentEditorComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
-      this.loaded &&
+      this.insertScriptService.hasScriptLoaded(KNOWN_SCRIPTS.MATHJAX) &&
       changes.value &&
       changes.value.currentValue.raw_latex !==
         changes.value.previousValue?.raw_latex

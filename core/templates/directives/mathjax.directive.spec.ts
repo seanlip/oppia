@@ -22,6 +22,10 @@ import {MathJaxDirective} from './mathjax.directive';
 import {InsertScriptService} from 'services/insert-script.service';
 import {By} from '@angular/platform-browser';
 
+/**
+ * @fileoverview Unit tests for mathjax directive
+ */
+
 @Component({
   selector: 'mock-comp-a',
   template: '  <span [oppiaMathJax]="expr"></span>',
@@ -48,6 +52,7 @@ describe('MathJax directive', () => {
   beforeEach(waitForAsync(() => {
     mockInsertScriptService = jasmine.createSpyObj('InsertScriptService', [
       'loadScript',
+      'hasScriptLoaded',
     ]);
     TestBed.configureTestingModule({
       declarations: [MockCompA, MathJaxDirective],
@@ -61,12 +66,11 @@ describe('MathJax directive', () => {
     fixture = TestBed.createComponent(MockCompA);
     component = fixture.componentInstance;
     window.MathJax = mockMathJs as unknown as typeof MathJax;
-
     mockInsertScriptService.loadScript.and.callFake((script, callback) => {
       // Simulate script loaded.
       callback();
     });
-
+    mockInsertScriptService.hasScriptLoaded.and.returnValue(true);
     // Trigger Angular's change detection.
     fixture.detectChanges();
   }));

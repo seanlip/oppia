@@ -204,31 +204,33 @@ describe('MathExpressionContentEditorComponent', () => {
     component.ngOnDestroy();
   });
 
-  it("should initialise component when user clicks 'math expression' in the rich text editor", () => {
-    const component = TestBed.createComponent(
-      MathExpressionContentEditorComponent
-    ).componentInstance;
-    component.active = true;
+  it(
+    "should initialise component when user clicks 'math expression' in" +
+      ' the rich text editor',
+    () => {
+      const component = TestBed.createComponent(
+        MathExpressionContentEditorComponent
+      ).componentInstance;
+      component.active = true;
 
-    // eslint-disable-next-line dot-notation
-    spyOn(component['insertScriptService'], 'loadScript').and.callFake(
-      (script, onLoadCb) => {
-        if (onLoadCb) {
-          onLoadCb();
+      // eslint-disable-next-line dot-notation
+      spyOn(component['insertScriptService'], 'loadScript').and.callFake(
+        (script, onLoadCb) => {
+          if (onLoadCb) {
+            onLoadCb();
+          }
+          return true;
         }
-        return true;
-      }
-    );
+      );
 
-    spyOn(component.valueChanged, 'emit');
-
-    component.ngOnInit();
-
-    expect(component.svgString).toBe('');
-    expect(component.numberOfElementsInQueue).toBe(0);
-    expect(component.value.mathExpressionSvgIsBeingProcessed).toBe(true);
-    expect(component.valueChanged.emit).toHaveBeenCalledWith(component.value);
-  });
+      spyOn(component.valueChanged, 'emit');
+      component.ngOnInit();
+      expect(component.svgString).toBe('');
+      expect(component.numberOfElementsInQueue).toBe(0);
+      expect(component.value.mathExpressionSvgIsBeingProcessed).toBe(true);
+      expect(component.valueChanged.emit).toHaveBeenCalledWith(component.value);
+    }
+  );
 
   it(
     'should let the user edit the existing expression when user' +
@@ -243,7 +245,6 @@ describe('MathExpressionContentEditorComponent', () => {
           return true;
         }
       );
-
       spyOn(component.valueChanged, 'emit');
 
       component.ngOnInit();
@@ -267,7 +268,6 @@ describe('MathExpressionContentEditorComponent', () => {
       }
       return true;
     });
-
     component.alwaysEditable = false;
 
     component.ngOnInit();
@@ -493,7 +493,10 @@ describe('MathExpressionContentEditorComponent', () => {
   );
 
   it('should update raw latex when the user is typing', () => {
-    component.loaded = true;
+    // eslint-disable-next-line dot-notation
+    spyOn(component['insertScriptService'], 'hasScriptLoaded').and.returnValue(
+      true
+    );
     const changes: SimpleChanges = {
       value: {
         previousValue: {
