@@ -16,7 +16,7 @@
  * @fileoverview Module for the story viewer page.
  */
 
-import {NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {InteractionExtensionsModule} from 'interactions/interactions.module';
@@ -48,6 +48,7 @@ import {EntityCreationService} from './services/entity-creation.service';
 import {CreateNewSkillModalService} from './services/create-new-skill-modal.service';
 
 @NgModule({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     InteractionExtensionsModule,
     SharedComponentsModule,
