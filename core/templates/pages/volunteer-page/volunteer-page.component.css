@@ -136,9 +136,9 @@
   display: flex;
   gap: 12px;
   -ms-overflow-style: none;
-  white-space: nowrap;
   overflow-x: auto;
   padding: 8px;
+  white-space: nowrap;
 }
 
 .volunteer-page .mat-tab-label-container::-webkit-scrollbar {
@@ -152,11 +152,10 @@
 }
 
 .volunteer-page .mat-tab-header {
-  position: sticky;
   background-color: #fff;
+  position: sticky;
   top: 0;
   z-index: 10;
-
 }
 
 .volunteer-page .mat-tab-label {
@@ -228,16 +227,15 @@
 
 .volunteer-page .oppia-volunteer-tab-prev-btn,
 .oppia-volunteer-tab-next-btn {
+  background-color: #fff;
+  bottom: 0;
+  cursor: pointer;
+  height: 48px;
+  padding: 8px;
   position: sticky;
   top: 10px;
-  background-color: #fff;
-  z-index: 999;
-  padding: 8px;
-  height: 48px;
-  cursor: pointer;
-  padding: 8px;
   width: 48px;
-  
+  z-index: 999;
 }
 
 .volunteer-page .mat-ink-bar {
