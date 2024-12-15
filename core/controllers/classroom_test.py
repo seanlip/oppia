@@ -291,14 +291,6 @@ class ClassroomAdminTests(BaseClassroomControllerTests):
     def test_get_classroom_id_to_classroom_name(self) -> None:
         self.signup(self.VIEWER_EMAIL, self.VIEWER_USERNAME)
         self.login(self.VIEWER_EMAIL)
-        physics_classroom = classroom_config_services.get_classroom_by_id(
-            self.physics_classroom_id
-        )
-        # TODO (#13059): Here we use MyPy ignore because we have a
-        # Test that checks if the index is None, it returns 0. The MyPy ignore
-        # Can be removed once the index for the math classroom is populated.
-        physics_classroom.index = None # type: ignore[assignment]
-        classroom_config_services.update_classroom(physics_classroom)
         classroom_id_to_classroom_name = [
             {
                 'classroom_id': self.physics_classroom.classroom_id,
