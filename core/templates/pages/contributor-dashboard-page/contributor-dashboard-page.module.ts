@@ -33,7 +33,6 @@ import {LoginRequiredModalContent} from './modal-templates/login-required-modal.
 import {OpportunitiesListItemComponent} from './opportunities-list-item/opportunities-list-item.component';
 import {OpportunitiesListComponent} from './opportunities-list/opportunities-list.component';
 import {TranslationSuggestionReviewModalComponent} from './modal-templates/translation-suggestion-review-modal.component';
-import {TranslationModalComponent} from './modal-templates/translation-modal.component';
 import {TranslationOpportunitiesComponent} from './translation-opportunities/translation-opportunities.component';
 import {toastrConfig} from 'pages/oppia-root/app.module';
 import {ContributionsAndReview} from './contributions-and-review/contributions-and-review.component';
