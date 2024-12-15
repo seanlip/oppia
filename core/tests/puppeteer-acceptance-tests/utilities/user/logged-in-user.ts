@@ -48,7 +48,7 @@ const invalidEmailErrorContainer = '#mat-error-1';
 const invalidUsernameErrorContainer = '.oppia-warning-text';
 const optionText = '.mat-option-text';
 const profileDropdown = '.e2e-test-profile-dropdown';
-const learnerDashboardMenuLink = '.e2e-test-learner-dashboard-link';
+const learnerDashboardMenuLink = '.e2e-test-learner-dashboard-menu-link';
 const confirmUsernameField = '.e2e-test-confirm-username-field';
 const confirmAccountDeletionButton = '.e2e-test-confirm-deletion-button';
 const agreeToTermsCheckbox = 'input.e2e-test-agree-to-terms-checkbox';
@@ -184,7 +184,7 @@ export class LoggedInUser extends BaseUser {
   /**
    * Navigates to the learner dashboard using profile dropdown in the navbar.
    */
-  async navigateToLearnerDashboardUsingprofileDropdown(): Promise<void> {
+  async navigateToLearnerDashboardUsingProfileDropdown(): Promise<void> {
     await this.clickOn(profileDropdown);
     await this.clickOn(learnerDashboardMenuLink);
   }
