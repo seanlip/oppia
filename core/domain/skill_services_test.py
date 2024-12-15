@@ -378,7 +378,7 @@ class SkillServicesUnitTests(test_utils.GenericTestBase):
             }
         )
 
-    def test_get_rubrics_skips_nonevalue_skills(self) -> None:
+    def test_get_rubrics_skips_none_value_skills(self) -> None:
         skill_1 = self.save_new_skill(
             'skill_id_1', self.user_id_admin, description='Description 1',
             misconceptions=[],
