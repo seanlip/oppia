@@ -799,6 +799,8 @@ def apply_change_list(
                     skill.record_that_all_questions_are_merged(
                         update_all_questions_merged_cmd.new_value
                     )
+                else: 
+                    raise Exception('Invalid change dict.')
             elif change.cmd == skill_domain.CMD_UPDATE_SKILL_CONTENTS_PROPERTY:
                 if (change.property_name ==
                         skill_domain.SKILL_CONTENTS_PROPERTY_EXPLANATION):
@@ -831,6 +833,8 @@ def apply_change_list(
                             skill_domain.WorkedExample.from_dict(worked_example)
                         )
                     skill.update_worked_examples(worked_examples_list)
+                else:
+                    raise Exception('Invalid change dict.')
             elif change.cmd == skill_domain.CMD_ADD_SKILL_MISCONCEPTION:
                 # Here we use cast because we are narrowing down the type from
                 # SkillChange to a specific change command.
@@ -948,7 +952,8 @@ def apply_change_list(
                 # latest schema version. As a result, simply resaving the
                 # skill is sufficient to apply the schema migration.
                 continue
-
+            else:
+                raise Exception('Invalid change dict.')
         return skill
 
     except Exception as e:
