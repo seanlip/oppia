@@ -307,6 +307,49 @@ def get_all_language_accent_codes_for_voiceovers(
     return language_codes_mapping
 
 
+def is_voiceover_autogeneration_using_azure_enabled() -> bool:
+    """The method verifies whether admins have enabled the configuration
+    for generating voiceovers automatically using Azure.
+
+    Returns:
+        bool. True if Azure-based voiceover autogeneration is enabled,
+        False otherwise.
+    """
+    voiceover_autogeneration_policy_model = (
+        voiceover_models.VoiceoverAutogenerationPolicyModel.get(
+            voiceover_models.VOICEOVER_AUTOGENERATION_POLICY_ID, strict=False)
+    )
+    return (
+        voiceover_autogeneration_policy_model.
+        voiceover_autogeneration_using_azure_is_enabled)
+
+
+def update_azure_config_for_voiceover_autogeneration(
+    voiceover_autogeneration_using_azure_is_enabled: bool
+) -> None:
+    """The method allows admins to enable or disable the use of Azure
+    for automatic voiceover generation from admin misc tab.
+
+    Args:
+        voiceover_autogeneration_using_azure_is_enabled: bool. A boolean value
+            indicating whether Azure based voiceover autogeneration is enabled
+            by admins or not.
+    """
+    voiceover_autogeneration_policy_model = (
+        voiceover_models.VoiceoverAutogenerationPolicyModel.get(
+            voiceover_models.VOICEOVER_AUTOGENERATION_POLICY_ID, strict=False))
+
+    (
+        voiceover_autogeneration_policy_model.
+        voiceover_autogeneration_using_azure_is_enabled
+    ) = (
+        voiceover_autogeneration_using_azure_is_enabled
+    )
+
+    voiceover_autogeneration_policy_model.update_timestamps()
+    voiceover_autogeneration_policy_model.put()
+
+
 def create_entity_voiceovers_model(
     entity_voiceovers: voiceover_domain.EntityVoiceovers
 ) -> voiceover_models.EntityVoiceoversModel:

@@ -62,6 +62,7 @@ from core.domain import topic_fetchers
 from core.domain import topic_services
 from core.domain import translation_domain
 from core.domain import user_services
+from core.domain import voiceover_services
 from core.domain import wipeout_service
 
 from typing import Dict, List, Optional, TypedDict, Union, cast
@@ -2241,6 +2242,45 @@ class AdminTopicsCsvFileDownloader(
             'topic_similarities.csv',
             'text/csv'
         )
+
+
+class AutomaticVoiceoverAdminControlHandler(
+    base.BaseHandler[Dict[str, str], Dict[str, str]]
+):
+    """Retrieves and updates automatic voiceover admin control."""
+
+    GET_HANDLER_ERROR_RETURN_TYPE = feconf.HANDLER_TYPE_DOWNLOADABLE
+    URL_PATH_ARGS_SCHEMAS: Dict[str, str] = {}
+    HANDLER_ARGS_SCHEMAS: Dict[str, Dict[str, str]] = {
+        'GET': {},
+        'POST': {
+            'voiceover_autogeneration_using_azure_is_enabled': {
+                'schema': {
+                    'type': 'bool'
+                },
+            }
+        }
+    }
+
+    def get(self) -> None:
+        """Retrieves the Azure admin config data for automatic voiceovers."""
+        self.render_json({
+            'voiceover_autogeneration_using_azure_is_enabled': (
+                voiceover_services.
+                is_voiceover_autogeneration_using_azure_enabled()
+            )
+        })
+
+    @acl_decorators.can_access_admin_page
+    def post(self) -> None:
+        """Updates the Azure admin config data for automatic voiceovers."""
+        voiceover_autogeneration_using_azure_is_enabled = (
+            self.normalized_payload.get(
+                'voiceover_autogeneration_using_azure_is_enabled'))
+
+        voiceover_services.update_azure_config_for_voiceover_autogeneration(
+            voiceover_autogeneration_using_azure_is_enabled)
+        self.render_json({})
 
 
 class DataExtractionQueryHandlerNormalizedRequestDict(TypedDict):

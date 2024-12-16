@@ -62,6 +62,10 @@ export interface ModelsRelatedToUserBackendResponse {
   related_models_exist: boolean;
 }
 
+interface AzureConfigForAutomaticVoiceoversBackendResponse {
+  voiceover_autogeneration_using_azure_is_enabled: boolean;
+}
+
 export interface ClassroomPageData {
   name: string;
   topic_ids: string[];
@@ -498,6 +502,35 @@ export class AdminBackendApiService {
         }
       )
       .toPromise();
+  }
+
+  async updateAutomaticVoiceoverSynthesisUsingAzureAsync(
+    voiceoverAutogenerationIsEnabled: boolean
+  ): Promise<void> {
+    return this.http
+      .post<void>(AdminPageConstants.AUTOMATIC_VOICEOVER_ADMIN_CONTROL_URL, {
+        voiceover_autogeneration_using_azure_is_enabled:
+          voiceoverAutogenerationIsEnabled,
+      })
+      .toPromise();
+  }
+
+  async getAzureConfigForAutomaticVoiceoversAsync(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      this.http
+        .get<AzureConfigForAutomaticVoiceoversBackendResponse>(
+          AdminPageConstants.AUTOMATIC_VOICEOVER_ADMIN_CONTROL_URL
+        )
+        .toPromise()
+        .then(
+          response => {
+            resolve(response.voiceover_autogeneration_using_azure_is_enabled);
+          },
+          errorResponse => {
+            reject(errorResponse.error.error);
+          }
+        );
+    });
   }
 
   async getModelsRelatedToUserAsync(userId: string): Promise<boolean> {

@@ -1170,6 +1170,88 @@ describe('Admin backend api service', () => {
     })
   );
 
+  it('should get the azure admin config', fakeAsync(() => {
+    abas
+      .getAzureConfigForAutomaticVoiceoversAsync()
+      .then(successHandler, failHandler);
+    let result = {
+      voiceover_autogeneration_using_azure_is_enabled: true,
+    };
+
+    let req = httpTestingController.expectOne(
+      '/automatic_voiceover_admin_control_handler'
+    );
+
+    expect(req.request.method).toEqual('GET');
+
+    req.flush(
+      {
+        voiceover_autogeneration_using_azure_is_enabled: true,
+      },
+      {
+        status: 200,
+        statusText: 'Success.',
+      }
+    );
+    flushMicrotasks();
+
+    expect(successHandler).toHaveBeenCalledWith(
+      result.voiceover_autogeneration_using_azure_is_enabled
+    );
+    expect(failHandler).not.toHaveBeenCalled();
+  }));
+
+  it('should fail to get the azure admin config', fakeAsync(() => {
+    abas
+      .getAzureConfigForAutomaticVoiceoversAsync()
+      .then(successHandler, failHandler);
+
+    let req = httpTestingController.expectOne(
+      '/automatic_voiceover_admin_control_handler'
+    );
+
+    expect(req.request.method).toEqual('GET');
+
+    req.flush(
+      {
+        error: 'Failed to get azure admin config.',
+      },
+      {
+        status: 500,
+        statusText: 'Internal Server Error',
+      }
+    );
+    flushMicrotasks();
+
+    expect(successHandler).not.toHaveBeenCalled();
+    expect(failHandler).toHaveBeenCalledWith(
+      'Failed to get azure admin config.'
+    );
+  }));
+
+  it('should update azure admin config', fakeAsync(() => {
+    let voiceoverAutogenerationIsEnabled = true;
+    abas
+      .updateAutomaticVoiceoverSynthesisUsingAzureAsync(
+        voiceoverAutogenerationIsEnabled
+      )
+      .then(successHandler, failHandler);
+    let payload = {
+      voiceover_autogeneration_using_azure_is_enabled: true,
+    };
+
+    let req = httpTestingController.expectOne(
+      '/automatic_voiceover_admin_control_handler'
+    );
+    expect(req.request.method).toEqual('POST');
+    expect(req.request.body).toEqual(payload);
+    req.flush(200);
+    flushMicrotasks();
+
+    expect(successHandler).toHaveBeenCalled();
+    expect(failHandler).not.toHaveBeenCalled();
+  }));
+
   it(
     'should delete the user account given the userId and' +
       'username when calling deleteUserAsync',

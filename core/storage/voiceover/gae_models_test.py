@@ -193,6 +193,8 @@ class VoiceoverAutogenerationPolicyModelTests(test_utils.GenericTestBase):
                 'deleted': base_models.EXPORT_POLICY.NOT_APPLICABLE,
                 'last_updated': base_models.EXPORT_POLICY.NOT_APPLICABLE,
                 'language_codes_mapping': (
+                    base_models.EXPORT_POLICY.NOT_APPLICABLE),
+                'voiceover_autogeneration_using_azure_is_enabled': (
                     base_models.EXPORT_POLICY.NOT_APPLICABLE)
             }
         )
