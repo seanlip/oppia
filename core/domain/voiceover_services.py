@@ -319,9 +319,13 @@ def is_voiceover_autogeneration_using_azure_enabled() -> bool:
         voiceover_models.VoiceoverAutogenerationPolicyModel.get(
             voiceover_models.VOICEOVER_AUTOGENERATION_POLICY_ID, strict=False)
     )
-    return (
+    assert voiceover_autogeneration_policy_model is not None
+
+    voiceover_autogeneration_using_azure_is_enabled: bool = (
         voiceover_autogeneration_policy_model.
-        voiceover_autogeneration_using_azure_is_enabled)
+        voiceover_autogeneration_using_azure_is_enabled
+    )
+    return voiceover_autogeneration_using_azure_is_enabled
 
 
 def update_azure_config_for_voiceover_autogeneration(
@@ -338,6 +342,8 @@ def update_azure_config_for_voiceover_autogeneration(
     voiceover_autogeneration_policy_model = (
         voiceover_models.VoiceoverAutogenerationPolicyModel.get(
             voiceover_models.VOICEOVER_AUTOGENERATION_POLICY_ID, strict=False))
+
+    assert voiceover_autogeneration_policy_model is not None
 
     (
         voiceover_autogeneration_policy_model.

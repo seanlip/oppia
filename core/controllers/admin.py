@@ -2244,14 +2244,24 @@ class AdminTopicsCsvFileDownloader(
         )
 
 
+class AutomaticVoiceoverAdminControlHandlerNormalizedPayloadDict(TypedDict):
+    """Dict representation of AutomaticVoiceoverAdminControlHandler's
+    normalized_payload dictionary.
+    """
+
+    voiceover_autogeneration_using_azure_is_enabled: bool
+
+
 class AutomaticVoiceoverAdminControlHandler(
-    base.BaseHandler[Dict[str, str], Dict[str, str]]
+    base.BaseHandler[
+        AutomaticVoiceoverAdminControlHandlerNormalizedPayloadDict,
+        Dict[str, str]
+    ]
 ):
     """Retrieves and updates automatic voiceover admin control."""
 
-    GET_HANDLER_ERROR_RETURN_TYPE = feconf.HANDLER_TYPE_DOWNLOADABLE
     URL_PATH_ARGS_SCHEMAS: Dict[str, str] = {}
-    HANDLER_ARGS_SCHEMAS: Dict[str, Dict[str, str]] = {
+    HANDLER_ARGS_SCHEMAS = {
         'GET': {},
         'POST': {
             'voiceover_autogeneration_using_azure_is_enabled': {
@@ -2262,6 +2272,7 @@ class AutomaticVoiceoverAdminControlHandler(
         }
     }
 
+    @acl_decorators.open_access
     def get(self) -> None:
         """Retrieves the Azure admin config data for automatic voiceovers."""
         self.render_json({
@@ -2274,9 +2285,11 @@ class AutomaticVoiceoverAdminControlHandler(
     @acl_decorators.can_access_admin_page
     def post(self) -> None:
         """Updates the Azure admin config data for automatic voiceovers."""
-        voiceover_autogeneration_using_azure_is_enabled = (
-            self.normalized_payload.get(
-                'voiceover_autogeneration_using_azure_is_enabled'))
+        assert self.normalized_payload is not None
+        voiceover_autogeneration_using_azure_is_enabled: bool = (
+            self.normalized_payload[
+                'voiceover_autogeneration_using_azure_is_enabled'])
+        assert isinstance(voiceover_autogeneration_using_azure_is_enabled, bool)
 
         voiceover_services.update_azure_config_for_voiceover_autogeneration(
             voiceover_autogeneration_using_azure_is_enabled)
