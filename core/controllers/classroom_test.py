@@ -351,7 +351,7 @@ class ClassroomDataHandlerTests(BaseClassroomControllerTests):
         )
 
         # Should return classroom with 'test_id', but count all
-        # public_classrooms('science' and 'test_id').
+        # public_classrooms ('science' and 'test_id').
         expected_dict = {
             'classroom_id': 'test_id',
             'name': 'math',
