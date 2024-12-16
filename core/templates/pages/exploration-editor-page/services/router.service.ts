@@ -71,7 +71,9 @@ export class RouterService {
 
     this.location.onPopState(() => {
       if (window.location.hash === '') {
-        window.history.go(-1);
+        setTimeout(() => {
+          window.history.go(-1);
+        }, 50);
       }
     });
   }
@@ -187,6 +189,7 @@ export class RouterService {
                 pathType === this.SLUG_GUI &&
                 this._activeTabName === this.TABS.MAIN.name
               ) {
+                this.windowRef.nativeWindow.location.hash = path;
                 this.stateEditorRefreshService.onRefreshStateEditor.emit();
               }
             } else {
