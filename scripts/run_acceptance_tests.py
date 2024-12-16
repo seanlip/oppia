@@ -7,7 +7,7 @@
 #      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an 'AS-IS' BASIS,
+#distributed under the License is distributed on an 'AS-IS' BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
@@ -164,8 +164,21 @@ def run_tests(args: argparse.Namespace) -> Tuple[List[bytes], int]:
                     # non-unicode strings.
                     line = line.encode('utf-8')  # pragma: no cover
                 output_lines.append(line.rstrip())
-                # Replaces non-ASCII characters with '?'.
-                common.write_stdout_safe(line.decode('ascii', errors='replace'))
+
+                # Decode the line for processing
+                decoded_line = line.decode('ascii', errors='replace')
+
+                # Check if the line contains an error
+                if "ERROR" in decoded_line or "FAIL" in decoded_line:
+                    # Apply red color for errors
+                    decoded_line = f"\033[91m{decoded_line}\033[0m"  # Red color
+                elif "SUCCESS" in decoded_line or "PASS" in decoded_line:
+                    # Apply green color for success messages
+                    decoded_line = f"\033[92m{decoded_line}\033[0m"  # Green color
+
+                # Write the processed line to the console
+                common.write_stdout_safe(decoded_line)
+
             # The poll() method returns None while the process is running,
             # otherwise it returns the return code of the process (an int).
             if proc.poll() is not None:
