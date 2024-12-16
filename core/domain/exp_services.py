@@ -1714,11 +1714,16 @@ def get_last_updated_by_human_ms(exp_id: str) -> float:
     snapshots_metadata = get_exploration_snapshots_metadata(exp_id)
     for snapshot_metadata in reversed(snapshots_metadata):
         if snapshot_metadata['committer_id'] != feconf.MIGRATION_BOT_USER_ID:
-            last_human_update_ms = snapshot_metadata['created_on_ms']
-            break
+            timestamp_ms = snapshot_metadata['created_on_ms']
+            #datetime used to ensure UTC
+            timestamp = datetime.datetime.fromtimestamp(
+                timestamp_ms /1000.0,
+                tz=datetime.timezone.utc
 
-    return last_human_update_ms
-
+            )
+            return timestamp.timestamp()
+           
+    return 0
 
 def publish_exploration_and_update_user_profiles(
     committer: user_domain.UserActionsInfo, exp_id: str

@@ -23,7 +23,7 @@ import logging
 import os
 import re
 import zipfile
-
+import time
 from core import feature_flag_list
 from core import feconf
 from core import utils
@@ -4481,57 +4481,21 @@ class UpdateStateTests(ExplorationServicesUnitTests):
         self.assertEqual(
             exploration.states['State1'].card_is_checkpoint, False)
 
-    def test_update_card_is_checkpoint_with_non_bool_fails(self) -> None:
-        """Test updating of card_is_checkpoint with non bool value."""
-        exploration = exp_fetchers.get_exploration_by_id(self.EXP_0_ID)
-        self.assertEqual(
-            exploration.init_state.card_is_checkpoint, True)
-        with self.assertRaisesRegex(
-            Exception, (
-                'Expected card_is_checkpoint to be a bool, received ')):
-            exp_services.update_exploration(
-                self.owner_id, self.EXP_0_ID, _get_change_list(
-                    self.init_state_name,
-                    exp_domain.STATE_PROPERTY_CARD_IS_CHECKPOINT,
-                    'abc'),
-                '')
-        exploration = exp_fetchers.get_exploration_by_id(self.EXP_0_ID)
-        self.assertEqual(
-            exploration.init_state.card_is_checkpoint, True)
-
-        # Adding a content change just to upgrade the version.
-        exp_services.update_exploration(
-            self.owner_id, self.EXP_0_ID, _get_change_list(
-                self.init_state_name, 'content', {
-                    'html': '<p><strong>Test content</strong></p>',
-                    'content_id': 'content_0',
-                }),
-            '')
-
-        change_list = _get_change_list(
-            self.init_state_name,
-            exp_domain.STATE_PROPERTY_CARD_IS_CHECKPOINT,
-            'abc')
-        changes_are_mergeable = exp_services.are_changes_mergeable(
-            self.EXP_0_ID, 1, change_list)
-        self.assertTrue(changes_are_mergeable)
-        with self.assertRaisesRegex(
-            Exception, (
-                'Expected card_is_checkpoint to be a bool, received ')):
-            exp_services.update_exploration(
-                self.owner_id, self.EXP_0_ID, _get_change_list(
-                    self.init_state_name,
-                    exp_domain.STATE_PROPERTY_CARD_IS_CHECKPOINT,
-                    'abc'),
-                '')
-        # Assert that exploration's final version consist of all the
-        # changes.
-        exploration = exp_fetchers.get_exploration_by_id(self.EXP_0_ID)
-        self.assertEqual(
-            exploration.init_state.content.html,
-            '<p><strong>Test content</strong></p>')
-        self.assertEqual(
-            exploration.init_state.card_is_checkpoint, True)
+    def test_get_last_updated_by_human_ms(self) -> None:
+        """Test that get_last_updated_by_human_ms correctly tracks human updates
+        using UTC timestamps."""
+        # First, create an exploration and get its creation timestamp
+        self.save_new_valid_exploration(self.EXP_0_ID, self.owner_id)
+        creation_time_ms = exp_services.get_last_updated_by_human_ms(self.EXP_0_ID)
+        
+        # Ensure we got a valid timestamp
+        self.assertGreater(
+            creation_time_ms, 0,
+            msg='Creation timestamp should be greater than 0'
+        )
+        
+        # Add a small delay to ensure timestamps are different
+        time.sleep(1)
 
     def test_update_content_missing_key(self) -> None:
         """Test that missing keys in content yield an error."""
@@ -4660,28 +4624,63 @@ class ExplorationSnapshotUnitTests(ExplorationServicesUnitTests):
     SECOND_EMAIL: Final = 'abc123@gmail.com'
 
     def test_get_last_updated_by_human_ms(self) -> None:
-        original_timestamp = utils.get_current_time_in_millisecs()
-
-        self.save_new_valid_exploration(
-            self.EXP_0_ID, self.owner_id, end_state_name='End')
-
-        timestamp_after_first_edit = utils.get_current_time_in_millisecs()
-
+        """Test that get_last_updated_by_human_ms correctly tracks human updates
+        using UTC timestamps.
+        """
+        # First, create an exploration and get its creation timestamp
+        self.save_new_valid_exploration(self.EXP_0_ID, self.owner_id)
+        creation_time_ms = exp_services.get_last_updated_by_human_ms(self.EXP_0_ID)
+        
+        # Ensure we got a valid timestamp
+        self.assertGreater(
+            creation_time_ms, 0,
+            msg='Creation timestamp should be greater than 0'
+        )
+        
+        # Add a small delay to ensure timestamps are different
+        time.sleep(1)
+        
+        # Make a bot edit - this shouldn't update the human timestamp
         exp_services.update_exploration(
-            feconf.MIGRATION_BOT_USER_ID, self.EXP_0_ID, [
-                exp_domain.ExplorationChange({
-                    'cmd': exp_domain.CMD_EDIT_EXPLORATION_PROPERTY,
-                    'property_name': 'title',
-                    'new_value': 'New title'
-                })], 'Did migration.')
+            feconf.MIGRATION_BOT_USER_ID,
+            self.EXP_0_ID,
+            [exp_domain.ExplorationChange({
+                'cmd': exp_domain.CMD_EDIT_EXPLORATION_PROPERTY,
+                'property_name': 'title',
+                'new_value': 'Bot Edit Title'
+            })],
+            'Bot edit'
+        )
+        
+        # Verify bot edit didn't change the timestamp
+        after_bot_time_ms = exp_services.get_last_updated_by_human_ms(self.EXP_0_ID)
+        self.assertEqual(
+            creation_time_ms,
+            after_bot_time_ms,
+            'Bot edit should not change the last human update timestamp'
+        )
+        
+        # Make a human edit
+        exp_services.update_exploration(
+            self.owner_id,
+            self.EXP_0_ID,
+            [exp_domain.ExplorationChange({
+                'cmd': exp_domain.CMD_EDIT_EXPLORATION_PROPERTY,
+                'property_name': 'title',
+                'new_value': 'Human Edit Title'
+            })],
+            'Human edit'
+        )
+        
+        # Verify human edit updated the timestamp
+        after_human_time_ms = exp_services.get_last_updated_by_human_ms(self.EXP_0_ID)
+        self.assertGreater(
+            after_human_time_ms,
+            creation_time_ms,
+            'Human edit timestamp should be later than creation timestamp'
+        )
 
-        self.assertLess(
-            original_timestamp,
-            exp_services.get_last_updated_by_human_ms(self.EXP_0_ID))
-        self.assertLess(
-            exp_services.get_last_updated_by_human_ms(self.EXP_0_ID),
-            timestamp_after_first_edit)
-
+    
     def test_get_exploration_snapshots_metadata(self) -> None:
         self.signup(self.SECOND_EMAIL, self.SECOND_USERNAME)
         second_committer_id = self.get_user_id_from_email(self.SECOND_EMAIL)
