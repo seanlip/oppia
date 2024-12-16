@@ -29,7 +29,7 @@ import {AppConstants} from 'app.constants';
 export class LanguageBannerComponent implements OnInit {
   COOKIE_NAME_COOKIES_ACKNOWLEDGED = 'OPPIA_COOKIES_ACKNOWLEDGED';
   COOKIE_NAME_DO_NOT_SHOW_LANGUAGE_BANNER = 'DO_NOT_SHOW_LANGUAGE_BANNER';
-  isVisible: boolean;
+  isVisible: boolean = false;
   isChecked: boolean = false;
   constructor(private cookieService: CookieService) {}
 
