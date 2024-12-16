@@ -46,6 +46,7 @@ describe('LanguageBannerComponent', () => {
     fixture.detectChanges();
     cookieService = TestBed.inject(CookieService);
     debugElement = fixture.debugElement;
+    cookieService.removeAll();
   });
 
   it('should create', () => {
@@ -124,6 +125,7 @@ describe('LanguageBannerComponent', () => {
     expect(
       cookieService.get(component.COOKIE_NAME_DO_NOT_SHOW_LANGUAGE_BANNER)
     ).toBe('true');
+    cookieService.removeAll();
   });
 
   it('should not set the DO_NOT_SHOW_LANGUAGE_BANNER cookie when checkbox is not checked and button is clicked', () => {
