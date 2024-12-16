@@ -651,14 +651,9 @@ class AllClassroomsSummaryHandlerTests(test_utils.GenericTestBase):
         super().setUp()
         self.signup(self.CURRICULUM_ADMIN_EMAIL, self.CURRICULUM_ADMIN_USERNAME)
         self.set_curriculum_admins([self.CURRICULUM_ADMIN_USERNAME])
-        classroom1 = self.save_new_valid_classroom(
+        self.save_new_valid_classroom(
             'classroom1', 'history', 'history'
         )
-        # TODO (#13059): Here we use MyPy ignore because we have a
-        # Test that checks if the index is None, it returns 0. The MyPy ignore
-        # Can be removed once the index for the math classroom is populated.
-        classroom1.index = None # type: ignore[assignment]
-        classroom_config_services.update_classroom(classroom1)
         self.save_new_valid_classroom(
             'classroom2', 'english', 'english'
         )
