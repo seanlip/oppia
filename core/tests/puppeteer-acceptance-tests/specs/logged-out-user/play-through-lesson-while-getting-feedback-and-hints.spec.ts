@@ -127,10 +127,8 @@ describe('Logged-out User', function () {
     await explorationEditor.navigateToCard(CARD_NAME.REVISION_CARD);
     await explorationEditor.updateCardContent(REVISION_CARD_CONTENT);
     await explorationEditor.addInteraction(INTERACTION_TYPES.CONTINUE_BUTTON);
-    await explorationEditor.editDefaultResponseFeedback(
-      undefined,
-      CARD_NAME.FINAL_CARD
-    );
+    await explorationEditor.viewOppiaResponses();
+    await explorationEditor.directLearnersToAlreadyExistingCard(CARD_NAME.FINAL_CARD);
 
     await explorationEditor.saveExplorationDraft();
 

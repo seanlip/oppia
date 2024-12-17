@@ -70,7 +70,7 @@ const textInputInteractionOption =
   'tr#e2e-test-schema-based-list-editor-table-row';
 const textInputField = '.e2e-test-text-input';
 
-const saveDraftButton = '.e2e-test-save-draft-button';
+const saveDraftButton = 'button.e2e-test-save-draft-button';
 const commitMessage = 'textarea.e2e-test-commit-message-input';
 const publishExplorationButton = 'button.e2e-test-publish-exploration';
 const explorationTitleInput = 'input.e2e-test-exploration-title-input-modal';
@@ -1012,6 +1012,13 @@ export class ExplorationEditor extends BaseUser {
     // The '/' value is used to select the 'a new card called' option in the dropdown.
     await this.select(destinationCardSelector, '/');
     await this.type(addStateInput, cardName);
+    await this.clickOn(saveOutcomeDestButton);
+  }
+
+  async directLearnersToAlreadyExistingCard(cardName: string): Promise<void> {
+    await this.clickOn(openOutcomeDestButton);
+    await this.waitForElementToBeClickable(destinationCardSelector);
+    await this.select(destinationCardSelector, cardName);
     await this.clickOn(saveOutcomeDestButton);
   }
 
