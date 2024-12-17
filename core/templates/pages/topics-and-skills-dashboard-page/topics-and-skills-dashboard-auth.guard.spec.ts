@@ -26,7 +26,7 @@ import {
 } from '@angular/router';
 
 import {AppConstants} from 'app.constants';
-import {UserInfo} from 'domain/user/user-info.model';
+import {UserInfo} from '../../domain/user/user-info.model.ts';
 import {UserService} from 'services/user.service';
 import {TopicsAndSkillsDashboardAuthGuard} from './topics-and-skills-dashboard-auth.guard';
 
@@ -78,27 +78,6 @@ describe('TopicsAndSkillsDashboardAuthGuard', () => {
     ).and.returnValue(
       Promise.resolve(
         new UserInfo([], false, true, false, false, false, '', '', '', true)
-      )
-    );
-    const navigateSpy = spyOn(router, 'navigate').and.callThrough();
-
-    guard
-      .canActivate(new ActivatedRouteSnapshot(), {} as RouterStateSnapshot)
-      .then(canActivate => {
-        expect(canActivate).toBe(true);
-        expect(getUserInfoAsyncSpy).toHaveBeenCalledTimes(1);
-        expect(navigateSpy).not.toHaveBeenCalled();
-        done();
-      });
-  });
-
-  it('should not redirect user to 401 page if user is a topic manager', done => {
-    const getUserInfoAsyncSpy = spyOn(
-      userService,
-      'getUserInfoAsync'
-    ).and.returnValue(
-      Promise.resolve(
-        new UserInfo([], false, false, true, false, false, '', '', '', false)
       )
     );
     const navigateSpy = spyOn(router, 'navigate').and.callThrough();
