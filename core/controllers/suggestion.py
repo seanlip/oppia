@@ -686,7 +686,8 @@ class SuggestionToSkillActionHandler(
         suggestion = suggestion_services.get_suggestion_by_id(suggestion_id)
         if suggestion.suggestion_type == feconf.SUGGESTION_TYPE_ADD_QUESTION:
             suggestion_services.update_question_review_stats(suggestion)
-
+        else:
+            logging.warning('Unexpected suggestion type: %s', suggestion.suggestion_type)
         self.render_json(self.values)
 
 
@@ -903,18 +904,21 @@ class ReviewableSuggestionsHandler(
             suggestions = (
                 suggestion_services
                 .get_suggestions_with_editable_explorations(
-                    reviewable_suggestions))
         elif suggestion_type == feconf.SUGGESTION_TYPE_ADD_QUESTION:
             if limit is None:
                 raise ValueError(
                     'Limit must be provided for question suggestions.')
             topic_name = self.normalized_request.get('topic_name')
             skill_ids = self._get_skill_ids_for_topic(topic_name)
-
+            if not skill_ids:
+                logging.warning('No skill IDs found for topic: %s', topic_name)
+                self.render_json({})
+                return
             suggestions, next_offset = (
                 suggestion_services
                 .get_reviewable_question_suggestions_by_offset(
                     self.user_id, limit, offset, sort_key, skill_ids))
+        self._render_suggestions(target_type, suggestions, next_offset)
         self._render_suggestions(target_type, suggestions, next_offset)
 
 
@@ -1289,9 +1293,13 @@ def _get_target_id_to_skill_opportunity_dict(
         skill.id: skill
         for skill in skill_fetchers.get_multi_skills([
             opp['id']
-            for opp in opportunity_id_to_opportunity_dict.values()
-            if opp is not None])
-    }
+    for opp_id, skill in opportunity_id_to_skill.items():
+        opportunity_dict = opportunity_id_to_opportunity_dict.get(opp_id)
+        if skill is not None and opportunity_dict is not None:
+            # Handle valid opportunities
+            pass
+        else:
+            logging.warning('Invalid opportunity or skill: %s, %s', opp_id, skill)
 
     for opp_id, skill in opportunity_id_to_skill.items():
         opportunity_dict = opportunity_id_to_opportunity_dict[opp_id]
