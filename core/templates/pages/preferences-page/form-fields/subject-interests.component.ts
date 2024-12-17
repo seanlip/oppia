@@ -148,4 +148,26 @@ export class SubjectInterestsComponent implements ControlValueAccessor {
       interest.toLowerCase().includes(filterValue)
     );
   }
+
+  onBlur(): void {
+    const value = this.subjectInterestInput.nativeElement.value.trim();
+
+    if (value && this.validInput(value)) {
+      this.subjectInterests.push(value);
+      this.subjectInterestInput.nativeElement.value = '';
+    }
+    this.onChange(this.subjectInterests);
+  }
+
+  onInput(event: Event): void {
+    const inputElement = event.target as HTMLInputElement;
+    const inputValue = inputElement.value.trim();
+
+    if (!inputValue) {
+      this.formCtrl.markAsPristine();
+    } else if (this.validInput(inputValue)) {
+      this.formCtrl.markAsDirty();
+    }
+    this.onChange(this.subjectInterests);
+  }
 }
