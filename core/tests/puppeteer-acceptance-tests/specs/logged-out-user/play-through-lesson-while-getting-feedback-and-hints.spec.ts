@@ -128,7 +128,9 @@ describe('Logged-out User', function () {
     await explorationEditor.updateCardContent(REVISION_CARD_CONTENT);
     await explorationEditor.addInteraction(INTERACTION_TYPES.CONTINUE_BUTTON);
     await explorationEditor.viewOppiaResponses();
-    await explorationEditor.directLearnersToAlreadyExistingCard(CARD_NAME.FINAL_CARD);
+    await explorationEditor.directLearnersToAlreadyExistingCard(
+      CARD_NAME.FINAL_CARD
+    );
 
     await explorationEditor.saveExplorationDraft();
 
