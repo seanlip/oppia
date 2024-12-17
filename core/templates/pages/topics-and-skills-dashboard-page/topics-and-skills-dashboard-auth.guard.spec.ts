@@ -62,7 +62,7 @@ describe('TopicsAndSkillsDashboardAuthGuard', () => {
     guard
       .canActivate(new ActivatedRouteSnapshot(), {} as RouterStateSnapshot)
       .then(canActivate => {
-        expect(canActivate).toBeFalse();
+        expect(canActivate).toBe(false);
         expect(getUserInfoAsyncSpy).toHaveBeenCalledTimes(1);
         expect(navigateSpy).toHaveBeenCalledWith([
           `${AppConstants.PAGES_REGISTERED_WITH_FRONTEND.ERROR.ROUTE}/401`,
@@ -85,7 +85,28 @@ describe('TopicsAndSkillsDashboardAuthGuard', () => {
     guard
       .canActivate(new ActivatedRouteSnapshot(), {} as RouterStateSnapshot)
       .then(canActivate => {
-        expect(canActivate).toBeTrue();
+        expect(canActivate).toBe(true);
+        expect(getUserInfoAsyncSpy).toHaveBeenCalledTimes(1);
+        expect(navigateSpy).not.toHaveBeenCalled();
+        done();
+      });
+  });
+
+  it('should not redirect user to 401 page if user is a topic manager', done => {
+    const getUserInfoAsyncSpy = spyOn(
+      userService,
+      'getUserInfoAsync'
+    ).and.returnValue(
+      Promise.resolve(
+        new UserInfo([], false, false, true, false, false, '', '', '', false)
+      )
+    );
+    const navigateSpy = spyOn(router, 'navigate').and.callThrough();
+
+    guard
+      .canActivate(new ActivatedRouteSnapshot(), {} as RouterStateSnapshot)
+      .then(canActivate => {
+        expect(canActivate).toBe(true);
         expect(getUserInfoAsyncSpy).toHaveBeenCalledTimes(1);
         expect(navigateSpy).not.toHaveBeenCalled();
         done();
