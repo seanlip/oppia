@@ -237,17 +237,14 @@
   width: 50vw;
 }
 
-
 .oppia-splash-section-five-left-testimonial {
   height: 300px;
   overflow: hidden; 
   transition: height 0.3s ease;
 }
-
-
 @media (max-width: 720px) {
   .oppia-splash-section-five-left-testimonial {
-    height: 410px;
+    height: 410px; 
   }
 }
 
