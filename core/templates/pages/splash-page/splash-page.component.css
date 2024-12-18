@@ -242,6 +242,7 @@
   overflow: hidden; 
   transition: height 0.3s ease;
 }
+
 @media (max-width: 720px) {
   .oppia-splash-section-five-left-testimonial {
     height: 410px; 
