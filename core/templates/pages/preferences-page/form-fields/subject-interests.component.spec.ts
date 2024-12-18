@@ -139,36 +139,40 @@ describe('Subject interests form field Component', () => {
     componentInstance.registerOnTouched(fn);
     expect(componentInstance.onTouched).toBe(fn);
   });
-});
 
-it('should enable the save button when input is entered', () => {
-  spyOn(componentInstance, 'onChange');
-  const event = {
-    target: {
-      value: 'science',
-    },
-  } as unknown as Event;
+  it('should enable the save button when input is entered', () => {
+    spyOn(componentInstance, 'onChange');
+    const event = {
+      target: {
+        value: 'science',
+      },
+    } as unknown as Event;
 
-  let saveButton = fixture.debugElement.nativeElement.querySelector('.e2e-test-save-changes-button');
-  expect(saveButton.disabled).toBeTrue();
+    let saveButton = fixture.debugElement.nativeElement.querySelector(
+      '.e2e-test-save-changes-button'
+    );
+    expect(saveButton.disabled).toBeTrue();
 
-  componentInstance.onInput(event);
-  fixture.detectChanges();
-  saveButton = fixture.debugElement.nativeElement.querySelector('.e2e-test-save-changes-button');
-  expect(saveButton.disabled).toBeFalse();
-});
+    componentInstance.onInput(event);
+    fixture.detectChanges();
+    saveButton = fixture.debugElement.nativeElement.querySelector(
+      '.e2e-test-save-changes-button'
+    );
+    expect(saveButton.disabled).toBeFalse();
+  });
 
-it('should save input when focus is moved away', () => {
-  spyOn(componentInstance, 'onChange');
-  componentInstance.subjectInterests = [];
-  componentInstance.subjectInterestInput = {
-    nativeElement: {
-      value: 'math',
-    },
-  } as ElementRef<HTMLInputElement>;
+  it('should save input when focus is moved away', () => {
+    spyOn(componentInstance, 'onChange');
+    componentInstance.subjectInterests = [];
+    componentInstance.subjectInterestInput = {
+      nativeElement: {
+        value: 'math',
+      },
+    } as ElementRef<HTMLInputElement>;
 
-  componentInstance.onBlur();
-  expect(componentInstance.subjectInterests).toEqual(['math']);
-  expect(componentInstance.onChange).toHaveBeenCalledWith(['math']);
-  expect(componentInstance.subjectInterestInput.nativeElement.value).toBe('');
+    componentInstance.onBlur();
+    expect(componentInstance.subjectInterests).toEqual(['math']);
+    expect(componentInstance.onChange).toHaveBeenCalledWith(['math']);
+    expect(componentInstance.subjectInterestInput.nativeElement.value).toBe('');
+  });
 });
