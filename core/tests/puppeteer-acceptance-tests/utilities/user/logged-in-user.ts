@@ -809,7 +809,6 @@ export class LoggedInUser extends BaseUser {
     interests: string[]
   ): Promise<void> {
     for (const interest of interests) {
-      await this.page.focus(subjectInterestsInputSelector);
       await this.type(subjectInterestsInputSelector, interest);
       await this.page.click(preferencePageBodySelector);
     }

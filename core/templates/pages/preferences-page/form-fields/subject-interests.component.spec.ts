@@ -141,7 +141,8 @@ describe('Subject interests form field Component', () => {
   });
 
   it('should enable the save button when input is entered', () => {
-    spyOn(componentInstance, 'onChange');
+    spyOn(componentInstance, 'onInput').and.callThrough();
+
     const event = {
       target: {
         value: 'science',
@@ -155,10 +156,13 @@ describe('Subject interests form field Component', () => {
 
     componentInstance.onInput(event);
     fixture.detectChanges();
+
     saveButton = fixture.debugElement.nativeElement.querySelector(
       '.e2e-test-save-changes-button'
     );
     expect(saveButton.disabled).toBeFalse();
+
+    expect(componentInstance.onInput).toHaveBeenCalledWith(event);
   });
 
   it('should save input when focus is moved away', () => {
