@@ -139,8 +139,7 @@ describe('Subject interests form field Component', () => {
     componentInstance.registerOnTouched(fn);
     expect(componentInstance.onTouched).toBe(fn);
   });
-
-  it('should enable the save button when input is entered', () => {
+  it('should enable the save button when input is entered', async () => {
     spyOn(componentInstance, 'onInput').and.callThrough();
 
     const event = {
@@ -152,15 +151,21 @@ describe('Subject interests form field Component', () => {
     let saveButton = fixture.debugElement.nativeElement.querySelector(
       '.e2e-test-save-changes-button'
     );
-    expect(saveButton.disabled).toBeTrue();
+
+    expect(saveButton).not.toBeNull();
+    expect(saveButton.hasAttribute('disabled')).toBeTrue();
 
     componentInstance.onInput(event);
     fixture.detectChanges();
 
+    await fixture.whenStable();
+
     saveButton = fixture.debugElement.nativeElement.querySelector(
       '.e2e-test-save-changes-button'
     );
-    expect(saveButton.disabled).toBeFalse();
+
+    expect(saveButton).not.toBeNull();
+    expect(saveButton.hasAttribute('disabled')).toBeFalse();
 
     expect(componentInstance.onInput).toHaveBeenCalledWith(event);
   });
