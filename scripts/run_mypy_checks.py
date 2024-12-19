@@ -206,10 +206,6 @@ def main(args: Optional[List[str]] = None) -> int:
 
     process = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
-    process = subprocess.Popen(
-        '/app/oppia/third_party/python3_libs/bin/mypy --version', 
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
-    print(cmd)
     stdout, stderr = process.communicate()
     # Standard and error output is in bytes, we need to decode the line to
     # print it.
