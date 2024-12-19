@@ -76,6 +76,7 @@ describe('Logged-in User', function () {
 
       // After confirmation of account deletion, user is redirected to /pending-account-deletion page.
       await loggedInUser2.expectToBeOnPage('pending account deletion');
+      await loggedInUser2.closeBrowser();
     },
     DEFAULT_SPEC_TIMEOUT_MSECS
   );
