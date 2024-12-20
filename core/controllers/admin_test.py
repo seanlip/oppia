@@ -917,6 +917,7 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         csrf_token = self.get_new_csrf_token()
 
+        platform_parameter_registry.Registry.parameter_registry.clear()
         param = self._create_dummy_param()
         new_rule_dicts = [
             {
@@ -1008,6 +1009,7 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
         self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         csrf_token = self.get_new_csrf_token()
 
+        platform_parameter_registry.Registry.parameter_registry.clear()
         param = self._create_dummy_param()
         new_rule_dicts = [
             {

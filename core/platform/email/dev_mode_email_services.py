@@ -22,8 +22,6 @@ import logging
 
 from core.domain import email_services
 
-from core.domain import email_services
-
 from typing import Dict, List, Optional, Union
 
 
