@@ -5862,13 +5862,10 @@ class CheckCompletionOfUserDeletionTaskServiceTests(
             (
                 platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS,
                 'noreply@example.com'
-<<<<<<< HEAD
             ),
             (
                 platform_parameter_list.ParamName.OPPIA_PROJECT_ID,
                 'dev-project-id'
-=======
->>>>>>> parent of 9c562c00e4 (Revert usage of email platform parameters (#21264))
             )
         ]
     )
