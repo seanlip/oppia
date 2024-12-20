@@ -434,6 +434,8 @@ class RunE2ETestsTests(test_utils.GenericTestBase):
             return contextlib.nullcontext(enter_result=process_stub)
 
         def poll_mock() -> Optional[int]:
+            # Simulate a long-running process that prints to stdout multiple
+            # times. run_tests terminates when poll does not return None.
             if process_stub.poll_count == 0:
                 process_stub.poll_count += 1
                 process_stub.stdout = io.BytesIO(b'spamalot')

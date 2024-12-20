@@ -44,14 +44,14 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
             self.print_arr.append(msg)
         self.print_swap = self.swap(builtins, 'print', mock_print)
 
-        class MockFile:
+        class MockStdout:
             def __init__(
                 self,
                 flakes: int = 0,
                 counter: int = 0,
                 print_karma_logs: bool = False
             ) -> None:
-                """Mock File for testing.
+                """Mock stdout for testing.
 
                 Args:
                     flakes: int. The number of times to re-run the task.
@@ -67,7 +67,16 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
                 self.flakes = flakes
                 self.print_karma_logs = print_karma_logs
 
-            def readline(self) -> bytes: # pylint: disable=missing-docstring
+            def readline(self) -> bytes:
+                """Simulates reading lines from stdout.
+
+                Each invocation reads a new line, in the process incrementing
+                counter. When readline returns empty bytes, the process is no
+                longer printing to stdout.
+
+                Returns:
+                    bytes. The line that has been read.
+                """
                 self.counter += 1
                 if self.counter == 1:
                     return (
@@ -90,7 +99,7 @@ class RunFrontendTestsTests(test_utils.GenericTestBase):
                 print_karma_logs: bool = False
             ) -> None:
                 self.returncode = returncode
-                self.stdout = MockFile(
+                self.stdout = MockStdout(
                     flakes=flakes,
                     counter=counter,
                     print_karma_logs=print_karma_logs)

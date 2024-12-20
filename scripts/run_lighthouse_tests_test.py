@@ -646,37 +646,44 @@ class RunLighthouseTestsTests(test_utils.GenericTestBase):
                                             '--skip_build',
                                             '--record_screen'])
 
-    def test_run_lighthouse_tests_dockerized(self) -> None:
+    def test_main_does_not_call_managed_servers_and_build_when_dockerized(
+        self
+    ) -> None:
         class MockTask:
+            """Represents a successful call to Popen that prints to stdout."""
+
             returncode = 0
+
             def communicate(self) -> tuple[bytes, bytes]:   # pylint: disable=missing-docstring
-                return b'Task output', b'No error.'
+                return b'Task output', b''
 
         swap_run_lighthouse_tests = self.swap_with_checks(
             run_lighthouse_tests, 'run_lighthouse_checks',
             lambda *unused_args: None, expected_args=[])
+
         def mock_popen(*unused_args: str, **unused_kwargs: str) -> MockTask:  # pylint: disable=unused-argument
             return MockTask()
         swap_popen = self.swap(subprocess, 'Popen', mock_popen)
         swap_is_dockerized = self.swap(feconf, 'OPPIA_IS_DOCKERIZED', True)
+        swap_redis_server_not_called = self.swap_with_checks(
+            servers,
+            'managed_redis_server',
+            MockCompilerContextManager,
+            called=False)
+        swap_elasticsearch_server_not_called = self.swap_with_checks(
+            servers,
+            'managed_elasticsearch_dev_server',
+            MockCompilerContextManager,
+            called=False)
+        swap_build_main_not_called = self.swap_with_checks(
+            build, 'main', lambda: None, called=False)
 
         with self.lighthouse_pages_json_filepath_swap, self.print_swap:
             with swap_is_dockerized, swap_popen, swap_run_lighthouse_tests:
-                run_lighthouse_tests.main(args=['--mode', 'performance'])
-                expected_all_lighthouse_urls = ','.join([
-                    'http://localhost:8181/',
-                    'http://localhost:8181/about',
-                    'http://localhost:8181/contact'
-                ])
-                expected_lighthouse_urls_to_run = ','.join([
-                    'http://localhost:8181/', 'http://localhost:8181/about'])
-                self.assertEqual(
-                    os.environ['ALL_LIGHTHOUSE_URLS'],
-                    expected_all_lighthouse_urls)
-                self.assertEqual(
-                    os.environ['LIGHTHOUSE_URLS_TO_RUN'],
-                    expected_lighthouse_urls_to_run)
+                with swap_redis_server_not_called, swap_build_main_not_called:
+                    with swap_elasticsearch_server_not_called:
+                        run_lighthouse_tests.main(
+                            args=['--mode', 'performance'])
 
-        self.assertNotIn('Building files in production mode.', self.print_arr)
         self.assertIn(
             'Puppeteer script completed successfully.', self.print_arr)
