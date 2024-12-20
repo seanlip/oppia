@@ -24,6 +24,7 @@ from core import feconf
 from core import utils
 from core.constants import constants
 from core.domain import platform_parameter_list
+from core.domain import platform_parameter_services
 from core.domain import skill_services
 from core.domain import story_domain
 from core.domain import story_fetchers
@@ -535,6 +536,12 @@ class SubtopicPageEditorTests(BaseTopicEditorControllerTests):
 class TopicEditorTests(
         BaseTopicEditorControllerTests, test_utils.EmailTestBase):
 
+    def setUp(self) -> None:
+        super().setUp()
+        self.admin_email_address = (
+            platform_parameter_services.get_platform_parameter_value(
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS.value))
+
     def test_get_can_not_access_topic_page_with_nonexistent_topic_id(
         self
     ) -> None:
@@ -613,8 +620,9 @@ class TopicEditorTests(
 
         # Check that admins can access the editable topic data.
         self.login(self.CURRICULUM_ADMIN_EMAIL)
+        assert isinstance(self.admin_email_address, str)
         messages = self._get_sent_email_messages(
-            feconf.ADMIN_EMAIL_ADDRESS)
+            self.admin_email_address)
         self.assertEqual(len(messages), 0)
         json_response = self.get_json(
             '%s/%s' % (
@@ -633,7 +641,7 @@ class TopicEditorTests(
             json_response['skill_id_to_description_dict'][self.skill_id])
 
         messages = self._get_sent_email_messages(
-            feconf.ADMIN_EMAIL_ADDRESS)
+            self.admin_email_address)
         expected_email_html_body = (
             'The deleted skills: %s are still'
             ' present in topic with id %s' % (
@@ -802,8 +810,9 @@ class TopicEditorTests(
         csrf_token = self.get_new_csrf_token()
         skill_services.delete_skill(self.admin_id, self.skill_id_2)
 
+        assert isinstance(self.admin_email_address, str)
         messages = self._get_sent_email_messages(
-            feconf.ADMIN_EMAIL_ADDRESS)
+            self.admin_email_address)
         self.assertEqual(len(messages), 0)
         json_response = self.put_json(
             '%s/%s' % (
@@ -817,7 +826,7 @@ class TopicEditorTests(
             json_response['skill_id_to_description_dict'][self.skill_id])
 
         messages = self._get_sent_email_messages(
-            feconf.ADMIN_EMAIL_ADDRESS)
+            self.admin_email_address)
         expected_email_html_body = (
             'The deleted skills: %s are still'
             ' present in topic with id %s' % (
@@ -1106,7 +1115,7 @@ class TopicPublishSendMailHandlerTests(
             (
                 platform_parameter_list.ParamName.OPPIA_PROJECT_ID,
                 'dev-project-id'
-            ),
+            )
         ]
     )
     def test_send_mail(self) -> None:
@@ -1117,8 +1126,11 @@ class TopicPublishSendMailHandlerTests(
             '%s/%s' % (
                 feconf.TOPIC_SEND_MAIL_URL_PREFIX, self.topic_id),
             {'topic_name': 'Topic Name'}, csrf_token=csrf_token)
-        messages = self._get_sent_email_messages(
-            feconf.ADMIN_EMAIL_ADDRESS)
+        admin_email_address = (
+            platform_parameter_services.get_platform_parameter_value(
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS.value))
+        assert isinstance(admin_email_address, str)
+        messages = self._get_sent_email_messages(admin_email_address)
         expected_email_html_body = (
             'wants to publish topic: Topic Name at URL %s/%s, please review'
             ' and publish if it looks good.'

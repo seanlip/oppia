@@ -740,10 +740,13 @@ class WipeoutServiceRunFunctionsTests(test_utils.GenericTestBase):
             (
                 platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
                 'system@example.com'
+<<<<<<< HEAD
             ),
             (
                 platform_parameter_list.ParamName.OPPIA_PROJECT_ID,
                 'dev-project-id'
+=======
+>>>>>>> parent of 9c562c00e4 (Revert usage of email platform parameters (#21264))
             )
         ]
     )
@@ -5695,7 +5698,13 @@ class PendingUserDeletionTaskServiceTests(test_utils.GenericTestBase):
             email_manager, 'send_mail_to_admin', _mock_send_mail_to_admin)
 
     @test_utils.set_platform_parameters(
-        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
+        [
+            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
+            (
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+                'system@example.com'
+            )
+        ]
     )
     def test_repeated_deletion_is_successful_when_emails_enabled(
         self
@@ -5742,7 +5751,13 @@ class PendingUserDeletionTaskServiceTests(test_utils.GenericTestBase):
             self.assertEqual(len(self.email_bodies), 0)
 
     @test_utils.set_platform_parameters(
-        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
+        [
+            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
+            (
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+                'system@example.com'
+            )
+        ]
     )
     def test_regular_deletion_is_successful(self) -> None:
         with self.send_mail_to_admin_swap:
@@ -5850,10 +5865,13 @@ class CheckCompletionOfUserDeletionTaskServiceTests(
             (
                 platform_parameter_list.ParamName.NOREPLY_EMAIL_ADDRESS,
                 'noreply@example.com'
+<<<<<<< HEAD
             ),
             (
                 platform_parameter_list.ParamName.OPPIA_PROJECT_ID,
                 'dev-project-id'
+=======
+>>>>>>> parent of 9c562c00e4 (Revert usage of email platform parameters (#21264))
             )
         ]
     )
@@ -5879,10 +5897,13 @@ class CheckCompletionOfUserDeletionTaskServiceTests(
             (
                 platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
                 'system@example.com'
+<<<<<<< HEAD
             ),
             (
                 platform_parameter_list.ParamName.OPPIA_PROJECT_ID,
                 'dev-project-id'
+=======
+>>>>>>> parent of 9c562c00e4 (Revert usage of email platform parameters (#21264))
             )
         ]
     )
