@@ -57,6 +57,7 @@ class ExistingPlatformParameterValidityTests(test_utils.GenericTestBase):
                             ),
                             'noreply_email_address',
                             'oppia_project_id',
+                            'oppia_site_url_for_emails',
                             'promo_bar_enabled',
                             'promo_bar_message',
                             'record_playthrough_probability',

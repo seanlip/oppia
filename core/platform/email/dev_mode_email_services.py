@@ -19,7 +19,8 @@
 from __future__ import annotations
 
 import logging
-import textwrap
+
+from core.domain import email_services
 
 from core.domain import email_services
 
