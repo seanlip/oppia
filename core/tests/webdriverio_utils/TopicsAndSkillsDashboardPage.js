@@ -388,6 +388,13 @@ var TopicsAndSkillsDashboardPage = function () {
       'Topic dashboard classroom filter option',
       dropdownOption
     );
+
+    var selectedOption = topicFilterClassroomField.$('.mat-select-value-text');
+    await waitFor.textToBePresentInElement(
+      selectedOption,
+      keyword,
+      'Classroom filter value taking too long to change.'
+    );
   };
 
   this.resetTopicFilters = async function () {
