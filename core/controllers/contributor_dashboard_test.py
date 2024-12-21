@@ -1550,7 +1550,7 @@ class TranslatableTopicNamesPerClassRoomHandlerTest(test_utils.GenericTestBase):
 
         self.set_curriculum_admins([self.CURRICULUM_ADMIN_USERNAME])
 
-    def test_get_translatable_topic_names_by_classroom(self) -> None:
+    def test_get_translatable_topic_names_per_classroom(self) -> None:
         # Initially there should be no topics.
         response = self.get_json('/gettranslatabletopicnamesperclassroom')
         self.assertEqual(
@@ -1623,9 +1623,10 @@ class TranslatableTopicNamesPerClassRoomHandlerTest(test_utils.GenericTestBase):
         }
 
         # Sort both lists by classroom name for order-independent comparison.
-        response['topic_names_per_classRoom'].sort(key=lambda x: x['classRoom'])
+        response['topic_names_per_classRoom'].sort(
+            key=lambda x: str(x['classRoom']))
         expected_response['topic_names_per_classRoom'].sort(
-            key=lambda x: x['classRoom'])
+            key=lambda x: str(x['classRoom']))
 
         self.assertEqual(response, expected_response)
 
@@ -1654,9 +1655,10 @@ class TranslatableTopicNamesPerClassRoomHandlerTest(test_utils.GenericTestBase):
         }
 
         # Sort both lists by classroom name for order-independent comparison.
-        response['topic_names_per_classRoom'].sort(key=lambda x: x['classRoom'])
+        response['topic_names_per_classRoom'].sort(
+            key=lambda x: str(x['classRoom']))
         expected_response['topic_names_per_classRoom'].sort(
-            key=lambda x: x['classRoom'])
+            key=lambda x: str(x['classRoom']))
 
         self.assertEqual(response, expected_response)
 
