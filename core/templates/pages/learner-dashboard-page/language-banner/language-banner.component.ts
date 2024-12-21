@@ -18,6 +18,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
+import {downgradeComponent} from '@angular/upgrade/static';
 import {CookieService} from 'ngx-cookie';
 import {AppConstants} from 'app.constants';
 
@@ -58,3 +59,10 @@ export class LanguageBannerComponent implements OnInit {
     }
   }
 }
+
+angular
+  .module('oppia')
+  .directive(
+    'languageBannerComponent',
+    downgradeComponent({component: LanguageBannerComponent})
+  );
