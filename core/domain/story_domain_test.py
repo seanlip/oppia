@@ -981,8 +981,8 @@ class StoryDomainUnitTests(test_utils.GenericTestBase):
             'outline_is_finalized': False,
             'exploration_id': None,
             'status': 'Draft',
-            'planned_publication_date_msecs': 100,
-            'last_modified_msecs': 100,
+            'planned_publication_date_msecs': 100.0,
+            'last_modified_msecs': 100.0,
             'first_publication_date_msecs': None,
             'unpublishing_reason': None
         }
@@ -1021,8 +1021,8 @@ class StoryDomainUnitTests(test_utils.GenericTestBase):
             'outline_is_finalized': False,
             'exploration_id': None,
             'status': 'Draft',
-            'planned_publication_date_msecs': 100,
-            'last_modified_msecs': 100,
+            'planned_publication_date_msecs': 100.0,
+            'last_modified_msecs': 100.0,
             'first_publication_date_msecs': None,
             'unpublishing_reason': None
         }
@@ -1067,9 +1067,9 @@ class StoryDomainUnitTests(test_utils.GenericTestBase):
             'outline_is_finalized': False,
             'exploration_id': 'exp_1',
             'status': 'Published',
-            'planned_publication_date_msecs': 100,
-            'last_modified_msecs': 100,
-            'first_publication_date_msecs': 100,
+            'planned_publication_date_msecs': 100.0,
+            'last_modified_msecs': 100.0,
+            'first_publication_date_msecs': 100.0,
             'unpublishing_reason': None
         }
         node_2: story_domain.StoryNodeDict = {
@@ -1087,9 +1087,9 @@ class StoryDomainUnitTests(test_utils.GenericTestBase):
             'outline_is_finalized': False,
             'exploration_id': 'exp_2',
             'status': 'Published',
-            'planned_publication_date_msecs': 100,
-            'last_modified_msecs': 100,
-            'first_publication_date_msecs': 100,
+            'planned_publication_date_msecs': 100.0,
+            'last_modified_msecs': 100.0,
+            'first_publication_date_msecs': 100.0,
             'unpublishing_reason': None
         }
         self.story.story_contents.initial_node_id = 'node_2'
