@@ -25,7 +25,6 @@ import {AppConstants} from 'app.constants';
 @Component({
   selector: 'language-banner',
   templateUrl: './language-banner.component.html',
-  styleUrls: ['./language-banner.component.scss'],
 })
 export class LanguageBannerComponent implements OnInit {
   COOKIE_NAME_COOKIES_ACKNOWLEDGED = 'OPPIA_COOKIES_ACKNOWLEDGED';
