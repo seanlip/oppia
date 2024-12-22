@@ -259,7 +259,7 @@
     "I18N_BLOG_DASHBOARD_AUTHOR_DETAILS_EDITOR_HEADING": "Add your Author Name and Biography",
     "I18N_BLOG_DASHBOARD_AUTHOR_NAME_HEADING": "Name",
     "I18N_BLOG_DASHBOARD_CREATE_NEW_BLOG_POST_BUTTON": "Create New Blog Post",
-    "I18N_BLOG_DASHBOARD_INTRO_MESSAGE": "It looks like you have not created any blog posts yet!",
+    "I18N_BLOG_DASHBOARD_INTRO_MESSAGE": "It looks like you have not created any blog posts yet",
     "I18N_BLOG_DASHBOARD_PAGE_NEW_POST_BUTTON": "New Post",
     "I18N_BLOG_DASHBOARD_PAGE_SAVE_BUTTON": "Save",
     "I18N_BLOG_DASHBOARD_TAB_DRAFTS": "Drafts",
