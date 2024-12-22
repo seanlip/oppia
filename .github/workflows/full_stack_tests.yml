@@ -343,8 +343,6 @@ jobs:
       #       ${{ runner.os }}-
       - name: Install Oppia dependencies
         uses: ./.github/actions/install-oppia-dependencies
-      - name: Generate build files
-        uses: ./.github/actions/generate-build-files
       - name: Increase lighthouse timeout
         run: |
           # Replace the 1.5 second timeout in lighthouse for retrieving
