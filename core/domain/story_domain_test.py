@@ -724,6 +724,10 @@ class StoryDomainUnitTests(test_utils.GenericTestBase):
         self.assertEqual(
             self.story.story_contents.nodes[0]. planned_publication_date_msecs,
             current_time_msecs)
+        self.story.story_contents.nodes[0].planned_publication_date_msecs = 10
+        self._assert_validation_error(
+            'Expected planned publication date to be milliseconds, received 10',
+        )
 
     def test_story_node_update_last_modified(self) -> None:
         self.story.story_contents.nodes[0].last_modified_msecs = None
@@ -733,6 +737,10 @@ class StoryDomainUnitTests(test_utils.GenericTestBase):
         self.assertEqual(
             self.story.story_contents.nodes[0].last_modified_msecs,
             current_time_msecs)
+        self.story.story_contents.nodes[0].last_modified_msecs = 10
+        self._assert_validation_error(
+            'Expected last modified to be milliseconds, received 10',
+        )
 
     def test_story_node_update_first_publication_date(self) -> None:
         self.story.story_contents.nodes[0].first_publication_date_msecs = None
@@ -743,6 +751,10 @@ class StoryDomainUnitTests(test_utils.GenericTestBase):
         self.assertEqual(
             self.story.story_contents.nodes[0].first_publication_date_msecs,
             current_time_msecs)
+        self.story.story_contents.nodes[0].first_publication_date_msecs = 10
+        self._assert_validation_error(
+            'Expected first publication date to be milliseconds, received 10',
+        )
 
     def test_story_node_update_unpublishing_reason(self) -> None:
         self.story.story_contents.nodes[0].unpublishing_reason = None
