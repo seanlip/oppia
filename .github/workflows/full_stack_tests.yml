@@ -500,12 +500,11 @@ jobs:
     name: Check that all necessary tests pass
     needs:
       - check_test_suites_to_run
-      # NOTE: Temporarily added this to check if trigger_build_and_deploy gets skipped
-      # - e2e_test
-      # - acceptance_test_with_python_installation
-      # - acceptance_test_with_docker_installation
-      # - lighthouse_accessibility_test
-      # - lighthouse_performance_test
+      - e2e_test
+      - acceptance_test_with_python_installation
+      - acceptance_test_with_docker_installation
+      - lighthouse_accessibility_test
+      - lighthouse_performance_test
     if: always()
     runs-on: ubuntu-22.04
     steps:
