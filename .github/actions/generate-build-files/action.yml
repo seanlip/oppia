@@ -52,3 +52,4 @@ runs:
         name: build_files
         path: /home/runner/work/oppia/build_files.zip
         retention-days: 7
+        overwrite: true
