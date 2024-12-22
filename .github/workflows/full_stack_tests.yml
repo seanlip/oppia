@@ -526,6 +526,10 @@ jobs:
     name: Trigger build and deploy
     needs: [check_workflow_statuses]
     runs-on: ubuntu-22.04
+    # Only broadcast this for commits to develop branch in the oppia/oppia repo.
+    # Further checks to ensure that the relevant commit can be deployed (e.g.
+    # the commit is not an older commit than the latest deployed commit) are
+    # done in the build_release_candidate script.
     if: ${{ github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
     steps:
       - name: Set environment variables
