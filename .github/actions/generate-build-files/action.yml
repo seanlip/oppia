@@ -36,12 +36,14 @@ runs:
       run: |
         echo "Failed to download build files. Regenerating."
         python -m scripts.build --prod_env
+      shell: bash
     - name: (Artifact re-build) Zip build files
       # We avoid using ../ or absolute paths because unzip treats these as
       # security issues and will refuse to follow them.
       run: |
         zip -rqy build_files.zip oppia/build oppia/webpack_bundles oppia/app.yaml oppia/assets/hashes.json oppia/backend_prod_files oppia/dist
       working-directory: /home/runner/work/oppia
+      shell: bash
     - name: Upload build files artifact
       if: steps.download_artifact.outcome == 'failure'
       uses: actions/upload-artifact@v4
