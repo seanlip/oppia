@@ -377,7 +377,6 @@ class StoryServicesUnitTests(test_utils.GenericTestBase):
             last_modified_msecs, (
                 datetime.datetime(2023, 1, 1, 0, 0).timestamp() * 1000),
             msg='Incorrect last modified date in milliseconds received.')
-
         story_summary = story_fetchers.get_story_summary_by_id(self.STORY_ID)
         self.assertEqual(story_summary.node_titles, ['Title 1', 'Title 2'])
 
