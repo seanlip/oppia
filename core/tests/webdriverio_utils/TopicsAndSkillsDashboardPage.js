@@ -373,7 +373,7 @@ var TopicsAndSkillsDashboardPage = function () {
     );
 
     await waitFor.textToBePresentInElement(
-      filterKeywordInput,
+      topicFilterKeywordField,
       keyword,
       'Keyword filter value taking too long to change.'
     );
