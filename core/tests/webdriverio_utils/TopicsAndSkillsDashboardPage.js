@@ -372,6 +372,12 @@ var TopicsAndSkillsDashboardPage = function () {
       keyword + '\n'
     );
 
+    await waitFor.textToBePresentInElement(
+      filterKeywordInput,
+      keyword,
+      'Keyword filter value taking too long to change.'
+    );
+
     if (width < 831) {
       await action.click('Close Filter', closeSkillFilter);
     }
