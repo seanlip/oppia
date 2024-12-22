@@ -362,7 +362,8 @@ var TopicsAndSkillsDashboardPage = function () {
       topicFilterKeywordField,
       'Topic Dashboard keyword filter parent taking too long to appear.'
     );
-    var filterKeywordInput = topicFilterKeywordField.$(
+
+    var filterKeywordInput = await topicFilterKeywordField.$(
       '.e2e-test-multi-selection-input'
     );
 
@@ -373,7 +374,7 @@ var TopicsAndSkillsDashboardPage = function () {
     );
 
     await waitFor.textToBePresentInElement(
-      topicFilterKeywordField,
+      await topicFilterKeywordField.$('.mat-chip-list-wrapper'),
       keyword,
       'Keyword filter value taking too long to change.'
     );
