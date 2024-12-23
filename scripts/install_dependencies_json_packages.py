@@ -18,14 +18,12 @@ dependencies.json.
 
 from __future__ import annotations
 
-import contextlib
 from http import client
 import io
 import json
 import os
 import ssl
 import sys
-import tarfile
 import urllib
 from urllib import error as urlerror
 from urllib import request as urlrequest
@@ -244,7 +242,7 @@ def download_files(
     """
     assert isinstance(source_filenames, list), (
         'Expected list of filenames, got \'%s\'' % source_filenames)
-    ensure_directory_exists(target_dir)
+    common.ensure_directory_exists(target_dir)
     for filename in source_filenames:
         if not os.path.exists(os.path.join(target_dir, filename)):
             print('Downloading file %s to %s ...' % (filename, target_dir))
@@ -308,48 +306,6 @@ def download_and_unzip_files(
             os.path.join(target_parent_dir, target_root_name))
 
         print('Download of %s succeeded.' % zip_root_name)
-
-
-def download_and_untar_files(
-    source_url: str,
-    target_parent_dir: str,
-    tar_root_name: str,
-    target_root_name: str
-) -> None:
-    """Downloads a tar file, untars it, and saves the result in a given dir.
-
-    The download occurs only if the target directory that the tar file untars
-    to does not exist.
-
-    NB: This function assumes that the root level of the tar file has exactly
-    one folder.
-
-    Args:
-        source_url: str. The URL from which to download the tar file.
-        target_parent_dir: str. The directory to save the contents of the tar
-            file to.
-        tar_root_name: str. The name of the top-level folder in the tar
-            directory.
-        target_root_name: str. The name that the top-level folder should be
-            renamed to in the local directory.
-    """
-    if not os.path.exists(os.path.join(target_parent_dir, target_root_name)):
-        print('Downloading and untarring file %s to %s ...' % (
-            tar_root_name, target_parent_dir))
-        ensure_directory_exists(target_parent_dir)
-
-        url_retrieve(source_url, TMP_UNZIP_PATH)
-        with contextlib.closing(tarfile.open(
-            name=TMP_UNZIP_PATH, mode='r:gz')) as tfile:
-            tfile.extractall(target_parent_dir)
-        os.remove(TMP_UNZIP_PATH)
-
-        # Rename the target directory.
-        os.rename(
-            os.path.join(target_parent_dir, tar_root_name),
-            os.path.join(target_parent_dir, target_root_name))
-
-        print('Download of %s succeeded.' % tar_root_name)
 
 
 def get_file_contents(filepath: str, mode: TextModeTypes = 'r') -> str:
@@ -477,7 +433,7 @@ def download_all_dependencies(filepath: str) -> None:
                 dependency['rootDir'] if 'rootDir' in dependency
                 else dependency['rootDirPrefix'] + dependency['version'])
             dependency_target_root_name = (
-                dependency['targetDir']if 'targetDir' in dependency
+                dependency['targetDir'] if 'targetDir' in dependency
                 else dependency['targetDirPrefix'] + dependency['version'])
             download_and_unzip_files(
                 dependency['url'], THIRD_PARTY_STATIC_DIR,

@@ -24,7 +24,6 @@ import shutil
 import subprocess
 
 from core.tests import test_utils
-from scripts import common
 
 import psutil
 from typing import List, Tuple

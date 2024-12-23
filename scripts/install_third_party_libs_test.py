@@ -24,17 +24,15 @@ import os
 import shutil
 import subprocess
 import sys
-import tempfile
+import tarfile
 
 from core import feconf
-from core import utils
 from core.tests import test_utils
 
 from typing import Final, List, Tuple
 
 from . import clean
 from . import common
-from . import install_python_prod_dependencies
 from . import install_third_party_libs
 from . import pre_commit_hook
 from . import pre_push_hook
@@ -46,17 +44,6 @@ TEST_DATA_DIR: Final = os.path.join('core', 'tests', 'data', '')
 MOCK_YARN_PATH: Final = os.path.join(
     TEST_DATA_DIR, 'yarn-v%s' % common.YARN_VERSION
 )
-
-
-class Ret:
-    """Return object with required attributes."""
-
-    def __init__(self) -> None:
-        self.returncode = 0
-
-    def communicate(self) -> Tuple[str, str]:
-        """Return required method."""
-        return '', ''
 
 
 class MockCD:
@@ -261,7 +248,7 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
         swap_copytree = self.swap(shutil, 'copytree', mock_copytree)
         check_call_swap = self.swap(subprocess, 'check_call', mock_check_call)
         install_third_party_main_swap = self.swap(
-            install_third_party, 'main', mock_main_for_install_third_party)
+            install_third_party_libs, 'main', mock_main_for_install_third_party)
         pre_commit_hook_main_swap = self.swap(
             pre_commit_hook, 'main', mock_main_for_pre_commit_hook)
         pre_push_hook_main_swap = self.swap(
@@ -272,9 +259,9 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
 
         with check_call_swap, self.Popen_swap:
             with install_third_party_main_swap, pre_commit_hook_main_swap:
-                    with pre_push_hook_main_swap, tweak_yarn_executable_swap:
-                        with swap_isdir, swap_mkdir, swap_copytree:
-                            install_third_party_libs.main()
+                with pre_push_hook_main_swap, tweak_yarn_executable_swap:
+                    with swap_isdir, swap_mkdir, swap_copytree:
+                        install_third_party_libs.main()
         self.assertEqual(check_function_calls, expected_check_function_calls)
         self.assertEqual(copied_src_dst_tuples, correct_copied_src_dst_tuples)
         self.assertEqual(initialized_directories, [correct_google_path])
@@ -282,6 +269,16 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
 
 class InstallRedisAndElasticSearchTests(test_utils.GenericTestBase):
     """Test the methods for installing Redis and Elasticsearch."""
+
+    class Ret:
+        """Return object with required attributes."""
+
+        def __init__(self) -> None:
+            self.returncode = 0
+
+        def communicate(self) -> Tuple[str, str]:
+            """Return required method."""
+            return '', ''
 
     def test_install_redis_cli_function_calls(self) -> None:
         check_function_calls = {
@@ -312,10 +309,10 @@ class InstallRedisAndElasticSearchTests(test_utils.GenericTestBase):
 
         swap_call = self.swap(subprocess, 'call', mock_call)
         untar_files_swap = self.swap(
-            install_third_party, 'download_and_untar_files',
+            install_third_party_libs, 'download_and_untar_files',
             mock_download_and_untar_files)
         with swap_call, untar_files_swap:
-            install_third_party.install_redis_cli()
+            install_third_party_libs.install_redis_cli()
 
         self.assertEqual(check_function_calls, expected_check_function_calls)
 
@@ -353,7 +350,7 @@ class InstallRedisAndElasticSearchTests(test_utils.GenericTestBase):
 
         swap_call = self.swap(subprocess, 'call', mock_call)
         untar_files_swap = self.swap(
-            install_third_party, 'download_and_untar_files',
+            install_third_party_libs, 'download_and_untar_files',
             mock_download_and_untar_files)
 
         expected_check_function_calls = {
@@ -365,7 +362,7 @@ class InstallRedisAndElasticSearchTests(test_utils.GenericTestBase):
         mac_os_swap = self.swap(common, 'is_mac_os', mock_is_mac_os)
         linux_os_swap = self.swap(common, 'is_linux_os', mock_is_linux_os)
         with swap_call, untar_files_swap, mac_os_swap, linux_os_swap:
-            install_third_party.install_elasticsearch_dev_server()
+            install_third_party_libs.install_elasticsearch_dev_server()
         self.assertEqual(check_function_calls, expected_check_function_calls)
 
     def test_install_elasticsearch_unrecognized_os(self) -> None:
@@ -395,7 +392,7 @@ class InstallRedisAndElasticSearchTests(test_utils.GenericTestBase):
             Exception, 'Unrecognized or unsupported operating system.')
         with mac_swap, linux_swap, swap_call, (
             os_not_supported_exception):
-            install_third_party.install_elasticsearch_dev_server()
+            install_third_party_libs.install_elasticsearch_dev_server()
 
     def test_elasticsearch_already_installed(self) -> None:
         check_function_calls = {
@@ -421,7 +418,7 @@ class InstallRedisAndElasticSearchTests(test_utils.GenericTestBase):
         }
 
         with swap_call:
-            install_third_party.install_elasticsearch_dev_server()
+            install_third_party_libs.install_elasticsearch_dev_server()
         self.assertEqual(check_function_calls, expected_check_function_calls)
 
 
@@ -464,12 +461,11 @@ class SetupTests(test_utils.GenericTestBase):
         def mock_get(unused_var: str) -> None:
             return None
 
-        self.create_swap = self.swap(
-            setup, 'create_directory', mock_create_directory)
         self.test_py_swap = self.swap(
-            setup, 'test_python_version', mock_test_python_version)
+            install_third_party_libs, 'test_python_version',
+            mock_test_python_version)
         self.download_swap = self.swap(
-            setup, 'download_and_install_package',
+            install_third_party_libs, 'download_and_install_package',
             mock_download_and_install_package)
         self.exists_true_swap = self.swap_to_always_return(
             os.path, 'exists', True)
@@ -620,7 +616,7 @@ class SetupTests(test_utils.GenericTestBase):
         print_swap = self.swap(builtins, 'print', mock_print)
         with self.test_py_swap, getcwd_swap, print_swap:
             with self.assertRaisesRegex(Exception, 'Invalid root directory.'):
-                install_third_party_libs.main(args=[])
+                install_third_party_libs.main()
         self.assertFalse(
             'WARNING   This script should be run from the oppia/ '
             'root folder.' in print_arr)
@@ -631,11 +627,11 @@ class SetupTests(test_utils.GenericTestBase):
 
         os_name_swap = self.swap(common, 'OS_NAME', 'Darwin')
 
-        with self.test_py_swap, self.create_swap, os_name_swap:
+        with self.test_py_swap, os_name_swap:
             with self.download_swap, self.rename_swap, self.exists_false_swap:
                 with self.chmod_swap, self.delete_swap, self.isfile_swap:
                     with self.is_x64_architecture_true_swap, self.chown_swap:
-                        install_third_party_libs.main(args=[])
+                        install_third_party_libs.main()
 
         for item in self.check_function_calls.values():
             self.assertTrue(item)
@@ -655,12 +651,12 @@ class SetupTests(test_utils.GenericTestBase):
             all_cmd_tokens.extend(cmd_tokens)
         check_call_swap = self.swap(subprocess, 'check_call', mock_check_call)
 
-        with self.test_py_swap, self.create_swap, os_name_swap, self.chown_swap:
+        with self.test_py_swap, os_name_swap, self.chown_swap:
             with self.download_swap, self.rename_swap, self.exists_false_swap:
                 with self.chmod_swap, self.delete_swap, self.isfile_swap:
                     with self.is_x64_architecture_false_swap, self.cd_swap:
                         with check_call_swap:
-                            install_third_party_libs.main(args=[])
+                            install_third_party_libs.main()
         for _, item in self.check_function_calls.items():
             self.assertTrue(item)
         self.assertEqual(
@@ -676,11 +672,11 @@ class SetupTests(test_utils.GenericTestBase):
 
         os_name_swap = self.swap(common, 'OS_NAME', 'Linux')
 
-        with self.test_py_swap, self.create_swap, os_name_swap, self.chown_swap:
+        with self.test_py_swap, os_name_swap, self.chown_swap:
             with self.download_swap, self.rename_swap, self.exists_false_swap:
                 with self.chmod_swap, self.delete_swap, self.isfile_swap:
                     with self.is_x64_architecture_true_swap:
-                        install_third_party_libs.main(args=[])
+                        install_third_party_libs.main()
 
         for item in self.check_function_calls.values():
             self.assertTrue(item)
@@ -700,12 +696,12 @@ class SetupTests(test_utils.GenericTestBase):
             all_cmd_tokens.extend(cmd_tokens)
         check_call_swap = self.swap(subprocess, 'check_call', mock_check_call)
 
-        with self.test_py_swap, self.create_swap, os_name_swap, check_call_swap:
+        with self.test_py_swap, os_name_swap, check_call_swap:
             with self.download_swap, self.rename_swap, self.cd_swap:
                 with self.chmod_swap, self.delete_swap, self.isfile_swap:
                     with self.is_x64_architecture_false_swap, self.chown_swap:
                         with self.exists_false_swap:
-                            install_third_party_libs.main(args=[])
+                            install_third_party_libs.main()
 
         for item in self.check_function_calls.values():
             self.assertTrue(item)
@@ -733,11 +729,11 @@ class SetupTests(test_utils.GenericTestBase):
             common, 'url_retrieve', mock_url_retrieve)
         check_call_swap = self.swap(subprocess, 'check_call', mock_check_call)
 
-        with self.test_py_swap, self.create_swap, os_name_swap, check_call_swap:
+        with self.test_py_swap, os_name_swap, check_call_swap:
             with self.download_swap, self.rename_swap, self.delete_swap:
                 with self.isfile_swap, self.is_x64_architecture_false_swap:
                     with url_retrieve_swap, self.exists_false_swap:
-                        install_third_party_libs.main(args=[])
+                        install_third_party_libs.main()
 
         check_function_calls = self.check_function_calls.copy()
         del check_function_calls['recursive_chown_is_called']
@@ -772,11 +768,11 @@ class SetupTests(test_utils.GenericTestBase):
             common, 'url_retrieve', mock_url_retrieve)
         check_call_swap = self.swap(subprocess, 'check_call', mock_check_call)
 
-        with self.test_py_swap, self.create_swap, os_name_swap, check_call_swap:
+        with self.test_py_swap, os_name_swap, check_call_swap:
             with self.download_swap, self.rename_swap, self.delete_swap:
                 with self.isfile_swap, self.is_x64_architecture_true_swap:
                     with url_retrieve_swap, self.exists_false_swap:
-                        install_third_party_libs.main(args=[])
+                        install_third_party_libs.main()
         check_function_calls = self.check_function_calls.copy()
         del check_function_calls['recursive_chown_is_called']
         del check_function_calls['recursive_chmod_is_called']
@@ -800,12 +796,12 @@ class SetupTests(test_utils.GenericTestBase):
     ) -> None:
         os_name_swap = self.swap(common, 'OS_NAME', 'Solaris')
 
-        with self.test_py_swap, self.create_swap, os_name_swap, self.chown_swap:
+        with self.test_py_swap, os_name_swap, self.chown_swap:
             with self.rename_swap, self.exists_false_swap:
                 with self.assertRaisesRegex(
                     Exception, 'System\'s Operating System is not compatible.'
                 ), self.is_x64_architecture_true_swap:
-                    install_third_party_libs.main(args=[])
+                    install_third_party_libs.main()
 
     def test_if_node_is_already_installed_then_skip_installation(self) -> None:
 
@@ -816,9 +812,9 @@ class SetupTests(test_utils.GenericTestBase):
         os_name_swap = self.swap(common, 'OS_NAME', 'Linux')
         print_swap = self.swap(builtins, 'print', mock_print)
 
-        with self.test_py_swap, self.create_swap, self.chown_swap, print_swap:
+        with self.test_py_swap, self.chown_swap, print_swap:
             with self.rename_swap, self.exists_true_swap, os_name_swap:
-                install_third_party_libs.main(args=[])
+                install_third_party_libs.main()
 
         print(print_list)
         self.assertIn('Environment setup completed.', print_list)
@@ -889,7 +885,7 @@ class GoogleCloudSdkInstallationTests(test_utils.GenericTestBase):
         remove_swap = self.swap(os, 'remove', mock_remove)
         exists_swap = self.swap(os.path, 'exists', mock_exists)
         with walk_swap, remove_swap, exists_swap:
-            install_third_party_libs.main(args=[])
+            install_third_party_libs.main()
         self.assertEqual(check_file_removals, expected_check_file_removals)
 
     def test_gcloud_install_without_errors(self) -> None:

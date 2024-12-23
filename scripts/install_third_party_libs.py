@@ -28,6 +28,7 @@ This setup script does three things:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import os
 import pathlib
 import shutil
@@ -49,8 +50,12 @@ if not feconf.OPPIA_IS_DOCKERIZED:
     from . import pre_push_hook  # isort:skip  pylint: disable=wrong-import-position, wrong-import-order
 
 from . import common  # isort:skip  pylint: disable=wrong-import-position, wrong-import-order
+from . import clean  # isort:skip  pylint: disable=wrong-import-position, wrong-import-order
 
 from core import utils  # isort:skip   pylint: disable=wrong-import-position, wrong-import-order
+
+# Place to download zip files for temporary storage.
+TMP_UNZIP_PATH: Final = os.path.join('.', 'tmp_unzip.zip')
 
 _PARSER: Final = argparse.ArgumentParser(
     description='Installation script for Oppia third-party libraries.')
@@ -222,6 +227,48 @@ def download_and_install_gcloud_sdk() -> None:
     make_google_module_importable_by_python(correct_google_path)
 
 
+def download_and_untar_files(
+    source_url: str,
+    target_parent_dir: str,
+    tar_root_name: str,
+    target_root_name: str
+) -> None:
+    """Downloads a tar file, untars it, and saves the result in a given dir.
+
+    The download occurs only if the target directory that the tar file untars
+    to does not exist.
+
+    NB: This function assumes that the root level of the tar file has exactly
+    one folder.
+
+    Args:
+        source_url: str. The URL from which to download the tar file.
+        target_parent_dir: str. The directory to save the contents of the tar
+            file to.
+        tar_root_name: str. The name of the top-level folder in the tar
+            directory.
+        target_root_name: str. The name that the top-level folder should be
+            renamed to in the local directory.
+    """
+    if not os.path.exists(os.path.join(target_parent_dir, target_root_name)):
+        print('Downloading and untarring file %s to %s ...' % (
+            tar_root_name, target_parent_dir))
+        common.ensure_directory_exists(target_parent_dir)
+
+        common.url_retrieve(source_url, TMP_UNZIP_PATH)
+        with contextlib.closing(tarfile.open(
+            name=TMP_UNZIP_PATH, mode='r:gz')) as tfile:
+            tfile.extractall(target_parent_dir)
+        os.remove(TMP_UNZIP_PATH)
+
+        # Rename the target directory.
+        os.rename(
+            os.path.join(target_parent_dir, tar_root_name),
+            os.path.join(target_parent_dir, target_root_name))
+
+        print('Download of %s succeeded.' % tar_root_name)
+
+
 def install_redis_cli() -> None:
     """This installs the redis-cli to the local oppia third_party directory so
     that development servers and backend tests can make use of a local redis
@@ -254,10 +301,10 @@ def install_redis_cli() -> None:
         # NOTE: We do the installation here since we need to use make.
         print('Installing redis-cli...')
 
-        download_and_untar_files(
+        common.download_and_untar_files(
             ('https://download.redis.io/releases/redis-%s.tar.gz') %
             common.REDIS_CLI_VERSION,
-            TARGET_DOWNLOAD_DIRS['oppiaTools'],
+            common.OPPIA_TOOLS_DIR,
             'redis-%s' % common.REDIS_CLI_VERSION,
             'redis-cli-%s' % common.REDIS_CLI_VERSION)
 
@@ -265,7 +312,7 @@ def install_redis_cli() -> None:
         # build the source code.
         with common.CD(
             os.path.join(
-                TARGET_DOWNLOAD_DIRS['oppiaTools'],
+                common.OPPIA_TOOLS_DIR,
                 'redis-cli-%s' % common.REDIS_CLI_VERSION)):
             # Build the scripts necessary to start the redis server.
             # The make command only builds the C++ files in the src/ folder
@@ -308,7 +355,7 @@ def install_elasticsearch_dev_server() -> None:
             common.ELASTICSEARCH_VERSION,
             common.OS_NAME.lower()
         ),
-        TARGET_DOWNLOAD_DIRS['oppiaTools'],
+        common.OPPIA_TOOLS_DIR,
         'elasticsearch-%s' % common.ELASTICSEARCH_VERSION,
         'elasticsearch-%s' % common.ELASTICSEARCH_VERSION
     )
@@ -317,6 +364,8 @@ def install_elasticsearch_dev_server() -> None:
 
 def main() -> None:
     """Set up GAE and install third-party libraries for Oppia."""
+    print('Running install_third_party_libs script...')
+
     if feconf.OPPIA_IS_DOCKERIZED:
         make_google_module_importable_by_python(
             google_module_path='/app/oppia/third_party/python_libs/google')
@@ -342,14 +391,17 @@ def main() -> None:
     # Download and install node.js.
     if not os.path.exists(common.NODE_PATH):
         download_and_install_node()
+    print('Node is installed.')
 
     # Download and install yarn.
     if not os.path.exists(common.YARN_PATH):
         download_and_install_yarn()
+    print('Yarn is installed.')
 
     # Download and install Google Cloud SDK.
     if not os.path.exists(common.GOOGLE_CLOUD_SDK_HOME):
         download_and_install_gcloud_sdk()
+    print('Google Cloud SDK is installed.')
 
     sys.path.append('.')
     sys.path.append(common.GOOGLE_APP_ENGINE_SDK_HOME)
@@ -369,10 +421,12 @@ def main() -> None:
     install_elasticsearch_dev_server()
 
     # Install pre-commit and pre-push scripts.
+    print('')
     print('Installing pre-commit hook for git')
     pre_commit_hook.main(args=['--install'])
     print('Installing pre-push hook for git')
     pre_push_hook.main(args=['--install'])
+    print('')
 
     # Install third-party libraries in third_party/ directory. Files in this
     # directory will be deployed to production.

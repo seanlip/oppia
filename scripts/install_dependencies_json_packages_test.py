@@ -23,7 +23,6 @@ import io
 import os
 import re
 import ssl
-import tarfile
 import tempfile
 from urllib import request as urlrequest
 import zipfile
@@ -179,29 +178,6 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
             self.check_function_calls, self.expected_check_function_calls)
         self.assertEqual(exists_arr, [False, True])
 
-    def test_download_and_untar_files(self) -> None:
-        exists_arr = []
-        def mock_exists(_path: str) -> bool:
-            exists_arr.append(False)
-            return False
-        def mock_extractall(_self: zipfile.ZipFile, _path: str) -> None:
-            self.check_function_calls['extractall_is_called'] = True
-
-        exists_swap = self.swap(os.path, 'exists', mock_exists)
-        extract_swap = self.swap(
-            tarfile.TarFile, 'extractall', mock_extractall)
-        unzip_swap = self.swap(
-            install_dependencies_json_packages, 'TMP_UNZIP_PATH', os.path.join(
-                RELEASE_TEST_DIR, 'tmp_unzip.tar.gz'))
-
-        with exists_swap, self.dir_exists_swap, self.url_retrieve_swap:
-            with self.remove_swap, self.rename_swap, unzip_swap, extract_swap:
-                install_dependencies_json_packages.download_and_untar_files(
-                    'source url', 'target dir', 'zip root', 'target root')
-        self.assertEqual(
-            self.check_function_calls, self.expected_check_function_calls)
-        self.assertEqual(exists_arr, [False])
-
     def test_get_file_contents(self) -> None:
         temp_file = tempfile.NamedTemporaryFile().name
         actual_text = 'Testing install third party file.'
@@ -343,13 +319,11 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
             'validate_dependencies_is_called': False,
             'download_files_is_called': False,
             'download_and_unzip_files_is_called': False,
-            'download_and_untar_files_is_called': False,
         }
         expected_check_function_calls = {
             'validate_dependencies_is_called': True,
             'download_files_is_called': True,
             'download_and_unzip_files_is_called': True,
-            'download_and_untar_files_is_called': True
         }
         def mock_return_json(
             _path: str
@@ -405,13 +379,6 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
             unused_target_root_name: str
         ) -> None:
             check_function_calls['download_and_unzip_files_is_called'] = True
-        def mock_download_and_untar_files(
-            unused_source_url: str,
-            unused_target_parent_dir: str,
-            unused_tar_root_name: str,
-            unused_target_root_name: str
-        ) -> None:
-            check_function_calls['download_and_untar_files_is_called'] = True
         return_json_swap = self.swap(
             install_dependencies_json_packages, 'return_json', mock_return_json)
         validate_swap = self.swap(
@@ -425,12 +392,9 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
         unzip_files_swap = self.swap(
             install_dependencies_json_packages, 'download_and_unzip_files',
             mock_download_and_unzip_files)
-        untar_files_swap = self.swap(
-            install_dependencies_json_packages, 'download_and_untar_files',
-            mock_download_and_untar_files)
 
         with validate_swap, return_json_swap, download_files_swap:
-            with unzip_files_swap, untar_files_swap:
+            with unzip_files_swap:
                 install_dependencies_json_packages.main()
         self.assertEqual(check_function_calls, expected_check_function_calls)
 

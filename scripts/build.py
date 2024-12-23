@@ -382,18 +382,6 @@ def _insert_hash(filepath: str, file_hash: str) -> str:
     return '%s.%s%s' % (filepath, file_hash, file_extension)
 
 
-def ensure_directory_exists(filepath: str) -> None:
-    """Ensures if directory tree exists, if not creates the directories.
-
-    Args:
-        filepath: str. Path to file located in directory that we want to ensure
-            exists.
-    """
-    directory = os.path.dirname(filepath)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
-
 def safe_delete_directory_tree(directory_path: str) -> None:
     """Recursively delete a directory tree. If directory tree does not exist,
     create the directories first then delete the directory tree.
@@ -401,7 +389,7 @@ def safe_delete_directory_tree(directory_path: str) -> None:
     Args:
         directory_path: str. Directory path to be deleted.
     """
-    ensure_directory_exists(directory_path)
+    common.ensure_directory_exists(directory_path)
     shutil.rmtree(directory_path)
 
 
@@ -617,7 +605,7 @@ def get_dependencies_filepaths() -> Dict[str, List[str]]:
     with utils.open_file(DEPENDENCIES_FILE_PATH, 'r') as json_file:
         dependencies_json = json.loads(
             json_file.read(), object_pairs_hook=collections.OrderedDict)
-    frontend_dependencies = dependencies_json['dependencies']['frontend']
+    frontend_dependencies = dependencies_json['frontendDependencies']
     for dependency in frontend_dependencies.values():
         if 'bundle' in dependency:
             dependency_dir = get_dependency_directory(dependency)
@@ -671,17 +659,17 @@ def build_third_party_libs(third_party_directory_path: str) -> None:
         third_party_directory_path, WEBFONTS_RELATIVE_DIRECTORY_PATH)
 
     dependency_filepaths = get_dependencies_filepaths()
-    ensure_directory_exists(third_party_js_filepath)
+    common.ensure_directory_exists(os.path.dirname(third_party_js_filepath))
     with utils.open_file(
         third_party_js_filepath, 'w+') as third_party_js_file:
         _join_files(dependency_filepaths['js'], third_party_js_file)
 
-    ensure_directory_exists(third_party_css_filepath)
+    common.ensure_directory_exists(os.path.dirname(third_party_css_filepath))
     with utils.open_file(
         third_party_css_filepath, 'w+') as third_party_css_file:
         _join_files(dependency_filepaths['css'], third_party_css_file)
 
-    ensure_directory_exists(webfonts_dir)
+    common.ensure_directory_exists(webfonts_dir)
     _execute_tasks(
         _generate_copy_tasks_for_fonts(
             dependency_filepaths['fonts'], webfonts_dir))
@@ -803,7 +791,7 @@ def generate_copy_tasks_to_copy_from_source_to_target(
                         _insert_hash(relative_path, file_hashes[relative_path]))
 
                 target_path = os.path.join(os.getcwd(), target, relative_path)
-                ensure_directory_exists(target_path)
+                common.ensure_directory_exists(os.path.dirname(target_path))
                 copy_task = threading.Thread(
                     target=safe_copy_file,
                     args=(source_path, target_path,))
@@ -932,7 +920,7 @@ def save_hashes_to_file(file_hashes: Dict[str, str]) -> None:
     # Only some of the hashes are needed in the frontend.
     filtered_hashes = filter_hashes(file_hashes)
 
-    ensure_directory_exists(HASHES_JSON_FILEPATH)
+    common.ensure_directory_exists(os.path.dirname(HASHES_JSON_FILEPATH))
     with utils.open_file(HASHES_JSON_FILEPATH, 'w+') as hashes_json_file:
         hashes_json_file.write(
             str(json.dumps(filtered_hashes, ensure_ascii=False)))
@@ -1013,7 +1001,7 @@ def generate_build_tasks_to_build_all_files_in_directory(
         for filename in filenames:
             source_path = os.path.join(root, filename)
             target_path = source_path.replace(source, target)
-            ensure_directory_exists(target_path)
+            common.ensure_directory_exists(os.path.dirname(target_path))
             if should_file_be_built(source_path):
                 task = threading.Thread(
                     target=minify_func,
@@ -1160,7 +1148,7 @@ def generate_build_tasks_to_build_directory(
     if not os.path.isdir(staging_dir):
         # If there is no staging dir, perform build process on all files.
         print('Creating new %s folder' % staging_dir)
-        ensure_directory_exists(staging_dir)
+        common.ensure_directory_exists(staging_dir)
         build_tasks += generate_build_tasks_to_build_all_files_in_directory(
             source_dir, staging_dir)
     else:
