@@ -495,32 +495,9 @@ class SetupTests(test_utils.GenericTestBase):
             sys, 'version_info', version_info(major=3, minor=9, micro=20)
         )
 
-    def test_create_directory_tree_with_missing_dir(self) -> None:
-        check_function_calls = {
-            'makedirs_is_called': False
-        }
-        def mock_makedirs(unused_path: str) -> None:
-            check_function_calls['makedirs_is_called'] = True
-
-        makedirs_swap = self.swap(os, 'makedirs', mock_makedirs)
-        with makedirs_swap, self.exists_false_swap:
-            setup.create_directory('dir')
-        self.assertTrue(check_function_calls['makedirs_is_called'])
-
-    def test_create_directory_tree_with_existing_dir(self) -> None:
-        check_function_calls = {
-            'makedirs_is_called': False
-        }
-        def mock_makedirs(unused_path: str) -> None:
-            check_function_calls['makedirs_is_called'] = True
-        makedirs_swap = self.swap(os, 'makedirs', mock_makedirs)
-        with makedirs_swap, self.exists_true_swap:
-            setup.create_directory('dir')
-        self.assertFalse(check_function_calls['makedirs_is_called'])
-
     def test_python_version_testing_with_correct_version(self) -> None:
         with self.version_info_py39_swap:
-            setup.test_python_version()
+            install_third_party_libs.test_python_version()
 
     def test_python_version_testing_with_incorrect_version_and_linux_os(
         self
@@ -543,7 +520,7 @@ class SetupTests(test_utils.GenericTestBase):
         with print_swap, uname_swap, version_swap, self.assertRaisesRegex(
             Exception, 'No suitable python version found.'
         ):
-            setup.test_python_version()
+            install_third_party_libs.test_python_version()
         self.assertEqual(print_arr, [])
 
     def test_python_version_testing_with_incorrect_version_and_windows_os(
@@ -565,7 +542,7 @@ class SetupTests(test_utils.GenericTestBase):
             with self.assertRaisesRegex(
                 Exception, 'No suitable python version found.'
             ):
-                setup.test_python_version()
+                install_third_party_libs.test_python_version()
         self.assertEqual(
             print_arr, [
                 'It looks like you are using Windows. If you have Python '
@@ -616,14 +593,15 @@ class SetupTests(test_utils.GenericTestBase):
 
         with url_retrieve_swap, open_swap, extract_swap, close_swap:
             with remove_swap:
-                setup.download_and_install_package('url', 'filename')
+                install_third_party_libs.download_and_install_package(
+                    'url', 'filename')
         self.assertEqual(check_function_calls, expected_check_function_calls)
 
     def test_rename_yarn_folder(self) -> None:
         # Creates a dummy yarn folder and then checks if `v` was removed
         # upon function call.
         os.mkdir(MOCK_YARN_PATH)
-        setup.rename_yarn_folder(
+        install_third_party_libs.rename_yarn_folder(
             'yarn-v%s' % common.YARN_VERSION, TEST_DATA_DIR
         )
         target = os.path.join(
@@ -642,7 +620,7 @@ class SetupTests(test_utils.GenericTestBase):
         print_swap = self.swap(builtins, 'print', mock_print)
         with self.test_py_swap, getcwd_swap, print_swap:
             with self.assertRaisesRegex(Exception, 'Invalid root directory.'):
-                setup.main(args=[])
+                install_third_party_libs.main(args=[])
         self.assertFalse(
             'WARNING   This script should be run from the oppia/ '
             'root folder.' in print_arr)
@@ -657,7 +635,7 @@ class SetupTests(test_utils.GenericTestBase):
             with self.download_swap, self.rename_swap, self.exists_false_swap:
                 with self.chmod_swap, self.delete_swap, self.isfile_swap:
                     with self.is_x64_architecture_true_swap, self.chown_swap:
-                        setup.main(args=[])
+                        install_third_party_libs.main(args=[])
 
         for item in self.check_function_calls.values():
             self.assertTrue(item)
@@ -682,7 +660,7 @@ class SetupTests(test_utils.GenericTestBase):
                 with self.chmod_swap, self.delete_swap, self.isfile_swap:
                     with self.is_x64_architecture_false_swap, self.cd_swap:
                         with check_call_swap:
-                            setup.main(args=[])
+                            install_third_party_libs.main(args=[])
         for _, item in self.check_function_calls.items():
             self.assertTrue(item)
         self.assertEqual(
@@ -702,7 +680,7 @@ class SetupTests(test_utils.GenericTestBase):
             with self.download_swap, self.rename_swap, self.exists_false_swap:
                 with self.chmod_swap, self.delete_swap, self.isfile_swap:
                     with self.is_x64_architecture_true_swap:
-                        setup.main(args=[])
+                        install_third_party_libs.main(args=[])
 
         for item in self.check_function_calls.values():
             self.assertTrue(item)
@@ -727,7 +705,7 @@ class SetupTests(test_utils.GenericTestBase):
                 with self.chmod_swap, self.delete_swap, self.isfile_swap:
                     with self.is_x64_architecture_false_swap, self.chown_swap:
                         with self.exists_false_swap:
-                            setup.main(args=[])
+                            install_third_party_libs.main(args=[])
 
         for item in self.check_function_calls.values():
             self.assertTrue(item)
@@ -759,7 +737,7 @@ class SetupTests(test_utils.GenericTestBase):
             with self.download_swap, self.rename_swap, self.delete_swap:
                 with self.isfile_swap, self.is_x64_architecture_false_swap:
                     with url_retrieve_swap, self.exists_false_swap:
-                        setup.main(args=[])
+                        install_third_party_libs.main(args=[])
 
         check_function_calls = self.check_function_calls.copy()
         del check_function_calls['recursive_chown_is_called']
@@ -798,7 +776,7 @@ class SetupTests(test_utils.GenericTestBase):
             with self.download_swap, self.rename_swap, self.delete_swap:
                 with self.isfile_swap, self.is_x64_architecture_true_swap:
                     with url_retrieve_swap, self.exists_false_swap:
-                        setup.main(args=[])
+                        install_third_party_libs.main(args=[])
         check_function_calls = self.check_function_calls.copy()
         del check_function_calls['recursive_chown_is_called']
         del check_function_calls['recursive_chmod_is_called']
@@ -827,7 +805,7 @@ class SetupTests(test_utils.GenericTestBase):
                 with self.assertRaisesRegex(
                     Exception, 'System\'s Operating System is not compatible.'
                 ), self.is_x64_architecture_true_swap:
-                    setup.main(args=[])
+                    install_third_party_libs.main(args=[])
 
     def test_if_node_is_already_installed_then_skip_installation(self) -> None:
 
@@ -840,7 +818,7 @@ class SetupTests(test_utils.GenericTestBase):
 
         with self.test_py_swap, self.create_swap, self.chown_swap, print_swap:
             with self.rename_swap, self.exists_true_swap, os_name_swap:
-                setup.main(args=[])
+                install_third_party_libs.main(args=[])
 
         print(print_list)
         self.assertIn('Environment setup completed.', print_list)

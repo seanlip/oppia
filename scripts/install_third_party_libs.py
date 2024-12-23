@@ -12,15 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Setup script for Oppia developer tools.
+"""Setup script for Oppia developers.
 
-This setup script is responsible for installing all Oppia developer
-dependencies. It installs Python dev dependencies at the top, and then installs
-all the tools in the ../oppia_tools directory. It also installs the pre-commit
-and pre-push hooks.
+This setup script does three things:
 
-Finally, it calls another script to install third-party dependencies that are
-needed in production.
+1. It installs developer dependencies and tools, starting with Python dev
+   dependencies at the top, and then all tools in the ../oppia_tools directory.
+
+2. It activates the pre-commit and pre-push hooks.
+
+3. Finally, it installs third-party dependencies that are needed in production
+   to the third_party/ and node_modules/ directories.
 """
 
 from __future__ import annotations
@@ -36,6 +38,7 @@ import tarfile
 from core import feconf
 from scripts import install_dependencies_json_packages
 from scripts import install_python_dev_dependencies
+from scripts import install_python_prod_dependencies
 
 from typing import Final
 
