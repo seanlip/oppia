@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Python execution environent set up for all scripts."""
+"""Python execution environment set up for all scripts."""
 
 from __future__ import annotations
 

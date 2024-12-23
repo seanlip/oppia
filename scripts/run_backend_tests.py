@@ -493,7 +493,6 @@ def main(args: Optional[List[str]] = None) -> None:
                     'scripts.install_python_prod_dependencies_test',
                     'scripts.setup_gae_test',
                     'scripts.setup_test',
-                    'scripts.script_import_test',
                     'scripts.build_test',
                     'scripts.run_acceptance_tests_test'
                 ]

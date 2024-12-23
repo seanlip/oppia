@@ -22,6 +22,7 @@ import builtins
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 
 from core import feconf
@@ -330,3 +331,31 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
                         with os_name_swap:
                             install_third_party_libs.main()
         self.assertEqual(check_function_calls, expected_check_function_calls)
+
+
+class InstallThirdPartyLibsImportTests(test_utils.GenericTestBase):
+    """Tests import of install third party libs."""
+
+    def test_commands_run_when_importing_install_third_party_libs(self) -> None:
+        commands: List[List[str]] = []
+        def mock_run(
+            cmd_tokens: List[str], *_args: str, **_kwargs: str
+        ) -> None:
+            commands.append(cmd_tokens)
+        run_swap = self.swap(subprocess, 'run', mock_run)
+
+        with run_swap:
+            from scripts import install_third_party_libs  # isort:skip pylint: disable=unused-import,line-too-long
+        expected_commands = [
+            [sys.executable, '-m', 'pip', 'install', 'pip==24.3.1'],
+            [sys.executable, '-m', 'pip', 'install', 'pip-tools==7.4.1'],
+            [sys.executable, '-m', 'pip', 'install', 'setuptools==75.6.0'],
+            [
+                'pip-compile', '--no-emit-index-url', '--quiet',
+                '--generate-hashes', 'requirements_dev.in',
+                '--output-file', 'requirements_dev.txt',
+            ],
+            ['pip-sync', 'requirements_dev.txt', '--pip-args',
+            '--require-hashes --no-deps'],
+        ]
+        self.assertEqual(commands, expected_commands)
