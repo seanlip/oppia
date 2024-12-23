@@ -882,26 +882,6 @@ class CommonTests(test_utils.GenericTestBase):
         # Revert the file.
         shutil.move(backup_filepath, origin_filepath)
 
-    def test_convert_to_posixpath_on_windows(self) -> None:
-        def mock_is_windows() -> Literal[True]:
-            return True
-
-        is_windows_swap = self.swap(common, 'is_windows_os', mock_is_windows)
-        original_filepath = 'c:\\path\\to\\a\\file.js'
-        with is_windows_swap:
-            actual_file_path = common.convert_to_posixpath(original_filepath)
-        self.assertEqual(actual_file_path, 'c:/path/to/a/file.js')
-
-    def test_convert_to_posixpath_on_platform_other_than_windows(self) -> None:
-        def mock_is_windows() -> Literal[False]:
-            return False
-
-        is_windows_swap = self.swap(common, 'is_windows_os', mock_is_windows)
-        original_filepath = 'c:\\path\\to\\a\\file.js'
-        with is_windows_swap:
-            actual_file_path = common.convert_to_posixpath(original_filepath)
-        self.assertEqual(actual_file_path, original_filepath)
-
     def test_create_readme(self) -> None:
         try:
             os.makedirs('readme_test_dir')

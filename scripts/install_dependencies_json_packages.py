@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Installation script for Oppia third-party libraries."""
+"""Installation script for Oppia frontend prod dependencies from
+dependencies.json.
+"""
 
 from __future__ import annotations
 
@@ -43,14 +45,7 @@ THIRD_PARTY_STATIC_DIR: Final = os.path.join(THIRD_PARTY_DIR, 'static')
 # Place to download zip files for temporary storage.
 TMP_UNZIP_PATH: Final = os.path.join('.', 'tmp_unzip.zip')
 
-TARGET_DOWNLOAD_DIRS: Final = {
-    'proto': THIRD_PARTY_DIR,
-    'frontend': THIRD_PARTY_STATIC_DIR,
-    'oppiaTools': TOOLS_DIR
-}
-
 _DOWNLOAD_FORMAT_ZIP: Final = 'zip'
-_DOWNLOAD_FORMAT_TAR: Final = 'tar'
 _DOWNLOAD_FORMAT_FILES: Final = 'files'
 
 DownloadFormatType = Literal['zip', 'files', 'tar']
@@ -74,12 +69,6 @@ DOWNLOAD_FORMATS_TO_DEPENDENCIES_KEYS: Dict[
     'files': {
         'mandatory_keys': [
             'version', 'url', 'files',
-            'targetDirPrefix', 'downloadFormat'],
-        'optional_key_pairs': []
-    },
-    'tar': {
-        'mandatory_keys': [
-            'version', 'url', 'tarRootDirPrefix',
             'targetDirPrefix', 'downloadFormat'],
         'optional_key_pairs': []
     }
@@ -435,11 +424,8 @@ def test_dependencies_syntax(
     if '#' in dependency_url:
         dependency_url = dependency_url.rpartition('#')[0]
     is_zip_file_format = dependency_type == _DOWNLOAD_FORMAT_ZIP
-    is_tar_file_format = dependency_type == _DOWNLOAD_FORMAT_TAR
     if (dependency_url.endswith('.zip') and not is_zip_file_format or
-            is_zip_file_format and not dependency_url.endswith('.zip') or
-            dependency_url.endswith('.tar.gz') and not is_tar_file_format or
-            is_tar_file_format and not dependency_url.endswith('.tar.gz')):
+            is_zip_file_format and not dependency_url.endswith('.zip')):
         print('------------------------------------------')
         print('There is syntax error in this dependency')
         print(dependency_dict)
@@ -459,15 +445,12 @@ def validate_dependencies(filepath: str) -> None:
         Exception. The 'downloadFormat' not specified.
     """
     dependencies_data = return_json(filepath)
-    dependencies = dependencies_data['dependencies']
+    dependencies = dependencies_data['frontendDependencies']
     for _, dependency in dependencies.items():
-        for _, dependency_contents in dependency.items():
-            if 'downloadFormat' not in dependency_contents:
-                raise Exception(
-                    'downloadFormat not specified in %s' %
-                    dependency_contents)
-            download_format = dependency_contents['downloadFormat']
-            test_dependencies_syntax(download_format, dependency_contents)
+        if 'downloadFormat' not in dependency:
+            raise Exception('downloadFormat not specified in %s' % dependency)
+        download_format = dependency['downloadFormat']
+        test_dependencies_syntax(download_format, dependency)
 
 
 def download_all_dependencies(filepath: str) -> None:
@@ -478,46 +461,27 @@ def download_all_dependencies(filepath: str) -> None:
     """
     validate_dependencies(filepath)
     dependencies_data = return_json(filepath)
-    dependencies = dependencies_data['dependencies']
-    for data, dependency in dependencies.items():
-        for _, dependency_contents in dependency.items():
-            dependency_rev = dependency_contents['version']
-            dependency_url = dependency_contents['url']
-            download_format = dependency_contents['downloadFormat']
-            if download_format == _DOWNLOAD_FORMAT_FILES:
-                dependency_files = dependency_contents['files']
-                target_dirname = (
-                    dependency_contents['targetDirPrefix'] + dependency_rev)
-                dependency_dst = os.path.join(
-                    TARGET_DOWNLOAD_DIRS[data], target_dirname)
-                download_files(dependency_url, dependency_dst, dependency_files)
+    dependencies = dependencies_data['frontendDependencies']
+    for _, dependency in dependencies.items():
+        download_format = dependency['downloadFormat']
 
-            elif download_format == _DOWNLOAD_FORMAT_ZIP:
-                if 'rootDir' in dependency_contents:
-                    dependency_zip_root_name = dependency_contents['rootDir']
-                else:
-                    dependency_zip_root_name = (
-                        dependency_contents['rootDirPrefix'] + dependency_rev)
+        if download_format == _DOWNLOAD_FORMAT_FILES:
+            dependency_dst = os.path.join(
+                THIRD_PARTY_STATIC_DIR,
+                dependency['targetDirPrefix'] + dependency['version'])
+            download_files(
+                dependency['url'], dependency_dst, dependency['files'])
 
-                if 'targetDir' in dependency_contents:
-                    dependency_target_root_name = (
-                        dependency_contents['targetDir'])
-                else:
-                    dependency_target_root_name = (
-                        dependency_contents['targetDirPrefix'] + dependency_rev)
-                download_and_unzip_files(
-                    dependency_url, TARGET_DOWNLOAD_DIRS[data],
-                    dependency_zip_root_name, dependency_target_root_name)
-
-            elif download_format == _DOWNLOAD_FORMAT_TAR:
-                dependency_tar_root_name = (
-                    dependency_contents['tarRootDirPrefix'] + dependency_rev)
-
-                dependency_target_root_name = (
-                    dependency_contents['targetDirPrefix'] + dependency_rev)
-                download_and_untar_files(
-                    dependency_url, TARGET_DOWNLOAD_DIRS[data],
-                    dependency_tar_root_name, dependency_target_root_name)
+        elif download_format == _DOWNLOAD_FORMAT_ZIP:
+            dependency_zip_root_name = (
+                dependency['rootDir'] if 'rootDir' in dependency
+                else dependency['rootDirPrefix'] + dependency['version'])
+            dependency_target_root_name = (
+                dependency['targetDir']if 'targetDir' in dependency
+                else dependency['targetDirPrefix'] + dependency['version'])
+            download_and_unzip_files(
+                dependency['url'], THIRD_PARTY_STATIC_DIR,
+                dependency_zip_root_name, dependency_target_root_name)
 
 
 def main() -> None:
@@ -527,6 +491,6 @@ def main() -> None:
 
 
 # The 'no coverage' pragma is used as this line is un-testable. This is because
-# it will only be called when install_third_party.py is used as a script.
+# it will only be called when this Python file is used as a script.
 if __name__ == '__main__': # pragma: no cover
     main()

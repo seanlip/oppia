@@ -98,13 +98,11 @@ def install_hook() -> None:
             print('Copied file to .git/hooks directory')
 
     print('Making pre-commit hook file executable ...')
-    if not common.is_windows_os():
-        _, err_chmod_cmd = start_subprocess_for_result(chmod_cmd)
-
-        if not err_chmod_cmd:
-            print('pre-commit hook file is now executable!')
-        else:
-            raise ValueError(err_chmod_cmd)
+    _, err_chmod_cmd = start_subprocess_for_result(chmod_cmd)
+    if not err_chmod_cmd:
+        print('pre-commit hook file is now executable!')
+    else:
+        raise ValueError(err_chmod_cmd)
 
 
 def start_subprocess_for_result(cmd: List[str]) -> Tuple[bytes, bytes]:

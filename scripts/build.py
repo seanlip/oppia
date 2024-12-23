@@ -286,10 +286,8 @@ def _minify_css(source_path: str, target_path: str) -> None:
         target_path: str. Absolute path to location where to copy
             the minified file.
     """
-    source_path = common.convert_to_posixpath(
-        os.path.relpath(source_path))
-    target_path = common.convert_to_posixpath(
-        os.path.relpath(target_path))
+    source_path = os.path.relpath(source_path)
+    target_path = os.path.relpath(target_path)
     with utils.open_file(source_path, 'r') as source_file:
         with utils.open_file(target_path, 'w') as target_file:
             target_file.write(rcssmin.cssmin(source_file.read()))
@@ -798,10 +796,7 @@ def generate_copy_tasks_to_copy_from_source_to_target(
             if not any(
                     source_path.endswith(p) for p in FILE_EXTENSIONS_TO_IGNORE):
                 target_path = source_path
-                # The path in hashes.json file is in posix style,
-                # see the comment above HASHES_JSON_FILENAME for details.
-                relative_path = common.convert_to_posixpath(
-                    os.path.relpath(source_path, start=source))
+                relative_path = os.path.relpath(source_path, start=source)
                 if (hash_should_be_inserted(source + relative_path) and
                         relative_path in file_hashes):
                     relative_path = (
@@ -896,12 +891,9 @@ def get_file_hashes(directory_path: str) -> Dict[str, str]:
             filepath = os.path.join(root, filename)
             if should_file_be_built(filepath) and not any(
                     filename.endswith(p) for p in FILE_EXTENSIONS_TO_IGNORE):
-                # The path in hashes.json file is in posix style,
-                # see the comment above HASHES_JSON_FILENAME for details.
-                complete_filepath = common.convert_to_posixpath(
-                    os.path.join(root, filename))
-                relative_filepath = common.convert_to_posixpath(os.path.relpath(
-                    complete_filepath, start=directory_path))
+                complete_filepath = os.path.join(root, filename)
+                relative_filepath = os.path.relpath(
+                    complete_filepath, start=directory_path)
                 file_hashes[relative_filepath] = generate_md5_hash(
                     complete_filepath)
 
@@ -1088,11 +1080,8 @@ def generate_delete_tasks_to_remove_deleted_files(
             # Ignore files with certain extensions.
             if not any(
                     target_path.endswith(p) for p in FILE_EXTENSIONS_TO_IGNORE):
-                # On Windows the path is on Windows-Style, while the path in
-                # hashes is in posix style, we need to convert it so the check
-                # can run correctly.
-                relative_path = common.convert_to_posixpath(
-                    os.path.relpath(target_path, start=staging_directory))
+                relative_path = os.path.relpath(
+                    target_path, start=staging_directory)
                 # Remove file found in staging directory but not in source
                 # directory, i.e. file not listed in hash dict.
                 if relative_path not in source_dir_hashes:
@@ -1282,20 +1271,12 @@ def _verify_hashes(
 
     hash_final_filename = _insert_hash(
         HASHES_JSON_FILENAME, file_hashes[HASHES_JSON_FILENAME])
-
-    # The path in hashes.json (generated via file_hashes) file is in posix
-    # style, see the comment above HASHES_JSON_FILENAME for details.
     third_party_js_final_filename = _insert_hash(
         MINIFIED_THIRD_PARTY_JS_RELATIVE_FILEPATH,
-        file_hashes[common.convert_to_posixpath(
-            MINIFIED_THIRD_PARTY_JS_RELATIVE_FILEPATH)])
-
-    # The path in hashes.json (generated via file_hashes) file is in posix
-    # style, see the comment above HASHES_JSON_FILENAME for details.
+        file_hashes[MINIFIED_THIRD_PARTY_JS_RELATIVE_FILEPATH])
     third_party_css_final_filename = _insert_hash(
         MINIFIED_THIRD_PARTY_CSS_RELATIVE_FILEPATH,
-        file_hashes[common.convert_to_posixpath(
-            MINIFIED_THIRD_PARTY_CSS_RELATIVE_FILEPATH)])
+        file_hashes[MINIFIED_THIRD_PARTY_CSS_RELATIVE_FILEPATH])
 
     _ensure_files_exist([
         os.path.join(ASSETS_OUT_DIR, hash_final_filename),

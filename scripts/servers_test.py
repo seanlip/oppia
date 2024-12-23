@@ -514,23 +514,6 @@ class ManagedProcessTests(test_utils.TestBase):
 
         self.assertTrue(check_function_calls['shutil_rmtree_is_called'])
 
-    def test_managed_redis_server_throws_exception_when_on_windows_os(
-        self
-    ) -> None:
-        self.exit_stack.enter_context(self.swap_popen())
-        self.exit_stack.enter_context(self.swap_to_always_return(
-            common, 'is_windows_os', value=True))
-        self.exit_stack.enter_context(self.swap_to_always_return(
-            common, 'wait_for_port_to_be_in_use'))
-
-        with self.assertRaisesRegex(
-            Exception,
-            'The redis command line interface is not installed because '
-            'your machine is on the Windows operating system. The redis '
-            'server cannot start.'
-        ):
-            self.exit_stack.enter_context(servers.managed_redis_server())
-
     def test_managed_redis_server(self) -> None:
         original_os_remove = os.remove
         original_os_path_exists = os.path.exists

@@ -22,7 +22,6 @@ import subprocess
 from typing import Optional, Sequence
 
 from . import common
-from . import setup
 
 _PARSER = argparse.ArgumentParser(
     description="""
