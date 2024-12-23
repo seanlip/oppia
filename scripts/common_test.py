@@ -32,8 +32,9 @@ import subprocess
 import sys
 import tempfile
 import time
-import yaml
 from urllib import request as urlrequest
+
+import yaml
 
 from core import feconf
 from core import utils
@@ -1395,21 +1396,21 @@ class CommonTests(test_utils.GenericTestBase):
         workflows_dir = '.github/workflows'
         self.assertTrue(
             os.path.isdir(workflows_dir),
-            f"{workflows_dir} directory not found."
+            f'{workflows_dir} directory not found.'
         )
 
         for filename in os.listdir(workflows_dir):
             if filename.endswith('.yaml') or filename.endswith('.yml'):
                 filepath = os.path.join(workflows_dir, filename)
-                with open(filepath, 'r') as file:
+                with open(filepath, 'r', encoding='utf-8') as file:
                     try:
                         workflow_data = yaml.safe_load(file)
-                        permissions = workflow_data.get("permissions")
+                        permissions = workflow_data.get('permissions')
                         self.assertEqual(
                             permissions,
-                            "read-all",
-                            f"Workflow '{filename}' does not have 'permissions: read-all'."
+                            'read-all',
+                            f'Workflow \'{filename}\' does not have \'permissions: read-all\'.'
                         )
                     except yaml.YAMLError as e:
-                        self.fail(f"Error parsing YAML file {filename}: {str(e)}")
-
+                        self.fail(f'Error parsing YAML file {filename}: {str(e)}')
+                        
