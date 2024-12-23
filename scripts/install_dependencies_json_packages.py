@@ -35,6 +35,8 @@ from typing import (
     Union, cast, overload
 )
 
+from . import common
+
 DEPENDENCIES_FILE_PATH: Final = os.path.join(os.getcwd(), 'dependencies.json')
 TOOLS_DIR: Final = os.path.join('..', 'oppia_tools')
 THIRD_PARTY_DIR: Final = os.path.join('.', 'third_party')
