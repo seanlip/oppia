@@ -23,6 +23,7 @@ import collections
 import contextlib
 import io
 import os
+import pathlib
 import re
 import subprocess
 import sys
@@ -78,9 +79,11 @@ class BuildTests(test_utils.GenericTestBase):
     """Test the build methods."""
 
     def tearDown(self) -> None:
-        super().tearDown()
         build.safe_delete_directory_tree(TEST_DIR)
         build.safe_delete_directory_tree(EMPTY_DIR)
+        pathlib.Path.unlink(pathlib.Path('mock_app.yaml'), missing_ok=True)
+        pathlib.Path.unlink(pathlib.Path('mock_app_dev.yaml'), missing_ok=True)
+        super().tearDown()
 
     def test_minify_func_with_invalid_filepath(self) -> None:
         """Tests minify_func with an invalid filepath."""

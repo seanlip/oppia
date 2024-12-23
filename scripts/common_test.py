@@ -23,6 +23,7 @@ import getpass
 import http.server
 import io
 import os
+import pathlib
 import re
 import shutil
 import socketserver
@@ -73,6 +74,11 @@ class CommonTests(test_utils.GenericTestBase):
         def mock_print(msg: str) -> None:
             self.print_arr.append(msg)
         self.print_swap = self.swap(builtins, 'print', mock_print)
+
+    def tearDown(self) -> None:
+        pathlib.Path.unlink(pathlib.Path('mock_app.yaml'), missing_ok=True)
+        pathlib.Path.unlink(pathlib.Path('mock_app_dev.yaml'), missing_ok=True)
+        super().tearDown()
 
     def test_run_ng_compilation_successfully(self) -> None:
         swap_isdir = self.swap_with_checks(

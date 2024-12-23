@@ -349,7 +349,6 @@
         "scripts.check_backend_associated_test_file_test",
         "scripts.run_custom_eslint_tests_test",
         "scripts.run_presubmit_checks_test",
-        "scripts.run_tests_test",
         "core.controllers.collection_viewer_test",
         "core.domain.rating_services_test",
         "core.controllers.recent_commits_test",

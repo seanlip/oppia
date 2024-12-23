@@ -84,10 +84,21 @@ def make_google_module_importable_by_python(google_module_path: str) -> None:
                 pass
 
 
-# This function takes a command for python as its only input.
-# It checks this input for a specific version of python and returns false
-# if it does not match the expected prefix.
+def clean_pyc_files() -> None:
+    """Cleans up old *.pyc files."""
+    for directory, _, files in os.walk('.'):
+        for file_name in files:
+            if file_name.endswith('.pyc'):
+                filepath = os.path.join(directory, file_name)
+                os.remove(filepath)
+
+
 def test_python_version() -> None:
+    """Checks whether the Python version matches an expected prefix.
+
+    Raises:
+        Exception. The Python version does not match the expected prefix.
+    """
     running_python_version = '{0[0]}.{0[1]}.{0[2]}'.format(sys.version_info)
     if running_python_version != '3.9.20':
         print('Please use Python 3.9.20. Exiting...')
@@ -377,13 +388,7 @@ def main() -> None:
             'the Windows Subsystem for Linux (WSL) instead.')
     common.require_cwd_to_be_oppia()
     test_python_version()
-
-    # Clean old *.pyc files.
-    for directory, _, files in os.walk('.'):
-        for file_name in files:
-            if file_name.endswith('.pyc'):
-                filepath = os.path.join(directory, file_name)
-                os.remove(filepath)
+    clean_pyc_files()
 
     # Create OPPIA_TOOLS_DIR if it doesn't exist.
     pathlib.Path(common.OPPIA_TOOLS_DIR).mkdir(exist_ok=True)

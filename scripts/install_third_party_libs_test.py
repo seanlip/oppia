@@ -212,6 +212,31 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
         self.assertEqual(copied_src_dst_tuples, correct_copied_src_dst_tuples)
         self.assertEqual(initialized_directories, [correct_google_path])
 
+    def test_main_removes_pyc_files(self) -> None:
+        check_file_removals = {
+            'root/file1.js': False,
+            'root/file2.pyc': False
+        }
+        expected_check_file_removals = {
+            'root/file1.js': False,
+            'root/file2.pyc': True
+        }
+        def mock_walk(
+            unused_path: str
+        ) -> List[Tuple[str, List[str], List[str]]]:
+            return [('root', ['dir1'], ['file1.js', 'file2.pyc'])]
+        def mock_remove(path: str) -> None:
+            check_file_removals[path] = True
+        def mock_exists(unused_path: str) -> bool:
+            return True
+
+        walk_swap = self.swap(os, 'walk', mock_walk)
+        remove_swap = self.swap(os, 'remove', mock_remove)
+        exists_swap = self.swap(os.path, 'exists', mock_exists)
+        with walk_swap, remove_swap, exists_swap:
+            install_third_party_libs.main()
+        self.assertEqual(check_file_removals, expected_check_file_removals)
+
 
 class InstallRedisAndElasticSearchTests(test_utils.GenericTestBase):
     """Test the methods for installing Redis and Elasticsearch."""
@@ -795,31 +820,6 @@ class GoogleCloudSdkInstallationTests(test_utils.GenericTestBase):
         self.print_swap = self.swap(builtins, 'print', mock_print)
         self.url_retrieve_swap = self.swap(
             common, 'url_retrieve', mock_url_retrieve)
-
-    def test_main_removes_pyc_files(self) -> None:
-        check_file_removals = {
-            'root/file1.js': False,
-            'root/file2.pyc': False
-        }
-        expected_check_file_removals = {
-            'root/file1.js': False,
-            'root/file2.pyc': True
-        }
-        def mock_walk(
-            unused_path: str
-        ) -> List[Tuple[str, List[str], List[str]]]:
-            return [('root', ['dir1'], ['file1.js', 'file2.pyc'])]
-        def mock_remove(path: str) -> None:
-            check_file_removals[path] = True
-        def mock_exists(unused_path: str) -> bool:
-            return True
-
-        walk_swap = self.swap(os, 'walk', mock_walk)
-        remove_swap = self.swap(os, 'remove', mock_remove)
-        exists_swap = self.swap(os.path, 'exists', mock_exists)
-        with walk_swap, remove_swap, exists_swap:
-            install_third_party_libs.main()
-        self.assertEqual(check_file_removals, expected_check_file_removals)
 
     def test_gcloud_install_without_errors(self) -> None:
         self.check_function_calls['open_is_called'] = False
