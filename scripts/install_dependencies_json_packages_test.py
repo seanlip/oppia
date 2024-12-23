@@ -257,7 +257,6 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
                     'url': (
                         'https://python.org/packages/beautifulsoup4-4.7.1.tar'
                         '#md5=321d'),
-                    'tarRootDirPrefix': 'beautifulsoup4-',
                     'rootDirPrefix': 'beautifulsoup4-',
                     'targetDirPrefix': 'beautifulsoup4-'})
         self.assertTrue(
@@ -269,15 +268,13 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
             _path: str
         ) -> install_dependencies_json_packages.DependenciesDict:
             return {
-                'dependencies': {
-                    'frontend': {
-                        'mathJax': {
-                            'url': 'https://github.com/mathjax/2.7.5',
-                            'files': ['MathJax-2.7.5.jar'],
-                            'version': '2.7.5',
-                            'targetDirPrefix': 'MathJax-',
-                            'downloadFormat': 'files'
-                        }
+                'frontend': {
+                    'mathJax': {
+                        'url': 'https://github.com/mathjax/2.7.5',
+                        'files': ['MathJax-2.7.5.jar'],
+                        'version': '2.7.5',
+                        'targetDirPrefix': 'MathJax-',
+                        'downloadFormat': 'files'
                     }
                 }
             }
@@ -292,13 +289,11 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
             _path: str
         ) -> install_dependencies_json_packages.DependenciesDict:
             return {
-                'dependencies': {
-                    'frontend': {
-                        'mathJax': {
-                            'version': '2.7.5',
-                            'url': 'https://github.com/mathjax/2.7.5.zip',
-                            'targetDirPrefix': 'MathJax-'
-                        }
+                'frontend': {
+                    'mathJax': {
+                        'version': '2.7.5',
+                        'url': 'https://github.com/mathjax/2.7.5.zip',
+                        'targetDirPrefix': 'MathJax-'
                     }
                 }
             }

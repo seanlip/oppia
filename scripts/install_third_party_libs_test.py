@@ -71,7 +71,7 @@ class Ret:
         self.returncode = returncode
         self.communicate_val = communicate_val
 
-    def communicate(self) -> Tuple[str, str]:
+    def communicate(self) -> Tuple[bytes, bytes]:
         """Return required method."""
         return self.communicate_val
 
