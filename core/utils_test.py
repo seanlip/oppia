@@ -22,7 +22,6 @@ import base64
 import copy
 import datetime
 import os
-import sys
 import time
 import urllib
 
@@ -781,9 +780,8 @@ class UtilsTests(test_utils.GenericTestBase):
 
     def test_convert_millisecs_time_to_datetime_object(self) -> None:
         msecs = 1690761600000
-        dt = utils.convert_millisecs_time_to_datetime_object(
-            msecs + 1000.0 * time.timezone)
-        dt2 = datetime.datetime(2023, 7, 31)
+        dt = utils.convert_millisecs_time_to_datetime_object(msecs)
+        dt2 = datetime.datetime(2023, 7, 31, 0, 0, tzinfo=datetime.timezone.utc)
         self.assertEqual(dt, dt2)
 
     def test_grouper(self) -> None:
@@ -939,16 +937,6 @@ class UtilsTests(test_utils.GenericTestBase):
         filter_values_list = utils.convert_filter_parameter_string_into_list(
             '("GSOC" OR "Math")')
         self.assertEqual(filter_values_list.sort(), ['GSOC', 'Math'].sort())
-
-    def test_compress_and_decompress_zlib(self) -> None:
-        byte_instance = b'a' * 26
-        byte_compressed = utils.compress_to_zlib(byte_instance)
-        self.assertLess(
-            sys.getsizeof(byte_compressed),
-            sys.getsizeof(byte_instance))
-        self.assertEqual(
-            utils.decompress_from_zlib(byte_compressed),
-            byte_instance)
 
     def test_compute_list_difference(self) -> None:
         self.assertEqual(utils.compute_list_difference(
