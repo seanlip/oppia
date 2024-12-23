@@ -1164,7 +1164,7 @@ export class ExplorationEditor extends BaseUser {
    * @param {string} [directToCardWhenStuck] - The card to direct to when the learner is stuck (optional).
    */
   async editDefaultResponseFeedback(
-    defaultResponseFeedback?: string,
+    defaultResponseFeedback: string,
     directToCard?: string,
     directToCardWhenStuck?: string
   ): Promise<void> {
