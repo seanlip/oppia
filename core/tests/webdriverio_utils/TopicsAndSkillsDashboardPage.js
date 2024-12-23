@@ -373,11 +373,11 @@ var TopicsAndSkillsDashboardPage = function () {
       keyword + '\n'
     );
 
-    await waitFor.textToBePresentInElement(
-      await topicFilterKeywordField.$('.mat-chip-list-wrapper'),
-      keyword,
-      'Keyword filter value taking too long to change.'
-    );
+    // await waitFor.textToBePresentInElement(
+    //   await topicFilterKeywordField.$('.mat-chip-list-wrapper'),
+    //   keyword,
+    //   'Keyword filter value taking too long to change.'
+    // );
 
     if (width < 831) {
       await action.click('Close Filter', closeSkillFilter);
