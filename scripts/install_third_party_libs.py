@@ -421,16 +421,16 @@ def main() -> None:
     install_elasticsearch_dev_server()
 
     # Install pre-commit and pre-push scripts.
-    print('')
-    print('Installing pre-commit hook for git')
+    common.print_each_string_after_two_new_lines([
+        'Installing pre-commit hook for git'])
     pre_commit_hook.main(args=['--install'])
     print('Installing pre-push hook for git')
     pre_push_hook.main(args=['--install'])
-    print('')
 
     # Install third-party libraries in third_party/ directory. Files in this
     # directory will be deployed to production.
-    print('Installing third-party libraries in third_party directory')
+    common.print_each_string_after_two_new_lines([
+        'Installing third-party Python and JS libs in third_party directory'])
     pathlib.Path(common.THIRD_PARTY_DIR).mkdir(exist_ok=True)
     common.create_readme(
         common.THIRD_PARTY_DIR,
@@ -442,7 +442,8 @@ def main() -> None:
 
     # Install third-party node modules in node_modules/ directory, to be used
     # when generating files in the build process.
-    print('Installing third-party libraries in node_modules directory')
+    common.print_each_string_after_two_new_lines([
+        'Installing third-party Node modules in node_modules directory'])
     pathlib.Path(common.NODE_MODULES_PATH).mkdir(exist_ok=True)
     common.create_readme(
         common.NODE_MODULES_PATH,
