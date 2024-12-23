@@ -20,8 +20,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-        with:
-          use_cache: false
       - name: Check that all e2e and acceptance test files are captured in wdio.conf.js and core/tests/ci-test-suite-configs
         run: make run_tests.check_tests_are_captured_in_ci
       - name: Report failure if failed on oppia/oppia develop branch
@@ -71,10 +69,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-        with:
-          use_cache: true
       - name: Cache node modules and third_party/static
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -116,10 +112,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-        with:
-          use_cache: true
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -214,10 +208,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-        with:
-          use_cache: true
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -303,17 +295,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Setup Python 3.8
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.8.15'
-          architecture: 'x64'
+      - name: Merge develop and set up Python
+        uses: ./.github/actions/merge-develop-and-setup-python
       - name: Free disk space
         run: |
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-      - name: Merge develop branch into the current branch
-        uses: ./.github/actions/merge
       - name: Install Chrome
         uses: ./.github/actions/install-chrome
       - name: Initializing Containers
@@ -368,13 +355,11 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-        with:
-          use_cache: true
       # Caching is disabled to avoid poisoning our cache with the
       # changed lighthouse file (see later).
       #
       # - name: Cache node modules
-      #   uses: actions/cache@v3
+      #   uses: actions/cache@v4
       #   env:
       #     cache-name: cache-node-modules
       #   with:
@@ -431,10 +416,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-        with:
-          use_cache: true
       - name: Cache node modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
           cache-name: cache-node-modules
         with:
@@ -512,8 +495,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-        with:
-          use_cache: false
       - name: Check workflow status
         uses: ./.github/actions/check-workflow-status
         id: check_workflow_status
