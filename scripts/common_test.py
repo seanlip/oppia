@@ -1390,8 +1390,8 @@ class CommonTests(test_utils.GenericTestBase):
             self.assertEqual(
                 common.start_subprocess_for_result(['cmd']),
                 (b'test\n', b''))
+
     def test_workflow_permissions_set_to_read_all(self) -> None:
-        """Ensure all workflows in .github/workflows have 'permissions: read-all'."""
         workflows_dir = '.github/workflows'
         self.assertTrue(
             os.path.isdir(workflows_dir),
@@ -1407,7 +1407,7 @@ class CommonTests(test_utils.GenericTestBase):
                         permissions = workflow_data.get('permissions')
                         self.assertEqual(
                             permissions, 'read-all',
-                            f'Workflow \'{filename}\' donot have \'permissions: read-all\'.'
+                            f'Workflow \'{filename}\' no \'read-all\'.'
                         )
                     except yaml.YAMLError as e:
-                        self.fail(f'Error parsing YAML file {filename}: {str(e)}')
+                        self.fail(f'Error parse YML file {filename}: {str(e)}')
