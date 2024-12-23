@@ -34,14 +34,13 @@ import tempfile
 import time
 from urllib import request as urlrequest
 
-import yaml
-
 from core import feconf
 from core import utils
 from core.tests import test_utils
 from scripts import servers
 
 from typing import Generator, List, Literal, NoReturn
+import yaml
 
 from . import common
 
@@ -1407,10 +1406,8 @@ class CommonTests(test_utils.GenericTestBase):
                         workflow_data = yaml.safe_load(file)
                         permissions = workflow_data.get('permissions')
                         self.assertEqual(
-                            permissions,
-                            'read-all',
-                            f'Workflow \'{filename}\' does not have \'permissions: read-all\'.'
+                            permissions, 'read-all',
+                            f'Workflow \'{filename}\' donot have \'permissions: read-all\'.'
                         )
                     except yaml.YAMLError as e:
                         self.fail(f'Error parsing YAML file {filename}: {str(e)}')
-                        
