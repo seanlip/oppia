@@ -102,7 +102,7 @@ fi
 # Run hook in container
 # Run commands in parallel and capture their outputs
 python_hook_cmd="$DOCKER_EXEC_COMMAND python3 ./$PYTHON_PRE_PUSH_SYMLINK $@"
-mypy_checks="make run_tests.mypy"
+mypy_checks_cmd="make run_tests.mypy"
 
 # Create temp files for storing outputs
 python_hook_output=$(mktemp)
@@ -112,7 +112,7 @@ mypy_checks_output=$(mktemp)
 $python_hook_cmd >"$python_hook_output" 2>&1 &
 python_hook_pid=$!
 
-$mypy_checks >"$mypy_checks_output" 2>&1 &
+$mypy_checks_cmd >"$mypy_checks_output" 2>&1 &
 mypy_checks_pid=$!
 
 # Wait for both processes to complete
@@ -131,8 +131,6 @@ cat "$mypy_checks_output"
 # Cleanup temp files
 rm "$python_hook_output"
 rm "$mypy_checks_output"
-
-$CMD
 
 # Exit with non-zero if either check failed
 if [ $python_hook_exit -ne 0 ]; then

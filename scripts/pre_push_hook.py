@@ -325,6 +325,8 @@ def main(args: Optional[List[str]] = None) -> None:
                         'Push failed, please correct the linting issues above.')
                     sys.exit(1)
 
+            # When using Docker, we run MYPY checks in docker/pre_push_hook.sh
+            # itself.
             if not feconf.OPPIA_IS_DOCKERIZED:
                 mypy_check_status = execute_mypy_checks()
                 if mypy_check_status != 0:
