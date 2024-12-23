@@ -91,7 +91,7 @@ def install_installation_tools() -> None:
         proc_pip_install.stdout.close()
         out, err = proc_filter_output.communicate()
         if out:
-            print(out)
+            print(out.splitlines())
         if err:
             print('ERRORS: {0}'.format(err))
 
