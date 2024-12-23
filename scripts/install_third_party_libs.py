@@ -301,7 +301,7 @@ def install_redis_cli() -> None:
         # NOTE: We do the installation here since we need to use make.
         print('Installing redis-cli...')
 
-        common.download_and_untar_files(
+        download_and_untar_files(
             ('https://download.redis.io/releases/redis-%s.tar.gz') %
             common.REDIS_CLI_VERSION,
             common.OPPIA_TOOLS_DIR,

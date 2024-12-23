@@ -251,18 +251,18 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
         print_swap = self.swap(builtins, 'print', mock_print)
         with print_swap, self.assertRaisesRegex(SystemExit, '1'):
             install_dependencies_json_packages.test_dependencies_syntax(
-                'tar', {
+                'zip', {
                     'version': '4.7.1',
-                    'downloadFormat': 'tar',
+                    'downloadFormat': 'zip',
                     'url': (
-                        'https://python.org/packages/beautifulsoup4-4.7.1.zip'
+                        'https://python.org/packages/beautifulsoup4-4.7.1.tar'
                         '#md5=321d'),
                     'tarRootDirPrefix': 'beautifulsoup4-',
                     'rootDirPrefix': 'beautifulsoup4-',
                     'targetDirPrefix': 'beautifulsoup4-'})
         self.assertTrue(
-            'This url https://python.org/packages/beautifulsoup4-4.7.1.zip is '
-            'invalid for tar file format.' in print_arr)
+            'This url https://python.org/packages/beautifulsoup4-4.7.1.tar is '
+            'invalid for zip file format.' in print_arr)
 
     def test_validate_dependencies_with_correct_syntax(self) -> None:
         def mock_return_json(
@@ -329,38 +329,28 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
             _path: str
         ) -> install_dependencies_json_packages.DependenciesDict:
             return {
-                'dependencies': {
-                    'oppiaTools': {
-                        'bleach': {
-                            'version': '3.1.0',
-                            'downloadFormat': 'zip',
-                            'url': 'https://github.com/bleach/v3.1.0.zip',
-                            'rootDirPrefix': 'bleach-',
-                            'targetDirPrefix': 'bleach-'
-                        },
-                        'graphy': {
-                            'version': '1.0.0',
-                            'downloadFormat': 'tar',
-                            'url': 'https://pypi/Graphy/Graphy-1.0.0.tar.gz',
-                            'tarRootDirPrefix': 'Graphy-',
-                            'rootDirPrefix': 'graphy-',
-                            'targetDirPrefix': 'graphy-'
-                        },
-                        'bootstrap': {
-                            'version': '4.3.1',
-                            'downloadFormat': 'zip',
-                            'url': 'https://bootstrap/bootstrap-4.3.1-dist.zip',
-                            'rootDir': 'bootstrap-4.3.1-dist',
-                            'targetDir': 'bootstrap'
-                        },
-                        'angularTest': {
-                            'version': '1.8.2',
-                            'downloadFormat': 'files',
-                            'url': 'https://code.angularjs.org/1.8.2',
-                            'targetDirPrefix': 'angularjs-',
-                            'files': ['angular-mocks.js']
-                        },
-                    }
+                'frontendDependencies': {
+                    'bleach': {
+                        'version': '3.1.0',
+                        'downloadFormat': 'zip',
+                        'url': 'https://github.com/bleach/v3.1.0.zip',
+                        'rootDirPrefix': 'bleach-',
+                        'targetDirPrefix': 'bleach-'
+                    },
+                    'bootstrap': {
+                        'version': '4.3.1',
+                        'downloadFormat': 'zip',
+                        'url': 'https://bootstrap/bootstrap-4.3.1-dist.zip',
+                        'rootDir': 'bootstrap-4.3.1-dist',
+                        'targetDir': 'bootstrap'
+                    },
+                    'angularTest': {
+                        'version': '1.8.2',
+                        'downloadFormat': 'files',
+                        'url': 'https://code.angularjs.org/1.8.2',
+                        'targetDirPrefix': 'angularjs-',
+                        'files': ['angular-mocks.js']
+                    },
                 }
             }
 

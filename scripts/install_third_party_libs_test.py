@@ -66,7 +66,7 @@ class Ret:
 
     def __init__(
            self, returncode: int = 0,
-           communicate_val: Tuple[bytes, bytes] = ('', '')
+           communicate_val: Tuple[bytes, bytes] = (b'', b'')
         ) -> None:
         self.returncode = returncode
         self.communicate_val = communicate_val
@@ -134,60 +134,6 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
         with self.swap(feconf, 'OPPIA_IS_DOCKERIZED', False):
             with self.check_call_swap:
                 install_third_party_libs.main()
-
-    def test_tweak_yarn_executable(self) -> None:
-        check_function_calls = {
-            'mock_rename': False,
-        }
-        def mock_is_file(unused_filename: str) -> bool:
-            return True
-
-        def mock_rename(origin_name: str, new_name: str) -> None:
-            self.assertEqual(origin_name + '.sh', new_name)
-            check_function_calls['mock_rename'] = True
-        check_function_calls['mock_rename'] = False
-        isfile_swap = self.swap(os.path, 'isfile', mock_is_file)
-        rename_swap = self.swap(os, 'rename', mock_rename)
-        with isfile_swap, rename_swap:
-            install_third_party_libs.tweak_yarn_executable()
-        self.assertTrue(check_function_calls['mock_rename'])
-
-    def test_tweak_yarn_executable_handles_yarn_file_not_found(self) -> None:
-        # If the yarn file is not found, os.rename() is not called and the
-        # method simply exits.
-        check_function_calls = {
-            'mock_rename': False,
-        }
-        def mock_is_file(unused_filename: str) -> bool:
-            return False
-
-        def mock_rename(origin_name: str, new_name: str) -> None:
-            self.assertEqual(origin_name + '.sh', new_name)
-            check_function_calls['mock_rename'] = True
-        check_function_calls['mock_rename'] = False
-        isfile_swap = self.swap(os.path, 'isfile', mock_is_file)
-        rename_swap = self.swap(os, 'rename', mock_rename)
-        with isfile_swap, rename_swap:
-            install_third_party_libs.tweak_yarn_executable()
-        self.assertFalse(check_function_calls['mock_rename'])
-
-    def test_get_yarn_command_on_windows(self) -> None:
-        os_name_swap = self.swap(common, 'OS_NAME', 'Windows')
-        with os_name_swap:
-            command = install_third_party_libs.get_yarn_command()
-            self.assertEqual(command, 'yarn.cmd')
-
-    def test_get_yarn_command_on_linux(self) -> None:
-        os_name_swap = self.swap(common, 'OS_NAME', 'Linux')
-        with os_name_swap:
-            command = install_third_party_libs.get_yarn_command()
-            self.assertEqual(command, 'yarn')
-
-    def test_get_yarn_command_on_mac(self) -> None:
-        os_name_swap = self.swap(common, 'OS_NAME', 'Darwin')
-        with os_name_swap:
-            command = install_third_party_libs.get_yarn_command()
-            self.assertEqual(command, 'yarn')
 
     def test_function_calls(self) -> None:
         check_function_calls = {

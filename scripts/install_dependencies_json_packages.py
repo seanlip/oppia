@@ -48,7 +48,7 @@ TMP_UNZIP_PATH: Final = os.path.join('.', 'tmp_unzip.zip')
 _DOWNLOAD_FORMAT_ZIP: Final = 'zip'
 _DOWNLOAD_FORMAT_FILES: Final = 'files'
 
-DownloadFormatType = Literal['zip', 'files', 'tar']
+DownloadFormatType = Literal['zip', 'files']
 
 
 class DownloadFormatToDependenciesKeysDict(TypedDict):
@@ -167,7 +167,6 @@ class DependencyDict(TypedDict, total=False):
     rootDir: str
     targetDirPrefix: str
     targetDir: str
-    tarRootDirPrefix: str
     files: List[str]
     bundle: Dict[str, List[str]]
 
@@ -175,7 +174,7 @@ class DependencyDict(TypedDict, total=False):
 class DependenciesDict(TypedDict):
     """Dict representation of dependencies."""
 
-    dependencies: Dict[str, Dict[str, DependencyDict]]
+    frontendDependencies: Dict[str, DependencyDict]
 
 
 @overload

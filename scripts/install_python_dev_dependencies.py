@@ -88,12 +88,14 @@ def install_installation_tools() -> None:
             stdin=proc_pip_install.stdout,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        proc_pip_install.stdout.close()
+        if proc_pip_install.stdout is not None:
+            proc_pip_install.stdout.close()
+
         out, err = proc_filter_output.communicate()
         if out:
             print(out.splitlines())
         if err:
-            print('ERRORS: {0}'.format(err))
+            print('ERRORS: {0}'.format(str(err)))
 
 
 def install_dev_dependencies() -> None:
