@@ -1031,7 +1031,7 @@ def generate_build_tasks_to_build_files_from_filepaths(
     for filepath in filepaths:
         source_file_path = os.path.join(source_path, filepath)
         target_file_path = os.path.join(target_path, filepath)
-        ensure_directory_exists(target_file_path)
+        common.ensure_directory_exists(os.path.dirname(target_file_path))
         if should_file_be_built(source_file_path):
             task = threading.Thread(
                 target=minify_func,

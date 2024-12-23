@@ -61,6 +61,21 @@ class MockCD:
         pass
 
 
+class Ret:
+    """Return object with required attributes."""
+
+    def __init__(
+           self, returncode: int = 0,
+           communicate_val: Tuple[bytes, bytes] = ('', '')
+        ) -> None:
+        self.returncode = returncode
+        self.communicate_val = communicate_val
+
+    def communicate(self) -> Tuple[str, str]:
+        """Return required method."""
+        return self.communicate_val
+
+
 class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
     """Test the methods for installing third party libs."""
 
@@ -71,21 +86,6 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
             'check_call_is_called': False,
         }
         self.print_arr: List[str] = []
-
-        class Ret:
-            """Return object with required attributes."""
-
-            def __init__(
-                self,
-                returncode: int,
-                communicate_val: Tuple[bytes, bytes]
-            ) -> None:
-                self.returncode = returncode
-                self.communicate_val = communicate_val
-
-            def communicate(self) -> Tuple[bytes, bytes]:
-                """Return required method."""
-                return self.communicate_val
 
         def mock_check_call(
             unused_cmd_tokens: List[str],
@@ -270,16 +270,6 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
 class InstallRedisAndElasticSearchTests(test_utils.GenericTestBase):
     """Test the methods for installing Redis and Elasticsearch."""
 
-    class Ret:
-        """Return object with required attributes."""
-
-        def __init__(self) -> None:
-            self.returncode = 0
-
-        def communicate(self) -> Tuple[str, str]:
-            """Return required method."""
-            return '', ''
-
     def test_install_redis_cli_function_calls(self) -> None:
         check_function_calls = {
             'subprocess_call_is_called': False,
@@ -428,7 +418,6 @@ class SetupTests(test_utils.GenericTestBase):
     def setUp(self) -> None:
         super().setUp()
         self.check_function_calls = {
-            'create_directory_is_called': False,
             'test_python_version_is_called': False,
             'recursive_chown_is_called': False,
             'recursive_chmod_is_called': False,
@@ -436,8 +425,6 @@ class SetupTests(test_utils.GenericTestBase):
             'delete_file_is_called': False
         }
         self.urls: List[str] = []
-        def mock_create_directory(unused_path: str) -> None:
-            self.check_function_calls['create_directory_is_called'] = True
         def mock_test_python_version() -> None:
             self.check_function_calls['test_python_version_is_called'] = True
         def mock_download_and_install_package(
