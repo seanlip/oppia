@@ -268,7 +268,7 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
             _path: str
         ) -> install_dependencies_json_packages.DependenciesDict:
             return {
-                'frontend': {
+                'frontendDependencies': {
                     'mathJax': {
                         'url': 'https://github.com/mathjax/2.7.5',
                         'files': ['MathJax-2.7.5.jar'],
@@ -289,7 +289,7 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
             _path: str
         ) -> install_dependencies_json_packages.DependenciesDict:
             return {
-                'frontend': {
+                'frontendDependencies': {
                     'mathJax': {
                         'version': '2.7.5',
                         'url': 'https://github.com/mathjax/2.7.5.zip',
