@@ -32,6 +32,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import yaml
 from urllib import request as urlrequest
 
 from core import feconf
@@ -1389,3 +1390,26 @@ class CommonTests(test_utils.GenericTestBase):
             self.assertEqual(
                 common.start_subprocess_for_result(['cmd']),
                 (b'test\n', b''))
+    def test_workflow_permissions_set_to_read_all(self) -> None:
+        """Ensure all workflows in .github/workflows have 'permissions: read-all'."""
+        workflows_dir = '.github/workflows'
+        self.assertTrue(
+            os.path.isdir(workflows_dir),
+            f"{workflows_dir} directory not found."
+        )
+
+        for filename in os.listdir(workflows_dir):
+            if filename.endswith('.yaml') or filename.endswith('.yml'):
+                filepath = os.path.join(workflows_dir, filename)
+                with open(filepath, 'r') as file:
+                    try:
+                        workflow_data = yaml.safe_load(file)
+                        permissions = workflow_data.get("permissions")
+                        self.assertEqual(
+                            permissions,
+                            "read-all",
+                            f"Workflow '{filename}' does not have 'permissions: read-all'."
+                        )
+                    except yaml.YAMLError as e:
+                        self.fail(f"Error parsing YAML file {filename}: {str(e)}")
+
