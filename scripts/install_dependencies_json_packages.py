@@ -236,7 +236,7 @@ def download_files(
     """
     assert isinstance(source_filenames, list), (
         'Expected list of filenames, got \'%s\'' % source_filenames)
-    pathlib.Path(target_dir).mkdir(exist_ok=True)
+    pathlib.Path(target_dir).mkdir(parents=True, exist_ok=True)
     for filename in source_filenames:
         if not os.path.exists(os.path.join(target_dir, filename)):
             print('Downloading file %s to %s ...' % (filename, target_dir))
@@ -273,7 +273,7 @@ def download_and_unzip_files(
     if not os.path.exists(os.path.join(target_parent_dir, target_root_name)):
         print('Downloading and unzipping file %s to %s ...' % (
             zip_root_name, target_parent_dir))
-        pathlib.Path(target_parent_dir).mkdir(exist_ok=True)
+        pathlib.Path(target_parent_dir).mkdir(parents=True, exist_ok=True)
 
         url_retrieve(source_url, TMP_UNZIP_PATH)
 
