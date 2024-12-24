@@ -1407,7 +1407,8 @@ class CommonTests(test_utils.GenericTestBase):
                         permissions = workflow_data.get('permissions')
                         self.assertEqual(
                             permissions, 'read-all',
-                            f'Workflow file "{filename}" is missing a "permissions: read-all" field.'
+                            f'Workflow file "{filename}" is missing a '
+                            '"permissions: read-all" field.'
                         )
                     except yaml.YAMLError as e:
-                        self.fail(f'Error parsing YML file "{filename}": {str(e)}')
+                        self.fail(f'Error parsing file "{filename}": {str(e)}')
