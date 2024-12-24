@@ -134,7 +134,7 @@ def compile_pip_requirements(
     subprocess.run(
         [
             'pip-compile', '--no-emit-index-url', '--quiet',
-            '--generate-hashes', requirements_path,
+            '--strip-extras', '--generate-hashes', requirements_path,
             '--output-file', compiled_path,
         ],
         check=True,

@@ -191,7 +191,8 @@ class InstallPythonDevDependenciesTests(test_utils.GenericTestBase):
             subprocess, 'run', mock_run, expected_args=[
                 ([
                     'pip-compile', '--no-emit-index-url', '--quiet',
-                    '--generate-hashes', 'requirements_dev.in',
+                    '--strip-extras', '--generate-hashes',
+                    'requirements_dev.in',
                     '--output-file', 'requirements_dev.txt',
                 ],),
             ],
@@ -231,7 +232,8 @@ class InstallPythonDevDependenciesTests(test_utils.GenericTestBase):
             subprocess, 'run', mock_run, expected_args=[
                 ([
                     'pip-compile', '--no-emit-index-url', '--quiet',
-                    '--generate-hashes', 'requirements_dev.in',
+                    '--strip-extras',  '--generate-hashes',
+                    'requirements_dev.in',
                     '--output-file', 'requirements_dev.txt',
                 ],),
             ],
