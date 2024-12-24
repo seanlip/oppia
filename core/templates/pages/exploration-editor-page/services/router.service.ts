@@ -70,8 +70,6 @@ export class RouterService {
     this._changeTab(this.windowRef.nativeWindow.location.hash.split('#')[1]);
 
     this.location.onPopState(() => {
-      console.log(window.location.hash);
-      console.trace();
       if (window.location.hash === '') {
         setTimeout(() => {
           window.history.go(-1);
