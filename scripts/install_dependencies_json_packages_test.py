@@ -30,6 +30,7 @@ import zipfile
 from core.tests import test_utils
 from typing import BinaryIO, Final, NoReturn, Tuple
 
+from . import common
 from . import install_dependencies_json_packages
 
 RELEASE_TEST_DIR: Final = os.path.join('core', 'tests', 'release_sources', '')
@@ -79,7 +80,7 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
             install_dependencies_json_packages, 'TMP_UNZIP_PATH',
             MOCK_TMP_UNZIP_PATH)
         self. dir_exists_swap = self.swap(
-            install_dependencies_json_packages,
+            common,
             'ensure_directory_exists', mock_ensure_directory_exists)
         self.exists_swap = self.swap(os.path, 'exists', mock_exists)
         self.remove_swap = self.swap(os, 'remove', mock_remove)

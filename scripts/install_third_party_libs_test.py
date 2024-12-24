@@ -33,6 +33,8 @@ from typing import Final, List, Tuple
 
 from . import clean
 from . import common
+from . import install_dependencies_json_packages
+from . import install_python_prod_dependencies
 from . import install_third_party_libs
 from . import pre_commit_hook
 from . import pre_push_hook
@@ -130,34 +132,35 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
             with self.check_call_swap:
                 install_third_party_libs.main()
 
-    def test_install_third_party_main(self) -> None:
-        with self.swap(feconf, 'OPPIA_IS_DOCKERIZED', False):
-            with self.check_call_swap:
-                install_third_party_libs.main()
-
-    def test_function_calls(self) -> None:
+    def test_install_third_party_main_also_installs_hooks(self) -> None:
         check_function_calls = {
-            'install_third_party_main_is_called': False,
             'pre_commit_hook_main_is_called': False,
             'pre_push_hook_main_is_called': False,
         }
         expected_check_function_calls = {
-            'install_third_party_main_is_called': True,
             'pre_commit_hook_main_is_called': True,
             'pre_push_hook_main_is_called': True,
         }
-        def mock_check_call(unused_cmd_tokens: List[str]) -> None:
+
+        def mock_install_gcloud_sdk() -> None:
             pass
-        def mock_main_for_install_third_party(args: List[str]) -> None:  # pylint: disable=unused-argument
-            check_function_calls['install_third_party_main_is_called'] = True
+        def mock_install_redis_cli() -> None:
+            pass
+        def mock_install_elasticsearch_dev_server() -> None:
+            pass
+        def mock_external_script_call() -> None:
+            pass
+        def mock_mkdir(unused_path: str) -> None:
+            pass
+        def mock_copytree(unused_src: str, unused_dst: str) -> None:
+            pass
         def mock_main_for_pre_commit_hook(args: List[str]) -> None:  # pylint: disable=unused-argument
             check_function_calls['pre_commit_hook_main_is_called'] = True
         def mock_main_for_pre_push_hook(args: List[str]) -> None:  # pylint: disable=unused-argument
             check_function_calls['pre_push_hook_main_is_called'] = True
-
-        correct_google_path = os.path.join(
-            common.THIRD_PARTY_PYTHON_LIBS_DIR, 'google')
         def mock_isdir(path: str) -> bool:
+            correct_google_path = os.path.join(
+                common.THIRD_PARTY_PYTHON_LIBS_DIR, 'google')
             directories_that_do_not_exist = {
                 os.path.join(correct_google_path, 'appengine'),
                 os.path.join(correct_google_path, 'pyglib'),
@@ -166,44 +169,40 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
             if path in directories_that_do_not_exist:
                 return False
             return True
-        initialized_directories = []
-        def mock_mkdir(path: str) -> None:
-            initialized_directories.append(path)
 
-        copied_src_dst_tuples = []
-        def mock_copytree(src: str, dst: str) -> None:
-            copied_src_dst_tuples.append((src, dst))
-
-        correct_copied_src_dst_tuples = [
-            (
-                os.path.join(
-                    common.GOOGLE_APP_ENGINE_SDK_HOME, 'google', 'appengine'),
-                os.path.join(correct_google_path, 'appengine')),
-            (
-                os.path.join(
-                    common.GOOGLE_APP_ENGINE_SDK_HOME, 'google', 'pyglib'),
-                os.path.join(correct_google_path, 'pyglib'))
-        ]
-
+        swap_install_gcloud_sdk = self.swap(
+            install_third_party_libs, 'install_gcloud_sdk',
+            mock_install_gcloud_sdk)
+        swap_install_redis_cli = self.swap(
+            install_third_party_libs, 'install_redis_cli',
+            mock_install_redis_cli)
+        swap_install_elasticsearch_dev_server = self.swap(
+            install_third_party_libs, 'install_elasticsearch_dev_server',
+            mock_install_elasticsearch_dev_server)
+        swap_install_python_prod_main = self.swap(
+            install_python_prod_dependencies, 'main',
+            mock_external_script_call)
+        swap_install_json_deps_main = self.swap(
+            install_dependencies_json_packages, 'main',
+            mock_external_script_call)
         swap_isdir = self.swap(os.path, 'isdir', mock_isdir)
         swap_mkdir = self.swap(os, 'mkdir', mock_mkdir)
         swap_copytree = self.swap(shutil, 'copytree', mock_copytree)
-        check_call_swap = self.swap(subprocess, 'check_call', mock_check_call)
-        install_third_party_main_swap = self.swap(
-            install_third_party_libs, 'main', mock_main_for_install_third_party)
         pre_commit_hook_main_swap = self.swap(
             pre_commit_hook, 'main', mock_main_for_pre_commit_hook)
         pre_push_hook_main_swap = self.swap(
             pre_push_hook, 'main', mock_main_for_pre_push_hook)
 
-        with check_call_swap, self.Popen_swap:
-            with install_third_party_main_swap, pre_commit_hook_main_swap:
-                with pre_push_hook_main_swap:
-                    with swap_isdir, swap_mkdir, swap_copytree:
-                        install_third_party_libs.main()
+        with self.swap(feconf, 'OPPIA_IS_DOCKERIZED', False):
+            with self.check_call_swap, self.Popen_swap, swap_install_redis_cli:
+                with swap_install_gcloud_sdk, swap_install_python_prod_main:
+                    with pre_commit_hook_main_swap, pre_push_hook_main_swap:
+                        with swap_isdir, swap_mkdir, swap_copytree:
+                            with swap_install_elasticsearch_dev_server:
+                                with swap_install_json_deps_main:
+                                    install_third_party_libs.main()
+
         self.assertEqual(check_function_calls, expected_check_function_calls)
-        self.assertEqual(copied_src_dst_tuples, correct_copied_src_dst_tuples)
-        self.assertEqual(initialized_directories, [correct_google_path])
 
     def test_clean_pyc_files_removes_pyc_files(self) -> None:
         check_file_removals = {
@@ -382,11 +381,9 @@ class SetupTests(test_utils.GenericTestBase):
     def setUp(self) -> None:
         super().setUp()
         self.check_function_calls = {
-            'test_python_version_is_called': False,
             'recursive_chown_is_called': False,
             'recursive_chmod_is_called': False,
             'rename_is_called': False,
-            'delete_file_is_called': False
         }
         self.urls: List[str] = []
         def mock_test_python_version() -> None:
@@ -540,11 +537,8 @@ class SetupTests(test_utils.GenericTestBase):
         self.assertFalse(
             'WARNING   This script should be run from the oppia/ '
             'root folder.' in print_arr)
-        self.assertTrue(
-            self.check_function_calls['test_python_version_is_called'])
 
     def test_package_install_with_darwin_x64(self) -> None:
-
         os_name_swap = self.swap(common, 'OS_NAME', 'Darwin')
 
         with self.test_py_swap, os_name_swap:
@@ -553,18 +547,14 @@ class SetupTests(test_utils.GenericTestBase):
                     with self.is_x64_architecture_true_swap, self.chown_swap:
                         install_third_party_libs.install_node()
 
-        for item in self.check_function_calls.values():
-            self.assertTrue(item)
+        for item, status in self.check_function_calls.items():
+            self.assertTrue(status, msg='Failed check for %s' % item)
         self.assertEqual(
             self.urls, [
                 'https://nodejs.org/dist/v%s/node-v%s-darwin-x64.tar.gz' % (
-                    common.NODE_VERSION, common.NODE_VERSION),
-                'https://github.com/yarnpkg/yarn/releases/download/'
-                'v%s/yarn-v%s.tar.gz' % (
-                    common.YARN_VERSION, common.YARN_VERSION)])
+                    common.NODE_VERSION, common.NODE_VERSION)])
 
     def test_package_install_with_darwin_x86(self) -> None:
-
         os_name_swap = self.swap(common, 'OS_NAME', 'Darwin')
         all_cmd_tokens: List[str] = []
         def mock_check_call(cmd_tokens: List[str]) -> None:
@@ -577,15 +567,12 @@ class SetupTests(test_utils.GenericTestBase):
                     with self.is_x64_architecture_false_swap, self.cd_swap:
                         with check_call_swap:
                             install_third_party_libs.install_node()
-        for _, item in self.check_function_calls.items():
-            self.assertTrue(item)
+        for item, status in self.check_function_calls.items():
+            self.assertTrue(status, msg='Failed check for %s' % item)
         self.assertEqual(
             self.urls, [
                 'https://nodejs.org/dist/v%s/node-v%s.tar.gz' % (
-                    common.NODE_VERSION, common.NODE_VERSION),
-                'https://github.com/yarnpkg/yarn/releases/download/'
-                'v%s/yarn-v%s.tar.gz' % (
-                    common.YARN_VERSION, common.YARN_VERSION)])
+                    common.NODE_VERSION, common.NODE_VERSION)])
         self.assertEqual(all_cmd_tokens, ['./configure', 'make'])
 
     def test_package_install_with_linux_x64(self) -> None:
@@ -598,15 +585,12 @@ class SetupTests(test_utils.GenericTestBase):
                     with self.is_x64_architecture_true_swap:
                         install_third_party_libs.install_node()
 
-        for item in self.check_function_calls.values():
-            self.assertTrue(item)
+        for item, status in self.check_function_calls.items():
+            self.assertTrue(status, msg='Failed check for %s' % item)
         self.assertEqual(
             self.urls, [
                 'https://nodejs.org/dist/v%s/node-v%s-linux-x64.tar.gz' % (
-                    common.NODE_VERSION, common.NODE_VERSION),
-                'https://github.com/yarnpkg/yarn/releases/download/'
-                'v%s/yarn-v%s.tar.gz' % (
-                    common.YARN_VERSION, common.YARN_VERSION)])
+                    common.NODE_VERSION, common.NODE_VERSION)])
 
     def test_package_install_with_linux_x86(self) -> None:
         os_name_swap = self.swap(common, 'OS_NAME', 'Linux')
@@ -623,15 +607,12 @@ class SetupTests(test_utils.GenericTestBase):
                         with self.exists_false_swap:
                             install_third_party_libs.install_node()
 
-        for item in self.check_function_calls.values():
-            self.assertTrue(item)
+        for item, status in self.check_function_calls.items():
+            self.assertTrue(status, msg='Failed check for %s' % item)
         self.assertEqual(
             self.urls, [
                 'https://nodejs.org/dist/v%s/node-v%s.tar.gz' % (
-                    common.NODE_VERSION, common.NODE_VERSION),
-                'https://github.com/yarnpkg/yarn/releases/download/'
-                'v%s/yarn-v%s.tar.gz' % (
-                    common.YARN_VERSION, common.YARN_VERSION)])
+                    common.NODE_VERSION, common.NODE_VERSION)])
         self.assertEqual(all_cmd_tokens, ['./configure', 'make'])
 
     def test_package_install_with_incompatible_system_raises_error(
@@ -660,7 +641,7 @@ class SetupTests(test_utils.GenericTestBase):
                 install_third_party_libs.install_node()
 
         print(print_list)
-        self.assertIn('Environment setup completed.', print_list)
+        self.assertIn('Node is installed.', print_list)
         self.assertNotIn('Installing Node.js', print_list)
         self.assertNotIn('Removing package-lock.json', print_list)
 
@@ -752,3 +733,81 @@ class GoogleCloudSdkInstallationTests(test_utils.GenericTestBase):
         self.assertTrue(
             'Error downloading Google Cloud SDK. Exiting.'
             in self.print_arr)
+
+    def test_directory_copying(self) -> None:
+        correct_google_path = os.path.join(
+            common.THIRD_PARTY_PYTHON_LIBS_DIR, 'google')
+        def mock_check_call(unused_cmd_tokens: List[str]) -> None:
+            pass
+        def mock_isdir(path: str) -> bool:
+            directories_that_do_not_exist = {
+                os.path.join(correct_google_path, 'appengine'),
+                os.path.join(correct_google_path, 'pyglib'),
+                correct_google_path
+            }
+            if path in directories_that_do_not_exist:
+                return False
+            return True
+        def mock_exists(path: str) -> bool:
+            if path == common.GOOGLE_CLOUD_SDK_HOME:
+                return False
+            return True
+
+        class MockProcess:
+            returncode = 0
+            stdout = 'No data to report.'
+            stderr = 'None'
+        def mock_subprocess_run(*args: str, **kwargs: str) -> MockProcess: # pylint: disable=unused-argument
+            return MockProcess()
+
+        temp_file = tarfile.open(name=MOCK_TMP_UNTAR_PATH)
+        def mock_open(name: str) -> tarfile.TarFile:  # pylint: disable=unused-argument
+            self.check_function_calls['open_is_called'] = True
+            return temp_file
+        def mock_extractall(unused_self: str, path: str) -> None:  # pylint: disable=unused-argument
+            self.check_function_calls['extractall_is_called'] = True
+        def mock_close(unused_self: str) -> None:
+            self.check_function_calls['close_is_called'] = True
+        def mock_remove(unused_self: str) -> None:
+            pass
+        open_swap = self.swap(tarfile, 'open', mock_open)
+        extractall_swap = self.swap(
+            tarfile.TarFile, 'extractall', mock_extractall)
+        close_swap = self.swap(tarfile.TarFile, 'close', mock_close)
+
+        initialized_directories = []
+        def mock_mkdir(path: str, unused_mode: int = 0o777) -> None:
+            initialized_directories.append(path)
+
+        copied_src_dst_tuples = []
+        def mock_copytree(src: str, dst: str) -> None:
+            copied_src_dst_tuples.append((src, dst))
+
+        correct_copied_src_dst_tuples = [(
+            os.path.join(
+                common.GOOGLE_APP_ENGINE_SDK_HOME, 'google', 'appengine'),
+            os.path.join(correct_google_path, 'appengine')
+        ), (
+            os.path.join(
+                common.GOOGLE_APP_ENGINE_SDK_HOME, 'google', 'pyglib'),
+            os.path.join(correct_google_path, 'pyglib')
+        )]
+
+        swap_exists = self.swap(os.path, 'exists', mock_exists)
+        swap_isdir = self.swap(os.path, 'isdir', mock_isdir)
+        swap_mkdir = self.swap(os, 'mkdir', mock_mkdir)
+        swap_copytree = self.swap(shutil, 'copytree', mock_copytree)
+        swap_remove = self.swap(os, 'remove', mock_remove)
+        popen_swap = self.swap(subprocess, 'Popen', mock_check_call)
+        run_swap = self.swap(subprocess, 'run', mock_subprocess_run)
+        check_call_swap = self.swap(subprocess, 'check_call', mock_check_call)
+
+        with check_call_swap, popen_swap, close_swap, run_swap, swap_remove:
+            with swap_isdir, swap_mkdir, swap_copytree, swap_exists:
+                with self.url_retrieve_swap, open_swap, extractall_swap:
+                    install_third_party_libs.install_gcloud_sdk()
+
+        self.assertEqual(copied_src_dst_tuples, correct_copied_src_dst_tuples)
+        self.assertEqual(
+            initialized_directories,
+            [common.GOOGLE_CLOUD_SDK_HOME, correct_google_path])

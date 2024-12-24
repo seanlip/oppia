@@ -28,7 +28,7 @@ import sys
 from core.tests import test_utils
 from scripts import install_python_dev_dependencies
 
-from typing import Dict, Generator, List
+from typing import Dict, Generator, List, Optional
 
 
 class InstallPythonDevDependenciesTests(test_utils.GenericTestBase):
@@ -122,10 +122,11 @@ class InstallPythonDevDependenciesTests(test_utils.GenericTestBase):
 
         process = subprocess.Popen(
             ['echo', 'test'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        def mock_popen(
-            cmd_tokens: List[str], unused_stdout: int, unused_stderr: int,
+        def mock_popen(  # pylint: disable=unused-argument
+            cmd_tokens: List[str], stdout: int, stdin: Optional[int] = None,
+            stderr: Optional[int] = None
         ) -> subprocess.Popen[bytes]:
-            if cmd_tokens[3] == 'install':
+            if len(cmd_tokens) > 3 and cmd_tokens[3] == 'install':
                 package, version = cmd_tokens[4].split('==')
                 installed_tools[package] = version
                 self.assertEqual(cmd_tokens, [

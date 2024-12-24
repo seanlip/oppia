@@ -245,6 +245,18 @@ def install_gcloud_sdk() -> None:
         # https://github.com/googleapis/python-ndb/issues/518
         make_google_module_importable_by_python(correct_google_path)
 
+    sys.path.append('.')
+    sys.path.append(common.GOOGLE_APP_ENGINE_SDK_HOME)
+    # Install specific google cloud components for the Google Cloud SDK. The
+    # --quiet flag specifically tells the gcloud program to autofill all
+    # prompts with default values. In this case, that means accepting all
+    # installations of gcloud packages.
+    subprocess.run([
+        common.GCLOUD_PATH, 'components', 'install', 'beta',
+        'cloud-datastore-emulator', 'app-engine-python',
+        'app-engine-python-extras', '--quiet',
+    ], check=True)
+
     print('Google Cloud SDK is installed.')
 
 
@@ -413,18 +425,6 @@ def main() -> None:
     install_gcloud_sdk()
     install_redis_cli()
     install_elasticsearch_dev_server()
-
-    sys.path.append('.')
-    sys.path.append(common.GOOGLE_APP_ENGINE_SDK_HOME)
-    # Install specific google cloud components for the Google Cloud SDK. The
-    # --quiet flag specifically tells the gcloud program to autofill all
-    # prompts with default values. In this case, that means accepting all
-    # installations of gcloud packages.
-    subprocess.run([
-        common.GCLOUD_PATH, 'components', 'install', 'beta',
-        'cloud-datastore-emulator', 'app-engine-python',
-        'app-engine-python-extras', '--quiet',
-    ], check=True)
 
     # Install pre-commit and pre-push scripts.
     common.print_each_string_after_two_new_lines([
