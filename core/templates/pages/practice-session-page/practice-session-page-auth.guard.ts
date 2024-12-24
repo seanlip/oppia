@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Auth Guard for the topic viewer page.
+ * @fileoverview Auth Guard for the practice session page.
  */
 import {Location} from '@angular/common';
 import {Injectable} from '@angular/core';
@@ -30,7 +30,7 @@ import {AccessValidationBackendApiService} from 'pages/oppia-root/routing/access
 @Injectable({
   providedIn: 'root',
 })
-export class TopicViewerAccessGuard implements CanActivate {
+export class PracticeSessionAccessGuard implements CanActivate {
   constructor(
     private accessValidationBackendApiService: AccessValidationBackendApiService,
     private router: Router,
@@ -46,7 +46,10 @@ export class TopicViewerAccessGuard implements CanActivate {
     let topicUrlFragment = route.paramMap.get('topic_url_fragment') || '';
     return new Promise<boolean>(resolve => {
       this.accessValidationBackendApiService
-        .validateAccessToTopicViewerPage(classroomUrlFragment, topicUrlFragment)
+        .validateAccessToPracticeSessionPage(
+          classroomUrlFragment,
+          topicUrlFragment
+        )
         .then(() => {
           resolve(true);
         })
