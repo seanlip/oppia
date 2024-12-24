@@ -36,11 +36,6 @@ import subprocess
 import sys
 import tarfile
 
-from core import feconf
-from scripts import install_dependencies_json_packages
-from scripts import install_python_dev_dependencies
-from scripts import install_python_prod_dependencies
-
 from typing import Final
 
 if not feconf.OPPIA_IS_DOCKERIZED:
@@ -52,7 +47,11 @@ if not feconf.OPPIA_IS_DOCKERIZED:
 from . import common  # isort:skip  pylint: disable=wrong-import-position, wrong-import-order
 from . import clean  # isort:skip  pylint: disable=wrong-import-position, wrong-import-order
 
+from core import feconf  # isort:skip   pylint: disable=wrong-import-position, wrong-import-order
 from core import utils  # isort:skip   pylint: disable=wrong-import-position, wrong-import-order
+from scripts import install_dependencies_json_packages  # isort:skip   pylint: disable=wrong-import-position, wrong-import-order
+from scripts import install_python_dev_dependencies  # isort:skip   pylint: disable=wrong-import-position, wrong-import-order
+from scripts import install_python_prod_dependencies  # isort:skip   pylint: disable=wrong-import-position, wrong-import-order
 
 # Place to download zip files for temporary storage.
 TMP_UNZIP_PATH: Final = os.path.join('.', 'tmp_unzip.zip')
