@@ -524,27 +524,3 @@ class InstallThirdPartyTests(test_utils.GenericTestBase):
                     'https://example.com', output_path, enforce_https=False)
             with open(output_path, 'rb') as buffer:
                 self.assertEqual(buffer.read(), b'content')
-
-    def test_ensure_directory_exists_with_existing_dir(self) -> None:
-        check_function_calls = {
-            'makedirs_gets_called': False
-        }
-        def mock_makedirs(unused_dirpath: str) -> None:
-            check_function_calls['makedirs_gets_called'] = True
-        with self.swap(os, 'makedirs', mock_makedirs):
-            install_dependencies_json_packages.ensure_directory_exists(
-                'assets')
-        self.assertEqual(
-            check_function_calls, {'makedirs_gets_called': False})
-
-    def test_ensure_directory_exists_with_non_existing_dir(self) -> None:
-        check_function_calls = {
-            'makedirs_gets_called': False
-        }
-        def mock_makedirs(unused_dirpath: str) -> None:
-            check_function_calls['makedirs_gets_called'] = True
-        with self.swap(os, 'makedirs', mock_makedirs):
-            install_dependencies_json_packages.ensure_directory_exists(
-                'test-dir')
-        self.assertEqual(
-            check_function_calls, {'makedirs_gets_called': True})

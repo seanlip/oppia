@@ -134,108 +134,118 @@ def rename_yarn_folder(filename: str, path: str) -> None:
         os.rename(path + '/' + old_name, path + '/' + new_name)
 
 
-def download_and_install_node() -> None:
+def install_node() -> None:
     """Download and install node to Oppia tools directory."""
-    print(
-        'Node package not found in Oppia tools directory. '
-        'Installing Node.js...')
+    if not os.path.exists(common.NODE_PATH):
+        print(
+            'Node package not found in Oppia tools directory. '
+            'Installing Node.js...')
 
-    outfile_name = 'node-download'
-    if common.is_x64_architecture():
-        if common.is_mac_os():
-            node_file_name = 'node-v%s-darwin-x64' % common.NODE_VERSION
-        elif common.is_linux_os():
-            node_file_name = 'node-v%s-linux-x64' % common.NODE_VERSION
+        outfile_name = 'node-download'
+        if common.is_x64_architecture():
+            if common.is_mac_os():
+                node_file_name = 'node-v%s-darwin-x64' % common.NODE_VERSION
+            elif common.is_linux_os():
+                node_file_name = 'node-v%s-linux-x64' % common.NODE_VERSION
+            else:
+                raise Exception('System\'s Operating System is not compatible.')
         else:
-            raise Exception('System\'s Operating System is not compatible.')
-    else:
-        node_file_name = 'node-v%s' % common.NODE_VERSION
+            node_file_name = 'node-v%s' % common.NODE_VERSION
 
-    download_and_install_package(
-        'https://nodejs.org/dist/v%s/%s.tar.gz' % (
-            common.NODE_VERSION, node_file_name),
-        outfile_name)
-    os.rename(
-        os.path.join(common.OPPIA_TOOLS_DIR, node_file_name),
-        common.NODE_PATH)
-    if node_file_name == 'node-v%s' % common.NODE_VERSION:
-        with common.CD(common.NODE_PATH):
-            subprocess.check_call(['./configure'])
-            subprocess.check_call(['make'])
+        download_and_install_package(
+            'https://nodejs.org/dist/v%s/%s.tar.gz' % (
+                common.NODE_VERSION, node_file_name),
+            outfile_name)
+        os.rename(
+            os.path.join(common.OPPIA_TOOLS_DIR, node_file_name),
+            common.NODE_PATH)
+        if node_file_name == 'node-v%s' % common.NODE_VERSION:
+            with common.CD(common.NODE_PATH):
+                subprocess.check_call(['./configure'])
+                subprocess.check_call(['make'])
 
-    # Change ownership of node_modules.
-    common.recursive_chown(common.NODE_MODULES_PATH, os.getuid(), -1)
-    common.recursive_chmod(common.NODE_MODULES_PATH, 0o744)
+        # Change ownership of node_modules.
+        common.recursive_chown(common.NODE_MODULES_PATH, os.getuid(), -1)
+        common.recursive_chmod(common.NODE_MODULES_PATH, 0o744)
+
+    print('Node is installed.')
 
 
-def download_and_install_yarn() -> None:
+def install_yarn() -> None:
     """Download and install yarn to Oppia tools directory."""
-    print(
-        'Yarn package not found in Oppia tools directory. '
-        'Installing yarn...')
-    print('Removing package-lock.json')
-    clean.delete_file('package-lock.json')
+    if not os.path.exists(common.YARN_PATH):
+        print(
+            'Yarn package not found in Oppia tools directory. '
+            'Installing yarn...')
+        print('Removing package-lock.json')
+        clean.delete_file('package-lock.json')
 
-    yarn_file_name = 'yarn-v%s.tar.gz' % common.YARN_VERSION
-    download_and_install_package(
-        'https://github.com/yarnpkg/yarn/releases/download/v%s/%s'
-        % (common.YARN_VERSION, yarn_file_name), yarn_file_name)
+        yarn_file_name = 'yarn-v%s.tar.gz' % common.YARN_VERSION
+        download_and_install_package(
+            'https://github.com/yarnpkg/yarn/releases/download/v%s/%s'
+            % (common.YARN_VERSION, yarn_file_name), yarn_file_name)
+
+    print('Yarn is installed.')
 
 
-def download_and_install_gcloud_sdk() -> None:
+def install_gcloud_sdk() -> None:
     """Download and install Google Cloud SDK to Oppia tools directory."""
-    print('Google Cloud SDK package not found in Oppia tools directory.')
-    print('Downloading Google Cloud SDK (this may take a little while)...')
-    os.makedirs(common.GOOGLE_CLOUD_SDK_HOME)
-    try:
-        # If the google cloud version is updated here, the corresponding
-        # lines (GAE_DIR and GCLOUD_PATH) in assets/release_constants.json
-        # should also be updated.
-        common.url_retrieve(
-            'https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/'
-            'google-cloud-sdk-500.0.0-linux-x86_64.tar.gz',
-            'gcloud-sdk.tar.gz')
-    except Exception as e:
-        print('Error downloading Google Cloud SDK. Exiting.')
-        raise Exception('Error downloading Google Cloud SDK.') from e
+    if not os.path.exists(common.GOOGLE_CLOUD_SDK_HOME):
+        print('Google Cloud SDK package not found in Oppia tools directory.')
+        print('Downloading Google Cloud SDK (this may take a little while)...')
+        os.makedirs(common.GOOGLE_CLOUD_SDK_HOME)
+        try:
+            # If the google cloud version is updated here, the corresponding
+            # lines (GAE_DIR and GCLOUD_PATH) in assets/release_constants.json
+            # should also be updated.
+            common.url_retrieve(
+                'https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/'
+                'google-cloud-sdk-500.0.0-linux-x86_64.tar.gz',
+                'gcloud-sdk.tar.gz')
+        except Exception as e:
+            print('Error downloading Google Cloud SDK. Exiting.')
+            raise Exception('Error downloading Google Cloud SDK.') from e
 
-    print('Download complete. Installing Google Cloud SDK...')
-    tar = tarfile.open(name='gcloud-sdk.tar.gz')
-    tar.extractall(path=os.path.join(
-        common.OPPIA_TOOLS_DIR, 'google-cloud-sdk-500.0.0/'))
-    tar.close()
+        print('Download complete. Installing Google Cloud SDK...')
+        tar = tarfile.open(name='gcloud-sdk.tar.gz')
+        tar.extractall(path=os.path.join(
+            common.OPPIA_TOOLS_DIR, 'google-cloud-sdk-500.0.0/'))
+        tar.close()
 
-    os.remove('gcloud-sdk.tar.gz')
+        os.remove('gcloud-sdk.tar.gz')
 
-    # Address the problem of multiple google paths confusing the python
-    # interpreter. Namely, there are two modules named google/, one that is
-    # installed with google cloud libraries and another that comes with the
-    # Google Cloud SDK. Python cannot import from both paths simultaneously
-    # so we must combine the two modules into one. We solve this by copying the
-    # Google Cloud SDK libraries that we need into the correct google
-    # module directory in the 'third_party/python_libs' directory.
-    print('Copying Google Cloud SDK modules to third_party/python_libs...')
-    correct_google_path = os.path.join(
-        common.THIRD_PARTY_PYTHON_LIBS_DIR, 'google')
-    if not os.path.isdir(correct_google_path):
-        os.mkdir(correct_google_path)
-    if not os.path.isdir(os.path.join(correct_google_path, 'appengine')):
-        shutil.copytree(
-            os.path.join(
-                common.GOOGLE_APP_ENGINE_SDK_HOME, 'google', 'appengine'),
-            os.path.join(correct_google_path, 'appengine'))
-    if not os.path.isdir(os.path.join(correct_google_path, 'pyglib')):
-        shutil.copytree(
-            os.path.join(
-                common.GOOGLE_APP_ENGINE_SDK_HOME, 'google', 'pyglib'),
-            os.path.join(correct_google_path, 'pyglib'))
+        # Address the problem of multiple google paths confusing the python
+        # interpreter. Namely, there are two modules named google/, one that is
+        # installed with google cloud libraries and another that comes with the
+        # Google Cloud SDK. Python cannot import from both paths simultaneously
+        # so we must combine the two modules into one. We solve this by copying
+        # the Google Cloud SDK libraries that we need into the correct google
+        # module directory in the 'third_party/python_libs' directory.
+        print('Copying Google Cloud SDK modules to third_party/python_libs...')
+        correct_google_path = os.path.join(
+            common.THIRD_PARTY_PYTHON_LIBS_DIR, 'google')
+        if not os.path.isdir(correct_google_path):
+            os.mkdir(correct_google_path)
+        if not os.path.isdir(os.path.join(correct_google_path, 'appengine')):
+            shutil.copytree(
+                os.path.join(
+                    common.GOOGLE_APP_ENGINE_SDK_HOME, 'google', 'appengine'),
+                os.path.join(correct_google_path, 'appengine'))
+        if not os.path.isdir(os.path.join(correct_google_path, 'pyglib')):
+            shutil.copytree(
+                os.path.join(
+                    common.GOOGLE_APP_ENGINE_SDK_HOME, 'google', 'pyglib'),
+                os.path.join(correct_google_path, 'pyglib'))
 
-    # Populate all google modules with the correct __init__.py files if they do
-    # not exist. This solves the bug mentioned below where namespace packages
-    # sometimes install modules without __init__.py files (python requires
-    # modules to have __init__.py files in in order to recognize them as modules
-    # and import them): https://github.com/googleapis/python-ndb/issues/518
-    make_google_module_importable_by_python(correct_google_path)
+        # Populate all google modules with the correct __init__.py files if
+        # they do not exist. This solves the bug mentioned below where
+        # namespace packages sometimes install modules without __init__.py
+        # files (python requires modules to have __init__.py files in in order
+        # to recognize them as modules and import them):
+        # https://github.com/googleapis/python-ndb/issues/518
+        make_google_module_importable_by_python(correct_google_path)
+
+    print('Google Cloud SDK is installed.')
 
 
 def download_and_untar_files(
@@ -360,16 +370,21 @@ def install_elasticsearch_dev_server() -> None:
     except OSError:
         print('Installing ElasticSearch...')
 
-    download_and_untar_files(
-        'https://artifacts.elastic.co/downloads/elasticsearch/' +
-        'elasticsearch-%s-%s-x86_64.tar.gz' % (
-            common.ELASTICSEARCH_VERSION,
-            common.OS_NAME.lower()
-        ),
-        common.OPPIA_TOOLS_DIR,
-        'elasticsearch-%s' % common.ELASTICSEARCH_VERSION,
-        'elasticsearch-%s' % common.ELASTICSEARCH_VERSION
-    )
+    if common.is_mac_os() or common.is_linux_os():
+        download_and_untar_files(
+            'https://artifacts.elastic.co/downloads/elasticsearch/' +
+            'elasticsearch-%s-%s-x86_64.tar.gz' % (
+                common.ELASTICSEARCH_VERSION,
+                common.OS_NAME.lower()
+            ),
+            common.OPPIA_TOOLS_DIR,
+            'elasticsearch-%s' % common.ELASTICSEARCH_VERSION,
+            'elasticsearch-%s' % common.ELASTICSEARCH_VERSION
+        )
+
+    else:
+        raise Exception('Unrecognized or unsupported operating system.')
+
     print('ElasticSearch installed successfully.')
 
 
@@ -393,24 +408,14 @@ def main() -> None:
     # Create OPPIA_TOOLS_DIR if it doesn't exist.
     pathlib.Path(common.OPPIA_TOOLS_DIR).mkdir(exist_ok=True)
 
-    # Download and install node.js.
-    if not os.path.exists(common.NODE_PATH):
-        download_and_install_node()
-    print('Node is installed.')
-
-    # Download and install yarn.
-    if not os.path.exists(common.YARN_PATH):
-        download_and_install_yarn()
-    print('Yarn is installed.')
-
-    # Download and install Google Cloud SDK.
-    if not os.path.exists(common.GOOGLE_CLOUD_SDK_HOME):
-        download_and_install_gcloud_sdk()
-    print('Google Cloud SDK is installed.')
+    install_node()
+    install_yarn()
+    install_gcloud_sdk()
+    install_redis_cli()
+    install_elasticsearch_dev_server()
 
     sys.path.append('.')
     sys.path.append(common.GOOGLE_APP_ENGINE_SDK_HOME)
-
     # Install specific google cloud components for the Google Cloud SDK. The
     # --quiet flag specifically tells the gcloud program to autofill all
     # prompts with default values. In this case, that means accepting all
@@ -420,10 +425,6 @@ def main() -> None:
         'cloud-datastore-emulator', 'app-engine-python',
         'app-engine-python-extras', '--quiet',
     ], check=True)
-
-    # Install redis and elasticsearch if they don't already exist.
-    install_redis_cli()
-    install_elasticsearch_dev_server()
 
     # Install pre-commit and pre-push scripts.
     common.print_each_string_after_two_new_lines([

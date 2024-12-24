@@ -140,13 +140,11 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
             'install_third_party_main_is_called': False,
             'pre_commit_hook_main_is_called': False,
             'pre_push_hook_main_is_called': False,
-            'tweak_yarn_executable_is_called': False
         }
         expected_check_function_calls = {
             'install_third_party_main_is_called': True,
             'pre_commit_hook_main_is_called': True,
             'pre_push_hook_main_is_called': True,
-            'tweak_yarn_executable_is_called': False
         }
         def mock_check_call(unused_cmd_tokens: List[str]) -> None:
             pass
@@ -156,8 +154,6 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
             check_function_calls['pre_commit_hook_main_is_called'] = True
         def mock_main_for_pre_push_hook(args: List[str]) -> None:  # pylint: disable=unused-argument
             check_function_calls['pre_push_hook_main_is_called'] = True
-        def mock_tweak_yarn_executable() -> None:
-            check_function_calls['tweak_yarn_executable_is_called'] = True
 
         correct_google_path = os.path.join(
             common.THIRD_PARTY_PYTHON_LIBS_DIR, 'google')
@@ -199,20 +195,17 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
             pre_commit_hook, 'main', mock_main_for_pre_commit_hook)
         pre_push_hook_main_swap = self.swap(
             pre_push_hook, 'main', mock_main_for_pre_push_hook)
-        tweak_yarn_executable_swap = self.swap(
-            install_third_party_libs, 'tweak_yarn_executable',
-            mock_tweak_yarn_executable)
 
         with check_call_swap, self.Popen_swap:
             with install_third_party_main_swap, pre_commit_hook_main_swap:
-                with pre_push_hook_main_swap, tweak_yarn_executable_swap:
+                with pre_push_hook_main_swap:
                     with swap_isdir, swap_mkdir, swap_copytree:
                         install_third_party_libs.main()
         self.assertEqual(check_function_calls, expected_check_function_calls)
         self.assertEqual(copied_src_dst_tuples, correct_copied_src_dst_tuples)
         self.assertEqual(initialized_directories, [correct_google_path])
 
-    def test_main_removes_pyc_files(self) -> None:
+    def test_clean_pyc_files_removes_pyc_files(self) -> None:
         check_file_removals = {
             'root/file1.js': False,
             'root/file2.pyc': False
@@ -234,7 +227,7 @@ class InstallThirdPartyLibsTests(test_utils.GenericTestBase):
         remove_swap = self.swap(os, 'remove', mock_remove)
         exists_swap = self.swap(os.path, 'exists', mock_exists)
         with walk_swap, remove_swap, exists_swap:
-            install_third_party_libs.main()
+            install_third_party_libs.clean_pyc_files()
         self.assertEqual(check_file_removals, expected_check_file_removals)
 
 
@@ -477,39 +470,6 @@ class SetupTests(test_utils.GenericTestBase):
             install_third_party_libs.test_python_version()
         self.assertEqual(print_arr, [])
 
-    def test_python_version_testing_with_incorrect_version_and_windows_os(
-        self
-    ) -> None:
-        print_arr: List[str] = []
-
-        def mock_print(msg_list: List[str]) -> None:
-            print_arr.extend(msg_list)
-
-        print_swap = self.swap(
-            common, 'print_each_string_after_two_new_lines', mock_print)
-        os_name_swap = self.swap(common, 'OS_NAME', 'Windows')
-        version_info = collections.namedtuple(
-            'version_info', ['major', 'minor', 'micro'])
-        version_swap = self.swap(
-            sys, 'version_info', version_info(major=3, minor=4, micro=12))
-        with print_swap, os_name_swap, version_swap:
-            with self.assertRaisesRegex(
-                Exception, 'No suitable python version found.'
-            ):
-                install_third_party_libs.test_python_version()
-        self.assertEqual(
-            print_arr, [
-                'It looks like you are using Windows. If you have Python '
-                'installed,',
-                'make sure it is in your PATH and that PYTHONPATH is set.',
-                'If you have two versions of Python (ie, Python 2.7 and 3), '
-                'specify 2.7 before other versions of Python when setting the '
-                'PATH.',
-                'Here are some helpful articles:',
-                'http://docs.python-guide.org/en/latest/starting/install/win/',
-                'https://stackoverflow.com/questions/3701646/how-to-add-to-the-'
-                'pythonpath-in-windows-7'])
-
     def test_download_and_install_package(self) -> None:
         check_function_calls = {
             'url_retrieve_is_called': False,
@@ -573,7 +533,9 @@ class SetupTests(test_utils.GenericTestBase):
         getcwd_swap = self.swap(os, 'getcwd', mock_getcwd)
         print_swap = self.swap(builtins, 'print', mock_print)
         with self.test_py_swap, getcwd_swap, print_swap:
-            with self.assertRaisesRegex(Exception, 'Invalid root directory.'):
+            with self.assertRaisesRegex(
+                    Exception,
+                    'Please run this script from the oppia/ directory.'):
                 install_third_party_libs.main()
         self.assertFalse(
             'WARNING   This script should be run from the oppia/ '
@@ -589,7 +551,7 @@ class SetupTests(test_utils.GenericTestBase):
             with self.download_swap, self.rename_swap, self.exists_false_swap:
                 with self.chmod_swap, self.delete_swap, self.isfile_swap:
                     with self.is_x64_architecture_true_swap, self.chown_swap:
-                        install_third_party_libs.main()
+                        install_third_party_libs.install_node()
 
         for item in self.check_function_calls.values():
             self.assertTrue(item)
@@ -614,7 +576,7 @@ class SetupTests(test_utils.GenericTestBase):
                 with self.chmod_swap, self.delete_swap, self.isfile_swap:
                     with self.is_x64_architecture_false_swap, self.cd_swap:
                         with check_call_swap:
-                            install_third_party_libs.main()
+                            install_third_party_libs.install_node()
         for _, item in self.check_function_calls.items():
             self.assertTrue(item)
         self.assertEqual(
@@ -634,7 +596,7 @@ class SetupTests(test_utils.GenericTestBase):
             with self.download_swap, self.rename_swap, self.exists_false_swap:
                 with self.chmod_swap, self.delete_swap, self.isfile_swap:
                     with self.is_x64_architecture_true_swap:
-                        install_third_party_libs.main()
+                        install_third_party_libs.install_node()
 
         for item in self.check_function_calls.values():
             self.assertTrue(item)
@@ -659,7 +621,7 @@ class SetupTests(test_utils.GenericTestBase):
                 with self.chmod_swap, self.delete_swap, self.isfile_swap:
                     with self.is_x64_architecture_false_swap, self.chown_swap:
                         with self.exists_false_swap:
-                            install_third_party_libs.main()
+                            install_third_party_libs.install_node()
 
         for item in self.check_function_calls.values():
             self.assertTrue(item)
@@ -671,83 +633,6 @@ class SetupTests(test_utils.GenericTestBase):
                 'v%s/yarn-v%s.tar.gz' % (
                     common.YARN_VERSION, common.YARN_VERSION)])
         self.assertEqual(all_cmd_tokens, ['./configure', 'make'])
-
-    def test_package_install_with_windows_x86(self) -> None:
-
-        def mock_url_retrieve(url: str, filename: str) -> None: # pylint: disable=unused-argument
-            self.urls.append(url)
-
-        check_call_commands: List[str] = []
-        def mock_check_call(commands: List[str]) -> None:
-            nonlocal check_call_commands
-            check_call_commands = commands
-
-        os_name_swap = self.swap(common, 'OS_NAME', 'Windows')
-        url_retrieve_swap = self.swap(
-            common, 'url_retrieve', mock_url_retrieve)
-        check_call_swap = self.swap(subprocess, 'check_call', mock_check_call)
-
-        with self.test_py_swap, os_name_swap, check_call_swap:
-            with self.download_swap, self.rename_swap, self.delete_swap:
-                with self.isfile_swap, self.is_x64_architecture_false_swap:
-                    with url_retrieve_swap, self.exists_false_swap:
-                        install_third_party_libs.main()
-
-        check_function_calls = self.check_function_calls.copy()
-        del check_function_calls['recursive_chown_is_called']
-        del check_function_calls['recursive_chmod_is_called']
-        for item in check_function_calls.values():
-            self.assertTrue(item)
-        self.assertEqual(
-            check_call_commands,
-            ['powershell.exe', '-c', 'expand-archive',
-             'node-download', '-DestinationPath',
-             common.OPPIA_TOOLS_DIR])
-        self.assertEqual(
-            self.urls, [
-                'https://nodejs.org/dist/v%s/node-v%s-win-x86.zip' % (
-                    common.NODE_VERSION, common.NODE_VERSION),
-                'https://github.com/yarnpkg/yarn/releases/download/'
-                'v%s/yarn-v%s.tar.gz' % (
-                    common.YARN_VERSION, common.YARN_VERSION)])
-
-    def test_package_install_with_windows_x64(self) -> None:
-
-        def mock_url_retrieve(url: str, filename: str) -> None: # pylint: disable=unused-argument
-            self.urls.append(url)
-
-        check_call_commands: List[str] = []
-        def mock_check_call(commands: List[str]) -> None:
-            nonlocal check_call_commands
-            check_call_commands = commands
-
-        os_name_swap = self.swap(common, 'OS_NAME', 'Windows')
-        url_retrieve_swap = self.swap(
-            common, 'url_retrieve', mock_url_retrieve)
-        check_call_swap = self.swap(subprocess, 'check_call', mock_check_call)
-
-        with self.test_py_swap, os_name_swap, check_call_swap:
-            with self.download_swap, self.rename_swap, self.delete_swap:
-                with self.isfile_swap, self.is_x64_architecture_true_swap:
-                    with url_retrieve_swap, self.exists_false_swap:
-                        install_third_party_libs.main()
-        check_function_calls = self.check_function_calls.copy()
-        del check_function_calls['recursive_chown_is_called']
-        del check_function_calls['recursive_chmod_is_called']
-        for item in check_function_calls.values():
-            self.assertTrue(item)
-        self.assertEqual(
-            check_call_commands,
-            ['powershell.exe', '-c', 'expand-archive',
-             'node-download', '-DestinationPath',
-             common.OPPIA_TOOLS_DIR])
-        self.assertEqual(
-            self.urls, [
-                'https://nodejs.org/dist/v%s/node-v%s-win-x64.zip' % (
-                    common.NODE_VERSION, common.NODE_VERSION),
-                'https://github.com/yarnpkg/yarn/releases/download/'
-                'v%s/yarn-v%s.tar.gz' % (
-                    common.YARN_VERSION, common.YARN_VERSION)])
 
     def test_package_install_with_incompatible_system_raises_error(
         self
@@ -772,7 +657,7 @@ class SetupTests(test_utils.GenericTestBase):
 
         with self.test_py_swap, self.chown_swap, print_swap:
             with self.rename_swap, self.exists_true_swap, os_name_swap:
-                install_third_party_libs.main()
+                install_third_party_libs.install_node()
 
         print(print_list)
         self.assertIn('Environment setup completed.', print_list)
@@ -786,23 +671,16 @@ class GoogleCloudSdkInstallationTests(test_utils.GenericTestBase):
     def setUp(self) -> None:
         super().setUp()
         self.check_function_calls = {
-            'walk_is_called': False,
             'remove_is_called': False,
             'makedirs_is_called': False,
             'url_retrieve_is_called': False
         }
         self.expected_check_function_calls = {
-            'walk_is_called': True,
             'remove_is_called': True,
             'makedirs_is_called': True,
             'url_retrieve_is_called': True
         }
         self.raise_error = False
-        def mock_walk(
-            unused_path: str
-        ) -> List[Tuple[str, List[str], List[str]]]:
-            self.check_function_calls['walk_is_called'] = True
-            return []
         def mock_remove(unused_path: str) -> None:
             self.check_function_calls['remove_is_called'] = True
         def mock_makedirs(unused_path: str) -> None:
@@ -814,7 +692,6 @@ class GoogleCloudSdkInstallationTests(test_utils.GenericTestBase):
             self.check_function_calls['url_retrieve_is_called'] = True
             if self.raise_error:
                 raise Exception
-        self.walk_swap = self.swap(os, 'walk', mock_walk)
         self.remove_swap = self.swap(os, 'remove', mock_remove)
         self.makedirs_swap = self.swap(os, 'makedirs', mock_makedirs)
         self.print_swap = self.swap(builtins, 'print', mock_print)
@@ -846,10 +723,10 @@ class GoogleCloudSdkInstallationTests(test_utils.GenericTestBase):
             tarfile.TarFile, 'extractall', mock_extractall)
         close_swap = self.swap(tarfile.TarFile, 'close', mock_close)
 
-        with self.walk_swap, self.remove_swap, self.makedirs_swap:
+        with self.remove_swap, self.makedirs_swap:
             with self.print_swap, self.url_retrieve_swap, exists_swap:
                 with open_swap, extractall_swap, close_swap:
-                    install_third_party_libs.download_and_install_gcloud_sdk()
+                    install_third_party_libs.install_gcloud_sdk()
         self.assertEqual(
             self.check_function_calls, self.expected_check_function_calls)
         self.assertTrue(
@@ -865,11 +742,11 @@ class GoogleCloudSdkInstallationTests(test_utils.GenericTestBase):
             return True
         exists_swap = self.swap(os.path, 'exists', mock_exists)
 
-        with self.walk_swap, self.remove_swap, self.makedirs_swap:
+        with self.remove_swap, self.makedirs_swap:
             with self.print_swap, self.url_retrieve_swap, exists_swap:
                 with self.assertRaisesRegex(
                     Exception, 'Error downloading Google Cloud SDK.'):
-                    install_third_party_libs.download_and_install_gcloud_sdk()
+                    install_third_party_libs.install_gcloud_sdk()
         self.assertEqual(
             self.check_function_calls, self.expected_check_function_calls)
         self.assertTrue(

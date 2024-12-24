@@ -78,12 +78,6 @@ TextModeTypes = Literal['r', 'w', 'a', 'x', 'r+', 'w+', 'a+']
 BinaryModeTypes = Literal['rb', 'wb', 'ab', 'xb', 'r+b', 'w+b', 'a+b', 'x+b']
 
 
-def ensure_directory_exists(d: str) -> None:
-    """Creates the given directory if it does not already exist."""
-    if not os.path.exists(d):
-        os.makedirs(d)
-
-
 def url_retrieve(
         url: str, output_path: str, max_attempts: int = 2,
         enforce_https: bool = True
@@ -280,7 +274,7 @@ def download_and_unzip_files(
     if not os.path.exists(os.path.join(target_parent_dir, target_root_name)):
         print('Downloading and unzipping file %s to %s ...' % (
             zip_root_name, target_parent_dir))
-        ensure_directory_exists(target_parent_dir)
+        common.ensure_directory_exists(target_parent_dir)
 
         url_retrieve(source_url, TMP_UNZIP_PATH)
 
