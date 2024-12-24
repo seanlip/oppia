@@ -130,13 +130,13 @@ describe('Topics and skills dashboard functionality', function () {
     let TOPIC_BETA = 'Beta TASD';
     let topicsTableIsPresent =
       await topicsAndSkillsDashboardPage.isTopicTablePresent();
-    // if (topicsTableIsPresent) {
-    //   await topicsAndSkillsDashboardPage.filterTopicsByKeyword(TOPIC_ALPHA);
-    //   // await topicsAndSkillsDashboardPage.expectNumberOfTopicsToBe(0);
-    //   await topicsAndSkillsDashboardPage.resetTopicFilters();
-    //   await topicsAndSkillsDashboardPage.filterTopicsByKeyword(TOPIC_BETA);
-    //   // await topicsAndSkillsDashboardPage.expectNumberOfTopicsToBe(0);
-    // }
+    if (topicsTableIsPresent) {
+      await topicsAndSkillsDashboardPage.filterTopicsByKeyword(TOPIC_ALPHA);
+      await topicsAndSkillsDashboardPage.expectNumberOfTopicsToBe(0);
+      await topicsAndSkillsDashboardPage.resetTopicFilters();
+      await topicsAndSkillsDashboardPage.filterTopicsByKeyword(TOPIC_BETA);
+      await topicsAndSkillsDashboardPage.expectNumberOfTopicsToBe(0);
+    }
     // await topicsAndSkillsDashboardPage.createTopic(
     //   TOPIC_ALPHA,
     //   'alpha-tasd',
