@@ -232,7 +232,7 @@ class InstallPythonDevDependenciesTests(test_utils.GenericTestBase):
             subprocess, 'run', mock_run, expected_args=[
                 ([
                     'pip-compile', '--no-emit-index-url', '--quiet',
-                    '--strip-extras',  '--generate-hashes',
+                    '--strip-extras', '--generate-hashes',
                     'requirements_dev.in',
                     '--output-file', 'requirements_dev.txt',
                 ],),

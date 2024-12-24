@@ -22,6 +22,7 @@ from http import client
 import io
 import json
 import os
+import pathlib
 import ssl
 import sys
 import urllib
@@ -34,8 +35,6 @@ from typing import (
     BinaryIO, Dict, Final, List, Literal, TextIO, TypedDict,
     Union, cast, overload
 )
-
-from . import common
 
 DEPENDENCIES_FILE_PATH: Final = os.path.join(os.getcwd(), 'dependencies.json')
 TOOLS_DIR: Final = os.path.join('..', 'oppia_tools')
@@ -237,7 +236,7 @@ def download_files(
     """
     assert isinstance(source_filenames, list), (
         'Expected list of filenames, got \'%s\'' % source_filenames)
-    common.ensure_directory_exists(target_dir)
+    pathlib.Path(target_dir).mkdir(exist_ok=True)
     for filename in source_filenames:
         if not os.path.exists(os.path.join(target_dir, filename)):
             print('Downloading file %s to %s ...' % (filename, target_dir))
@@ -274,7 +273,7 @@ def download_and_unzip_files(
     if not os.path.exists(os.path.join(target_parent_dir, target_root_name)):
         print('Downloading and unzipping file %s to %s ...' % (
             zip_root_name, target_parent_dir))
-        common.ensure_directory_exists(target_parent_dir)
+        pathlib.Path(target_parent_dir).mkdir(exist_ok=True)
 
         url_retrieve(source_url, TMP_UNZIP_PATH)
 
