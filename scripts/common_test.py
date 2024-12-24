@@ -1392,14 +1392,14 @@ class CommonTests(test_utils.GenericTestBase):
                 (b'test\n', b''))
 
     def test_workflow_permissions_set_to_read_all(self) -> None:
-        workflows_dir = '.github/workflows'
+        workflows_dir = os.path.join(os.getcwd(), '.github', 'workflows')
         self.assertTrue(
             os.path.isdir(workflows_dir),
             f'{workflows_dir} directory not found.'
         )
 
         for filename in os.listdir(workflows_dir):
-            if filename.endswith('.yaml') or filename.endswith('.yml'):
+            if filename.endswith(('.yaml', '.yml')):
                 filepath = os.path.join(workflows_dir, filename)
                 with open(filepath, 'r', encoding='utf-8') as file:
                     try:
@@ -1407,7 +1407,7 @@ class CommonTests(test_utils.GenericTestBase):
                         permissions = workflow_data.get('permissions')
                         self.assertEqual(
                             permissions, 'read-all',
-                            f'Workflow \'{filename}\' no \'read-all\'.'
+                            f'Workflow file "{filename}" is missing a "permissions: read-all" field.'
                         )
                     except yaml.YAMLError as e:
-                        self.fail(f'Error parse YML file {filename}: {str(e)}')
+                        self.fail(f'Error parsing YML file "{filename}": {str(e)}')
