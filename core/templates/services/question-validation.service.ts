@@ -71,9 +71,9 @@ export class QuestionValidationService {
     return false;
   }
 
-  normalizeRuleInputs(inputs: Record<string, string | number>): string {
+  normalizeRuleInputs(inputs: Record<string, any>): string {
     const sortedKeys = Object.keys(inputs).sort();
-    const normalizedInputs: Record<string, string | number> = {};
+    const normalizedInputs: Record<string, any> = {};
 
     for (const key of sortedKeys) {
       normalizedInputs[key] = inputs[key];
