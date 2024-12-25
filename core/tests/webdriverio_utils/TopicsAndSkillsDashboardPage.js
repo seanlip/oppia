@@ -81,10 +81,7 @@ var TopicsAndSkillsDashboardPage = function () {
   var topicFilterClassroomField = $('.e2e-test-select-classroom-dropdown');
   var topicsListItem = $('.e2e-test-topics-list-item');
   var topicsListItemsSelector = async function () {
-    await waitFor.visibilityOf(
-      topicsListItem,
-      'Topics list taking too long to appear.'
-    );
+    await waitFor.pageToFullyLoad();
     return await $$('.e2e-test-topics-list-item');
   };
   var topicNameField = $('.e2e-test-new-topic-name-field');
