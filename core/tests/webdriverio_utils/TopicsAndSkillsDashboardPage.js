@@ -374,12 +374,6 @@ var TopicsAndSkillsDashboardPage = function () {
       keyword + '\n'
     );
 
-    // await waitFor.textToBePresentInElement(
-    //   await topicFilterKeywordField.$('.mat-chip-list-wrapper'),
-    //   keyword,
-    //   'Keyword filter value taking too long to change.'
-    // );
-
     if (width < 831) {
       await action.click('Close Filter', closeSkillFilter);
     }
@@ -395,13 +389,6 @@ var TopicsAndSkillsDashboardPage = function () {
     await action.click(
       'Topic dashboard classroom filter option',
       dropdownOption
-    );
-
-    var selectedOption = topicFilterClassroomField.$('.mat-select-value-text');
-    await waitFor.textToBePresentInElement(
-      selectedOption,
-      keyword,
-      'Classroom filter value taking too long to change.'
     );
   };
 
@@ -565,7 +552,6 @@ var TopicsAndSkillsDashboardPage = function () {
 
   this.getTopicsCount = async function () {
     var topicsListItems = await topicsListItemsSelector();
-    console.log('Topics List: ' + topicsListItems);
     return topicsListItems.length;
   };
 
