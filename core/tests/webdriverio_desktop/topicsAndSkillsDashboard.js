@@ -157,8 +157,8 @@ describe('Topics and skills dashboard functionality', function () {
       TOPIC_ALPHA + '\n' + TOPIC_BETA
     );
     await topicsAndSkillsDashboardPage.expectNumberOfTopicsToBe(2);
-    // await topicsAndSkillsDashboardPage.resetTopicFilters();
-    // await topicsAndSkillsDashboardPage.expectNumberOfTopicsToBe(topicsCount);
+    await topicsAndSkillsDashboardPage.resetTopicFilters();
+    await topicsAndSkillsDashboardPage.expectNumberOfTopicsToBe(topicsCount);
 
     // await topicsAndSkillsDashboardPage.filterTopicsByKeyword('alp');
     // await topicsAndSkillsDashboardPage.expectNumberOfTopicsToBe(1);

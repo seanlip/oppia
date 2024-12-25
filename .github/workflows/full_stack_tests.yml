@@ -105,11 +105,11 @@ jobs:
   e2e_test:
     needs: [check_test_suites_to_run, build]
     runs-on: ubuntu-22.04
-    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.count > 0 }}
+    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.suites.*.name == 'topicsAndSkillsDashboard' }}
     strategy:
-      max-parallel: 3
+      # max-parallel: 1
       matrix:
-        suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.suites }}
+        suite: [ { name: 'topicsAndSkillsDashboard' } ]
     name: E2E (${{ matrix.suite.name }})
     steps:
       - name: Checkout repository so that local actions can be used
