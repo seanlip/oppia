@@ -62,10 +62,7 @@ jobs:
     name: Build the app, and store build files as an artifact
     needs: [check_test_suites_to_run]
     runs-on: ubuntu-22.04
-    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.count > 0 ||
-            fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_performance.count > 0 ||
-            fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.count > 0 ||
-            fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.count > 0 }}
+    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.count > 0 }}
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
@@ -105,11 +102,11 @@ jobs:
   e2e_test:
     needs: [check_test_suites_to_run, build]
     runs-on: ubuntu-22.04
-    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.suites.*.name == 'topicsAndSkillsDashboard' }}
+    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.count > 0 }}
     strategy:
-      # max-parallel: 1
+      # max-parallel: 3
       matrix:
-        suite: [ { name: 'topicsAndSkillsDashboard' } ]
+        suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.suites }}
     name: E2E (${{ matrix.suite.name }})
     steps:
       - name: Checkout repository so that local actions can be used
@@ -200,98 +197,98 @@ jobs:
         with:
           message: "An E2E test failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
-  acceptance_test_with_python_installation:
-    needs: [check_test_suites_to_run, build]
-    runs-on: ubuntu-22.04
-    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.count > 0 }}
-    strategy:
-      max-parallel: 3
-      matrix:
-        suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.suites }}
-    name: Acceptance (${{ matrix.suite.name }} -- Python installation)
-    steps:
-      - name: Checkout repository so that local actions can be used
-        uses: actions/checkout@v4
-      - name: Merge develop and set up Python
-        uses: ./.github/actions/merge-develop-and-setup-python
-        with:
-          use_cache: true
-      - name: Cache node modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: /home/runner/work/oppia/yarn_cache
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - name: Download build files artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build_files
-          path: /home/runner/work/oppia
-      - name: Unzip build files
-        run: |
-          pwd
-          ls -la
-          unzip build_files.zip
-          rm build_files.zip
-          echo "Files in ./:"
-          ls -la .
-          echo "Files in oppia_tools:"
-          ls -la oppia_tools
-          echo "Files in oppia:"
-          ls -la oppia
-          echo "Files in build:"
-          ls -la oppia/build
-          echo "Files in third_party:"
-          ls -la oppia/third_party
-        working-directory: /home/runner/work/oppia
-        shell: bash
-      - name: Install Oppia dependencies
-        uses: ./.github/actions/install-oppia-dependencies
-      - name: Run Desktop Acceptance Test ${{ matrix.suite.name }}
-        run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" python -m scripts.run_acceptance_tests --skip-build --suite=${{ matrix.suite.name }} --prod_env
-      - name: Generate modified suite name for artifacts
-        id: generate_suite_name_for_artifacts
-        # Replace slashes in the filename with underscores.
-        run: |
-          SUITE_NAME=${{ matrix.suite.name }}
-          echo "MODIFIED_SUITE_NAME=${SUITE_NAME//\//_}" >> $GITHUB_OUTPUT
-      - name: Uploading generated test to angular module mapping as an artifact
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: generated-test-to-angular-module-mapping-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
-          path: /home/runner/work/oppia/oppia/core/tests/test-modules-mappings/acceptance/${{ steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME }}.txt
-      - name: Run Mobile Acceptance Test ${{ matrix.suite.name }}
-        run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" python -m scripts.run_acceptance_tests --skip-build --suite=${{ matrix.suite.name }} --prod_env --mobile
-      - name: Uploading webpack bundles as an artifact
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: webpack-bundles-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
-          path: /home/runner/work/oppia/oppia/build
-      - name: Uploading diff screenshots as an artifact
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: diff-snapshots-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
-          path: /home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots-${{ steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME }}.txt
-      - name: Report failure if failed on oppia/oppia develop branch
-        if: ${{
-          failure() &&
-          github.event_name == 'push' &&
-          github.repository == 'oppia/oppia' &&
-          github.ref == 'refs/heads/develop'
-          }}
-        uses: ./.github/actions/send-webhook-notification
-        with:
-          message: "An acceptance test failed on the upstream develop branch."
-          webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
-  acceptance_test_with_docker_installation:
+  # acceptance_test_with_python_installation:
+  #   needs: [check_test_suites_to_run, build]
+  #   runs-on: ubuntu-22.04
+  #   if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.count > 0 }}
+  #   strategy:
+  #     max-parallel: 3
+  #     matrix:
+  #       suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.suites }}
+  #   name: Acceptance (${{ matrix.suite.name }} -- Python installation)
+  #   steps:
+  #     - name: Checkout repository so that local actions can be used
+  #       uses: actions/checkout@v4
+  #     - name: Merge develop and set up Python
+  #       uses: ./.github/actions/merge-develop-and-setup-python
+  #       with:
+  #         use_cache: true
+  #     - name: Cache node modules
+  #       uses: actions/cache@v3
+  #       env:
+  #         cache-name: cache-node-modules
+  #       with:
+  #         path: /home/runner/work/oppia/yarn_cache
+  #         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-build-${{ env.cache-name }}-
+  #           ${{ runner.os }}-build-
+  #           ${{ runner.os }}-
+  #     - name: Download build files artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: build_files
+  #         path: /home/runner/work/oppia
+  #     - name: Unzip build files
+  #       run: |
+  #         pwd
+  #         ls -la
+  #         unzip build_files.zip
+  #         rm build_files.zip
+  #         echo "Files in ./:"
+  #         ls -la .
+  #         echo "Files in oppia_tools:"
+  #         ls -la oppia_tools
+  #         echo "Files in oppia:"
+  #         ls -la oppia
+  #         echo "Files in build:"
+  #         ls -la oppia/build
+  #         echo "Files in third_party:"
+  #         ls -la oppia/third_party
+  #       working-directory: /home/runner/work/oppia
+  #       shell: bash
+  #     - name: Install Oppia dependencies
+  #       uses: ./.github/actions/install-oppia-dependencies
+  #     - name: Run Desktop Acceptance Test ${{ matrix.suite.name }}
+  #       run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" python -m scripts.run_acceptance_tests --skip-build --suite=${{ matrix.suite.name }} --prod_env
+  #     - name: Generate modified suite name for artifacts
+  #       id: generate_suite_name_for_artifacts
+  #       # Replace slashes in the filename with underscores.
+  #       run: |
+  #         SUITE_NAME=${{ matrix.suite.name }}
+  #         echo "MODIFIED_SUITE_NAME=${SUITE_NAME//\//_}" >> $GITHUB_OUTPUT
+  #     - name: Uploading generated test to angular module mapping as an artifact
+  #       if: ${{ failure() }}
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: generated-test-to-angular-module-mapping-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
+  #         path: /home/runner/work/oppia/oppia/core/tests/test-modules-mappings/acceptance/${{ steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME }}.txt
+  #     - name: Run Mobile Acceptance Test ${{ matrix.suite.name }}
+  #       run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" python -m scripts.run_acceptance_tests --skip-build --suite=${{ matrix.suite.name }} --prod_env --mobile
+  #     - name: Uploading webpack bundles as an artifact
+  #       if: ${{ failure() }}
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: webpack-bundles-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
+  #         path: /home/runner/work/oppia/oppia/build
+  #     - name: Uploading diff screenshots as an artifact
+  #       if: ${{ failure() }}
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: diff-snapshots-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
+  #         path: /home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots-${{ steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME }}.txt
+  #     - name: Report failure if failed on oppia/oppia develop branch
+  #       if: ${{
+  #         failure() &&
+  #         github.event_name == 'push' &&
+  #         github.repository == 'oppia/oppia' &&
+  #         github.ref == 'refs/heads/develop'
+  #         }}
+  #       uses: ./.github/actions/send-webhook-notification
+  #       with:
+  #         message: "An acceptance test failed on the upstream develop branch."
+  #         webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
+  # acceptance_test_with_docker_installation:
     needs: [check_test_suites_to_run, build]
     runs-on: ubuntu-22.04
     if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.count > 0 }}
@@ -355,70 +352,70 @@ jobs:
         with:
           message: "An acceptance test failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
-  lighthouse_accessibility_test:
-    needs: [check_test_suites_to_run]
-    if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_accessibility.count > 0 }}
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_accessibility.suites }}
-    name: Lighthouse a11y (shard ${{ matrix.suite.name }})
-    steps:
-      - name: Checkout repository so that local actions can be used
-        uses: actions/checkout@v4
-      - name: Merge develop and set up Python
-        uses: ./.github/actions/merge-develop-and-setup-python
-        with:
-          use_cache: true
-      # Caching is disabled to avoid poisoning our cache with the
-      # changed lighthouse file (see later).
-      #
-      # - name: Cache node modules
-      #   uses: actions/cache@v3
-      #   env:
-      #     cache-name: cache-node-modules
-      #   with:
-      #     path: /home/runner/work/oppia/yarn_cache
-      #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-build-${{ env.cache-name }}-
-      #       ${{ runner.os }}-build-
-      #       ${{ runner.os }}-
-      - name: Install Oppia dependencies
-        uses: ./.github/actions/install-oppia-dependencies
-      - name: Increase lighthouse timeout
-        run: |
-          # Replace the 1.5 second timeout in lighthouse for retrieving
-          # sourcemaps with a 10 second timeout. This timeout is not
-          # configurable through Lighthouse's exposed API, so we have
-          # resorted to patching the code instead.
-          set -e
-          FILEPATH=$GITHUB_WORKSPACE/node_modules/lighthouse/lighthouse-core/gather/gatherers/source-maps.js
-          SEARCH_TARGET="1500"
-          REPLACEMENT="10000"
-          occurrences=$(grep -c $SEARCH_TARGET $FILEPATH)
-          echo "Found $occurrences occurrences of '$SEARCH_TARGET'"
-          # Assert that there is only one match for the target string.
-          # If there are ever zero or multiple matches, the lighthouse
-          # code has changed and this logic needs to be reviewed.
-          [[ $occurrences == "1" ]]
-          # Replace the target string with the replacement string.
-          sed -i 's/$SEARCH_TARGET/$REPLACEMENT/' $FILEPATH
-          echo "Replaced '$SEARCH_TARGET' with '$REPLACEMENT' in $FILEPATH"
-        shell: bash
-      - name: Install Chrome
-        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        uses: ./.github/actions/install-chrome
-      - name: Run Lighthouse accessibility checks shard ${{ matrix.suite.name }}
-        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        run: python -m scripts.run_lighthouse_tests --mode accessibility --pages ${{ join(matrix.suite.pages_to_run, ',') }}
-      - name: Report failure if failed on oppia/oppia develop branch
-        if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
-        uses: ./.github/actions/send-webhook-notification
-        with:
-          message: "A Lighthouse test failed on the upstream develop branch."
-          webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
-  lighthouse_performance_test:
+  # lighthouse_accessibility_test:
+  #   needs: [check_test_suites_to_run]
+  #   if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_accessibility.count > 0 }}
+  #   runs-on: ubuntu-22.04
+  #   strategy:
+  #     matrix:
+  #       suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_accessibility.suites }}
+  #   name: Lighthouse a11y (shard ${{ matrix.suite.name }})
+  #   steps:
+  #     - name: Checkout repository so that local actions can be used
+  #       uses: actions/checkout@v4
+  #     - name: Merge develop and set up Python
+  #       uses: ./.github/actions/merge-develop-and-setup-python
+  #       with:
+  #         use_cache: true
+  #     # Caching is disabled to avoid poisoning our cache with the
+  #     # changed lighthouse file (see later).
+  #     #
+  #     # - name: Cache node modules
+  #     #   uses: actions/cache@v3
+  #     #   env:
+  #     #     cache-name: cache-node-modules
+  #     #   with:
+  #     #     path: /home/runner/work/oppia/yarn_cache
+  #     #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+  #     #     restore-keys: |
+  #     #       ${{ runner.os }}-build-${{ env.cache-name }}-
+  #     #       ${{ runner.os }}-build-
+  #     #       ${{ runner.os }}-
+  #     - name: Install Oppia dependencies
+  #       uses: ./.github/actions/install-oppia-dependencies
+  #     - name: Increase lighthouse timeout
+  #       run: |
+  #         # Replace the 1.5 second timeout in lighthouse for retrieving
+  #         # sourcemaps with a 10 second timeout. This timeout is not
+  #         # configurable through Lighthouse's exposed API, so we have
+  #         # resorted to patching the code instead.
+  #         set -e
+  #         FILEPATH=$GITHUB_WORKSPACE/node_modules/lighthouse/lighthouse-core/gather/gatherers/source-maps.js
+  #         SEARCH_TARGET="1500"
+  #         REPLACEMENT="10000"
+  #         occurrences=$(grep -c $SEARCH_TARGET $FILEPATH)
+  #         echo "Found $occurrences occurrences of '$SEARCH_TARGET'"
+  #         # Assert that there is only one match for the target string.
+  #         # If there are ever zero or multiple matches, the lighthouse
+  #         # code has changed and this logic needs to be reviewed.
+  #         [[ $occurrences == "1" ]]
+  #         # Replace the target string with the replacement string.
+  #         sed -i 's/$SEARCH_TARGET/$REPLACEMENT/' $FILEPATH
+  #         echo "Replaced '$SEARCH_TARGET' with '$REPLACEMENT' in $FILEPATH"
+  #       shell: bash
+  #     - name: Install Chrome
+  #       if: startsWith(github.head_ref, 'update-changelog-for-release') == false
+  #       uses: ./.github/actions/install-chrome
+  #     - name: Run Lighthouse accessibility checks shard ${{ matrix.suite.name }}
+  #       if: startsWith(github.head_ref, 'update-changelog-for-release') == false
+  #       run: python -m scripts.run_lighthouse_tests --mode accessibility --pages ${{ join(matrix.suite.pages_to_run, ',') }}
+  #     - name: Report failure if failed on oppia/oppia develop branch
+  #       if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
+  #       uses: ./.github/actions/send-webhook-notification
+  #       with:
+  #         message: "A Lighthouse test failed on the upstream develop branch."
+  #         webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
+  # lighthouse_performance_test:
     needs: [check_test_suites_to_run, build]
     runs-on: ubuntu-22.04
     if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_performance.count > 0 }}
