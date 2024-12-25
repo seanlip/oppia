@@ -53,6 +53,34 @@ export class QuestionValidationService {
     );
   }
 
+  hasDuplicateRules(question: Question): boolean {
+    const answerGroups = question._stateData.interaction.answerGroups;
+    const ruleSet = new Set<string>();
+
+    for (const group of answerGroups) {
+      for (const rule of group.rules) {
+        const ruleHash = `${rule.type}:${this.normalizeRuleInputs(rule.inputs)}`;
+
+        if (ruleSet.has(ruleHash)) {
+          return true; // Duplicate found.
+        }
+        ruleSet.add(ruleHash);
+      }
+    }
+
+    return false; // No duplicates.
+  }
+
+  normalizeRuleInputs(inputs: Record<string, any>): string {
+    const sortedKeys = Object.keys(inputs).sort();
+    const normalizedInputs: Record<string, any> = {};
+
+    for (const key of sortedKeys) {
+      normalizedInputs[key] = inputs[key];
+    }
+
+    return JSON.stringify(normalizedInputs);
+  }
   // Returns 'null' when the message is valid.
   getValidationErrorMessage(question: Question): string | null {
     const interaction = question.getStateData().interaction;
@@ -93,6 +121,17 @@ export class QuestionValidationService {
     }
     if (!atLeastOneAnswerCorrect) {
       return 'At least one answer should be marked correct';
+    }
+    if (
+      question._stateData.interaction.answerGroups.length > 1 ||
+      question._stateData.interaction.answerGroups[0].rules.length > 1
+    ) {
+      if (this.hasDuplicateRules(question)) {
+        return (
+          'Duplicate rule detected. Ensure that no two rules in any answer group ' +
+          'have the same configuration.'
+        );
+      }
     }
     return null;
   }
