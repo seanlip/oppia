@@ -352,12 +352,19 @@ class PreCommitHookTests(test_utils.GenericTestBase):
 
     def test_main_without_install_arg_and_errors(self) -> None:
         check_function_calls = {
-            'check_changes_in_config_is_called': False
+            'check_changes_in_config_is_called': False,
+            'check_npx_subprocess_is_called': False
         }
         def mock_func() -> bool:
             return False
         def mock_check_changes_in_config() -> None:
             check_function_calls['check_changes_in_config_is_called'] = True
+        def mock_npx_subprocess(  # pylint: disable=unused-argument
+                cmds: List[str], shell: bool, check: bool) -> None:
+            self.assertTrue(cmds[0].endswith('npx'))
+            self.assertEqual(cmds[1], 'lint-staged')
+            check_function_calls['check_npx_subprocess_is_called'] = True
+
         package_lock_swap = self.swap(
             pre_commit_hook, 'does_diff_include_package_lock_file', mock_func)
         package_lock_in_current_folder_swap = self.swap(
@@ -367,8 +374,12 @@ class PreCommitHookTests(test_utils.GenericTestBase):
         check_config_swap = self.swap(
             pre_commit_hook, 'check_changes_in_config',
             mock_check_changes_in_config)
+        npx_subprocess_swap = self.swap(
+            subprocess, 'run', mock_npx_subprocess)
         with package_lock_swap, package_lock_in_current_folder_swap:
-            with check_config_swap:
+            with check_config_swap, npx_subprocess_swap:
                 pre_commit_hook.main(args=[])
         self.assertTrue(
             check_function_calls['check_changes_in_config_is_called'])
+        self.assertTrue(
+            check_function_calls['check_npx_subprocess_is_called'])
