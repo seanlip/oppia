@@ -327,7 +327,6 @@ describe('Question Validation Service', () => {
         const question =
           questionObjectFactory.createFromBackendDict(mockQuestionDict);
 
-        // Example input for multiple answer groups with possible duplicate rules
         question._stateData.interaction.answerGroups = [
           {
             rules: [
