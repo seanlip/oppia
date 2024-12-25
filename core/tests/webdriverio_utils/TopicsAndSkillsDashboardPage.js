@@ -564,6 +564,7 @@ var TopicsAndSkillsDashboardPage = function () {
 
   this.getTopicsCount = async function () {
     var topicsListItems = await topicsListItemsSelector();
+    console.log('Topics List: ' + topicsListItems);
     return topicsListItems.length;
   };
 
