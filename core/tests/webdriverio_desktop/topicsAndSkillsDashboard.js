@@ -156,7 +156,7 @@ describe('Topics and skills dashboard functionality', function () {
     await topicsAndSkillsDashboardPage.filterTopicsByKeyword(
       TOPIC_ALPHA + '\n' + TOPIC_BETA
     );
-    // await topicsAndSkillsDashboardPage.expectNumberOfTopicsToBe(2);
+    await topicsAndSkillsDashboardPage.expectNumberOfTopicsToBe(2);
     // await topicsAndSkillsDashboardPage.resetTopicFilters();
     // await topicsAndSkillsDashboardPage.expectNumberOfTopicsToBe(topicsCount);
 
