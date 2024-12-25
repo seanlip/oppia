@@ -62,13 +62,13 @@ export class QuestionValidationService {
         const ruleHash = `${rule.type}:${this.normalizeRuleInputs(rule.inputs)}`;
 
         if (ruleSet.has(ruleHash)) {
-          return true; // Duplicate found.
+          return true;
         }
         ruleSet.add(ruleHash);
       }
     }
 
-    return false; // No duplicates.
+    return false;
   }
 
   normalizeRuleInputs(inputs: Record<string, any>): string {
