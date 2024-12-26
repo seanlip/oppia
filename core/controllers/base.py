@@ -673,7 +673,7 @@ class BaseHandler(
                 True when the template is compiled by angular AoT compiler.
 
         Raises:
-            Exception. Invalid X-Frame-Options.
+            Exception. Invalid iframe restriction value.
         """
 
         # The 'no-store' must be used to properly invalidate the cache when we
@@ -686,11 +686,11 @@ class BaseHandler(
         self.response.headers['X-Xss-Protection'] = '1; mode=block'
         if iframe_restriction is not None:
             if iframe_restriction in ['SAMEORIGIN', 'DENY']:
-                self.response.headers['X-Frame-Options'] = (
-                    str(iframe_restriction))
+                self.response.headers['Content-Security-Policy'] = (
+                    f"frame-ancestors {iframe_restriction.lower()};")
             else:
                 raise Exception(
-                    'Invalid X-Frame-Options: %s' % iframe_restriction)
+                    'Invalid iframe restriction value: %s' % iframe_restriction)
 
         self.response.expires = 'Mon, 01 Jan 1990 00:00:00 GMT'
         self.response.pragma = 'no-cache'
