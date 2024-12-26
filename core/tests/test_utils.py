@@ -757,7 +757,7 @@ class ElasticSearchStub:
             'total': index_size,
             'batches': 1,
             'requests_per_second': -1.0,
-            'retries': {u'search': 0, u'bulk': 0},
+            'retries': {'search': 0, 'bulk': 0},
             'timed_out': False,
             'deleted': index_size
         }

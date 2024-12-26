@@ -311,7 +311,7 @@ class ValidateModelDomainObjectInstances(
         Returns:
             *. A domain object to validate.
         """
-        return None
+        raise NotImplementedError
 
     def _get_domain_object_validation_type(
         self, unused_item: ModelInstanceType
