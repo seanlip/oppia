@@ -2841,7 +2841,7 @@ class DisallowHandlerWithoutSchema(checkers.BaseChecker):  # type: ignore[misc]
             bool. Whether the parent class of given class is BaseHandler.
         """
         for ancestor_node in node.ancestors():
-            if ancestor_node.name == u'BaseHandler':
+            if ancestor_node.name == 'BaseHandler':
                 return True
         return False
 

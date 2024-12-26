@@ -556,7 +556,7 @@ class ElasticSearchStub:
 
         Raises:
             elasticsearch.NotFoundError. A manually-constructed error
-            indicating that the index was not found.
+                indicating that the index was not found.
         """
         raise elasticsearch.NotFoundError(
             404, 'index_not_found_exception', {
