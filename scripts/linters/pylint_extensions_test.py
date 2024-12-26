@@ -2710,32 +2710,6 @@ class TypeIgnoreCommentCheckerTests(unittest.TestCase):
             )
         temp_file.close()
 
-    def test_untyped_call_type_ignores_should_not_raise_error(self) -> None:
-        node_function = astroid.scoped_nodes.Module(
-            name='test',
-            doc='Custom test'
-        )
-        temp_file = tempfile.NamedTemporaryFile()
-        filename = temp_file.name
-
-        with utils.open_file(filename, 'w') as tmp:
-            tmp.write(
-                u"""
-                # Here we use MyPy ignore because attributes on BaseChange
-                # class are defined dynamically.
-                suggestion.change.new_value = (  # type: ignore[attr-defined]
-                    new_content
-                )
-
-                func_only_accept_str(1234)  # type: ignore[no-untyped-call] #@
-                """
-            )
-        node_function.file = filename
-
-        with self.checker_test_object.assertNoMessages():
-            self.checker_test_object.checker.visit_module(node_function)
-        temp_file.close()
-
     def test_raises_error_if_gap_in_ignore_and_comment_is_more_than_fifteen(
         self
     ) -> None:

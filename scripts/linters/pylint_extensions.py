@@ -1929,9 +1929,8 @@ class TypeIgnoreCommentChecker(checkers.BaseChecker):  # type: ignore[misc]
             ' comment with clear justification. The format of the comment'
             ' should be -> Here we use MyPy ignore because ...',
             'mypy-ignore-used',
-            'MyPy ignores (except for \'type: ignore[no-untyped-call]\')'
-            ' should be accompanied by proper comments. The format of'
-            ' comments should be -> Here we use MyPy ignore because ...'
+            'MyPy ignores should be accompanied by proper comments. The format '
+            ' of comments should be -> Here we use MyPy ignore because ...'
         ),
         'C0046': (
             'Extra comment is present for MyPy type: ignore. Please'
