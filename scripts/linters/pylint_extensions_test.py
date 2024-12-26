@@ -2473,7 +2473,7 @@ class TypeIgnoreCommentCheckerTests(unittest.TestCase):
         with utils.open_file(filename, 'w') as tmp:
             tmp.write(
                 """
-                suggestion.change.new_value = (  # type: ignore[arg-type, no-untyped-call, truthy-bool] pylint: disable=line-too-long
+                suggestion.change.new_value = (  # type: ignore[arg-type, truthy-bool] pylint: disable=line-too-long
                     new_content
                 ) #@
                 """
@@ -2505,7 +2505,7 @@ class TypeIgnoreCommentCheckerTests(unittest.TestCase):
         with utils.open_file(filename, 'w') as tmp:
             tmp.write(
                 """
-                suggestion.change.new_value = (  # type: ignore[return-none, no-untyped-call, truthy-bool] pylint: disable=line-too-long
+                suggestion.change.new_value = (  # type: ignore[return-none, truthy-bool] pylint: disable=line-too-long
                     new_content
                 ) #@
                 """

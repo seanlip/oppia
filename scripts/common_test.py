@@ -1198,7 +1198,7 @@ class CommonTests(test_utils.GenericTestBase):
             # `setattr` is used to set the attribute.
             setattr(feconf_temp_file, 'name', mock_feconf_path)
             with utils.open_file(mock_feconf_path, 'w') as tmp:
-                tmp.write(u'ENABLE_MAINTENANCE_MODE = False')
+                tmp.write('ENABLE_MAINTENANCE_MODE = False')
 
             with constants_path_swap, feconf_path_swap, check_output_swap:
                 common.modify_constants(prod_env=True, maintenance_mode=False)
@@ -1270,7 +1270,7 @@ class CommonTests(test_utils.GenericTestBase):
             # to set the attribute.
             setattr(feconf_temp_file, 'name', mock_feconf_path)
             with utils.open_file(mock_feconf_path, 'w') as tmp:
-                tmp.write(u'ENABLE_MAINTENANCE_MODE = False')
+                tmp.write('ENABLE_MAINTENANCE_MODE = False')
 
             with constants_path_swap, feconf_path_swap, check_output_swap:
                 common.modify_constants(prod_env=True, maintenance_mode=False)
@@ -1335,7 +1335,7 @@ class CommonTests(test_utils.GenericTestBase):
         # silence the MyPy complaints `setattr` is used to set the attribute.
         setattr(feconf_temp_file, 'name', mock_feconf_path)
         with utils.open_file(mock_feconf_path, 'w') as tmp:
-            tmp.write(u'ENABLE_MAINTENANCE_MODE = True')
+            tmp.write('ENABLE_MAINTENANCE_MODE = True')
         self.contextManager.__exit__(None, None, None)
         with self.swap(feconf, 'OPPIA_IS_DOCKERIZED', False):
             with constants_path_swap, feconf_path_swap:
