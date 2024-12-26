@@ -3,12 +3,17 @@ name: PR Merge Comment
 on:
   pull_request_target:
     types: [closed]
+  # TEMPORARY, TO DELETE
+  pull_request:
+    branches:
+      - develop
 
 permissions: write-all
 
 jobs:
   comment-on-merge:
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
+    # REINSTATE THIS AFTER TESTING
+    # if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository so that local actions can be used
@@ -24,7 +29,7 @@ jobs:
           echo "OWNER=${OWNER}" >> $GITHUB_ENV
       - name: Count merged PRs
         id: count-prs
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -40,6 +45,7 @@ jobs:
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          retries: 3
           script: |
             const prCount = parseInt(process.env.PR_COUNT);
             const author = process.env.AUTHOR;
@@ -59,11 +65,29 @@ jobs:
                 `Looking forward to seeing even more contributions from you. The developer onboarding lead: @${mention} is here if you need any help! Keep up the great work! 🚀`;
             }
               
-            if (prCount === 1 || prCount === 2) {
+            // Temporary, delete this
+            console.log(Math.random() * 60000);
+            setTimeout(function() {
               await github.rest.issues.createComment({
                 owner: process.env.OWNER,
                 repo: process.env.REPO,
                 issue_number: prNumber,
-                body: message
+                body: 'This is a test comment. ' + String(Math.random() * 60000)
               });
+            }, Math.random() * 60000)
+
+            if (prCount === 1 || prCount === 2) {
+              // GitHub rate-limits REST API requests to 15 per second (see
+              // (https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28#about-secondary-rate-limits ).
+              // The timeout here is used to handle the case where multiple PRs
+              // are merged in a group through the merge queue, and this action
+              // runs simultaneously for all of them.
+              setTimeout(function() {
+                await github.rest.issues.createComment({
+                  owner: process.env.OWNER,
+                  repo: process.env.REPO,
+                  issue_number: prNumber,
+                  body: message
+                });
+              }, Math.random() * 60000)
             }
