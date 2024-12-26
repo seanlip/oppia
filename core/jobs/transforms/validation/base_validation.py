@@ -380,16 +380,13 @@ class BaseValidateCommitCmdsSchema(beam.DoFn, Generic[ModelInstanceType]):  # ty
     def _get_change_domain_class(
         self, unused_item: ModelInstanceType
     ) -> Type[change_domain.BaseChange]:
-        """Returns a Change domain class.
+        """Returns a Change domain class for the changes made by commit
+        commands of the model.
 
         This should be implemented by subclasses.
 
         Args:
             unused_item: datastore_services.Model. Entity to validate.
-
-        Returns:
-            change_domain.BaseChange. A domain object class for the
-            changes made by commit commands of the model.
 
         Raises:
             NotImplementedError. This function has not yet been implemented.
