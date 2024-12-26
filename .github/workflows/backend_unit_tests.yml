@@ -148,14 +148,14 @@ jobs:
             to fix the missing coverage.
 
             Thanks!
-        permissions:
-          pull-requests: write
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ steps.check_backend_coverage.outputs.WORKFLOW_STATUS == 'failure' && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
         uses: ./.github/actions/send-webhook-notification
         with:
           message: "Backend coverage checks failed on the upstream develop branch."
           webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
+    permissions:
+      pull-requests: write
   check_backend_test_times:
     name: Check test times
     needs: run_tests

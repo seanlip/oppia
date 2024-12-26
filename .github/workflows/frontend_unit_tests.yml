@@ -80,14 +80,14 @@ jobs:
             helpful.
 
             Thanks!
-        permissions:
-          pull-requests: write
       - name: Upload frontend coverage reports as an artifact
         if: ${{ steps.run_frontend_tests.outputs.WORKFLOW_STATUS == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage-${{ matrix.num_runs }}
           path: /home/runner/work/oppia/karma_coverage_reports
+    permissions:
+      pull-requests: write
   report-failure:
     name: Report failure
     needs: frontend-karma-tests
