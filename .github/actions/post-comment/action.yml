@@ -1,0 +1,29 @@
+name: 'Post an issue/PR comment'
+description: 'This action posts a comment to the GitHub issue or PR conversation thread.'
+inputs:
+  owner:
+    description: 'The owner of the repo.'
+    required: true
+  repo:
+    description: 'The name of the repo containing the issue/PR.'
+    required: true
+  issue_number:
+    description: 'The number of the issue/PR.'
+    required: true
+  message:
+    description: 'The message to post.'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Leave a comment on the PR if workflow failed
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          await github.rest.issues.createComment({
+            repo: inputs.repo,
+            owner: inputs.owner,
+            issue_number: inputs.issue_number,
+            body: inputs.message
+          });
