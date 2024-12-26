@@ -2043,8 +2043,6 @@ class TypeIgnoreCommentChecker(checkers.BaseChecker):  # type: ignore[misc]
                             args=tuple(encountered_prohibited_error_codes),
                             node=node
                         )
-                    if ['no-untyped-call'] == encountered_error_codes:
-                        continue
                     if (
                         type_ignore_comment_present and
                         line_num <= (

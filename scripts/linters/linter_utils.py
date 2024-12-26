@@ -120,4 +120,3 @@ class BaseLinter(abc.ABC):
         """Perform all the lint checks and returns a list of TaskResult objects
         representing the results of the lint checks.
         """
-        pass
