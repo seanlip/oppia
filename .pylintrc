@@ -132,6 +132,7 @@ disable=abstract-method,
         too-many-public-methods,
         too-many-statements,
         ungrouped-imports,
+        unnecessary-lambda-assignment,
         unnecessary-pass,
         wrong-import-order,
 # TODO(#12912): Remove these after the Python 3 migration.
@@ -143,7 +144,6 @@ disable=abstract-method,
         not-an-iterable,
 # TODO(#14322): Reinstate this.
         missing-type-doc,
-        unnecessary-lambda-assignment,
 
 [REPORTS]
 
