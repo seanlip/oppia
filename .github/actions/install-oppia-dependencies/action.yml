@@ -37,6 +37,7 @@ runs:
     - name: Write the exact Python version to a file for cache-busting.
       run: |
         echo "${{ steps.setup_python.outputs.python-version }}" > ".pyversion"
+      shell: bash
     - name: Cache third_party and node_modules
       id: restore_third_party_and_node_modules_cache
       uses: actions/cache@v4
