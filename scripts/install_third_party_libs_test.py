@@ -538,6 +538,15 @@ class SetupTests(test_utils.GenericTestBase):
             'WARNING   This script should be run from the oppia/ '
             'root folder.' in print_arr)
 
+    def test_install_on_windows_os_gives_failure(self) -> None:
+        os_name_swap = self.swap(common, 'OS_NAME', 'Windows')
+
+        with os_name_swap:
+            with self.assertRaisesRegex(
+                    Exception,
+                    'Installation of Oppia is not supported on Windows OS.'):
+                install_third_party_libs.main()
+
     def test_package_install_with_darwin_x64(self) -> None:
         os_name_swap = self.swap(common, 'OS_NAME', 'Darwin')
 
@@ -576,7 +585,6 @@ class SetupTests(test_utils.GenericTestBase):
         self.assertEqual(all_cmd_tokens, ['./configure', 'make'])
 
     def test_package_install_with_linux_x64(self) -> None:
-
         os_name_swap = self.swap(common, 'OS_NAME', 'Linux')
 
         with self.test_py_swap, os_name_swap, self.chown_swap:
