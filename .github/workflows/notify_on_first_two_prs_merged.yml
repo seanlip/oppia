@@ -1,4 +1,4 @@
-name: PR Merge Comment
+name: Celebrate initial contributions
 
 on:
   pull_request_target:
