@@ -42,7 +42,8 @@ runs:
         id: "restore_third_party_and_node_modules_cache"
         with:
           # We don't use the restore-keys option, since the hash in the key
-          # should fully define the cache.
+          # should fully define the cache. See https://stackoverflow.com/a/74620917
+          # for some useful context on cases in which restore-keys is useful.
           key: "${{ runner.os }}-proddeps-${{ hashFiles('.pyversion', 'yarn.lock', 'requirements_dev.txt', 'requirements.txt', 'dependencies.json') }}"
           path: |
             /home/runner/work/oppia/oppia_tools
