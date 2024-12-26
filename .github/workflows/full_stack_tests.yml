@@ -69,17 +69,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            /home/runner/work/oppia/oppia_tools
-            /home/runner/work/oppia/yarn_cache
-            /home/runner/work/oppia/oppia/third_party
-          key: ${{ runner.os }}-oppiadeps-${{ hashFiles('yarn.lock', 'dependencies.json', 'requirements.txt', 'requirements_dev.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-oppiadeps-
-            ${{ runner.os }}-
       - name: Install Oppia dependencies
         uses: ./.github/actions/install-oppia-dependencies
       - name: Build Webpack
@@ -110,17 +99,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            /home/runner/work/oppia/oppia_tools
-            /home/runner/work/oppia/yarn_cache
-            /home/runner/work/oppia/oppia/third_party
-          key: ${{ runner.os }}-oppiadeps-${{ hashFiles('yarn.lock', 'dependencies.json', 'requirements.txt', 'requirements_dev.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-oppiadeps-
-            ${{ runner.os }}-
       - name: Install Oppia dependencies
         uses: ./.github/actions/install-oppia-dependencies
       - name: Generate build files
@@ -184,17 +162,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            /home/runner/work/oppia/oppia_tools
-            /home/runner/work/oppia/yarn_cache
-            /home/runner/work/oppia/oppia/third_party
-          key: ${{ runner.os }}-oppiadeps-${{ hashFiles('yarn.lock', 'dependencies.json', 'requirements.txt', 'requirements_dev.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-oppiadeps-
-            ${{ runner.os }}-
       - name: Install Oppia dependencies
         uses: ./.github/actions/install-oppia-dependencies
       - name: Generate build files
@@ -325,7 +292,7 @@ jobs:
       #       ${{ runner.os }}-
       - name: Install Oppia dependencies
         uses: ./.github/actions/install-oppia-dependencies
-      - name: Increase lighthouse timeout
+      - name: Patch lighthouse to increase lighthouse timeout
         run: |
           # Replace the 1.5 second timeout in lighthouse for retrieving
           # sourcemaps with a 10 second timeout. This timeout is not
@@ -351,6 +318,27 @@ jobs:
       - name: Run Lighthouse accessibility checks shard ${{ matrix.suite.name }}
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         run: python -m scripts.run_lighthouse_tests --mode accessibility --pages ${{ join(matrix.suite.pages_to_run, ',') }}
+      - name: Unpatch lighthouse to clean up files for the cache
+        # This step is needed so that we don't poison our node_modules cache
+        # with the changed lighthouse file. Note that the cache is only written
+        # to if the entire job completes successfully:
+        # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows#cache-hits-and-misses
+        run: |
+          # Undo the changes from the patch above.
+          set -e
+          FILEPATH=$GITHUB_WORKSPACE/node_modules/lighthouse/lighthouse-core/gather/gatherers/source-maps.js
+          SEARCH_TARGET="10000"
+          REPLACEMENT="1500"
+          occurrences=$(grep -c $SEARCH_TARGET $FILEPATH)
+          echo "Found $occurrences occurrences of '$SEARCH_TARGET'"
+          # Assert that there is only one match for the target string.
+          # If there are ever zero or multiple matches, the lighthouse
+          # code has changed and this logic needs to be reviewed.
+          [[ $occurrences == "1" ]]
+          # Replace the target string with the replacement string.
+          sed -i 's/$SEARCH_TARGET/$REPLACEMENT/' $FILEPATH
+          echo "Replaced '$SEARCH_TARGET' with '$REPLACEMENT' in $FILEPATH"
+        shell: bash
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
         uses: ./.github/actions/send-webhook-notification
@@ -370,17 +358,6 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            /home/runner/work/oppia/oppia_tools
-            /home/runner/work/oppia/yarn_cache
-            /home/runner/work/oppia/oppia/third_party
-          key: ${{ runner.os }}-oppiadeps-${{ hashFiles('yarn.lock', 'dependencies.json', 'requirements.txt', 'requirements_dev.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-oppiadeps-
-            ${{ runner.os }}-
       - name: Install Oppia dependencies
         uses: ./.github/actions/install-oppia-dependencies
       - name: Generate build files

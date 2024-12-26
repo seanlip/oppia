@@ -41,14 +41,14 @@ runs:
       - uses: "actions/cache@v4"
         id: "restore_third_party_and_node_modules_cache"
         with:
-          key: "proddeps-${{ hashFiles('.pyversion', 'requirements.txt', 'requirements_dev.txt', 'dependencies.json', 'yarn.lock') }}"
+          key: "${{ runner.os }}-proddeps-${{ hashFiles('.pyversion', 'yarn.lock', 'requirements_dev.txt', 'requirements.txt', 'dependencies.json') }}"
           path: |
             /home/runner/work/oppia/oppia_tools
             /home/runner/work/oppia/yarn_cache
-            /home/runner/work/oppia/oppia/third_party
             /home/runner/work/oppia/oppia/node_modules
+            /home/runner/work/oppia/oppia/third_party
           restore-keys: |
-            oppiadeps-
+            ${{ runner.os }}-proddeps-
     - name: Install third-party libs on cache miss (retries on error)
       if: "steps.restore_third_party_and_node_modules_cache.outputs.cache-hit == false"
       uses: nick-fields/retry@v3
