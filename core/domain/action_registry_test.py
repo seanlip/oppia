@@ -17,7 +17,7 @@
 """Tests for methods in the action registry."""
 
 from __future__ import annotations
-
+import unittest.mock as mock
 from core.domain import action_registry
 from core.tests import test_utils
 
@@ -25,10 +25,46 @@ from core.tests import test_utils
 class ActionRegistryUnitTests(test_utils.GenericTestBase):
     """Test for the action registry."""
 
+    @mock.patch("core.domain.action_registry.Registry.get_all_action_types")
+    @mock.patch("importlib.import_module")
+    def test_ancestors_name(self, mock_import_module, mock_get_all_action_types) -> None:
+        """Test ancestor name processing in the action registry."""
+        mock_get_all_action_types.return_value = ['ExplorationStart']
+
+        class MockClass1:
+            __name__ = 'MockClass1'
+            __bases__ = (object,)  # No 'BaseLearnerActionSpec'
+
+        mock_classes = {
+            'ExplorationStart': MockClass1,
+        }
+
+        def mock_import_module_side_effect(module_name):
+            class MockModule:
+                pass
+
+            class_name = module_name.split('.')[-1]
+            if class_name in mock_classes:
+                setattr(MockModule, class_name, mock_classes[class_name])
+            return MockModule()
+
+        mock_import_module.side_effect = mock_import_module_side_effect
+
+        action_registry.Registry._refresh()
+
+        self.assertEqual(len(action_registry.Registry._actions), 0)
+    
     def test_action_registry(self) -> None:
         """Do some sanity checks on the action registry."""
         self.assertEqual(
             len(action_registry.Registry.get_all_actions()), 3)
+    
+    def test_action_registry_when_Registry_not_empty(self) -> None:
+        """Do some sanity checks on the action registry."""
+        action_registry.Registry._refresh()
+        self.assertEqual(
+            len(action_registry.Registry.get_all_actions()), 3)
+    
 
     def test_cannot_get_action_by_invalid_type(self) -> None:
         # Testing with invalid action type.
@@ -39,5 +75,6 @@ class ActionRegistryUnitTests(test_utils.GenericTestBase):
 
     def test_can_get_action_by_valid_type(self) -> None:
         # Testing with valid action type.
+        action_registry.Registry._refresh()
         self.assertIsNotNone(
             action_registry.Registry.get_action_by_type('ExplorationStart'))
