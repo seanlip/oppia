@@ -194,6 +194,12 @@ class CommonTests(test_utils.GenericTestBase):
         with self.swap(common, 'OS_NAME', 'Windows'):
             self.assertFalse(common.is_linux_os())
 
+    def test_is_windows_os(self) -> None:
+        with self.swap(common, 'OS_NAME', 'Windows'):
+            self.assertTrue(common.is_windows_os())
+        with self.swap(common, 'OS_NAME', 'Linux'):
+            self.assertFalse(common.is_windows_os())
+
     def test_run_cmd(self) -> None:
         self.assertEqual(
             common.run_cmd(('echo Test for common.py ').split(' ')),
