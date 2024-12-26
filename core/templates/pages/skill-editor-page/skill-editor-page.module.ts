@@ -40,12 +40,13 @@ import {SkillQuestionsTabComponent} from './questions-tab/skill-questions-tab.co
 import {SkillPreviewTabComponent} from './skill-preview-tab/skill-preview-tab.component';
 import {SkillEditorMainTabComponent} from './editor-tab/skill-editor-main-tab.component';
 import {SkillEditorPageComponent} from './skill-editor-page.component';
-import {NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {toastrConfig} from 'pages/lightweight-oppia-root/app.module';
 import {SkillEditorAccessGuard} from './skill-editor-access.guard';
 import {SkillEditorPageRootComponent} from './skill-editor-page-root.component';
 
 @NgModule({
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     DragDropModule,
     InteractionExtensionsModule,
