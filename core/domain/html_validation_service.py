@@ -981,7 +981,7 @@ def _replace_incorrectly_encoded_chars(soup_context: bs4.BeautifulSoup) -> str:
     char_mapping_tuples = CHAR_MAPPINGS + [
         # Replace 'spaces' with space characters, otherwise we can't do a
         # canonical comparison.
-        (u'&nbsp;', u' '),
+        ('&nbsp;', ' '),
     ]
     for bad_char, good_char in char_mapping_tuples:
         html_string = html_string.replace(bad_char, good_char)

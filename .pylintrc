@@ -100,7 +100,7 @@ allowed-type-ignore-error-codes=
     call-overload,
     dict-item,
     func-returns-value,
-    index
+    index,
     list-item,
     misc,
     override,

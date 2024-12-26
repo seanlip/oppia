@@ -554,7 +554,7 @@ class ElasticSearchStub:
         Args:
             index_name: str. The index that was not found.
 
-        Returns:
+        Raises:
             elasticsearch.NotFoundError. A manually-constructed error
             indicating that the index was not found.
         """

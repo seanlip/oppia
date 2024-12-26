@@ -2342,22 +2342,19 @@ class TypeIgnoreCommentCheckerTests(unittest.TestCase):
             pylint_extensions.TypeIgnoreCommentChecker)
         self.checker_test_object.setup_method()
         self.checker_test_object.checker.config.allowed_type_ignore_error_codes = [  # pylint: disable=line-too-long
-            'attr-defined',
-            'union-attr',
             'arg-type',
+            'assignment',
+            'attr-defined',
             'call-overload',
+            'dict-item',
+            'func-returns-value',
+            'list-item',
+            'misc',
             'override',
             'return',
-            'assignment',
-            'list-item',
-            'dict-item',
-            'typeddict-item',
-            'func-returns-value',
-            'misc',
             'type-arg',
-            'no-untyped-def',
-            'no-untyped-call',
-            'no-any-return'
+            'typeddict-item',
+            'union-attr',
         ]
 
     def test_type_ignore_used_without_comment_raises_error(self) -> None:

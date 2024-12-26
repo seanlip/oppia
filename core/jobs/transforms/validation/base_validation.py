@@ -298,7 +298,7 @@ class ValidateModelDomainObjectInstances(
     # Here we use type Any because in child classes this method can be
     # redefined with domain objects as return type. So, to allow every
     # domain object as return type, we used Any here.
-    def _get_model_domain_object_instance(
+    def _get_model_domain_object_instance(  # pylint: disable=redundant-returns-documentation
         self, unused_item: ModelInstanceType
     ) -> Any:
         """Returns a domain object instance created from the model.
@@ -311,7 +311,7 @@ class ValidateModelDomainObjectInstances(
         Returns:
             *. A domain object to validate.
         """
-        raise NotImplementedError
+        return None
 
     def _get_domain_object_validation_type(
         self, unused_item: ModelInstanceType

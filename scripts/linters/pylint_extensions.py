@@ -1292,7 +1292,6 @@ class ImportOnlyModulesChecker(checkers.BaseChecker):  # type: ignore[misc]
         'types',
         'typing',
         'mypy_imports',
-        'typing_extensions'
     ]
 
     # TODO(#16567): Here we use MyPy ignore because the incomplete typing of
