@@ -326,7 +326,7 @@ jobs:
         # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows#cache-hits-and-misses
         run: |
           # Undo the changes from the patch above.
-          set -e
+          echo $GITHUB_WORKSPACE
           FILEPATH=$GITHUB_WORKSPACE/node_modules/lighthouse/lighthouse-core/gather/gatherers/source-maps.js
           SEARCH_TARGET="10000"
           REPLACEMENT="1500"
