@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Unit tests for for ProgressTabComponent.
+ * @fileoverview Unit tests for for OldProgressTabComponent.
  */
 
 import {
@@ -28,7 +28,7 @@ import {FormsModule} from '@angular/forms';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
 import {MockTranslatePipe} from 'tests/unit-test-utils';
-import {ProgressTabComponent} from './progress-tab.component';
+import {OldProgressTabComponent} from './progress-tab.component';
 import {EventEmitter, NO_ERRORS_SCHEMA} from '@angular/core';
 import {LearnerDashboardBackendApiService} from 'domain/learner_dashboard/learner-dashboard-backend-api.service';
 import {StorySummary} from 'domain/story/story-summary.model';
@@ -36,8 +36,8 @@ import {LearnerTopicSummary} from 'domain/topic/learner-topic-summary.model';
 import {WindowDimensionsService} from 'services/contextual/window-dimensions.service';
 
 describe('Progress tab Component', () => {
-  let component: ProgressTabComponent;
-  let fixture: ComponentFixture<ProgressTabComponent>;
+  let component: OldProgressTabComponent;
+  let fixture: ComponentFixture<OldProgressTabComponent>;
   let urlInterpolationService: UrlInterpolationService;
   let learnerDashboardBackendApiService: LearnerDashboardBackendApiService;
   let windowDimensionsService: WindowDimensionsService;
@@ -46,7 +46,7 @@ describe('Progress tab Component', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MaterialModule, FormsModule, HttpClientTestingModule],
-      declarations: [MockTranslatePipe, ProgressTabComponent],
+      declarations: [MockTranslatePipe, OldProgressTabComponent],
       providers: [
         UrlInterpolationService,
         LearnerDashboardBackendApiService,
@@ -63,7 +63,7 @@ describe('Progress tab Component', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ProgressTabComponent);
+    fixture = TestBed.createComponent(OldProgressTabComponent);
     component = fixture.componentInstance;
     urlInterpolationService = TestBed.inject(UrlInterpolationService);
     learnerDashboardBackendApiService = TestBed.inject(
