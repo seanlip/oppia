@@ -20,14 +20,13 @@ from __future__ import annotations
 
 import datetime
 import enum
-
+from unittest import mock
 from core import feconf
 from core import utils
 from core.domain import app_feedback_report_constants
 from core.domain import app_feedback_report_domain
 from core.platform import models
 from core.tests import test_utils
-from unittest import mock
 from typing import List
 
 MYPY = False
@@ -141,6 +140,7 @@ REPORT_JSON: app_feedback_report_domain.AndroidFeedbackReportDict = {
         }
     }
 
+
 class AppFeedbackReportDomainTests(test_utils.GenericTestBase):
 
     def setUp(self) -> None:
@@ -239,15 +239,21 @@ class AppFeedbackReportDomainTests(test_utils.GenericTestBase):
             NotImplementedError,
             'Domain objects for web reports have not been implemented yet.'):
             self.web_report_obj.validate()
-    def test_raise_not_implemented_error_for_web_platform_feedback(self) -> None:
+
+    def test_raise_not_implemented_error_for_web_platform_feedback(
+        self
+        ) -> None:
+        REPORT_JSON['platform_type'] = 'invalid_platform_type'
         with self.assertRaisesRegex(
             NotImplementedError,
             'Domain objects for web reports must be implemented.'):
-            self.web_report_obj.from_submitted_feedback_dict({'platform_type':'invalid_platform_type'})
+            self.web_report_obj.from_submitted_feedback_dict(REPORT_JSON)
 
     def test_for_web_platform_feedback(self) -> None:
-        result= self.web_report_obj.from_submitted_feedback_dict(REPORT_JSON)
-        self.assertEqual(type(result),type(self.web_report_obj))
+        result = self.web_report_obj.from_submitted_feedback_dict(REPORT_JSON)
+        self.assertEqual(
+            type(result),
+            type(self.web_report_obj))
 
     # TODO(#13059): Here we use MyPy ignore because after we fully type the
     # codebase we plan to get rid of the tests that intentionally test wrong
@@ -260,6 +266,16 @@ class AppFeedbackReportDomainTests(test_utils.GenericTestBase):
             self.android_report_obj,
             'The report schema version %r is invalid, expected an integer' % (
                 self.android_report_obj.schema_version))
+
+    def test_report_ticket_id_none(
+        self
+    ) -> None:
+        self.android_report_obj.ticket_id = None
+        # Validate the report object and ensure no exceptions are raised.
+        try:
+            self.android_report_obj.validate()
+        except utils.ValidationError as e:
+            self.fail(f'ValidationError raised unexpectedly: {e}')
 
     def test_report_android_schema_version_less_than_minimum_validation_fails(
             self) -> None:
@@ -292,11 +308,17 @@ class AppFeedbackReportDomainTests(test_utils.GenericTestBase):
             self.android_report_obj,
             'The scrubbed_by user id \'%s\' is invalid.' % (
                 self.android_report_obj.scrubbed_by))
-        
-    def test_report_scrubber_id_is_bot_id_validation_passes(self) -> None:
-        """Tests that validation passes when the scrubbed_by ID is the bot ID."""
+
+    def test_report_scrubber_id_is_bot_id_validation_passes(
+        self
+        ) -> None:
+        """Tests that validation passes 
+        when the scrubbed_by ID is the bot ID.
+        """
         # Set the scrubbed_by ID to the valid bot ID constant.
-        self.android_report_obj.scrubbed_by = feconf.APP_FEEDBACK_REPORT_SCRUBBER_BOT_ID
+        self.android_report_obj.scrubbed_by = (
+            feconf.APP_FEEDBACK_REPORT_SCRUBBER_BOT_ID
+        )
 
         # Validate the report object and ensure no exceptions are raised.
         try:
@@ -306,11 +328,11 @@ class AppFeedbackReportDomainTests(test_utils.GenericTestBase):
 
         # Assert that the scrubbed_by ID is correctly retained as the bot ID.
         self.assertEqual(
-            self.android_report_obj.scrubbed_by, 
+            self.android_report_obj.scrubbed_by,
             feconf.APP_FEEDBACK_REPORT_SCRUBBER_BOT_ID,
             'The scrubbed_by ID did not match the expected bot ID.'
         )
-        
+
     # TODO(#13059): Here we use MyPy ignore because after we fully type the
     # codebase we plan to get rid of the tests that intentionally test wrong
     # inputs that we can normally catch by typing.
@@ -649,7 +671,7 @@ class UserSuppliedFeedbackDomainTests(test_utils.GenericTestBase):
         self.user_supplied_feedback.report_type = REPORT_TYPE_ISSUE
         self.user_supplied_feedback.category = CATEGORY_ISSUE_TOPICS
         self.user_supplied_feedback.user_feedback_selected_items = (
-            ['123',123]) # type: ignore[list-item]
+            ['123', 123]) # type: ignore[list-item]
         self.user_supplied_feedback.user_feedback_other_text_input = ''
         self._assert_validation_error(
             self.user_supplied_feedback,
@@ -667,15 +689,16 @@ class UserSuppliedFeedbackDomainTests(test_utils.GenericTestBase):
         self._assert_validation_error(
             self.user_supplied_feedback,
             'Invalid input text, must be a string')
-        
+
     def test_validation_empty_selected_items(
             self) -> None:
         self.user_supplied_feedback.report_type = REPORT_TYPE_SUGGESTION
         self.user_supplied_feedback.category = CATEGORY_ISSUE_TOPICS
         self.user_supplied_feedback.user_feedback_selected_items = []
         self.user_supplied_feedback.validate()
-        self.assertEqual(type(self.user_supplied_feedback.user_feedback_selected_items),type([]))
-
+        self.assertEqual(
+            type(self.user_supplied_feedback.user_feedback_selected_items),
+            type([]))
 
     def test_report_type_is_none_fails_validation(self) -> None:
         # Here we use MyPy ignore because here we assign type None to
@@ -1073,10 +1096,11 @@ class LessonPlayerEntryPointDomainTests(test_utils.GenericTestBase):
             self.entry_point,
             'Exploration with id invalid_exploration is not part of story '
             'with id')
-        
+
     @mock.patch('core.domain.exp_services.get_story_id_linked_to_exploration')
     def test_validation_expected_story_id_is_equal_to_story_id(
-        self, mock_get_story_id_linked_to_exploration
+        self,
+        mock_get_story_id_linked_to_exploration: mock.MagicMock
     ) -> None:
         # Arrange: Mock the external function to return the matching story_id.
         mock_get_story_id_linked_to_exploration.return_value = 'story_id'
@@ -1088,17 +1112,19 @@ class LessonPlayerEntryPointDomainTests(test_utils.GenericTestBase):
                 story_id=self.entry_point.story_id,
             )
         except utils.ValidationError as e:
-            self.fail(f'ValidationError was raised unexpectedly: {e}')
+            self.fail(
+                f'ValidationError was raised unexpectedly: {e}')
 
-        # Assert: Verify that the mock was called with the correct exploration_id.
+        # Assert: Verify that the mock was called
+        # with the correct exploration_id.
         mock_get_story_id_linked_to_exploration.assert_called_once_with(
-            self.entry_point.exploration_id
+                self.entry_point.exploration_id
         )
 
     # TODO(#13059): Here we use MyPy ignore because after we fully type the
     # codebase we plan to get rid of the tests that intentionally test wrong
     # inputs that we can normally catch by typing.
-    def test_validation_exploration_id_not_a_stringfails(self) -> None:
+    def test_validation_exploration_id_not_a_string_fails(self) -> None:
         self.entry_point.topic_id = 'valid_topic1'
         self.entry_point.story_id = 'valid_story1'
         self.entry_point.exploration_id = 123  # type: ignore[assignment]
@@ -1184,18 +1210,22 @@ class RevisionCardEntryPointDomainTests(test_utils.GenericTestBase):
         self.entry_point.subtopic_id = 'invalid_subtopic_id'
         self._assert_validation_error(
             self.entry_point, 'Expected subtopic id to be an int')
-    
+
     def test_validation_with_valid_subtopic_id(self) -> None:
         """Tests the `validate` method with a valid subtopic ID."""
         self.entry_point.topic_id = 'valid_topic1'
-        self.entry_point.subtopic_id = 42
+        # Here we use MyPy ignore because after we fully type the
+        # codebase we plan to get rid of the tests that intentionally test wrong
+        # inputs that we can normally catch by typing.
+        self.entry_point.subtopic_id = 42 # type: ignore[assignment]
 
-        # Use self.assertDoesNotRaise to assert that no exception occurs during validation
+        # Use self.assertDoesNotRaise to assert
+        # that no exception occurs during validation.
         try:
             self.entry_point.validate()
         except utils.ValidationError:
             self.fail('validate() raised ValidationError unexpectedly!')
-            
+
     def _assert_validation_error(
             self,
             entry_point_obj: app_feedback_report_domain.RevisionCardEntryPoint,
@@ -1560,7 +1590,7 @@ class AppFeedbackReportTicketDomainTests(test_utils.GenericTestBase):
         self._assert_validation_error(
             self.ticket_obj,
             'The Github issue number name must be a positive integer')
-        
+
     # TODO(#13059): Here we use MyPy ignore because after we fully type the
     # codebase we plan to get rid of the tests that intentionally test wrong
     # inputs that we can normally catch by typing.
@@ -1585,8 +1615,11 @@ class AppFeedbackReportTicketDomainTests(test_utils.GenericTestBase):
             self.ticket_obj,
             'The ticket archived status must be a boolean')
 
-    def test_validation_check_with_integer_github_issue_number_archived_is_not_boolean_fails(self) -> None:
-        self.ticket_obj.github_issue_number = 5 # type: ignore[assignment]
+    # TODO(#13059): Here we use MyPy ignore because after we fully type the
+    # codebase we plan to get rid of the tests that intentionally test wrong
+    # inputs that we can normally catch by typing.
+    def test_validation_check_with_integer_github_issue_number(self) -> None:
+        self.ticket_obj.github_issue_number = 5
         self.ticket_obj.github_issue_repo_name = PLATFORM_CHOICE_ANDROID
         self.ticket_obj.archived = 123 # type: ignore[assignment]
         self._assert_validation_error(
