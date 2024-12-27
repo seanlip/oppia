@@ -172,8 +172,8 @@ class AppFeedbackReport:
                     app_feedback_report_constants.TIMEZONE_MAXIMUM_OFFSET,
                     self.local_timezone_offset_hrs))
 
-
-        AppFeedbackReportTicket.require_valid_ticket_id(self.ticket_id)
+        if self.ticket_id is not None:
+            AppFeedbackReportTicket.require_valid_ticket_id(self.ticket_id)
 
         self.user_supplied_feedback.validate()
 
