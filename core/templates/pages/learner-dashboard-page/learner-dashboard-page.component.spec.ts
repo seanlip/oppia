@@ -1125,10 +1125,8 @@ describe('Learner dashboard page', () => {
       );
     });
 
-    // TODO(#18384): Change community-lessons to progress.
     it('should return progress greeting when current tab is set to progress', () => {
-      component.activeSection =
-        'I18N_LEARNER_DASHBOARD_COMMUNITY_LESSONS_SECTION';
+      component.activeSection = 'I18N_LEARNER_DASHBOARD_PROGRESS_SECTION';
       fixture.detectChanges();
 
       expect(component.getDashboardTabHeading()).toBe(
@@ -1136,7 +1134,6 @@ describe('Learner dashboard page', () => {
       );
     });
 
-    // TODO(#18384): Change community-lessons to progress.
     it('should return default greeting when current tab is not valid', () => {
       component.activeSection = 'I18N_LEARNER_DASHBOARD_PLAYLIST_SECTION';
       fixture.detectChanges();
