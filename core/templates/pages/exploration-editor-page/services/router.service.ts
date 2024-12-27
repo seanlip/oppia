@@ -71,6 +71,9 @@ export class RouterService {
 
     this.location.onPopState(() => {
       if (window.location.hash === '') {
+        // We use setTimeout() here so that window.history.go(-1)
+        // can go back one page and set the hash before being
+        // interrupted by the next call in the stack.
         setTimeout(() => {
           window.history.go(-1);
         });
