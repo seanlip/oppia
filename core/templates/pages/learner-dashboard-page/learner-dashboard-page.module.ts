@@ -31,7 +31,7 @@ import {LearnerStorySummaryTileComponent} from 'components/summary-tile/learner-
 import {LearnerTopicGoalsSummaryTileComponent} from 'components/summary-tile/learner-topic-goals-summary-tile.component';
 import {OldProgressTabComponent} from './progress-tab.component';
 import {GoalsTabComponent} from './goals-tab.component';
-import {CommunityLessonsTabComponent} from './community-lessons-tab.component';
+import {ProgressTabComponent} from './community-lessons-tab.component';
 import {LearnerTopicSummaryTileComponent} from 'components/summary-tile/learner-topic-summary-tile.component';
 import {HomeTabComponent} from './home-tab.component';
 import {LearnerGroupsTabComponent} from './learner-groups-tab.component';
@@ -90,7 +90,7 @@ import {NgCircleProgressModule} from 'ng-circle-progress';
     HomeTabComponent,
     LearnerGroupsTabComponent,
     LearnerTopicSummaryTileComponent,
-    CommunityLessonsTabComponent,
+    ProgressTabComponent,
     RemoveActivityModalComponent,
     LearnerDashboardSuggestionModalComponent,
     DeclineInvitationModalComponent,
@@ -111,7 +111,7 @@ import {NgCircleProgressModule} from 'ng-circle-progress';
     HomeTabComponent,
     LearnerGroupsTabComponent,
     LearnerTopicSummaryTileComponent,
-    CommunityLessonsTabComponent,
+    ProgressTabComponent,
     RemoveActivityModalComponent,
     LearnerDashboardSuggestionModalComponent,
     DeclineInvitationModalComponent,

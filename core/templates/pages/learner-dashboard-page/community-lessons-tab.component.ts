@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Component for community lessons tab in the Learner Dashboard
+ * @fileoverview Component for progress tab in the Learner Dashboard
  * page.
  */
 
@@ -38,11 +38,11 @@ interface ShowMoreInSectionDict {
 }
 
 @Component({
-  selector: 'oppia-community-lessons-tab',
+  selector: 'oppia-progress-tab',
   templateUrl: './community-lessons-tab.component.html',
   styleUrls: ['./community-lessons-tab.component.css'],
 })
-export class CommunityLessonsTabComponent {
+export class ProgressTabComponent {
   constructor(
     private learnerDashboardActivityBackendApiService: LearnerDashboardActivityBackendApiService,
     private i18nLanguageCodeService: I18nLanguageCodeService,
