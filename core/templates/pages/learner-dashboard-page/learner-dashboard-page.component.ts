@@ -569,12 +569,11 @@ export class LearnerDashboardPageComponent implements OnInit, OnDestroy {
 
   getDashboardTabHeading(): string {
     switch (this.activeSection) {
-      // TODO(#18384): Change community-lessons to progress.
       case LearnerDashboardPageConstants.LEARNER_DASHBOARD_SECTION_I18N_IDS
         .HOME:
         return 'I18N_LEARNER_DASHBOARD_HOME_SECTION_HEADING';
       case LearnerDashboardPageConstants.LEARNER_DASHBOARD_SECTION_I18N_IDS
-        .COMMUNITY_LESSONS:
+        .PROGRESS:
         return 'I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_HEADING';
       case LearnerDashboardPageConstants.LEARNER_DASHBOARD_SECTION_I18N_IDS
         .GOALS:
