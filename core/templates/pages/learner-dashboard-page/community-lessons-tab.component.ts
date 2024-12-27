@@ -69,7 +69,10 @@ export class ProgressTabComponent {
   @Input() partiallyLearntTopicsList!: LearnerTopicSummary[];
   @Input() learntTopicsList!: LearnerTopicSummary[];
   @Input() currentGoals!: LearnerTopicSummary[];
-  @Input() subtopicMastery!: Record<string, SubtopicMasterySummaryBackendDict>;
+  @Input() subtopicMasteries!: Record<
+    string,
+    SubtopicMasterySummaryBackendDict
+  >;
   selectedSection!: string;
   noCommunityLessonActivity: boolean = false;
   noPlaylistActivity: boolean = false;
@@ -501,7 +504,7 @@ export class ProgressTabComponent {
         topic: partialTopic,
         progress: this.getSubtopicProgress(
           partialTopic.subtopics,
-          this.subtopicMastery[partialTopic.id]
+          this.subtopicMasteries[partialTopic.id]
         ),
       });
     }
@@ -511,7 +514,7 @@ export class ProgressTabComponent {
         topic: learntTopic,
         progress: this.getSubtopicProgress(
           learntTopic.subtopics,
-          this.subtopicMastery[learntTopic.id]
+          this.subtopicMasteries[learntTopic.id]
         ),
       });
     }

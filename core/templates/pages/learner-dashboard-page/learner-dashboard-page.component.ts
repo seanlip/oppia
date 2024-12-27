@@ -177,7 +177,7 @@ export class LearnerDashboardPageComponent implements OnInit, OnDestroy {
   LEARNER_GROUP_FEATURE_IS_ENABLED: boolean = false;
   totalLessonsInPlaylists: (LearnerExplorationSummary | CollectionSummary)[] =
     [];
-  subtopicMastery: Record<string, SubtopicMasterySummaryBackendDict> = {};
+  subtopicMasteries: Record<string, SubtopicMasterySummaryBackendDict> = {};
 
   constructor(
     private alertsService: AlertsService,
@@ -590,7 +590,7 @@ export class LearnerDashboardPageComponent implements OnInit, OnDestroy {
   }
 
   async getSubtopicMasteryData(): Promise<void> {
-    this.subtopicMastery =
+    this.subtopicMasteries =
       await this.learnerDashboardBackendApiService.fetchSubtopicMastery([
         ...this.partiallyLearntTopicsList.map(topic => topic.id),
         ...this.learntTopicsList.map(topic => topic.id),

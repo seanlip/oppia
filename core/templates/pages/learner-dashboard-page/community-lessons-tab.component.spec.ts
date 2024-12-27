@@ -345,7 +345,7 @@ describe('Community lessons tab Component', () => {
       LearnerTopicSummary.createFromBackendDict(learntTopicSummaryDict),
     ];
 
-    component.subtopicMastery = {
+    component.subtopicMasteries = {
       new_sample_topic_id: {},
       sample_topic_id: {1: 1},
     };
