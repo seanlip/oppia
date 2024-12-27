@@ -36,7 +36,6 @@ import {EventEmitter, NO_ERRORS_SCHEMA, Pipe} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {WindowDimensionsService} from 'services/contextual/window-dimensions.service';
 import {UserService} from 'services/user.service';
-import {LearnerDashboardBackendApiService} from 'domain/learner_dashboard/learner-dashboard-backend-api.service';
 import {LearnerTopicSummary} from 'domain/topic/learner-topic-summary.model';
 class MockRemoveActivityNgbModalRef {
   componentInstance = {
@@ -88,7 +87,6 @@ describe('Community lessons tab Component', () => {
   let mockResizeEmitter: EventEmitter<void>;
   let userService: UserService;
   let explorationSummary: LearnerExplorationSummary;
-  let learnerDashboardBackendApiService: LearnerDashboardBackendApiService;
 
   let subtopic = {
     skill_ids: ['skill_id_2'],
@@ -320,9 +318,6 @@ describe('Community lessons tab Component', () => {
     ngbModal = TestBed.inject(NgbModal);
     windowDimensionsService = TestBed.inject(WindowDimensionsService);
     userService = TestBed.inject(UserService);
-    learnerDashboardBackendApiService = TestBed.inject(
-      LearnerDashboardBackendApiService
-    );
     component.incompleteExplorationsList = [];
     component.incompleteCollectionsList = [];
     component.completedExplorationsList = [];
