@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Unit tests for for CommunityLessonsTabComponent.
+ * @fileoverview Unit tests for for ProgressTabComponent.
  */
 
 import {
@@ -31,7 +31,7 @@ import {MockTranslatePipe} from 'tests/unit-test-utils';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {LearnerExplorationSummary} from 'domain/summary/learner-exploration-summary.model';
 import {CollectionSummary} from 'domain/collection/collection-summary.model';
-import {CommunityLessonsTabComponent} from './community-lessons-tab.component';
+import {ProgressTabComponent} from './community-lessons-tab.component';
 import {EventEmitter, NO_ERRORS_SCHEMA, Pipe} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {WindowDimensionsService} from 'services/contextual/window-dimensions.service';
@@ -80,8 +80,8 @@ const sampleExploration = {
 };
 
 describe('Community lessons tab Component', () => {
-  let component: CommunityLessonsTabComponent;
-  let fixture: ComponentFixture<CommunityLessonsTabComponent>;
+  let component: ProgressTabComponent;
+  let fixture: ComponentFixture<ProgressTabComponent>;
   let learnerDashboardActivityBackendApiService: LearnerDashboardActivityBackendApiService;
   let ngbModal: NgbModal;
   let windowDimensionsService: WindowDimensionsService;
@@ -296,11 +296,7 @@ describe('Community lessons tab Component', () => {
         FormsModule,
         HttpClientTestingModule,
       ],
-      declarations: [
-        CommunityLessonsTabComponent,
-        MockTranslatePipe,
-        MockTruncatePipe,
-      ],
+      declarations: [ProgressTabComponent, MockTranslatePipe, MockTruncatePipe],
       providers: [
         LearnerDashboardActivityBackendApiService,
         {
@@ -316,7 +312,7 @@ describe('Community lessons tab Component', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CommunityLessonsTabComponent);
+    fixture = TestBed.createComponent(ProgressTabComponent);
     component = fixture.componentInstance;
     learnerDashboardActivityBackendApiService = TestBed.inject(
       LearnerDashboardActivityBackendApiService
