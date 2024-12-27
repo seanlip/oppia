@@ -21,7 +21,6 @@ import {
   ComponentFixture,
   fakeAsync,
   TestBed,
-  tick,
 } from '@angular/core/testing';
 import {MaterialModule} from 'modules/material.module';
 import {FormsModule} from '@angular/forms';
@@ -78,7 +77,7 @@ const sampleExploration = {
   title: 'Test Title',
 };
 
-describe('Community lessons tab Component', () => {
+describe('Progress Tab Component', () => {
   let component: ProgressTabComponent;
   let fixture: ComponentFixture<ProgressTabComponent>;
   let learnerDashboardActivityBackendApiService: LearnerDashboardActivityBackendApiService;
@@ -1066,9 +1065,7 @@ describe('Community lessons tab Component', () => {
     expect(component.isLearnerStateEmpty()).toBeFalse();
   });
 
-  it("should correctly set a topic and its subtopics' masteries", () => {
-    component.setTopicMastery();
-
+  it("should correctly set a topic and its subtopics' masteries on ngOnInit", () => {
     expect(component.partialTopicMastery).toEqual([
       {topic: component.partiallyLearntTopicsList[0], progress: [0]},
     ]);
