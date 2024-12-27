@@ -1309,7 +1309,7 @@ describe('Learner dashboard page', () => {
     component.getSubtopicMasteryData();
     tick();
 
-    expect(component.subtopicMastery).toEqual({
+    expect(component.subtopicMasteries).toEqual({
       new_sample_topic_id: {},
       sample_topic_id: {1: 1},
     });
