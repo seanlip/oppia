@@ -31,7 +31,7 @@ import {MockTranslatePipe} from 'tests/unit-test-utils';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {LearnerExplorationSummary} from 'domain/summary/learner-exploration-summary.model';
 import {CollectionSummary} from 'domain/collection/collection-summary.model';
-import {ProgressTabComponent} from './community-lessons-tab.component';
+import {ProgressTabComponent} from './progress-tab.component';
 import {EventEmitter, NO_ERRORS_SCHEMA, Pipe} from '@angular/core';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {WindowDimensionsService} from 'services/contextual/window-dimensions.service';
