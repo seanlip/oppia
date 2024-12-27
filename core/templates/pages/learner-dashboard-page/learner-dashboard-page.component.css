@@ -314,12 +314,13 @@ oppia-learner-dashboard-page .oppia-learner-groups-icon {
 .oppia-learner-dash-container {
   background-color: #f2f4f7;
   padding: 0 16px;
+  position: relative;
 }
 
 .oppia-learner-dash-sidebar {
   background-color: #00645c;
   border-radius: 4px;
-  height: 95%;
+  height: 97.5%;
   list-style-type: none;
   margin-bottom: 0;
   max-height: 706px;
@@ -355,10 +356,11 @@ oppia-learner-dashboard-page .oppia-learner-groups-icon {
 }
 
 .oppia-learner-dash-sidebar_position {
-  height: 92vh;
+  height: 90vh;
   max-height: 750px;
   position: sticky;
-  top: 57.5px;
+  padding: 8px 0;
+  top: 56px;
 }
 
 .oppia-learner-dash-tab {
