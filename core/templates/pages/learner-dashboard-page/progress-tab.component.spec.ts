@@ -1066,6 +1066,8 @@ describe('Progress Tab Component', () => {
   });
 
   it("should correctly set a topic and its subtopics' masteries on ngOnInit", () => {
+    fixture.detectChanges();
+
     expect(component.partialTopicMastery).toEqual([
       {topic: component.partiallyLearntTopicsList[0], progress: [0]},
     ]);
