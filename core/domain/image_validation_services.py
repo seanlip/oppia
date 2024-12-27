@@ -17,12 +17,12 @@
 from __future__ import annotations
 
 import base64
-import imghdr
 
 from core import feconf
 from core import utils
 from core.domain import html_validation_service
 
+import filetype
 from typing import Optional, Union
 
 HUNDRED_KB_IN_BYTES = 100 * 1024
@@ -88,9 +88,11 @@ def validate_image_and_filename(
                 'The svg tag does not contains the \'xmlns\' attribute.')
     else:
         # Verify that the data is recognized as an image.
-        file_format = imghdr.what(None, h=raw_image)
-        if file_format not in feconf.ACCEPTED_IMAGE_FORMATS_AND_EXTENSIONS:
+        kind = filetype.guess(raw_image)
+        if (kind is None or
+            kind.extension not in feconf.ACCEPTED_IMAGE_FORMATS_AND_EXTENSIONS):
             raise utils.ValidationError('Image not recognized')
+        file_format = kind.extension
 
     # Verify that the file type matches the supplied extension.
     if not filename:
