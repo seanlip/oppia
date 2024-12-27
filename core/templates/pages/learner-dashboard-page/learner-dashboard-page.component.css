@@ -358,8 +358,8 @@ oppia-learner-dashboard-page .oppia-learner-groups-icon {
 .oppia-learner-dash-sidebar_position {
   height: 90vh;
   max-height: 750px;
-  position: sticky;
   padding: 8px 0;
+  position: sticky;
   top: 56px;
 }
 
