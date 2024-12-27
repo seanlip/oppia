@@ -1072,7 +1072,7 @@ describe('Community lessons tab Component', () => {
   });
 
   it("should correctly set a topic and its subtopics' masteries", () => {
-    component.getSubtopicMasteryData();
+    component.setTopicMastery();
 
     expect(component.partialTopicMastery).toEqual([
       {topic: component.partiallyLearntTopicsList[0], progress: [0]},

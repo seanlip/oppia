@@ -196,7 +196,7 @@ export class ProgressTabComponent {
     this.currentGoalIds = new Set(this.currentGoals.map(g => g.id));
     this.completedGoalIds = new Set(this.learntTopicsList.map(t => t.id));
 
-    this.getSubtopicMasteryData();
+    this.setTopicMastery();
   }
 
   getProfileImagePngDataUrl(username: string): string {
@@ -495,7 +495,7 @@ export class ProgressTabComponent {
     );
   }
 
-  getSubtopicMasteryData(): void {
+  setTopicMastery(): void {
     for (const partialTopic of this.partiallyLearntTopicsList) {
       this.partialTopicMastery.push({
         topic: partialTopic,
