@@ -494,6 +494,10 @@ describe('Learner dashboard page', () => {
         })
       );
 
+      spyOn(learnerDashboardBackendApiService, 'fetchSubtopicMastery')
+        .withArgs([])
+        .and.returnValue(Promise.resolve({}));
+
       spyOn(
         learnerGroupBackendApiService,
         'isLearnerGroupFeatureEnabledAsync'
@@ -1151,4 +1155,163 @@ describe('Learner dashboard page', () => {
       expect(component.directiveSubscriptions.unsubscribe).toHaveBeenCalled();
     });
   });
+
+  it('should correctly get subtopic masteries', fakeAsync(() => {
+    let subtopic = {
+      skill_ids: ['skill_id_2'],
+      id: 1,
+      title: 'subtopic_name',
+      thumbnail_filename: 'image.svg',
+      thumbnail_bg_color: '#F8BF74',
+      url_fragment: 'subtopic-name',
+    };
+
+    let nodeDict1 = {
+      id: 'node_1',
+      thumbnail_filename: 'image1.png',
+      title: 'Chapter 1',
+      description: 'Description 1',
+      prerequisite_skill_ids: ['skill_id_1'],
+      acquired_skill_ids: ['skill_id_2'],
+      destination_node_ids: ['node_2'],
+      outline: 'Outline',
+      exploration_id: 'exp_1',
+      outline_is_finalized: false,
+      thumbnail_bg_color: '#a33f40',
+      status: 'Published',
+      planned_publication_date_msecs: 100,
+      last_modified_msecs: 100,
+      first_publication_date_msecs: 200,
+      unpublishing_reason: null,
+    };
+    const learntTopicSummaryDict = {
+      id: 'sample_topic_id',
+      name: 'Topic Name',
+      language_code: 'en',
+      description: 'description',
+      version: 1,
+      story_titles: ['Story 1'],
+      total_published_node_count: 2,
+      thumbnail_filename: 'image.svg',
+      thumbnail_bg_color: '#C6DCDA',
+      classroom_name: 'math',
+      classroom_url_fragment: 'math',
+      practice_tab_is_displayed: false,
+      canonical_story_summary_dict: [
+        {
+          id: '0',
+          title: 'Story Title',
+          description: 'Story Description',
+          node_titles: ['Chapter 1'],
+          thumbnail_filename: 'image.svg',
+          thumbnail_bg_color: '#F8BF74',
+          story_is_published: true,
+          completed_node_titles: ['Chapter 1'],
+          all_node_dicts: [nodeDict1],
+          url_fragment: 'story-title',
+          topic_name: 'Topic Name',
+          classroom_url_fragment: 'math',
+          topic_url_fragment: 'topic-name',
+        },
+      ],
+      url_fragment: 'topic-name',
+      subtopics: [subtopic],
+      degrees_of_mastery: {
+        skill_id_1: 1,
+        skill_id_2: 1,
+      },
+      skill_descriptions: {
+        skill_id_1: 'Skill Description 1',
+        skill_id_2: 'Skill Description 2',
+      },
+    };
+
+    let newSubtopic = {
+      skill_ids: ['skill_id_3'],
+      id: 1,
+      title: 'subtopic_name',
+      thumbnail_filename: 'image.svg',
+      thumbnail_bg_color: '#F8BF74',
+      url_fragment: 'subtopic-name',
+    };
+
+    let newNodeDict = {
+      id: 'node_1',
+      thumbnail_filename: 'image1.png',
+      title: 'Chapter 1',
+      description: 'Description 1',
+      prerequisite_skill_ids: ['skill_id_3'],
+      acquired_skill_ids: ['skill_id_4'],
+      destination_node_ids: [''],
+      outline: 'Outline',
+      exploration_id: 'exp_1',
+      outline_is_finalized: false,
+      thumbnail_bg_color: '#a33f40',
+      status: 'Published',
+      planned_publication_date_msecs: 100,
+      last_modified_msecs: 100,
+      first_publication_date_msecs: 200,
+      unpublishing_reason: null,
+    };
+
+    const newTopicSummaryDict = {
+      id: 'new_sample_topic_id',
+      name: 'New Topic Name',
+      language_code: 'en',
+      description: 'description',
+      version: 1,
+      story_titles: ['Story 1'],
+      total_published_node_count: 2,
+      thumbnail_filename: 'image.svg',
+      thumbnail_bg_color: '#C6DCDA',
+      classroom_name: 'math',
+      classroom_url_fragment: 'math',
+      practice_tab_is_displayed: false,
+      canonical_story_summary_dict: [
+        {
+          id: '0',
+          title: 'Story Title',
+          description: 'Story Description',
+          node_titles: ['Chapter 1'],
+          thumbnail_filename: 'image.svg',
+          thumbnail_bg_color: '#F8BF74',
+          story_is_published: true,
+          completed_node_titles: [''],
+          all_node_dicts: [newNodeDict],
+          url_fragment: 'new-story-title',
+          topic_name: 'New Topic Name',
+          classroom_url_fragment: 'math',
+          topic_url_fragment: 'new-topic-name',
+        },
+      ],
+      url_fragment: 'new-topic-name',
+      subtopics: [newSubtopic],
+      degrees_of_mastery: {
+        skill_id_3: 0,
+      },
+      skill_descriptions: {
+        skill_id_3: 'Skill Description 3',
+      },
+    };
+
+    component.partiallyLearntTopicsList = [
+      LearnerTopicSummary.createFromBackendDict(newTopicSummaryDict),
+    ];
+    component.learntTopicsList = [
+      LearnerTopicSummary.createFromBackendDict(learntTopicSummaryDict),
+    ];
+    spyOn(learnerDashboardBackendApiService, 'fetchSubtopicMastery')
+      .withArgs(['new_sample_topic_id', 'sample_topic_id'])
+      .and.returnValue(
+        Promise.resolve({new_sample_topic_id: {}, sample_topic_id: {1: 1}})
+      );
+
+    component.getSubtopicMasteryData();
+    tick();
+
+    expect(component.subtopicMastery).toEqual({
+      new_sample_topic_id: {},
+      sample_topic_id: {1: 1},
+    });
+  }));
 });

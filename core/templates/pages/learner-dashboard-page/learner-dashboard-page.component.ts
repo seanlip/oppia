@@ -32,7 +32,10 @@ import {AppConstants} from 'app.constants';
 import {LearnerExplorationSummary} from 'domain/summary/learner-exploration-summary.model';
 import {CollectionSummary} from 'domain/collection/collection-summary.model';
 import {ProfileSummary} from 'domain/user/profile-summary.model';
-import {LearnerDashboardBackendApiService} from 'domain/learner_dashboard/learner-dashboard-backend-api.service';
+import {
+  LearnerDashboardBackendApiService,
+  SubtopicMasterySummaryBackendDict,
+} from 'domain/learner_dashboard/learner-dashboard-backend-api.service';
 import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
 import {ThreadStatusDisplayService} from 'pages/exploration-editor-page/feedback-tab/services/thread-status-display.service';
 import {SuggestionModalForLearnerDashboardService} from 'pages/learner-dashboard-page/suggestion-modal/suggestion-modal-for-learner-dashboard.service';
@@ -174,6 +177,7 @@ export class LearnerDashboardPageComponent implements OnInit, OnDestroy {
   LEARNER_GROUP_FEATURE_IS_ENABLED: boolean = false;
   totalLessonsInPlaylists: (LearnerExplorationSummary | CollectionSummary)[] =
     [];
+  subtopicMastery: Record<string, SubtopicMasterySummaryBackendDict> = {};
 
   constructor(
     private alertsService: AlertsService,
@@ -243,6 +247,8 @@ export class LearnerDashboardPageComponent implements OnInit, OnDestroy {
           this.activeSection =
             LearnerDashboardPageConstants.LEARNER_DASHBOARD_SECTION_I18N_IDS.LEARNER_GROUPS;
         }
+
+        return this.getSubtopicMasteryData();
       },
       errorResponseStatus => {
         if (
@@ -581,5 +587,13 @@ export class LearnerDashboardPageComponent implements OnInit, OnDestroy {
       default:
         return `No valid I18N key for heading of ${this.activeSection}`;
     }
+  }
+
+  async getSubtopicMasteryData(): Promise<void> {
+    this.subtopicMastery =
+      await this.learnerDashboardBackendApiService.fetchSubtopicMastery([
+        ...this.partiallyLearntTopicsList.map(topic => topic.id),
+        ...this.learntTopicsList.map(topic => topic.id),
+      ]);
   }
 }
