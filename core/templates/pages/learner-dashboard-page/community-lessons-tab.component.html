@@ -402,7 +402,7 @@
         <p class="oppia-learner-dash-section-heading">{{ 'I18N_LEARNER_DASHBOARD_INCOMPLETE_SECTION' | translate }}</p>
         <div class="incomplete-section e2e-test-incomplete-community-lessons-section w-100" *ngIf="totalIncompleteLessonsList.length !== 0 || partiallyLearntTopicsList.length !== 0">
           <!--TODO(#18384): Display all lessons in topic or just the most recent/last?-->
-          <oppia-card-display *ngIf="partiallyLearntTopicsList.length !== 0 && dataLoaded" [headingI18n]="'I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_CLASSROOM'" [numCards]="partialTopicMastery.length" [controlType]="'toggle'">
+          <oppia-card-display *ngIf="partiallyLearntTopicsList.length !== 0" [headingI18n]="'I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_CLASSROOM'" [numCards]="partialTopicMastery.length" [controlType]="'toggle'">
             <ng-container *ngFor="let topicObj of partialTopicMastery">
               <ng-container *ngFor="let story of topicObj.topic.canonicalStorySummaryDicts; index as i">
                 <lesson-card [story]="story" [topic]="topicObj.topic.name" [isGoal]="currentGoalIds.has(topicObj.topic.id)"> </lesson-card>
@@ -414,8 +414,7 @@
               <lesson-card [story]="summaryTile"> </lesson-card>
             </ng-container>
           </oppia-card-display>
-           <!--TODO(#18384): Find max number of skill cards-->
-          <oppia-card-display *ngIf="partiallyLearntTopicsList.length !== 0 && dataLoaded" [headingI18n]="'I18N_LEARNER_DASHBOARD_SKILLS'" [numCards]="partialTopicMastery.reduce(getTotalSkillCards, 0)" [controlType]="'toggle'">
+          <oppia-card-display *ngIf="partiallyLearntTopicsList.length !== 0" [headingI18n]="'I18N_LEARNER_DASHBOARD_SKILLS'" [numCards]="partialTopicMastery.reduce(getTotalSkillCards, 0)" [controlType]="'toggle'">
             <ng-container *ngFor="let topicObj of partialTopicMastery">
               <ng-container *ngFor="let subtopic of topicObj.topic.subtopics; index as i">
                 <oppia-skill-card [topic]="topicObj.topic" [progress]="topicObj.progress[i]" [subtopic]="subtopic"></oppia-skill-card>
@@ -427,7 +426,7 @@
       <div tabindex="0" class="oppia-learner-dash-section e2e-test-completed-community-lessons-section w-100" *ngIf="totalCompletedLessonsList.length !== 0 || learntTopicsList.length !== 0">
         <p class="oppia-learner-dash-section-heading"> {{ 'I18N_LEARNER_DASHBOARD_COMPLETED_SECTION' | translate }} </p>
          <!--TODO(#18384): Display all lessons in topic or just the most recent/last?-->
-        <oppia-card-display *ngIf="learntTopicsList.length !== 0 && dataLoaded" [headingI18n]="'I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_CLASSROOM'" [numCards]="learntTopicMastery.length" [controlType]="'toggle'">
+        <oppia-card-display *ngIf="learntTopicsList.length !== 0" [headingI18n]="'I18N_LEARNER_DASHBOARD_PROGRESS_SECTION_CLASSROOM'" [numCards]="learntTopicMastery.length" [controlType]="'toggle'">
           <ng-container *ngFor="let topicObj of learntTopicMastery">
             <ng-container *ngFor="let story of topicObj.topic.canonicalStorySummaryDicts; index as i">
               <lesson-card [story]="story" [topic]="topicObj.topic.name" [isGoal]="completedGoalIds.has(topicObj.id)"> </lesson-card>
@@ -439,8 +438,7 @@
             <lesson-card [story]="summaryTile" [isCommunityLessonComplete]="true"> </lesson-card>
           </ng-container>
         </oppia-card-display>
-         <!--TODO(#18384): Find max number of skill cards-->
-        <oppia-card-display *ngIf="learntTopicsList.length !== 0 && dataLoaded" [headingI18n]="'I18N_LEARNER_DASHBOARD_SKILLS'" [numCards]="learntTopicMastery.reduce(getTotalSkillCards, 0)" [controlType]="'toggle'">
+        <oppia-card-display *ngIf="learntTopicsList.length !== 0" [headingI18n]="'I18N_LEARNER_DASHBOARD_SKILLS'" [numCards]="learntTopicMastery.reduce(getTotalSkillCards, 0)" [controlType]="'toggle'">
           <ng-container *ngFor="let topicObj of learntTopicMastery">
             <ng-container *ngFor="let subtopic of topicObj.topic.subtopics; index as i">
               <oppia-skill-card [topic]="topicObj.topic" [progress]="topicObj.progress[i]" [subtopic]="subtopic"></oppia-skill-card>
@@ -455,24 +453,5 @@
         <oppia-classroom-button [classroom]="'math'" [variant]="'default'"> </oppia-classroom-button>
       </div>
     </ng-template>
-    <!--TODO(#18384): Move saved data to home tab, totalLessonsInPlaylist/displayLessonsInPlaylist-->
-    <!--TODO(#18384): Remove subscriptions-->
-    <div tabindex="0" class="subscriptions-section e2e-test-subscriptions-section" *ngIf="subscriptionsList.length !== 0">
-      <h1 [ngClass]="{'oppia-force-right-align': isLanguageRTL()}" class="lessons-title" [innerHTML]="'I18N_LEARNER_DASHBOARD_SUBSCRIPTIONS_SECTION' | translate"></h1>
-      <div *ngIf="subscriptionsList.length !== 0" class="oppia-subscriptions-container">
-        <mat-card class="oppia-subscription-card oppia-subscription-container-list"
-          *ngFor="let subscription of subscriptionsList">
-          <a class="oppia-subscription-profile-link" href="/profile/{{ subscription.username }}" target="_blank" rel="noopener">
-            <p class="oppia-subscription-name">
-              <strong class="e2e-test-subscription-name"
-                      container="body"
-                      triggers="showUsernamePopover(subscription.username)" ngbPopover="subscription.username">
-                {{ subscription.username| truncate:10 }}
-              </strong>
-            </p>
-          </a>
-        </mat-card>
-      </div>
-    </div>
   </div>
 </div>
