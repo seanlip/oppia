@@ -31,7 +31,7 @@ import {WindowDimensionsService} from 'services/contextual/window-dimensions.ser
 
 @Component({
   selector: 'oppia-old-progress-tab',
-  templateUrl: './progress-tab.component.html',
+  templateUrl: './old-progress-tab.component.html',
 })
 export class OldProgressTabComponent implements OnInit {
   @Output() setActiveSection: EventEmitter<string> = new EventEmitter();

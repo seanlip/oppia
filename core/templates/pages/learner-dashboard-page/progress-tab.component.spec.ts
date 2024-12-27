@@ -28,7 +28,7 @@ import {FormsModule} from '@angular/forms';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
 import {MockTranslatePipe} from 'tests/unit-test-utils';
-import {OldProgressTabComponent} from './progress-tab.component';
+import {OldProgressTabComponent} from './old-progress-tab.component';
 import {EventEmitter, NO_ERRORS_SCHEMA} from '@angular/core';
 import {LearnerDashboardBackendApiService} from 'domain/learner_dashboard/learner-dashboard-backend-api.service';
 import {StorySummary} from 'domain/story/story-summary.model';
