@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Component for progress tab in the Learner Dashboard page.
+ * @fileoverview Component for old progress tab in the Learner Dashboard page.
  */
 
 import {OnInit} from '@angular/core';
@@ -30,10 +30,10 @@ import {Subscription} from 'rxjs';
 import {WindowDimensionsService} from 'services/contextual/window-dimensions.service';
 
 @Component({
-  selector: 'oppia-progress-tab',
+  selector: 'oppia-old-progress-tab',
   templateUrl: './progress-tab.component.html',
 })
-export class ProgressTabComponent implements OnInit {
+export class OldProgressTabComponent implements OnInit {
   @Output() setActiveSection: EventEmitter<string> = new EventEmitter();
   // These properties are initialized using Angular lifecycle hooks
   // and we need to do non-null assertion. For more information, see
