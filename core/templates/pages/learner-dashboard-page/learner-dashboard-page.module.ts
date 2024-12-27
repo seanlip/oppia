@@ -29,7 +29,7 @@ import {GoalListComponent} from './goal-list/goal-list.component';
 import {SkillCardModule} from './skill-card/skill-card.module';
 import {LearnerStorySummaryTileComponent} from 'components/summary-tile/learner-story-summary-tile.component';
 import {LearnerTopicGoalsSummaryTileComponent} from 'components/summary-tile/learner-topic-goals-summary-tile.component';
-import {OldProgressTabComponent} from './progress-tab.component';
+import {OldProgressTabComponent} from './old-progress-tab.component';
 import {GoalsTabComponent} from './goals-tab.component';
 import {ProgressTabComponent} from './community-lessons-tab.component';
 import {LearnerTopicSummaryTileComponent} from 'components/summary-tile/learner-topic-summary-tile.component';
