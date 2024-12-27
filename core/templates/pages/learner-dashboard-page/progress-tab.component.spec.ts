@@ -35,7 +35,7 @@ import {StorySummary} from 'domain/story/story-summary.model';
 import {LearnerTopicSummary} from 'domain/topic/learner-topic-summary.model';
 import {WindowDimensionsService} from 'services/contextual/window-dimensions.service';
 
-describe('Progress tab Component', () => {
+describe('Old Progress tab Component', () => {
   let component: OldProgressTabComponent;
   let fixture: ComponentFixture<OldProgressTabComponent>;
   let urlInterpolationService: UrlInterpolationService;

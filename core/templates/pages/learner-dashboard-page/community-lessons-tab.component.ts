@@ -134,7 +134,6 @@ export class ProgressTabComponent {
 
   windowIsNarrow: boolean = false;
   directiveSubscriptions = new Subscription();
-  dataLoaded: boolean = false;
 
   ngOnInit(): void {
     var tempIncompleteLessonsList: (
@@ -516,7 +515,6 @@ export class ProgressTabComponent {
         ),
       });
     }
-    this.dataLoaded = true;
   }
 
   getSubtopicProgress(
