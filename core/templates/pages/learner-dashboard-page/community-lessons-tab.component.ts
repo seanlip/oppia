@@ -29,7 +29,10 @@ import {WindowDimensionsService} from 'services/contextual/window-dimensions.ser
 import {Subscription} from 'rxjs';
 import {I18nLanguageCodeService} from 'services/i18n-language-code.service';
 import {UserService} from 'services/user.service';
-import {LearnerDashboardBackendApiService} from 'domain/learner_dashboard/learner-dashboard-backend-api.service';
+import {
+  LearnerDashboardBackendApiService,
+  SubtopicMasterySummaryBackendDict,
+} from 'domain/learner_dashboard/learner-dashboard-backend-api.service';
 import {Subtopic} from 'domain/topic/subtopic.model';
 import './community-lessons-tab.component.css';
 
@@ -66,6 +69,7 @@ export class ProgressTabComponent {
   @Input() partiallyLearntTopicsList!: LearnerTopicSummary[];
   @Input() learntTopicsList!: LearnerTopicSummary[];
   @Input() currentGoals!: LearnerTopicSummary[];
+  @Input() subtopicMastery!: Record<string, SubtopicMasterySummaryBackendDict>;
   selectedSection!: string;
   noCommunityLessonActivity: boolean = false;
   noPlaylistActivity: boolean = false;
@@ -489,18 +493,13 @@ export class ProgressTabComponent {
     );
   }
 
-  async getSubtopicMasteryData(): Promise<void> {
-    const results =
-      await this.learnerDashboardBackendApiService.fetchSubtopicMastery([
-        ...this.partiallyLearntTopicsList.map(topic => topic.id),
-        ...this.learntTopicsList.map(topic => topic.id),
-      ]);
+  getSubtopicMasteryData(): void {
     for (const partialTopic of this.partiallyLearntTopicsList) {
       this.partialTopicMastery.push({
         topic: partialTopic,
         progress: this.getSubtopicProgress(
           partialTopic.subtopics,
-          results[partialTopic.id]
+          this.subtopicMastery[partialTopic.id]
         ),
       });
     }
@@ -510,7 +509,7 @@ export class ProgressTabComponent {
         topic: learntTopic,
         progress: this.getSubtopicProgress(
           learntTopic.subtopics,
-          results[learntTopic.id]
+          this.subtopicMastery[learntTopic.id]
         ),
       });
     }
