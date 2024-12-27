@@ -34,7 +34,7 @@ import {
   SubtopicMasterySummaryBackendDict,
 } from 'domain/learner_dashboard/learner-dashboard-backend-api.service';
 import {Subtopic} from 'domain/topic/subtopic.model';
-import './community-lessons-tab.component.css';
+import './progress-tab.component.css';
 
 interface ShowMoreInSectionDict {
   [section: string]: boolean;
@@ -42,8 +42,8 @@ interface ShowMoreInSectionDict {
 
 @Component({
   selector: 'oppia-progress-tab',
-  templateUrl: './community-lessons-tab.component.html',
-  styleUrls: ['./community-lessons-tab.component.css'],
+  templateUrl: './progress-tab.component.html',
+  styleUrls: ['./progress-tab.component.css'],
 })
 export class ProgressTabComponent {
   constructor(

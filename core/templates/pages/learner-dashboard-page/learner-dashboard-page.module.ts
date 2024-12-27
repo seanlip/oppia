@@ -31,7 +31,7 @@ import {LearnerStorySummaryTileComponent} from 'components/summary-tile/learner-
 import {LearnerTopicGoalsSummaryTileComponent} from 'components/summary-tile/learner-topic-goals-summary-tile.component';
 import {OldProgressTabComponent} from './old-progress-tab.component';
 import {GoalsTabComponent} from './goals-tab.component';
-import {ProgressTabComponent} from './community-lessons-tab.component';
+import {ProgressTabComponent} from './progress-tab.component';
 import {LearnerTopicSummaryTileComponent} from 'components/summary-tile/learner-topic-summary-tile.component';
 import {HomeTabComponent} from './home-tab.component';
 import {LearnerGroupsTabComponent} from './learner-groups-tab.component';
