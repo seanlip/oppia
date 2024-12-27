@@ -345,6 +345,11 @@ describe('Community lessons tab Component', () => {
       LearnerTopicSummary.createFromBackendDict(learntTopicSummaryDict),
     ];
 
+    component.subtopicMastery = {
+      new_sample_topic_id: {},
+      sample_topic_id: {1: 1},
+    };
+
     spyOn(userService, 'getProfileImageDataUrl').and.returnValue([
       'default-image-url-png',
       'default-image-url-webp',
@@ -1066,15 +1071,8 @@ describe('Community lessons tab Component', () => {
     expect(component.isLearnerStateEmpty()).toBeFalse();
   });
 
-  it('should correctly get subtopic masteries', fakeAsync(() => {
-    spyOn(learnerDashboardBackendApiService, 'fetchSubtopicMastery')
-      .withArgs(['new_sample_topic_id', 'sample_topic_id'])
-      .and.returnValue(
-        Promise.resolve({new_sample_topic_id: {}, sample_topic_id: {1: 1}})
-      );
-
+  it("should correctly set a topic and its subtopics' masteries", () => {
     component.getSubtopicMasteryData();
-    tick();
 
     expect(component.partialTopicMastery).toEqual([
       {topic: component.partiallyLearntTopicsList[0], progress: [0]},
@@ -1082,7 +1080,7 @@ describe('Community lessons tab Component', () => {
     expect(component.learntTopicMastery).toEqual([
       {topic: component.learntTopicsList[0], progress: [100]},
     ]);
-  }));
+  });
 
   it('should correctly get total number of skills', () => {
     const multipleTopics = LearnerTopicSummary.createFromBackendDict(
