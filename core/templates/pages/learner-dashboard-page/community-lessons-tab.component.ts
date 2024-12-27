@@ -194,7 +194,7 @@ export class ProgressTabComponent {
     this.dropdownEnabled = false;
     this.currentGoalIds = new Set(this.currentGoals.map(g => g.id));
 
-    this.getSubtopicMasteryData();
+    this.setTopicMastery();
   }
 
   getProfileImagePngDataUrl(username: string): string {
@@ -493,7 +493,7 @@ export class ProgressTabComponent {
     );
   }
 
-  getSubtopicMasteryData(): void {
+  setTopicMastery(): void {
     for (const partialTopic of this.partiallyLearntTopicsList) {
       this.partialTopicMastery.push({
         topic: partialTopic,
