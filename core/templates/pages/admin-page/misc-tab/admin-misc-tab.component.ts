@@ -70,7 +70,7 @@ export class AdminMiscTabComponent implements OnInit {
 
   ngOnInit(): void {
     this.adminBackendApiService
-      .getAzureConfigForAutomaticVoiceoversAsync()
+      .getAdminConfigForAutomaticVoiceoversAsync()
       .then(voiceoverAutogenerationIsEnabled => {
         this.voiceoverAutogenerationIsEnabled =
           voiceoverAutogenerationIsEnabled;
@@ -306,7 +306,7 @@ export class AdminMiscTabComponent implements OnInit {
   updateAutomaticVoiceoverSynthesisUsingAzure(): void {
     this.setStatusMessage.emit('Communicating with Firebase server...');
     this.adminBackendApiService
-      .updateAutomaticVoiceoverSynthesisUsingAzureAsync(
+      .updateAutomaticVoiceoverSynthesisConfigAsync(
         this.voiceoverAutogenerationIsEnabled
       )
       .then(

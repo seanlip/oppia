@@ -866,7 +866,7 @@ describe('Admin misc tab component ', () => {
 
       let getAzureAdminConfigSpy = spyOn(
         adminBackendApiService,
-        'getAzureConfigForAutomaticVoiceoversAsync'
+        'getAdminConfigForAutomaticVoiceoversAsync'
       ).and.resolveTo(true);
 
       component.ngOnInit();
@@ -881,7 +881,7 @@ describe('Admin misc tab component ', () => {
 
       let updateAzureAdminConfigSpy = spyOn(
         adminBackendApiService,
-        'updateAutomaticVoiceoverSynthesisUsingAzureAsync'
+        'updateAutomaticVoiceoverSynthesisConfigAsync'
       ).and.resolveTo();
 
       component.updateAutomaticVoiceoverSynthesisUsingAzure();
@@ -895,7 +895,7 @@ describe('Admin misc tab component ', () => {
 
       let updateAzureAdminConfigSpy = spyOn(
         adminBackendApiService,
-        'updateAutomaticVoiceoverSynthesisUsingAzureAsync'
+        'updateAutomaticVoiceoverSynthesisConfigAsync'
       ).and.rejectWith({
         error: {error: 'Failed to update Azure admin config.'},
       });
