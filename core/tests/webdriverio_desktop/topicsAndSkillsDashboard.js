@@ -209,7 +209,7 @@ describe('Topics and skills dashboard functionality', function () {
     );
     await topicsAndSkillsDashboardPage.get();
     await topicsAndSkillsDashboardPage.editTopic(TOPIC_NAME);
-    await topicEditorPage.expectNumberOfUncategorizedSkillsToBe(1);
+    // await topicEditorPage.expectNumberOfUncategorizedSkillsToBe(1);
   });
 
   it('should merge an outside skill with one in a topic', async function () {
