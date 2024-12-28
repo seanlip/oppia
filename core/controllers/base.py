@@ -687,10 +687,10 @@ class BaseHandler(
         if iframe_restriction is not None:
             if iframe_restriction == 'SAMEORIGIN':
                 self.response.headers['Content-Security-Policy'] = (
-                    "frame-ancestors 'self'")
+                    'frame-ancestors \'self\'')
             elif iframe_restriction == 'DENY':
                 self.response.headers['Content-Security-Policy'] = (
-                    "frame-ancestors 'none'")
+                    'frame-ancestors \'none\'')
             else:
                 raise Exception(
                     'Invalid iframe restriction value: %s' % iframe_restriction)
