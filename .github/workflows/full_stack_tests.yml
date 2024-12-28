@@ -106,7 +106,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.count > 0 }}
     strategy:
-      max-parallel: 3
+      # max-parallel: 3
       matrix:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.suites }}
     name: E2E (${{ matrix.suite.name }})
@@ -144,7 +144,7 @@ jobs:
           max_attempts: 2
           substrings_indicating_flaky_execution: ${{ matrix.suite.flaky_indicators || '' }}
           command: >
-            VIDEO_RECORDING_IS_ENABLED=0
+            VIDEO_RECORDING_IS_ENABLED=1
             xvfb-run -a --server-args="-screen 0, 1285x1000x24"
             python -m scripts.run_e2e_tests --skip-install
             --skip-build --suite=${{ matrix.suite.name }} --prod_env
@@ -183,7 +183,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.count > 0 }}
     strategy:
-      max-parallel: 3
+      # max-parallel: 3
       matrix:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.suites }}
     name: Acceptance (${{ matrix.suite.name }} -- Python installation)
@@ -253,7 +253,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.count > 0 }}
     strategy:
-      max-parallel: 3
+      # max-parallel: 3
       matrix:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.suites }}
     name: Acceptance (${{ matrix.suite.name }})
