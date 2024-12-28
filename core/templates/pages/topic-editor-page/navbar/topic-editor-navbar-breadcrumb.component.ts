@@ -18,6 +18,7 @@
 
 import {Component} from '@angular/core';
 import {Subscription} from 'rxjs';
+import {downgradeComponent} from '@angular/upgrade/static';
 import {Topic} from 'domain/topic/topic-object.model';
 import {TopicEditorRoutingService} from '../services/topic-editor-routing.service';
 import {TopicEditorStateService} from '../services/topic-editor-state.service';
@@ -68,3 +69,10 @@ export class TopicEditorNavbarBreadcrumbComponent {
     this.topicRights = this.topicEditorStateService.getTopicRights();
   }
 }
+
+angular.module('oppia').directive(
+  'oppiaTopicEditorNavbarBreadcrumb',
+  downgradeComponent({
+    component: TopicEditorNavbarBreadcrumbComponent,
+  }) as angular.IDirectiveFactory
+);

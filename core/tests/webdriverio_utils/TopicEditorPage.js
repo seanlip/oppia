@@ -112,14 +112,7 @@ var TopicEditorPage = function () {
     return $$('.e2e-test-subtopic-column');
   };
   var subtopicDescriptionEditor = $('.e2e-test-subtopic-description-editor');
-  var subtopicsSelector = async function (count = 0) {
-    if (count) {
-      let singleSubtopic = $('.e2e-test-subtopic');
-      await waitFor.presenceOf(
-        singleSubtopic,
-        'Subtopic taking too long to appear'
-      );
-    }
+  var subtopicsSelector = function () {
     return $$('.e2e-test-subtopic');
   };
   var subtopicTitleField = $('.e2e-test-subtopic-title-field');
@@ -289,7 +282,7 @@ var TopicEditorPage = function () {
   };
 
   this.expectNumberOfSubtopicsToBe = async function (count) {
-    var subtopics = await subtopicsSelector(count);
+    var subtopics = await subtopicsSelector();
     expect(subtopics.length).toEqual(count);
   };
 
