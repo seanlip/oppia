@@ -1,49 +1,21 @@
 name: Process New Pull Request
 
 on:
+  workflow_run:
+    workflows: ["Oppiabot"]
+    types:
+      - completed
   pull_request:
     types: [opened]
-  merge_group:
-    types: [checks_requested]
-  issues:
-    types:
-      - labeled
-  pull_request_target:
-    branches:
-      - develop
-      - release-*
+
 
 permissions: read-all
 
 jobs:
-  verify_cla:
-    name: Verify CLA
-    runs-on: ubuntu-22.04
-    permissions:
-      issues: write
-      pull-requests: write
-      checks: write
-      statuses: write
-    steps:
-      - name: Checkout repository so that local actions can be used
-        uses: actions/checkout@v4
-      - name: Merge develop branch into the current branch
-        uses: ./.github/actions/merge
-      - name: GitHub Actions from Oppiabot
-        uses: oppia/oppiabot@1.4.0
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-        env:
-          SHEETS_TOKEN: ${{ secrets.SHEETS_TOKEN }}
-          SHEETS_CRED: ${{ secrets.SHEETS_CRED }}
-          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
-
   assign_reviewers:
     name: Assign Reviewers
     runs-on: ubuntu-latest
-    needs: verify_cla
     permissions:
-      issues: write
       pull-requests: write
 
     steps:
@@ -70,7 +42,13 @@ jobs:
 
             const submitterIsNewContributor = mergedPRs.data.length === 0;
 
-            console.log(`User @${submitterUsername} is ${submitterIsNewContributor ? 'a new contributor' : 'not a new contributor'}.`);
+            console.log(
+              `User @${submitterUsername} is ${
+                submitterIsNewContributor
+                  ? 'a new contributor'
+                  : 'not a new contributor'
+              }.`
+            );
 
             // Get reviewers from CODEOWNERS
             const requestedReviewers = pull_request.requested_reviewers.map(r => r.login);
@@ -84,12 +62,16 @@ jobs:
                 issue_number: prNumber,
                 assignees: requestedReviewers,
               });
-              console.log(`Assigned reviewers: ${requestedReviewers.join(", ")}`);
+              console.log(
+                `Assigned reviewers: ${requestedReviewers.join(", ")}`
+              );
             }
 
             // Notify team if no individual reviewers are found
             if (requestedReviewers.length === 0) {
-              console.log("No individual reviewers found in CODEOWNERS. Notifying the team.");
+              console.log(
+                "No individual reviewers found in CODEOWNERS. Notifying the team."
+              );
               await github.issues.createComment({
                 owner,
                 repo,
@@ -108,5 +90,7 @@ jobs:
                 issue_number: prNumber,
                 body: commentBody,
               });
-              console.log(`Added PTAL syntax comment for new contributor @${submitterUsername}.`);
+              console.log(
+                `Added PTAL syntax comment for new contributor @${submitterUsername}.`
+              );
             }
