@@ -22,14 +22,19 @@ import {
   OnInit,
   QueryList,
   ViewChildren,
+  ViewChild,
 } from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
 import {WindowRef} from 'services/contextual/window-ref.service';
 import 'popper.js';
 import 'bootstrap';
+import {NgbCarousel} from '@ng-bootstrap/ng-bootstrap';
 import {ThanksForDonatingModalComponent} from './thanks-for-donating-modal.component';
 import {DonationBoxModalComponent} from './donation-box/donation-box-modal.component';
+import {I18nLanguageCodeService} from 'services/i18n-language-code.service';
+
+import './donate-page.component.css';
 
 interface ImpactStat {
   imageUrl: string | null;
@@ -59,7 +64,7 @@ interface Learner {
 @Component({
   selector: 'donate-page',
   templateUrl: './donate-page.component.html',
-  styleUrls: [],
+  styleUrls: ['./donate-page.component.css'],
 })
 export class DonatePageComponent implements OnInit {
   donationValues: DonationValue[] = [
@@ -176,11 +181,13 @@ export class DonatePageComponent implements OnInit {
 
   tileShown: number = 0;
   @ViewChildren('tiles') tiles!: QueryList<ElementRef>;
+  @ViewChild('learnerCarousel') learnerCarousel!: NgbCarousel;
 
   constructor(
     private urlInterpolationService: UrlInterpolationService,
     private windowRef: WindowRef,
-    private ngbModal: NgbModal
+    private ngbModal: NgbModal,
+    private i18nLanguageCodeService: I18nLanguageCodeService
   ) {}
 
   ngOnInit(): void {
@@ -198,6 +205,18 @@ export class DonatePageComponent implements OnInit {
 
   getStaticImageUrl(imagePath: string): string {
     return this.urlInterpolationService.getStaticImageUrl(imagePath);
+  }
+
+  moveLearnerCarouselToPreviousSlide(): void {
+    this.learnerCarousel.prev();
+  }
+
+  moveLearnerCarouselToNextSlide(): void {
+    this.learnerCarousel.next();
+  }
+
+  isLanguageRTL(): boolean {
+    return this.i18nLanguageCodeService.isCurrentLanguageRTL();
   }
 
   openDonationBoxModal(): void {
