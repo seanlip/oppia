@@ -7,8 +7,7 @@ on:
       - completed
   pull_request:
     types: [opened]
-
-
+    
 permissions: read-all
 
 jobs:
