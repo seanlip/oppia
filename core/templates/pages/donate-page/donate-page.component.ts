@@ -16,14 +16,7 @@
  * @fileoverview Component for the donate page.
  */
 
-import {
-  Component,
-  ElementRef,
-  OnInit,
-  QueryList,
-  ViewChildren,
-  ViewChild,
-} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
 import {WindowRef} from 'services/contextual/window-ref.service';
@@ -179,8 +172,6 @@ export class DonatePageComponent implements OnInit {
     },
   ];
 
-  tileShown: number = 0;
-  @ViewChildren('tiles') tiles!: QueryList<ElementRef>;
   @ViewChild('learnerCarousel') learnerCarousel!: NgbCarousel;
 
   constructor(
@@ -225,18 +216,5 @@ export class DonatePageComponent implements OnInit {
       size: 'xl',
       windowClass: 'donation-box-modal',
     });
-  }
-
-  nextTile(clickedVal: number): void {
-    let learnerTile = this.tiles.toArray()[clickedVal].nativeElement;
-    this.tileShown = clickedVal;
-
-    if (learnerTile !== null) {
-      learnerTile.scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'center',
-      });
-    }
   }
 }
