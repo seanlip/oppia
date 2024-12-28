@@ -51,40 +51,19 @@
                 </em>
               </div>
             </div>
-            <div class="topic-url-fragment" tabindex="0">
-              <label for="topicUrlFragment"
-                     class="form-heading e2e-test-topic-url-fragment-heading">
-                Topic URL Fragment
-              </label>
-              <input id="topicUrlFragment"
-                     type="text"
-                     class="form-control e2e-test-topic-url-fragment-field"
-                     [disabled]="!topicRights.canEditTopic()"
-                     [(ngModel)]="editableTopicUrlFragment"
-                     (blur)="updateTopicUrlFragment(editableTopicUrlFragment)"
-                     [maxlength]="maxCharsInTopicUrlFragment"
-                     [ngClass]="{'is-invalid': topicUrlFragmentExists} || !validUrlFragmentRegex.test(editableTopicUrlFragment.trim())"
-                     (change)="onChangeTopicEditorUrlFragment()"
-                     trim>
-              <span class="oppia-input-box-subtitle">
-                <em>
-                  The topic URL fragment is used to uniquely access the topic viewer page. It should consist of one or more hyphen-separated words, all in lowercase, with at most {{ maxCharsInTopicUrlFragment }} characters in total. Please use meaningful keywords, and avoid using words like "and", "of", or "the".
-                  This topic can be accessed at the following URL:<br>
-                  {{ hostname }}/learn/{{ classroomUrlFragment }}/{{ editableTopicUrlFragment }}
-                </em>
-              </span>
-              <div class="oppia-input-box-subtitle text-danger"
-                   [hidden]="editableTopicUrlFragment === '' || validUrlFragmentRegex.test(editableTopicUrlFragment.trim())">
-                <b>
-                  Please use only lowercase letters, optionally separated by hyphen.
-                </b>
-              </div>
-              <div *ngIf="topicUrlFragmentExists" class="oppia-input-box-subtitle text-danger">
-                <em>
-                  This topic URL fragment already exists.
-                </em>
-              </div>
-            </div>
+            <URLFragmentEditorComponent label="Topic URL Fragment"
+              [maxLength]="maxCharsInTopicUrlFragment"
+              [fragmentType]="'topic'"
+              [generatedUrlPrefix]="generateUrlFormat"
+              [(fragmentExists)]="topicUrlFragmentExists"
+              [inputId]="'topicUrlFragment'"
+              [e2eTestUrlFragment]="'e2e-test-topic-url-fragment-heading'"
+              [accessingPage]="'topic viewer'"
+              [(urlFragment)]="editableTopicUrlFragment"
+              [disabled]="!topicRights.canEditTopic()"
+              (blur)="updateTopicUrlFragment(editableTopicUrlFragment)"
+              (urlFragmentChange)="onChangeTopicEditorUrlFragment($event)">
+            </URLFragmentEditorComponent>
             <div class="topic-description" [ngClass]="{'has-error': editableDescriptionIsEmpty && topicDescriptionChanged}" tabindex="0">
               <label for="topicDescription"
                      class="form-heading e2e-test-topic-description-heading">

@@ -58,16 +58,12 @@ export class CreateNewStoryModalComponent extends ConfirmOrCancelModal {
   classroomUrlFragment = this.topicEditorStateService.getClassroomUrlFragment();
 
   topicUrlFragment = this.topicEditorStateService.getTopic()?.getUrlFragment();
+  generateUrlFormat: string = `${this.hostname}/learn/${this.classroomUrlFragment} /${this.topicUrlFragment}/story`;
 
   onStoryUrlFragmentChange(): void {
     if (!this.story.urlFragment) {
       return;
     }
-    this.story.urlFragment = this.story.urlFragment
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, '-');
-
     this.storyEditorStateService.updateExistenceOfStoryUrlFragment(
       this.story.urlFragment,
       () => {
@@ -78,6 +74,10 @@ export class CreateNewStoryModalComponent extends ConfirmOrCancelModal {
         return;
       }
     );
+  }
+
+  onUrlFragmentChange(urlFragment: string): void {
+    this.story.urlFragment = urlFragment;
   }
 
   save(): void {

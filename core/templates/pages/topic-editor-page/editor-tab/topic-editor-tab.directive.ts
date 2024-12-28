@@ -102,6 +102,7 @@ export class TopicEditorTabComponent implements OnInit, OnDestroy {
   classroomUrlFragment: string | null = null;
   classroomName: string | null = null;
   curriculumAdminUsernames: string[] = [];
+  generateUrlFormat: string;
 
   constructor(
     private contextService: ContextService,
@@ -187,6 +188,7 @@ export class TopicEditorTabComponent implements OnInit, OnDestroy {
         this.contextService.getEntityType(),
         this.contextService.getEntityId()
       );
+    this.generateUrlFormat = `${this.hostname}/learn/${this.classroomUrlFragment}`;
   }
 
   getEligibleSkillSummariesForDiagnosticTest(): ShortSkillSummary[] {
@@ -390,11 +392,8 @@ export class TopicEditorTabComponent implements OnInit, OnDestroy {
     }
   }
 
-  onChangeTopicEditorUrlFragment(): void {
-    this.editableTopicUrlFragment = this.editableTopicUrlFragment
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, '-');
+  onChangeTopicEditorUrlFragment(urlFragment: string): void {
+    this.editableTopicUrlFragment = urlFragment;
   }
 
   updateTopicThumbnailFilename(newThumbnailFilename: string): void {

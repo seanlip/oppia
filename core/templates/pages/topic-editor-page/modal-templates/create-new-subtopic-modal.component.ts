@@ -57,6 +57,7 @@ export class CreateNewSubtopicModalComponent
   subtopicPage!: SubtopicPage;
   MAX_CHARS_IN_SUBTOPIC_URL_FRAGMENT!: number;
   MAX_CHARS_IN_SUBTOPIC_TITLE!: number;
+  generateUrlFormat: string;
 
   constructor(
     private ngbActiveModal: NgbActiveModal,
@@ -92,6 +93,7 @@ export class CreateNewSubtopicModalComponent
     this.subtopicTitle = '';
     this.errorMsg = null;
     this.subtopicUrlFragmentExists = false;
+    this.generateUrlFormat = `${this.hostname}/learn/${this.classroomUrlFragment} /${this.topic.getUrlFragment()}/revision`;
   }
 
   getSchema(): object {
@@ -160,15 +162,14 @@ export class CreateNewSubtopicModalComponent
   }
 
   checkSubtopicExistence(): void {
-    this.editableUrlFragment = this.editableUrlFragment
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, '-');
-
     this.subtopicUrlFragmentExists =
       this.subtopicValidationService.doesSubtopicWithUrlFragmentExist(
         this.editableUrlFragment
       );
+  }
+
+  onUrlFragmentChange(urlFragment: string): void {
+    this.editableUrlFragment = urlFragment;
   }
 
   save(): void {

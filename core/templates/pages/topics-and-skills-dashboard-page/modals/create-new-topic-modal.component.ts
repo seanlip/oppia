@@ -46,6 +46,7 @@ export class CreateNewTopicModalComponent extends ConfirmOrCancelModal {
   topicNameExists: boolean = false;
   maxWebTitleFrag = AppConstants.MAX_CHARS_IN_PAGE_TITLE_FRAGMENT_FOR_WEB;
   minWebTitleFrag = AppConstants.MIN_CHARS_IN_PAGE_TITLE_FRAGMENT_FOR_WEB;
+  generateUrlFormat = `${this.hostname}/learn/staging`;
 
   constructor(
     private contextService: ContextService,
@@ -76,15 +77,14 @@ export class CreateNewTopicModalComponent extends ConfirmOrCancelModal {
     );
   }
 
+  onUrlFragmentChange(urlFragment: string): void {
+    this.newlyCreatedTopic.urlFragment = urlFragment;
+  }
+
   onTopicUrlFragmentChange(): void {
     if (!this.newlyCreatedTopic.urlFragment) {
       return;
     }
-    this.newlyCreatedTopic.urlFragment = this.newlyCreatedTopic.urlFragment
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, '-');
-
     this.topicEditorStateService.updateExistenceOfTopicUrlFragment(
       this.newlyCreatedTopic.urlFragment,
       () => {

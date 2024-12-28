@@ -80,6 +80,7 @@ export class StoryEditorComponent implements OnInit, OnDestroy {
       startupFocusEnabled: false,
     },
   };
+  generateUrlFormat: string;
 
   constructor(
     private alertsService: AlertsService,
@@ -185,6 +186,7 @@ export class StoryEditorComponent implements OnInit, OnDestroy {
   }
 
   _initEditor(): void {
+    this.generateUrlFormat = `${this.hostname}/learn/${this.getClassroomUrlFragment()}/${this.getTopicUrlFragment()}/story`;
     this.story = this.storyEditorStateService.getStory();
     if (this.story) {
       this.storyContents = this.story.getStoryContents();
@@ -270,11 +272,8 @@ export class StoryEditorComponent implements OnInit, OnDestroy {
       );
   }
 
-  onStoryEditorUrlFragmentChange(): void {
-    this.editableUrlFragment = this.editableUrlFragment
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, '-');
+  onStoryEditorUrlFragmentChange(urlFragment: string): void {
+    this.editableUrlFragment = urlFragment;
   }
 
   createNode(): void {
