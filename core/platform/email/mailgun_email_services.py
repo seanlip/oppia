@@ -149,25 +149,22 @@ def send_email_to_recipients(
             for attachment in attachments
         ] if attachments else None
 
-        try:
-            response = requests.post(
-                server,
-                auth=('api', mailgun_api_key),
-                data=data,
-                files=files,
-                timeout=TIMEOUT_SECS
-            )
+        response = requests.post(
+            server,
+            auth=('api', mailgun_api_key),
+            data=data,
+            files=files,
+            timeout=TIMEOUT_SECS
+        )
 
-            if files:
-                for _, (_, file_obj) in files:
-                    file_obj.close()
+        if files:
+            for _, (_, file_obj) in files:
+                file_obj.close()
 
-            if response.status_code != 200:
-                logging.error(
-                    'Failed to send email: %s - %s.'
-                    % (response.status_code, response.text))
-                return False
-        except requests.RequestException as e:
-            logging.error('Failed to send email: %s.' % e)
+        if response.status_code != 200:
+            logging.error(
+                'Failed to send email: %s - %s.'
+                % (response.status_code, response.text))
             return False
+
     return True
