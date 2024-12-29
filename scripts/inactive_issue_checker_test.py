@@ -1,10 +1,14 @@
 import unittest
 from unittest.mock import MagicMock, patch
 from datetime import datetime, timedelta, timezone
-from inactive_issue_checker import check_inactive_issues 
+from inactive_issue_checker import check_inactive_issues
 
 class TestCheckInactiveIssues(unittest.TestCase):
-    @patch("inactive_issue_checker.Github")  
+    """
+    Test suite for the check_inactive_issues function.
+    """
+
+    @patch("inactive_issue_checker.Github")
     def test_unassign_inactive_issues(self, MockGithub):
         """
         Test that inactive issues are unassigned correctly.
@@ -48,6 +52,7 @@ class TestCheckInactiveIssues(unittest.TestCase):
         ]
 
         check_inactive_issues("mock_token", "mock_owner", "mock_repo")
+
         mock_issue.remove_from_assignees.assert_not_called()
         mock_issue.create_comment.assert_not_called()
 
@@ -69,7 +74,9 @@ class TestCheckInactiveIssues(unittest.TestCase):
         mock_repo.get_pulls.return_value = [
             MagicMock(body="This fixes issue #3")
         ]
+
         check_inactive_issues("mock_token", "mock_owner", "mock_repo")
+
         mock_issue.remove_from_assignees.assert_not_called()
         mock_issue.create_comment.assert_not_called()
 
@@ -91,7 +98,9 @@ class TestCheckInactiveIssues(unittest.TestCase):
         mock_repo.get_collaborators.return_value = [
             MagicMock(login="collaborator123")
         ]
+
         check_inactive_issues("mock_token", "mock_owner", "mock_repo")
+
         mock_issue.remove_from_assignees.assert_not_called()
         mock_issue.create_comment.assert_not_called()
 
