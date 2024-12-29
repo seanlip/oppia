@@ -269,6 +269,11 @@ jobs:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.suites }}
     name: Acceptance (${{ matrix.suite.name }})
     steps:
+      # Delete this step.
+      - name: Induce automatic failure.
+        run: |
+          exit 1
+        shell: bash
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Setup Python 3.8
@@ -332,6 +337,11 @@ jobs:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_accessibility.suites }}
     name: Lighthouse a11y (shard ${{ matrix.suite.name }})
     steps:
+      # Delete this step.
+      - name: Induce automatic failure.
+        run: |
+          exit 1
+        shell: bash
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
@@ -395,6 +405,11 @@ jobs:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_performance.suites }}
     name: Lighthouse perf (shard ${{ matrix.suite.name }})
     steps:
+      # Delete this step.
+      - name: Induce automatic failure.
+        run: |
+          exit 1
+        shell: bash
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
@@ -472,7 +487,7 @@ jobs:
         with:
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
-          issue_number: context.payload.pull_request.number
+          issue_number: ${{ context.payload.pull_request.number }}
           message: >
             🛠️ Hi @${{ github.event.pull_request.user.login }}, it looks like
             the CI checks are failing on your PR. Please look at the logs and

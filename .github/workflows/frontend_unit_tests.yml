@@ -72,7 +72,7 @@ jobs:
         with:
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
-          issue_number: context.payload.pull_request.number
+          issue_number: ${{ context.payload.pull_request.number }}
           message: >
             🛠️ Hi @${{ github.event.pull_request.user.login }}, it looks like
             the frontend tests are failing on your PR. Please look at the logs
