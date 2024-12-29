@@ -17,6 +17,7 @@
  * page.
  */
 
+import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
 import {Component, OnInit} from '@angular/core';
 import {downgradeComponent} from '@angular/upgrade/static';
 import {CookieService} from 'ngx-cookie';
@@ -31,9 +32,15 @@ export class LanguageBannerComponent implements OnInit {
   COOKIE_NAME_DO_NOT_SHOW_LANGUAGE_BANNER = 'DO_NOT_SHOW_LANGUAGE_BANNER';
   isVisible: boolean = false;
   isChecked: boolean = false;
-  constructor(private cookieService: CookieService) {}
+  constructor(
+    private cookieService: CookieService,
+    private urlInterpolationService: UrlInterpolationService
+  ) {}
 
   ngOnInit(): void {
+    this.isVisible = true;
+    return;
+
     let cookieSetDateMsecs = this.cookieService.get(
       this.COOKIE_NAME_COOKIES_ACKNOWLEDGED
     );
@@ -56,6 +63,10 @@ export class LanguageBannerComponent implements OnInit {
         'true'
       );
     }
+  }
+
+  getStaticImageUrl(imagePath: string): string {
+    return this.urlInterpolationService.getStaticImageUrl(imagePath);
   }
 }
 

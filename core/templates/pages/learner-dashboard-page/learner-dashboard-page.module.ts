@@ -48,7 +48,6 @@ import {LearnerDashboardActivityBackendApiService} from 'domain/learner_dashboar
 import {AddGoalsModalComponent} from './add-goals-modal/add-goals-modal.component';
 import {MatDialogModule} from '@angular/material/dialog';
 import {NgCircleProgressModule} from 'ng-circle-progress';
-import {LanguageBannerComponent} from './language-banner/language-banner.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -97,7 +96,6 @@ import {LanguageBannerComponent} from './language-banner/language-banner.compone
     DeclineInvitationModalComponent,
     ViewLearnerGroupInvitationModalComponent,
     ViewLearnerGroupDetailsModalComponent,
-    LanguageBannerComponent,
   ],
   entryComponents: [
     AddGoalsModalComponent,
