@@ -8,10 +8,15 @@ on:
   pull_request:
     types: [opened]
 
+
+permissions: read-all
+
 jobs:
   assign_reviewers:
     name: Assign Reviewers
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
 
     steps:
       - name: Assign Reviewers
