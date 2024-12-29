@@ -9,14 +9,12 @@ on:
     types: [opened]
 
 
-permissions: read-all
+permissions: write-all
 
 jobs:
   assign_reviewers:
     name: Assign Reviewers
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
 
     steps:
       - name: Assign Reviewers
