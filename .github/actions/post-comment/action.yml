@@ -16,7 +16,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Set environment variables
     - name: Leave a comment on the PR if workflow failed
       uses: actions/github-script@v7
       env:
