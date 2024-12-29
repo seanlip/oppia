@@ -131,33 +131,14 @@ class MypyScriptChecks(test_utils.GenericTestBase):
             run_mypy_checks, 'install_mypy_prerequisites',
             mock_install_mypy_prerequisites)
 
-    def test_install_third_party_libraries_with_skip_install_as_true(
-        self
-    ) -> None:
-        run_mypy_checks.install_third_party_libraries(True)
-
-    def test_install_third_party_libraries_with_skip_install_as_false(
-        self
-    ) -> None:
-        with self.oppia_is_dockerized_swap:
-            with self.install_swap:
-                run_mypy_checks.install_third_party_libraries(False)
-
     def test_get_mypy_cmd_without_files(self) -> None:
         expected_cmd = [
             self.mypy_cmd_path, '--exclude', 'dir1/|dir2/',
             '--config-file', './mypy.ini', '.'
         ]
         with self.directories_swap:
-            cmd = run_mypy_checks.get_mypy_cmd(
-                None, self.mypy_cmd_path, False)
+            cmd = run_mypy_checks.get_mypy_cmd(None)
             self.assertEqual(cmd, expected_cmd)
-
-    def test_get_mypy_cmd_for_ci(self) -> None:
-        with self.directories_swap:
-            cmd = run_mypy_checks.get_mypy_cmd(
-                None, self.mypy_cmd_path, True)
-            self.assertEqual(cmd[0], 'mypy')
 
     def test_get_mypy_cmd_with_files(self) -> None:
         expected_cmd = [
@@ -165,45 +146,8 @@ class MypyScriptChecks(test_utils.GenericTestBase):
             'file1.py', 'file2.py'
         ]
         with self.directories_swap:
-            cmd = run_mypy_checks.get_mypy_cmd(
-                ['file1.py', 'file2.py'], self.mypy_cmd_path, False)
+            cmd = run_mypy_checks.get_mypy_cmd(['file1.py', 'file2.py'])
             self.assertEqual(cmd, expected_cmd)
-
-    def test_install_mypy_prerequisites(self) -> None:
-        with self.popen_swap_success:
-            code, path = run_mypy_checks.install_mypy_prerequisites(False)
-            self.assertEqual(code, 0)
-            self.assertEqual(path, self.mypy_cmd_path)
-
-    def test_install_mypy_prerequisites_for_ci(self) -> None:
-        with self.popen_swap_success:
-            code, _ = run_mypy_checks.install_mypy_prerequisites(True)
-            self.assertEqual(code, 0)
-
-    def test_install_mypy_prerequisites_with_user_prefix_error(self) -> None:
-        with self.popen_swap_user_prefix_error:
-            code, path = run_mypy_checks.install_mypy_prerequisites(False)
-            self.assertEqual(code, 0)
-            self.assertNotEqual(path, self.mypy_cmd_path)
-
-    def test_error_is_raised_with_none_user_base(
-        self
-    ) -> None:
-        with self.popen_swap_user_prefix_error:
-            with self.swap(site, 'USER_BASE', None):
-                with self.assertRaisesRegex(
-                    Exception,
-                    'No USER_BASE found for the user.'
-                ):
-                    run_mypy_checks.install_mypy_prerequisites(False)
-
-    def test_install_mypy_prerequisites_with_wrong_script(self) -> None:
-        with self.popen_swap_failure:
-            with self.swap(
-                run_mypy_checks, 'MYPY_REQUIREMENTS_FILE_PATH', 'scripts.wrong'
-            ):
-                code, _ = run_mypy_checks.install_mypy_prerequisites(False)
-                self.assertEqual(code, 1)
 
     def test_running_script_without_mypy_errors(self) -> None:
         with self.popen_swap_success:
