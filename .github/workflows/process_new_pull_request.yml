@@ -8,9 +8,6 @@ on:
   pull_request:
     types: [opened]
 
-
-permissions: write-all
-
 jobs:
   assign_reviewers:
     name: Assign Reviewers
