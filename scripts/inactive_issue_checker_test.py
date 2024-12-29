@@ -9,7 +9,7 @@ class TestCheckInactiveIssues(unittest.TestCase):
     """
 
     @patch("inactive_issue_checker.Github")
-    def test_unassign_inactive_issues(self, MockGithub):
+    def test_unassign_inactive_issues(self, MockGithub: any) -> None:
         """
         Test that inactive issues are unassigned correctly.
         """
@@ -36,7 +36,7 @@ class TestCheckInactiveIssues(unittest.TestCase):
         )
 
     @patch("inactive_issue_checker.Github")
-    def test_skip_active_issues(self, MockGithub):
+    def test_unassign_inactive_issues(self, MockGithub: any) -> None:
         """
         Test that active issues are not unassigned.
         """
@@ -57,7 +57,7 @@ class TestCheckInactiveIssues(unittest.TestCase):
         mock_issue.create_comment.assert_not_called()
 
     @patch("inactive_issue_checker.Github")
-    def test_skip_issues_with_open_prs(self, MockGithub):
+    def test_unassign_inactive_issues(self, MockGithub: any) -> None:
         """
         Test that issues with related open PRs are not unassigned.
         """
@@ -81,7 +81,7 @@ class TestCheckInactiveIssues(unittest.TestCase):
         mock_issue.create_comment.assert_not_called()
 
     @patch("inactive_issue_checker.Github")
-    def test_skip_issues_assigned_to_collaborators(self, MockGithub):
+    def test_unassign_inactive_issues(self, MockGithub: any) -> None:
         """
         Test that issues assigned to collaborators are not unassigned.
         """

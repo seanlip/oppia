@@ -4,7 +4,7 @@ from github import Github
 
 INACTIVE_DAYS = 7  
 
-def check_inactive_issues(github_token, repo_owner, repo_name):
+def check_inactive_issues(github_token: str, repo_owner: str, repo_name: str) -> None:
     """
     Check for inactive issues in the given repository and unassign them if necessary.
     """
