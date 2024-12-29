@@ -20,15 +20,15 @@ runs:
       shell: bash
     - name: Write the exact Python version to a file for cache-busting.
       run: |
-        echo "${{ steps.setup_python.outputs.python-version }}" > ".pyversion"
+        echo "${{ steps.setup_python.outputs.python-version }}" > /home/runner/work/.pyversion
       shell: bash
     - name: Cache Python dev dependencies
       id: restore_python_dev_dependencies_cache
       uses: actions/cache@v4
       with:
-        key: ${{ runner.os }}-proddeps-${{ hashFiles('.pyversion', 'requirements_dev.txt') }}
+        key: ${{ runner.os }}-proddeps-${{ hashFiles('/home/runner/work/.pyversion', 'requirements_dev.txt') }}
         path: |
-          /opt/hostedtoolcache/Python/3.9.20/x64/lib/python3.9/site-packages
+          /opt/hostedtoolcache/Python/3.9.20/x64
     - name: Install third-party Python dev dependencies
       if: steps.restore_python_dev_dependencies_cache.outputs.cache-hit == false
       uses: nick-fields/retry@v3
@@ -44,4 +44,5 @@ runs:
       run: |
         pip show certifi
         ls -la /opt/hostedtoolcache/Python/3.9.20/x64/lib/python3.9/site-packages
+        ls -la /opt/hostedtoolcache/Python/3.9.20/x64/bin
       shell: bash
