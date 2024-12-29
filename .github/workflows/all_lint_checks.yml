@@ -1,4 +1,5 @@
 name: Lint checks
+permissions: read-all
 on:
   merge_group:
     types: [checks_requested]
@@ -11,6 +12,9 @@ on:
       - develop
       - release-*
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
 jobs:
   backend_lint:
     name: Backend
