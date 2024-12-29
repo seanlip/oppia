@@ -70,10 +70,6 @@ module.exports = {
       '/pages/contributor-dashboard-page/' +
       'contributor-dashboard-page.import.ts',
     error: commonPrefix + '/pages/error-pages/error-page.import.ts',
-    error_iframed:
-      commonPrefix +
-      '/pages/error-pages/error-iframed-page/' +
-      'error-iframed-page.import.ts',
     exploration_editor:
       commonPrefix +
       '/pages/exploration-editor-page/' +
@@ -90,10 +86,6 @@ module.exports = {
       commonPrefix + '/pages/skill-editor-page/skill-editor-page.import.ts',
     topic_editor:
       commonPrefix + '/pages/topic-editor-page/topic-editor-page.import.ts',
-    topics_and_skills_dashboard:
-      commonPrefix +
-      '/pages/topics-and-skills-dashboard-page/' +
-      'topics-and-skills-dashboard-page.import.ts',
   },
 
   /**
@@ -132,17 +124,6 @@ module.exports = {
         commonPrefix +
         '/pages/contributor-dashboard-page/' +
         'contributor-dashboard-page.mainpage.html',
-      minify: htmlMinifyConfig,
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['error_iframed'],
-      filename: 'error-iframed.mainpage.html',
-      meta: defaultMeta,
-      template:
-        commonPrefix +
-        '/pages/error-pages/error-iframed-page/' +
-        'error-iframed-page.mainpage.html',
       minify: htmlMinifyConfig,
       inject: false,
     }),
@@ -251,18 +232,6 @@ module.exports = {
         commonPrefix +
         '/pages/topic-editor-page/' +
         'topic-editor-page.mainpage.html',
-      minify: htmlMinifyConfig,
-      inject: false,
-    }),
-    new HtmlWebpackPlugin({
-      chunks: ['topics_and_skills_dashboard'],
-      filename: 'topics-and-skills-dashboard-page.mainpage.html',
-      hybrid: true,
-      meta: defaultMeta,
-      template:
-        commonPrefix +
-        '/pages/topics-and-skills-dashboard-page/' +
-        'topics-and-skills-dashboard-page.mainpage.html',
       minify: htmlMinifyConfig,
       inject: false,
     }),

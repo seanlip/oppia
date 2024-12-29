@@ -37,10 +37,10 @@ from urllib import request as urlrequest
 from core import feconf
 from core import utils
 from core.tests import test_utils
-from scripts import install_python_dev_dependencies
 from scripts import servers
 
 from typing import Generator, List, Literal, NoReturn
+import yaml
 
 from . import common
 
@@ -166,22 +166,6 @@ class CommonTests(test_utils.GenericTestBase):
             yield server.server_address[1]
         finally:
             server.server_close()
-
-    def test_protoc_version_matches_protobuf(self) -> None:
-        """Check that common.PROTOC_VERSION matches the version of protobuf in
-        requirements.in.
-        """
-        with open(
-            install_python_dev_dependencies.REQUIREMENTS_DEV_FILE_PATH,
-            'r',
-            encoding='utf-8',
-        ) as f:
-            for line in f:
-                if line.startswith('protobuf'):
-                    line = line.strip()
-                    protobuf_version = line.split('==')[1]
-                    break
-        self.assertEqual(common.PROTOC_VERSION, protobuf_version)
 
     def test_is_x64_architecture_in_x86(self) -> None:
         maxsize_swap = self.swap(sys, 'maxsize', 1)
@@ -1406,3 +1390,25 @@ class CommonTests(test_utils.GenericTestBase):
             self.assertEqual(
                 common.start_subprocess_for_result(['cmd']),
                 (b'test\n', b''))
+
+    def test_workflow_permissions_set_to_read_all(self) -> None:
+        workflows_dir = os.path.join(os.getcwd(), '.github', 'workflows')
+        self.assertTrue(
+            os.path.isdir(workflows_dir),
+            f'{workflows_dir} directory not found.'
+        )
+
+        for filename in os.listdir(workflows_dir):
+            if filename.endswith(('.yaml', '.yml')):
+                filepath = os.path.join(workflows_dir, filename)
+                with open(filepath, 'r', encoding='utf-8') as file:
+                    try:
+                        workflow_data = yaml.safe_load(file)
+                        permissions = workflow_data.get('permissions')
+                        self.assertEqual(
+                            permissions, 'read-all',
+                            f'Workflow file "{filename}" is missing a '
+                            '"permissions: read-all" field.'
+                        )
+                    except yaml.YAMLError as e:
+                        self.fail(f'Error parsing file "{filename}": {str(e)}')

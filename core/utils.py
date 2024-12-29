@@ -34,7 +34,6 @@ import time
 import unicodedata
 import urllib.parse
 import urllib.request
-import zlib
 
 from core import feconf
 from core.constants import constants
@@ -620,20 +619,6 @@ def get_time_in_millisecs(datetime_obj: datetime.datetime) -> float:
         float. The time in milliseconds since the Epoch.
     """
     return datetime_obj.timestamp() * 1000.0
-
-
-def convert_millisecs_time_to_datetime_object(
-        date_time_msecs: float) -> datetime.datetime:
-    """Returns the datetime object from the given date time in milliseconds.
-
-    Args:
-        date_time_msecs: float. Date time represented in milliseconds.
-
-    Returns:
-        datetime. An object of type datetime.datetime corresponding to
-        the given milliseconds.
-    """
-    return datetime.datetime.fromtimestamp(date_time_msecs / 1000.0)
 
 
 def convert_naive_datetime_to_string(datetime_obj: datetime.datetime) -> str:
@@ -1267,30 +1252,6 @@ def get_hashable_value(value: Any) -> Any:
             (k, get_hashable_value(v)) for k, v in value.items()))
     else:
         return value
-
-
-def compress_to_zlib(data: bytes) -> bytes:
-    """Compress the data to zlib format for efficient storage and communication.
-
-    Args:
-        data: str. Data to be compressed.
-
-    Returns:
-        str. Compressed data string.
-    """
-    return zlib.compress(data)
-
-
-def decompress_from_zlib(data: bytes) -> bytes:
-    """Decompress the zlib compressed data.
-
-    Args:
-        data: str. Data to be decompressed.
-
-    Returns:
-        str. Decompressed data string.
-    """
-    return zlib.decompress(data)
 
 
 # The mentioned types can be changed in future if they are inadequate to
