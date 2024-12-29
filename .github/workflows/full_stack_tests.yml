@@ -113,6 +113,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt install ffmpeg
+      - name: Generate modified suite name for artifacts
+        id: generate_suite_name_for_artifacts
+        # Replace slashes in the filename with hyphens.
+        run: |
+          SUITE_NAME=${{ matrix.suite.name }}
+          echo "MODIFIED_SUITE_NAME=${SUITE_NAME//\//_}" >> $GITHUB_OUTPUT
       - name: Run E2E Test ${{ matrix.suite.name }}
         uses: oppia/retry@a9fb265410e634c84ee90f3e87f323fde0541037
         with:
@@ -123,12 +129,6 @@ jobs:
             xvfb-run -a --server-args="-screen 0, 1285x1000x24"
             python -m scripts.run_e2e_tests --skip-install
             --skip-build --suite=${{ matrix.suite.name }} --prod_env
-      - name: Generate modified suite name for artifacts
-        id: generate_suite_name_for_artifacts
-        # Replace slashes in the filename with hyphens.
-        run: |
-          SUITE_NAME=${{ matrix.suite.name }}
-          echo "MODIFIED_SUITE_NAME=${SUITE_NAME//\//_}" >> $GITHUB_OUTPUT
       - name: Uploading webdriverio-video as Artifacts
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -170,14 +170,14 @@ jobs:
         uses: ./.github/actions/install-oppia-dependencies
       - name: Generate build files
         uses: ./.github/actions/generate-build-files
-      - name: Run Desktop Acceptance Test ${{ matrix.suite.name }}
-        run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" python -m scripts.run_acceptance_tests --skip-build --suite=${{ matrix.suite.name }} --prod_env
       - name: Generate modified suite name for artifacts
         id: generate_suite_name_for_artifacts
         # Replace slashes in the filename with underscores.
         run: |
           SUITE_NAME=${{ matrix.suite.name }}
           echo "MODIFIED_SUITE_NAME=${SUITE_NAME//\//_}" >> $GITHUB_OUTPUT
+      - name: Run Desktop Acceptance Test ${{ matrix.suite.name }}
+        run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" python -m scripts.run_acceptance_tests --skip-build --suite=${{ matrix.suite.name }} --prod_env
       - name: Uploading generated test to angular module mapping as an artifact
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -234,14 +234,14 @@ jobs:
           docker compose up angular-build -d
           # This is required as acceptance tests are run on the host machine and not in the docker container.
           sudo docker cp oppia-angular-build:/app/oppia/node_modules .
-      - name: Run Desktop Acceptance Test ${{ matrix.suite.name }}
-        run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" make run_tests.acceptance suite=${{ matrix.suite.name }}
       - name: Generate modified suite name for artifacts
         id: generate_suite_name_for_artifacts
         # Replace slashes in the filename with underscores.
         run: |
           SUITE_NAME=${{ matrix.suite.name }}
           echo "MODIFIED_SUITE_NAME=${SUITE_NAME//\//_}" >> $GITHUB_OUTPUT
+      - name: Run Desktop Acceptance Test ${{ matrix.suite.name }}
+        run: xvfb-run -a --server-args="-screen 0, 1285x1000x24" make run_tests.acceptance suite=${{ matrix.suite.name }}
       - name: Uploading generated test to angular module mapping as an artifact
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -369,15 +369,15 @@ jobs:
       - name: Install Chrome
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         uses: ./.github/actions/install-chrome
-      - name: Run Lighthouse performance checks (shard ${{ matrix.suite.name }})
-        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        run: python -m scripts.run_lighthouse_tests --mode performance --skip_build --record_screen --pages ${{ join(matrix.suite.pages_to_run, ',') }}
       - name: Generate modified suite name for artifacts
         id: generate_suite_name_for_artifacts
         # Replace slashes in the filename with underscores.
         run: |
           SUITE_NAME=${{ matrix.suite.name }}
           echo "MODIFIED_SUITE_NAME=${SUITE_NAME//\//_}" >> $GITHUB_OUTPUT
+      - name: Run Lighthouse performance checks (shard ${{ matrix.suite.name }})
+        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
+        run: python -m scripts.run_lighthouse_tests --mode performance --skip_build --record_screen --pages ${{ join(matrix.suite.pages_to_run, ',') }}
       - name: Uploading puppeteer video as artifact
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
