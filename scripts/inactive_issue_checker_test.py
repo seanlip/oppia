@@ -1,108 +1,122 @@
-import unittest
-from unittest.mock import MagicMock, patch
-from datetime import datetime, timedelta, timezone
-from inactive_issue_checker import check_inactive_issues
+# coding: utf-8
+#
+# Copyright 2023 The Oppia Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS-IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""Unit tests for scripts/install_dependencies_json_packages.py."""
+
+from __future__ import annotations
+
+# import unittest
+# from unittest.mock import unittest.mock.MagicMock, unittest.mock.patch, unittest.mock.Mock
+# from datetime.datetime import datetime.datetime, datetime.timedelta, datetime.timezone
+from inactive_issue_checker import inactive_issues
+import unittest.mock
+import datetime
 
 class TestCheckInactiveIssues(unittest.TestCase):
-    """
-    Test suite for the check_inactive_issues function.
-    """
-
-    @patch("inactive_issue_checker.Github")
-    def test_unassign_inactive_issues(self, MockGithub: any) -> None:
-        """
-        Test that inactive issues are unassigned correctly.
-        """
+    """Test suite for the check_inactive_issues function."""
+    
+    @unittest.mock.patch('inactive_issue_checker.Github')
+    def test_unassign_inactive_issues1(self, MockGithub: unittest.mock.Mock) -> None:
+        """Test that inactive issues are unassigned correctly."""
         mock_github = MockGithub.return_value
         mock_repo = mock_github.get_repo.return_value
-        mock_issue = MagicMock()
+        mock_issue = unittest.mock.MagicMock()
         mock_repo.get_issues.return_value = [mock_issue]
         mock_issue.number = 1
-        mock_issue.assignee = MagicMock()
-        mock_issue.assignee.login = "user123"
+        mock_issue.assignee = unittest.mock.MagicMock()
+        mock_issue.assignee.login = 'user123'
         mock_issue.get_events.return_value = [
-            MagicMock(created_at=datetime.now(timezone.utc) - timedelta(days=10))
+            unittest.mock.MagicMock(cr_at=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=10))
         ]
         mock_repo.get_collaborators.return_value = []
         mock_repo.get_pulls.return_value = []
 
-        check_inactive_issues("mock_token", "mock_owner", "mock_repo")
+        inactive_issues('mock_token', 'mock_owner', 'mock_repo')
 
-        mock_issue.remove_from_assignees.assert_called_once_with("user123")
+        mock_issue.remove_from_assignees.assert_called_once_with('user123')
         mock_issue.create_comment.assert_called_once_with(
-            "@user123 has been unassigned from this issue due to inactivity "
-            "for more than 7 days. If you'd like to continue working on this issue, "
-            "please request to be reassigned."
+            '@user123 has been unassigned from this issue due to inactivity '
+            'for more than 7 days. If you would like '
+            'to continue working on this issue, '
+            'please request to be reassigned.'
         )
 
-    @patch("inactive_issue_checker.Github")
-    def test_unassign_inactive_issues(self, MockGithub: any) -> None:
-        """
-        Test that active issues are not unassigned.
-        """
+    @unittest.mock.patch('inactive_issue_checker.Github')
+    def test_unassign_inactive_issues2(self, MockGithub: unittest.mock.Mock) -> None:
+        """Test that active issues are not unassigned."""
         mock_github = MockGithub.return_value
         mock_repo = mock_github.get_repo.return_value
-        mock_issue = MagicMock()
+        mock_issue = unittest.mock.MagicMock()
         mock_repo.get_issues.return_value = [mock_issue]
         mock_issue.number = 2
-        mock_issue.assignee = MagicMock()
-        mock_issue.assignee.login = "user456"
+        mock_issue.assignee = unittest.mock.MagicMock()
+        mock_issue.assignee.login = 'user456'
         mock_issue.get_events.return_value = [
-            MagicMock(created_at=datetime.now(timezone.utc) - timedelta(days=5))
+            unittest.mock.MagicMock(cr_at=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=10))
         ]
 
-        check_inactive_issues("mock_token", "mock_owner", "mock_repo")
+        inactive_issues('mock_token', 'mock_owner', 'mock_repo')
 
         mock_issue.remove_from_assignees.assert_not_called()
         mock_issue.create_comment.assert_not_called()
 
-    @patch("inactive_issue_checker.Github")
-    def test_unassign_inactive_issues(self, MockGithub: any) -> None:
-        """
-        Test that issues with related open PRs are not unassigned.
-        """
+    @unittest.mock.patch('inactive_issue_checker.Github')
+    def test_unassign_inactive_issues3(self, MockGithub: unittest.mock.Mock) -> None:
+        """Test that issues with related open PRs are not unassigned."""
         mock_github = MockGithub.return_value
         mock_repo = mock_github.get_repo.return_value
-        mock_issue = MagicMock()
+        mock_issue = unittest.mock.MagicMock()
         mock_repo.get_issues.return_value = [mock_issue]
         mock_issue.number = 3
-        mock_issue.assignee = MagicMock()
-        mock_issue.assignee.login = "user789"
+        mock_issue.assignee = unittest.mock.MagicMock()
+        mock_issue.assignee.login = 'user789'
         mock_issue.get_events.return_value = [
-            MagicMock(created_at=datetime.now(timezone.utc) - timedelta(days=10))
+            unittest.mock.MagicMock(cr_at=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=10))
         ]
         mock_repo.get_pulls.return_value = [
-            MagicMock(body="This fixes issue #3")
+            unittest.mock.MagicMock(body='This fixes issue #3')
         ]
 
-        check_inactive_issues("mock_token", "mock_owner", "mock_repo")
+        inactive_issues('mock_token', 'mock_owner', 'mock_repo')
 
         mock_issue.remove_from_assignees.assert_not_called()
         mock_issue.create_comment.assert_not_called()
 
-    @patch("inactive_issue_checker.Github")
-    def test_unassign_inactive_issues(self, MockGithub: any) -> None:
-        """
-        Test that issues assigned to collaborators are not unassigned.
-        """
+    @unittest.mock.patch('inactive_issue_checker.Github')
+    def test_unassign_inactive_issues4(self, MockGithub: unittest.mock.Mock) -> None:
+        """Test that issues assigned to collaborators are not unassigned."""
         mock_github = MockGithub.return_value
         mock_repo = mock_github.get_repo.return_value
-        mock_issue = MagicMock()
+        mock_issue = unittest.mock.MagicMock()
         mock_repo.get_issues.return_value = [mock_issue]
         mock_issue.number = 4
-        mock_issue.assignee = MagicMock()
-        mock_issue.assignee.login = "collaborator123"
+        mock_issue.assignee = unittest.mock.MagicMock()
+        mock_issue.assignee.login = 'collaborator123'
         mock_issue.get_events.return_value = [
-            MagicMock(created_at=datetime.now(timezone.utc) - timedelta(days=10))
+            unittest.mock.MagicMock(cr_at=datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=10))
         ]
         mock_repo.get_collaborators.return_value = [
-            MagicMock(login="collaborator123")
+            unittest.mock.MagicMock(login='collaborator123')
         ]
 
-        check_inactive_issues("mock_token", "mock_owner", "mock_repo")
+        inactive_issues('mock_token', 'mock_owner', 'mock_repo')
 
         mock_issue.remove_from_assignees.assert_not_called()
         mock_issue.create_comment.assert_not_called()
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     unittest.main()
