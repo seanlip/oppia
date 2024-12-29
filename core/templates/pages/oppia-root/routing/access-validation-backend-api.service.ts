@@ -172,7 +172,8 @@ export class AccessValidationBackendApiService {
 
   validateAccessToPracticeSessionPage(
     classroomUrlFragment: string,
-    topicUrlFragment: string
+    topicUrlFragment: string,
+    selectedSubtopicIds: string
   ): Promise<void> {
     let url = this.urlInterpolationService.interpolateUrl(
       this.PRACTICE_SESSION_PAGE_ACCESS_VALIDATOR,
@@ -181,7 +182,8 @@ export class AccessValidationBackendApiService {
         topic_url_fragment: topicUrlFragment,
       }
     );
-    return this.http.get<void>(url).toPromise();
+    const params = new HttpParams().set('selected_subtopic_ids', selectedSubtopicIds);
+    return this.http.get<void>(url, {params}).toPromise();
   }
 
   validateAccessToClassroomPage(classroomUrlFragment: string): Promise<void> {

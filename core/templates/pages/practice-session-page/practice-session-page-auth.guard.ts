@@ -41,6 +41,7 @@ export class PracticeSessionAccessGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Promise<boolean> {
+    const selectedSubtopicIds = route.queryParams.selected_subtopic_ids;
     let classroomUrlFragment =
       route.paramMap.get('classroom_url_fragment') || '';
     let topicUrlFragment = route.paramMap.get('topic_url_fragment') || '';
@@ -48,7 +49,8 @@ export class PracticeSessionAccessGuard implements CanActivate {
       this.accessValidationBackendApiService
         .validateAccessToPracticeSessionPage(
           classroomUrlFragment,
-          topicUrlFragment
+          topicUrlFragment,
+          selectedSubtopicIds
         )
         .then(() => {
           resolve(true);

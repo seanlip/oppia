@@ -88,6 +88,53 @@ class ClassroomPageAccessValidationHandlerTests(test_utils.GenericTestBase):
 
 class PracticeSessionPageValidationHandlerTests(BasePracticeSessionsControllerTests):
 
+    def setUp(self) -> None:
+        """Completes the sign-up process for the various users."""
+        super().setUp()
+        self.signup(self.CURRICULUM_ADMIN_EMAIL, self.CURRICULUM_ADMIN_USERNAME)
+        self.admin_id = self.get_user_id_from_email(self.CURRICULUM_ADMIN_EMAIL)
+        self.set_curriculum_admins([self.CURRICULUM_ADMIN_USERNAME])
+        self.admin = user_services.get_user_actions_info(self.admin_id)
+
+        self.topic_id = 'topic'
+        self.topic_id_1 = 'topic1'
+        self.skill_id1 = 'skill_id_1'
+        self.skill_id2 = 'skill_id_2'
+
+        self.save_new_skill(
+            self.skill_id1, self.admin_id, description='Skill 1')
+        self.save_new_skill(
+            self.skill_id2, self.admin_id, description='Skill 2')
+
+        self.topic = topic_domain.Topic.create_default_topic(
+            self.topic_id, 'public_topic_name',
+            'public-topic-name', 'description', 'fragm')
+        self.topic.subtopics.append(topic_domain.Subtopic(
+            1, 'subtopic_name', [self.skill_id1], 'image.svg',
+            constants.ALLOWED_THUMBNAIL_BG_COLORS['subtopic'][0], 21131,
+            'subtopic-name-one'))
+        self.topic.subtopics.append(topic_domain.Subtopic(
+            2, 'subtopic_name_2', [self.skill_id2], 'image.svg',
+            constants.ALLOWED_THUMBNAIL_BG_COLORS['subtopic'][0], 21131,
+            'subtopic-name-two'))
+        self.topic.next_subtopic_id = 3
+        self.topic.skill_ids_for_diagnostic_test = [self.skill_id1]
+        self.topic.thumbnail_filename = 'Topic.svg'
+        self.topic.thumbnail_bg_color = (
+            constants.ALLOWED_THUMBNAIL_BG_COLORS['topic'][0])
+        topic_services.save_new_topic(self.admin_id, self.topic)
+
+        self.topic = topic_domain.Topic.create_default_topic(
+            self.topic_id_1, 'private_topic_name',
+            'private-topic-name', 'description', 'fragm')
+        self.topic.thumbnail_filename = 'Topic.svg'
+        self.topic.thumbnail_bg_color = (
+            constants.ALLOWED_THUMBNAIL_BG_COLORS['topic'][0])
+        topic_services.save_new_topic(self.admin_id, self.topic)
+
+        topic_services.publish_topic(self.topic_id, self.admin_id)
+
+
     def test_any_user_can_access_practice_sessions_page(self) -> None:
         self.get_html_response(
             '/learn/staging/public-topic-name/practice/session?'

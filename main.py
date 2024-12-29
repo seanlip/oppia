@@ -1235,6 +1235,13 @@ URLS.extend((
         oppia_root.OppiaRootPage
     ),
     get_redirect_route(
+        r'%s%s' % (
+            feconf.TOPIC_VIEWER_URL_PREFIX,
+            feconf.PRACTICE_SESSION_URL_PREFIX,
+        ),
+        oppia_root.OppiaRootPage
+    ),
+    get_redirect_route(
         r'%s/story' % feconf.TOPIC_VIEWER_URL_PREFIX,
         oppia_root.OppiaRootPage
     ),
