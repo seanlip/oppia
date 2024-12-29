@@ -18,24 +18,16 @@
 
 from __future__ import annotations
 
-import os
-import site
 import subprocess
 
 from core import feconf
 from core.tests import test_utils
-from scripts import install_third_party_libs
 from scripts import run_mypy_checks
 
 from typing import Final, List, Optional, Tuple
 
 PYTHON_CMD: Final = 'python3'
 MYPY_SCRIPT_MODULE: Final = 'scripts.run_mypy_checks'
-
-
-def mock_install_third_party_libs_main() -> None:
-    """Mock for install_third_party_libs."""
-    return
 
 
 class Ret:
@@ -58,9 +50,6 @@ class MypyScriptChecks(test_utils.GenericTestBase):
     def setUp(self) -> None:
         super().setUp()
 
-        self.install_swap = self.swap_with_checks(
-            install_third_party_libs, 'main',
-            mock_install_third_party_libs_main)
         self.oppia_is_dockerized_swap = self.swap(
             feconf, 'OPPIA_IS_DOCKERIZED', False)
 
@@ -91,50 +80,14 @@ class MypyScriptChecks(test_utils.GenericTestBase):
         self.popen_swap_failure = self.swap(
             subprocess, 'Popen', mock_popen_failure)
 
-        self.install_mypy_prereq_swap_success = self.swap(
-            run_mypy_checks,
-            'install_mypy_prerequisites',
-            lambda _: (0, 'exec')
-        )
-        self.install_mypy_prereq_swap_failure = self.swap(
-            run_mypy_checks,
-            'install_mypy_prerequisites',
-            lambda _: (1, 'exec')
-        )
-
         self.directories_swap = self.swap(
             run_mypy_checks, 'EXCLUDED_DIRECTORIES',
             ['dir1/', 'dir2/'])
 
-        def mock_install_mypy_prerequisites_success(
-            unused_ci: bool
-        ) -> Tuple[int, str]:
-            return (0, self.mypy_cmd_path)
-        self.swap_install_success = self.swap(
-            run_mypy_checks, 'install_mypy_prerequisites',
-            mock_install_mypy_prerequisites_success)
-
-        def mock_popen_user_prefix_error_call(
-            cmd_tokens: List[str], *unused_args: str, **unused_kwargs: str
-        ) -> Ret:
-            return Ret(cmd_tokens)
-
-        self.popen_swap_user_prefix_error = self.swap(
-            subprocess, 'Popen', mock_popen_user_prefix_error_call)
-
-        self.mypy_cmd_path = os.path.join(
-            os.getcwd(), 'third_party', 'python3_libs', 'bin', 'mypy')
-
-        def mock_install_mypy_prerequisites(unused_ci: bool) -> Tuple[int, str]:
-            return (0, self.mypy_cmd_path)
-        self.mypy_install_swap = self.swap_with_checks(
-            run_mypy_checks, 'install_mypy_prerequisites',
-            mock_install_mypy_prerequisites)
-
     def test_get_mypy_cmd_without_files(self) -> None:
         expected_cmd = [
-            self.mypy_cmd_path, '--exclude', 'dir1/|dir2/',
-            '--config-file', './mypy.ini', '.'
+            'mypy', '--exclude', 'dir1/|dir2/', '--config-file', './mypy.ini',
+            '.'
         ]
         with self.directories_swap:
             cmd = run_mypy_checks.get_mypy_cmd(None)
@@ -142,8 +95,7 @@ class MypyScriptChecks(test_utils.GenericTestBase):
 
     def test_get_mypy_cmd_with_files(self) -> None:
         expected_cmd = [
-            self.mypy_cmd_path, '--config-file', './mypy.ini',
-            'file1.py', 'file2.py'
+            'mypy', '--config-file', './mypy.ini', 'file1.py', 'file2.py'
         ]
         with self.directories_swap:
             cmd = run_mypy_checks.get_mypy_cmd(['file1.py', 'file2.py'])
@@ -166,41 +118,23 @@ class MypyScriptChecks(test_utils.GenericTestBase):
     def test_main_with_files_without_mypy_errors(self) -> None:
         with self.oppia_is_dockerized_swap:
             with self.popen_swap_success:
-                with self.install_swap, self.install_mypy_prereq_swap_success:
-                    process = run_mypy_checks.main(args=[
-                        '--files', 'file1.py'])
-                    self.assertEqual(process, 0)
+                process = run_mypy_checks.main(args=[
+                    '--files', 'file1.py'])
+                self.assertEqual(process, 0)
 
     def test_main_without_mypy_errors(self) -> None:
         with self.swap(feconf, 'OPPIA_IS_DOCKERIZED', False):
             with self.popen_swap_success:
-                with self.install_swap, self.install_mypy_prereq_swap_success:
-                    process = run_mypy_checks.main(args=[])
-                    self.assertEqual(process, 0)
+                process = run_mypy_checks.main(args=[])
+                self.assertEqual(process, 0)
 
     def test_main_with_files_with_mypy_errors(self) -> None:
         with self.oppia_is_dockerized_swap:
-            with self.install_mypy_prereq_swap_success:
-                with self.install_swap, self.popen_swap_failure:
-                    with self.assertRaisesRegex(SystemExit, '2'):
-                        run_mypy_checks.main(args=['--files', 'file1.py'])
+            with self.assertRaisesRegex(SystemExit, '1'):
+                run_mypy_checks.main(args=['--files', 'file1.py'])
 
     def test_main_failure_due_to_mypy_errors(self) -> None:
         with self.oppia_is_dockerized_swap:
             with self.popen_swap_failure:
-                with self.install_swap, self.install_mypy_prereq_swap_success:
-                    with self.assertRaisesRegex(SystemExit, '2'):
-                        run_mypy_checks.main(args=[])
-
-    def test_main_with_install_prerequisites_success(self) -> None:
-        with self.oppia_is_dockerized_swap:
-            with self.popen_swap_success, self.install_swap:
-                with self.mypy_install_swap:
-                    process = run_mypy_checks.main(args=[])
-                    self.assertEqual(process, 0)
-
-    def test_main_with_install_prerequisites_failure(self) -> None:
-        with self.swap(feconf, 'OPPIA_IS_DOCKERIZED', False):
-            with self.popen_swap_failure, self.install_swap:
                 with self.assertRaisesRegex(SystemExit, '1'):
                     run_mypy_checks.main(args=[])

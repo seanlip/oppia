@@ -106,7 +106,7 @@ def main(args: Optional[List[str]] = None) -> int:
             'Mypy type checks unsuccessful. Please fix the errors. '
             'For more information, visit: '
             'https://github.com/oppia/oppia/wiki/Backend-Type-Annotations')
-        sys.exit(2)
+        sys.exit(1)
     return process.returncode
 
 
