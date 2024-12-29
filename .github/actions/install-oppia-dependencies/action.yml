@@ -45,7 +45,11 @@ runs:
         # We don't use the restore-keys option, since the hash in the key
         # should fully define the cache. See https://stackoverflow.com/a/74620917
         # for some useful context on cases in which restore-keys is useful.
-        key: ${{ runner.os }}-proddeps-${{ hashFiles('/home/runner/work/.pyversion', 'yarn.lock', 'requirements_dev.txt', 'requirements.txt', 'dependencies.json') }}
+        #
+        # Note that we need to include install_python_dev_dependencies.py in
+        # the cache key because it has the version numbers for pip, pip-tools
+        # and setuptools.
+        key: ${{ runner.os }}-proddeps-${{ hashFiles('/home/runner/work/.pyversion', 'yarn.lock', 'requirements_dev.txt', 'requirements.txt', 'dependencies.json',  'scripts/install_python_dev_dependencies.py') }}
         path: |
           /home/runner/work/oppia/oppia_tools
           /home/runner/work/oppia/yarn_cache

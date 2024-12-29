@@ -25,8 +25,10 @@ runs:
     - name: Cache Python dev dependencies
       id: restore_python_dev_dependencies_cache
       uses: actions/cache@v4
+      # We need to include install_python_dev_dependencies.py in the cache key
+      # because it has the version numbers for pip, pip-tools and setuptools.
       with:
-        key: ${{ runner.os }}-proddeps-${{ hashFiles('/home/runner/work/.pyversion', 'requirements_dev.txt') }}
+        key: ${{ runner.os }}-proddeps-${{ hashFiles('/home/runner/work/.pyversion', 'requirements_dev.txt', 'scripts/install_python_dev_dependencies.py') }}
         path: |
           /opt/hostedtoolcache/Python/3.9.20/x64
     - name: Install third-party Python dev dependencies
