@@ -977,7 +977,7 @@ class UtilsTests(test_utils.GenericTestBase):
             'The given binary string does not represent a webp image.'
         ):
             utils.convert_image_binary_to_data_url(
-            file_contents_png, 'webp')
+                file_contents_png, 'webp')
 
     def test_get_exploration_components_from_dir_with_yaml_content(self) -> None: # pylint: disable=line-too-long
         img1_path = 'images/sample_Img.svg'

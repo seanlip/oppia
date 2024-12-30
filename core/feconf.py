@@ -405,7 +405,7 @@ DEFAULT_ABBREVIATED_TOPIC_NAME = ''
 # Default content id for the subtopic page's content.
 DEFAULT_SUBTOPIC_PAGE_CONTENT_ID = 'content'
 
-IMAGE_FORMAT_JPEG = 'jpeg'
+IMAGE_FORMAT_JPEG = 'jpg'
 IMAGE_FORMAT_PNG = 'png'
 IMAGE_FORMAT_GIF = 'gif'
 IMAGE_FORMAT_SVG = 'svg'

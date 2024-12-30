@@ -363,7 +363,8 @@ class AssetDevHandlerImageTests(test_utils.GenericTestBase):
         )
         self.assertEqual(response_dict['status_code'], 400)
         self.assertEqual(
-            response_dict['error'], 'Image not recognized or unsupported format'
+            response_dict['error'],
+            'Image not recognized or uses unsupported format'
         )
 
         self.logout()

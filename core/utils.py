@@ -452,8 +452,8 @@ def convert_image_binary_to_data_url(
         Exception. The given binary string does not represent a PNG image.
         Exception. The given binary string does not represent a WEBP image.
     """
-    kind = filetype.guess(content)
-    if kind is None or kind.extension != file_type:
+    file_details = filetype.guess(content)
+    if file_details is None or file_details.extension != file_type:
         raise Exception(
             'The given binary string does not represent a %s image.' 
             % file_type)

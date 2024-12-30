@@ -88,16 +88,17 @@ def validate_image_and_filename(
                 'The svg tag does not contains the \'xmlns\' attribute.')
     else:
         # Verify that the data is recognized as an image.
-        kind = filetype.guess(raw_image)
+        file_details = filetype.guess(raw_image)
         if (
-            kind is None or
-            kind.extension not in feconf.ACCEPTED_IMAGE_FORMATS_AND_EXTENSIONS
+            file_details is None or
+            file_details.extension not in
+            feconf.ACCEPTED_IMAGE_FORMATS_AND_EXTENSIONS
         ):
             raise utils.ValidationError(
-                'Image not recognized or unsupported format'
+                'Image not recognized or uses unsupported format'
             )
 
-        file_format = kind.extension
+        file_format = file_details.extension
 
     # Verify that the file type matches the supplied extension.
     if not filename:
