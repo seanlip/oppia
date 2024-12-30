@@ -1278,6 +1278,7 @@ class ExplorationDeletionRightsTests(BaseEditorControllerTests):
             self.login(self.OWNER_EMAIL)
             self.delete_json(
                 '/createhandler/data/%s' % exp_id)
+
             # TODO(release-scripts#137): Update once project ID is verified on
             # all servers.
             self.assertEqual(observed_log_messages, [

@@ -108,7 +108,13 @@ def send_email_to_recipients(
         platform_parameter_services.get_platform_parameter_value(
             platform_parameter_list.ParamName.MAILGUN_DOMAIN_NAME.value))
     if not mailgun_domain_name:
-        raise Exception('Mailgun domain name is not set.')
+        email_msg = email_services.convert_email_to_loggable_string(
+            sender_email, recipient_emails, subject, plaintext_body, html_body,
+            bcc, reply_to, recipient_variables
+        )
+        raise Exception(
+            'Mailgun domain name is not set. '
+            'Here is the email that failed sending: %s' % email_msg)
 
     # To send bulk emails we pass list of recipients in 'to' paarameter of
     # post data. Maximum limit of recipients per request is 1000.
