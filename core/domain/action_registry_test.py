@@ -26,7 +26,7 @@ class ActionRegistryUnitTests(test_utils.GenericTestBase):
 
     @mock.patch('core.domain.action_registry.Registry.get_all_action_types')
     @mock.patch('importlib.import_module')
-    def test_ancestors_name(
+    def test_refresh_with_mock_classes_has_no_actions(
         self,
         mock_import_module: mock.MagicMock,
         mock_get_all_action_types: mock.MagicMock
@@ -68,14 +68,7 @@ class ActionRegistryUnitTests(test_utils.GenericTestBase):
 
         self.assertEqual(len(action_registry.Registry.get_all_actions()), 0)
 
-    def test_action_registry(self) -> None:
-        """Do some sanity checks on the action registry."""
-        self.assertEqual(
-            len(action_registry.Registry.get_all_actions()),
-            3
-        )
-
-    def test_action_registry_when_registry_not_empty(self) -> None:
+    def test_refresh_with_valid_actions_has_three_actions(self) -> None:
         """Do some sanity checks on the action registry."""
         refresh_method = getattr(action_registry.Registry, '_refresh')
         refresh_method()
