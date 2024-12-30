@@ -306,10 +306,20 @@ jobs:
           # Replace the target string with the replacement string.
           sed -i 's/$SEARCH_TARGET/$REPLACEMENT/' $FILEPATH
           echo "Replaced '$SEARCH_TARGET' with '$REPLACEMENT' in $FILEPATH"
+          cat $FILEPATH
         shell: bash
       - name: Run Lighthouse accessibility checks shard ${{ matrix.suite.name }}
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        run: python -m scripts.run_lighthouse_tests --mode accessibility --pages ${{ join(matrix.suite.pages_to_run, ',') }}
+        run: |
+          cat $FILEPATH
+          python -m scripts.run_lighthouse_tests --mode accessibility --pages ${{ join(matrix.suite.pages_to_run, ',') }}
+          cat $FILEPATH
+        shell: bash
+      - name: Print Lighthouse file
+        run: |
+          FILEPATH=$GITHUB_WORKSPACE/node_modules/lighthouse/lighthouse-core/gather/gatherers/source-maps.js
+          cat $FILEPATH
+        shell: bash
       - name: Unpatch lighthouse to clean up files for the cache
         # This step is needed so that we don't poison our node_modules cache
         # with the changed lighthouse file. Note that the cache is only written
@@ -317,7 +327,7 @@ jobs:
         # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows#cache-hits-and-misses
         run: |
           # Undo the changes from the patch above.
-          echo $GITHUB_WORKSPACE
+          set -e
           FILEPATH=$GITHUB_WORKSPACE/node_modules/lighthouse/lighthouse-core/gather/gatherers/source-maps.js
           echo "Step 0"
           cat $FILEPATH
