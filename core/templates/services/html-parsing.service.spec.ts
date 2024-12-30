@@ -3,44 +3,71 @@ import {TestBed} from '@angular/core/testing';
 import {HtmlParsingService} from './html-parsing.service';
 
 describe('HtmlParsingService', () => {
-  let service: HtmlParsingService;
+  let htmlParsingService: HtmlParsingService;
+
+  const htmlWithImage = `
+    <p>Content with image</p>
+    <oppia-noninteractive-image
+      alt-with-value="&amp;quot;Image description&amp;quot;"
+      filepath-with-value="&amp;quot;img_20241109_030945_oc195e5356_height_350_width_450.svg&amp;quot;">
+    </oppia-noninteractive-image>
+  `;
+  const htmlWithoutImage = '<p>Content without image</p>';
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(HtmlParsingService);
+    htmlParsingService = TestBed.inject(HtmlParsingService);
   });
 
-  it('should count image tags in the given HTML string', () => {
-    const html = `<div>
-      <oppia-noninteractive-image filepath-with-value="img1"></oppia-noninteractive-image>
-      <oppia-noninteractive-image filepath-with-value="img2"></oppia-noninteractive-image>
-    </div>`;
-    expect(service.countImageTags(html)).toBe(2);
+  describe('countImageTags', () => {
+    it('should count image tags correctly when present', () => {
+      expect(htmlParsingService.countImageTags(htmlWithImage)).toBe(1);
+    });
+
+    it('should return 0 when no image tags are present', () => {
+      expect(htmlParsingService.countImageTags(htmlWithoutImage)).toBe(0);
+    });
+
+    it('should handle multiple image tags', () => {
+      const multipleImages = `${htmlWithImage}${htmlWithImage}`;
+      expect(htmlParsingService.countImageTags(multipleImages)).toBe(2);
+    });
+
+    it('should handle empty string input', () => {
+      expect(htmlParsingService.countImageTags('')).toBe(0);
+    });
   });
 
-  it('should return 0 if no image tags are present', () => {
-    const html = `<div>No images here!</div>`;
-    expect(service.countImageTags(html)).toBe(0);
-  });
+  describe('isImageRemoved', () => {
+    it('should return true when image is removed', () => {
+      expect(
+        htmlParsingService.isImageRemoved(htmlWithImage, htmlWithoutImage)
+      ).toBeTrue();
+    });
 
-  it('should return true if an image tag is removed', () => {
-    const initialHtml = `<div>
-      <oppia-noninteractive-image filepath-with-value="img1"></oppia-noninteractive-image>
-      <oppia-noninteractive-image filepath-with-value="img2"></oppia-noninteractive-image>
-    </div>`;
-    const currentHtml = `<div>
-      <oppia-noninteractive-image filepath-with-value="img1"></oppia-noninteractive-image>
-    </div>`;
-    expect(service.isImageRemoved(initialHtml, currentHtml)).toBe(true);
-  });
+    it('should return false when no images were initially present', () => {
+      expect(
+        htmlParsingService.isImageRemoved(htmlWithoutImage, htmlWithoutImage)
+      ).toBeFalse();
+    });
 
-  it('should return false if no image tags are removed', () => {
-    const initialHtml = `<div>
-      <oppia-noninteractive-image filepath-with-value="img1"></oppia-noninteractive-image>
-    </div>`;
-    const currentHtml = `<div>
-      <oppia-noninteractive-image filepath-with-value="img1"></oppia-noninteractive-image>
-    </div>`;
-    expect(service.isImageRemoved(initialHtml, currentHtml)).toBe(false);
+    it('should return false when image count remains the same', () => {
+      expect(
+        htmlParsingService.isImageRemoved(htmlWithImage, htmlWithImage)
+      ).toBeFalse();
+    });
+
+    it('should return false when images are added', () => {
+      expect(
+        htmlParsingService.isImageRemoved(htmlWithoutImage, htmlWithImage)
+      ).toBeFalse();
+    });
+
+    it('should handle multiple images being partially removed', () => {
+      const multipleImages = `${htmlWithImage}${htmlWithImage}`;
+      expect(
+        htmlParsingService.isImageRemoved(multipleImages, htmlWithImage)
+      ).toBeTrue();
+    });
   });
 });

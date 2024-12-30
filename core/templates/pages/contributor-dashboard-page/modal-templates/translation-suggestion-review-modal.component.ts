@@ -45,6 +45,7 @@ import {RteOutputDisplayComponent} from 'rich_text_components/rte-output-display
 import {UndoSnackbarComponent} from 'components/custom-snackbar/undo-snackbar.component';
 import {MatSnackBar, MatSnackBarRef} from '@angular/material/snack-bar';
 import {PlatformFeatureService} from 'services/platform-feature.service';
+import {HtmlParsingService} from 'services/html-parsing.service';
 
 interface HTMLSchema {
   type: string;
@@ -164,8 +165,6 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   currentSnackbarRef?: MatSnackBarRef<UndoSnackbarComponent>;
   isUndoFeatureEnabled: boolean = false;
   initialImageCount: number = 0;
-  private readonly IMAGE_TAG_REGEX =
-    /<oppia-noninteractive-image\b[^>]*?filepath-with-value=/g;
 
   @Input() altTextIsDisplayed: boolean = false;
 
@@ -210,7 +209,8 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     private userService: UserService,
     private validatorsService: ValidatorsService,
     private snackBar: MatSnackBar,
-    private platformFeatureService: PlatformFeatureService
+    private platformFeatureService: PlatformFeatureService,
+    private htmlParsingService: HtmlParsingService
   ) {}
 
   ngOnInit(): void {
@@ -250,8 +250,9 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     this.allContributions = this.suggestionIdToContribution;
     this.allContributions[this.activeSuggestionId] = this.activeContribution;
     this.refreshActiveContributionState();
-    const imageTags = this.translationHtml.match(this.IMAGE_TAG_REGEX);
-    this.initialImageCount = imageTags ? imageTags.length : 0;
+    this.initialImageCount = this.htmlParsingService.countImageTags(
+      this.translationHtml
+    );
 
     // The 'html' value is passed as an object as it is required for
     // schema-based-editor. Otherwise the corrrectly updated value for
@@ -374,23 +375,26 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   }
 
   isImageRemoved(): boolean {
-    const imageTags = this.editedContent.html.match(this.IMAGE_TAG_REGEX);
-    const currentImageCount = imageTags ? imageTags.length : 0;
-    return currentImageCount < this.initialImageCount;
+    return this.htmlParsingService.isImageRemoved(
+      this.translationHtml,
+      this.editedContent.html
+    );
   }
 
   get isUpdateDisabled(): boolean {
     return this.startedEditing && this.isImageRemoved();
   }
 
-  public getImageTagRegex(): RegExp {
-    return this.IMAGE_TAG_REGEX;
-  }
-
   updateSuggestion(): void {
     const updatedTranslation = this.editedContent.html;
     const suggestionId = this.activeSuggestion.suggestion_id;
-    if (this.initialImageCount > 0 && this.isImageRemoved()) {
+    if (
+      this.initialImageCount > 0 &&
+      this.htmlParsingService.isImageRemoved(
+        this.translationHtml,
+        updatedTranslation
+      )
+    ) {
       this.errorMessage =
         'Removing images from the translation is not allowed.';
       this.errorFound = true;

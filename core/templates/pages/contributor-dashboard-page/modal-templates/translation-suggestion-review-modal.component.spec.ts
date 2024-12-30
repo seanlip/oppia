@@ -49,6 +49,7 @@ import {of, Subject} from 'rxjs';
 import {RteOutputDisplayComponent} from 'rich_text_components/rte-output-display.component';
 import {UndoSnackbarComponent} from 'components/custom-snackbar/undo-snackbar.component';
 import {PlatformFeatureService} from 'services/platform-feature.service';
+import {HtmlParsingService} from '../../../services/html-parsing.service';
 
 class MockChangeDetectorRef {
   detectChanges(): void {}
@@ -83,6 +84,7 @@ describe('Translation Suggestion Review Modal Component', function () {
   let snackBarSpy: jasmine.Spy;
   let snackBar: MatSnackBar;
   let mockPlatformFeatureService = new MockPlatformFeatureService();
+  let htmlParsingService: HtmlParsingService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -99,6 +101,7 @@ describe('Translation Suggestion Review Modal Component', function () {
         SiteAnalyticsService,
         ThreadDataBackendApiService,
         UserService,
+        HtmlParsingService,
         {
           provide: ChangeDetectorRef,
           useValue: changeDetectorRef,
@@ -126,6 +129,7 @@ describe('Translation Suggestion Review Modal Component', function () {
     userService = TestBed.inject(UserService);
     contributionAndReviewService = TestBed.inject(ContributionAndReviewService);
     languageUtilService = TestBed.inject(LanguageUtilService);
+    htmlParsingService = TestBed.inject(HtmlParsingService);
 
     spyOn(
       siteAnalyticsService,
@@ -2796,153 +2800,54 @@ describe('Translation Suggestion Review Modal Component', function () {
       };
     });
 
-    it('should return the correct IMAGE_TAG_REGEX from the getter', () => {
-      const regexFromGetter = component.getImageTagRegex();
-      const matches = htmlWithImage.match(regexFromGetter);
-
-      expect(matches?.length).toBe(1);
-    });
-
-    it('should set the initial image count based on the translation HTML', () => {
-      component.ngOnInit();
-      const imageTags = htmlWithImage.match(component.getImageTagRegex());
-      const expectedImageCount = imageTags ? imageTags.length : 0;
-
-      expect(component.initialImageCount).toBe(expectedImageCount);
-    });
-
-    it('should correctly detect when an image is removed', () => {
-      component.translationHtml = htmlWithImage;
-
-      component.ngOnInit();
-
-      component.editedContent = {
-        html: htmlWithoutImage,
-      };
-      const isImageRemoved = component.isImageRemoved();
-
-      expect(isImageRemoved).toBeTrue();
-    });
-
-    it('should disable the update button if an image is removed', () => {
+    it('should initialize with correct image count', () => {
       component.translationHtml = htmlWithImage;
       component.ngOnInit();
+      expect(component.initialImageCount).toBe(1);
+    });
 
+    it('should disable update button when editing removes images', () => {
+      component.translationHtml = htmlWithImage;
+      component.ngOnInit();
       component.startedEditing = true;
-      component.editedContent = {
-        html: htmlWithoutImage,
-      };
-
+      component.editedContent = {html: htmlWithoutImage};
       expect(component.isUpdateDisabled).toBeTrue();
     });
 
-    it('should allow the update button if no image was initially present', () => {
-      component.initialSuggestionId = 'suggestion_2';
-      component.translationHtml = htmlWithoutImage;
-      component.ngOnInit();
-
-      component.startedEditing = true;
-      component.editedContent = {
-        html: htmlWithoutImage,
-      };
-
-      expect(component.isUpdateDisabled).toBeFalse();
-    });
-
-    it('should allow the update button if the image was not removed', () => {
-      component.translationHtml = htmlWithImage;
-      component.ngOnInit();
-
-      component.startedEditing = true;
-      component.editedContent = {
-        html: htmlWithImage,
-      };
-
-      expect(component.isUpdateDisabled).toBeFalse();
-    });
-
-    it('should allow the update button if images are added instead of being removed', () => {
-      component.initialSuggestionId = 'suggestion_2';
-      component.translationHtml = htmlWithoutImage;
-      component.ngOnInit();
-
-      component.startedEditing = true;
-      component.editedContent = {
-        html: htmlWithImage,
-      };
-
-      expect(component.isUpdateDisabled).toBeFalse();
-    });
-
-    it('should show an error and prevent update if an image is removed during translation update', () => {
+    it('should enable update button when no images were removed', () => {
       component.translationHtml = htmlWithImage;
       component.ngOnInit();
       component.startedEditing = true;
+      component.editedContent = {html: htmlWithImage};
+      expect(component.isUpdateDisabled).toBeFalse();
+    });
 
-      component.editedContent = {
-        html: htmlWithoutImage,
-      };
-
+    it('should show error message when attempting to update with removed images', () => {
+      component.translationHtml = htmlWithImage;
+      component.ngOnInit();
+      component.editedContent = {html: htmlWithoutImage};
       component.updateSuggestion();
-
       expect(component.errorMessage).toBe(
         'Removing images from the translation is not allowed.'
       );
       expect(component.errorFound).toBeTrue();
-      expect(component.isUpdateDisabled).toBeTrue();
     });
 
-    it('should return IMAGE_TAG_REGEX when getImageTagRegex is called', () => {
-      const regex = component.getImageTagRegex();
-      const matchingRegex =
-        /<oppia-noninteractive-image\b[^>]*?filepath-with-value=/g;
-      expect(regex).toEqual(matchingRegex);
-    });
-
-    it('should detect image removal correctly when images are present', () => {
-      component.translationHtml = htmlWithImage;
-      component.ngOnInit();
-
-      component.editedContent = {
-        html: htmlWithoutImage,
-      };
-      expect(component.isImageRemoved()).toBeTrue();
-    });
-
-    it('should return false for image removal when no images are present initially', () => {
+    it('should allow update when no images were present initially', () => {
       component.initialSuggestionId = 'suggestion_2';
       component.translationHtml = htmlWithoutImage;
       component.ngOnInit();
-
-      component.editedContent = {
-        html: htmlWithoutImage,
-      };
-      expect(component.isImageRemoved()).toBeFalse();
+      component.startedEditing = true;
+      component.editedContent = {html: htmlWithoutImage};
+      expect(component.isUpdateDisabled).toBeFalse();
     });
 
-    it('should return false for image removal if the number of images remains the same', () => {
-      component.translationHtml = htmlWithImage;
-      component.ngOnInit();
-
-      component.editedContent = {
-        html: htmlWithImage,
-      };
-      expect(component.isImageRemoved()).toBeFalse();
-    });
-
-    it('should set initialImageCount to 0 when no image tags are found', () => {
-      component.initialSuggestionId = 'suggestion_2';
+    it('should allow update when adding images', () => {
       component.translationHtml = htmlWithoutImage;
       component.ngOnInit();
-
-      expect(component.initialImageCount).toBe(0);
-    });
-
-    it('should set initialImageCount to the number of image tags found', () => {
-      component.translationHtml = htmlWithImage;
-      component.ngOnInit();
-
-      expect(component.initialImageCount).toBe(1);
+      component.startedEditing = true;
+      component.editedContent = {html: htmlWithImage};
+      expect(component.isUpdateDisabled).toBeFalse();
     });
   });
 });
