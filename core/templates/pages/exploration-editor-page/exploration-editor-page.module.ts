@@ -19,7 +19,7 @@
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
-import {JoyrideModule} from 'ngx-joyride';
+import {JoyrideModule, JoyrideService, LoggerService} from 'ngx-joyride';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatMenuModule} from '@angular/material/menu';
 import {SharedComponentsModule} from 'components/shared-component.module';
@@ -90,6 +90,66 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import 'third-party-imports/guppy.import';
 import 'third-party-imports/midi-js.import';
 import 'third-party-imports/skulpt.import';
+import {ExplorationSaveService} from './services/exploration-save.service';
+import {ExplorationObjectiveService} from './services/exploration-objective.service';
+import {ExplorationTitleService} from './services/exploration-title.service';
+import {FocusManagerService} from 'services/stateful/focus-manager.service';
+import {RouterService} from './services/router.service';
+import {ExplorationCategoryService} from './services/exploration-category.service';
+import {AutosaveInfoModalsService} from './services/autosave-info-modals.service';
+import {ExplorationStatesService} from './services/exploration-states.service';
+import {EntityTranslationsService} from 'services/entity-translations.services';
+import {PlatformFeatureService} from 'services/platform-feature.service';
+import {StateInteractionIdService} from 'components/state-editor/state-editor-properties-services/state-interaction-id.service';
+import {StateEditorService} from 'components/state-editor/state-editor-properties-services/state-editor.service';
+import {TranslationLanguageService} from './translation-tab/services/translation-language.service';
+import {ChangeListService} from './services/change-list.service';
+import {LanguageUtilService} from 'domain/utilities/language-util.service';
+import {ContextService} from 'services/context.service';
+import {ComputeGraphService} from 'services/compute-graph.service';
+import {StatesObjectFactory} from 'domain/exploration/StatesObjectFactory';
+import {GraphDataService} from './services/graph-data.service';
+import {ExplorationInitStateNameService} from './services/exploration-init-state-name.service';
+import {ExplorationWarningsService} from './services/exploration-warnings.service';
+import {ParameterMetadataService} from './services/parameter-metadata.service';
+import {ExplorationDataService} from './services/exploration-data.service';
+import {LoaderService} from 'services/loader.service';
+import {InternetConnectivityService} from 'services/internet-connectivity.service';
+import {AlertsService} from 'services/alerts.service';
+import {LocalStorageService} from 'services/local-storage.service';
+import {ExplorationDataBackendApiService} from './services/exploration-data-backend-api.service';
+import {ReadOnlyExplorationBackendApiService} from 'domain/exploration/read-only-exploration-backend-api.service';
+import {EditableExplorationBackendApiService} from 'domain/exploration/editable-exploration-backend-api.service';
+import {ExplorationPropertyService} from './services/exploration-property.service';
+import {EditabilityService} from 'services/editability.service';
+import {ExplorationHtmlFormatterService} from 'services/exploration-html-formatter.service';
+import {InteractionDetailsCacheService} from './editor-tab/services/interaction-details-cache.service';
+import {ResponsesService} from './editor-tab/services/responses.service';
+import {StateContentService} from 'components/state-editor/state-editor-properties-services/state-content.service';
+import {StateCustomizationArgsService} from 'components/state-editor/state-editor-properties-services/state-customization-args.service';
+import {GenerateContentIdService} from 'services/generate-content-id.service';
+import {StateSolutionService} from 'components/state-editor/state-editor-properties-services/state-solution.service';
+import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
+import {WindowDimensionsService} from 'services/contextual/window-dimensions.service';
+import {StateCardIsCheckpointService} from 'components/state-editor/state-editor-properties-services/state-card-is-checkpoint.service';
+import {StateHintsService} from 'components/state-editor/state-editor-properties-services/state-hints.service';
+import {StateLinkedSkillIdService} from 'components/state-editor/state-editor-properties-services/state-skill.service';
+import {StateNameService} from 'components/state-editor/state-editor-properties-services/state-name.service';
+import {StateParamChangesService} from 'components/state-editor/state-editor-properties-services/state-param-changes.service';
+import {StateSolicitAnswerDetailsService} from 'components/state-editor/state-editor-properties-services/state-solicit-answer-details.service';
+import {ExplorationNextContentIdIndexService} from './services/exploration-next-content-id-index.service';
+import {StateTutorialFirstTimeService} from './services/state-tutorial-first-time.service';
+import {SiteAnalyticsService} from 'services/site-analytics.service';
+import {UserExplorationPermissionsService} from './services/user-exploration-permissions.service';
+import {ExplorationFeaturesService} from 'services/exploration-features.service';
+import {StateEditorRefreshService} from './services/state-editor-refresh.service';
+import {VersionHistoryService} from './services/version-history.service';
+import {VersionHistoryBackendApiService} from './services/version-history-backend-api.service';
+import {SkillBackendApiService} from 'domain/skill/skill-backend-api.service';
+import {AnswerClassificationService} from 'pages/exploration-player-page/services/answer-classification.service';
+import {InteractionRulesRegistryService} from 'services/interaction-rules-registry.service';
+import {SolutionValidityService} from './editor-tab/services/solution-validity.service';
+import {ValidatorsService} from 'services/validators.service';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -224,6 +284,72 @@ import 'third-party-imports/skulpt.import';
     ExplorationEditorPageComponent,
     StateVersionHistoryComponent,
     ExplorationEditorPageRootComponent,
+  ],
+  providers: [
+    ExplorationSaveService,
+    ExplorationObjectiveService,
+    ExplorationTitleService,
+    FocusManagerService,
+    RouterService,
+    ExplorationCategoryService,
+    AutosaveInfoModalsService,
+    ExplorationStatesService,
+    EntityTranslationsService,
+    PlatformFeatureService,
+    StateInteractionIdService,
+    StateEditorService,
+    TranslationLanguageService,
+    ChangeListService,
+    LanguageUtilService,
+    ContextService,
+    ComputeGraphService,
+    StatesObjectFactory,
+    GraphDataService,
+    ExplorationInitStateNameService,
+    ExplorationWarningsService,
+    ParameterMetadataService,
+    ChangeListService,
+    ExplorationDataService,
+    LoaderService,
+    InternetConnectivityService,
+    AlertsService,
+    LoggerService,
+    ChangeListService,
+    LocalStorageService,
+    ExplorationDataBackendApiService,
+    ReadOnlyExplorationBackendApiService,
+    EditableExplorationBackendApiService,
+    ExplorationPropertyService,
+    EditabilityService,
+    ExplorationHtmlFormatterService,
+    InteractionDetailsCacheService,
+    ResponsesService,
+    StateContentService,
+    StateCustomizationArgsService,
+    GenerateContentIdService,
+    StateSolutionService,
+    UrlInterpolationService,
+    WindowDimensionsService,
+    StateCardIsCheckpointService,
+    StateHintsService,
+    StateLinkedSkillIdService,
+    StateNameService,
+    StateParamChangesService,
+    StateSolicitAnswerDetailsService,
+    ExplorationNextContentIdIndexService,
+    StateTutorialFirstTimeService,
+    SiteAnalyticsService,
+    UserExplorationPermissionsService,
+    ExplorationFeaturesService,
+    StateEditorRefreshService,
+    JoyrideService,
+    VersionHistoryService,
+    VersionHistoryBackendApiService,
+    SkillBackendApiService,
+    AnswerClassificationService,
+    InteractionRulesRegistryService,
+    SolutionValidityService,
+    ValidatorsService,
   ],
 })
 export class ExplorationEditorPageModule {}
