@@ -1,13 +1,8 @@
 name: Process New Pull Request
 
 on:
-  workflow_run:
-    workflows: ["Oppiabot"]
-    types:
-      - completed
   pull_request:
     types: [opened]
-
 
 permissions: read-all
 jobs:
