@@ -650,6 +650,17 @@ export class AdminBackendApiService {
     });
   }
 
+  async generateDummyStoriesAsync(
+    TopicId: string,
+    numberOfStories: number
+  ): Promise<void> {
+    return this._postRequestAsync(AdminPageConstants.ADMIN_HANDLER_URL, {
+      action: 'generate_dummy_stories',
+      topic_id: TopicId,
+      num_dummy_stories_to_generate: numberOfStories,
+    });
+  }
+
   async retrieveExplorationInteractionIdsAsync(
     expId: string
   ): Promise<ExplorationInteractionIdsBackendResponse> {
