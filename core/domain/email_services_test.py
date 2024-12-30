@@ -239,7 +239,7 @@ class EmailServicesTest(test_utils.EmailTestBase):
             ' contact us to report a bug at https://www.oppia.org/contact.')
         swap_send_email_to_recipients = self.swap(
             platform_email_services, 'send_email_to_recipients',
-            lambda *_: False)
+            lambda *_, **__: False)
         assert isinstance(self.admin_email_address, str)
         assert isinstance(self.system_email_address, str)
         recipients = [self.admin_email_address]
@@ -293,6 +293,8 @@ class EmailServicesTest(test_utils.EmailTestBase):
             Reply_to: None
             Recipient Variables:
                 Length: 0
+
+            Attachments: None
             """ % (
                 system_email_address, admin_email_address,
                 'subject', 4, 4))

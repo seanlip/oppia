@@ -83,7 +83,8 @@ def send_mail(
     subject: str,
     plaintext_body: str,
     html_body: str,
-    bcc_admin: bool = False
+    bcc_admin: bool = False,
+    attachments: Optional[List[Dict[str, str]]] = None
 ) -> None:
     """Sends an email.
 
@@ -102,6 +103,9 @@ def send_mail(
         html_body: str. The HTML body of the email. Must fit in a datastore
             entity. Format must be utf-8.
         bcc_admin: bool. Whether to bcc ADMIN_EMAIL_ADDRESS on the email.
+        attachments: list(dict)|None. Optional argument. A list of
+            dictionaries, where each dictionary includes the keys `filename`
+            and `path` with their corresponding values.
 
     Raises:
         Exception. The configuration in feconf.py forbids emails from being
@@ -134,7 +138,7 @@ def send_mail(
     bcc = [admin_email_address] if bcc_admin else None
     response = email_services.send_email_to_recipients(
         sender_email, [recipient_email], subject,
-        plaintext_body, html_body, bcc, '', None)
+        plaintext_body, html_body, bcc, '', None, attachments)
 
     if not response:
         raise Exception((
@@ -148,7 +152,8 @@ def send_bulk_mail(
     recipient_emails: List[str],
     subject: str,
     plaintext_body: str,
-    html_body: str
+    html_body: str,
+    attachments: Optional[List[Dict[str, str]]] = None
 ) -> None:
     """Sends emails to all recipients in recipient_emails.
 
@@ -166,6 +171,9 @@ def send_bulk_mail(
             utf-8.
         html_body: str. The HTML body of the email. Must fit in a datastore
             entity. Format must be utf-8.
+        attachments: list(dict)|None. Optional argument. A list of
+            dictionaries, where each dictionary includes the keys `filename`
+            and `path` with their corresponding values.
 
     Raises:
         Exception. The configuration in feconf.py forbids emails from being
@@ -194,7 +202,8 @@ def send_bulk_mail(
             'Malformed sender email address: %s' % sender_email)
 
     response = email_services.send_email_to_recipients(
-        sender_email, recipient_emails, subject, plaintext_body, html_body)
+        sender_email, recipient_emails, subject,
+        plaintext_body, html_body, attachments=attachments)
 
     if not response:
         raise Exception(
@@ -211,7 +220,8 @@ def convert_email_to_loggable_string(
         bcc: Optional[List[str]] = None,
         reply_to: Optional[str] = None,
         recipient_variables: Optional[
-            Dict[str, Dict[str, Union[str, float]]]] = None
+            Dict[str, Dict[str, Union[str, float]]]] = None,
+        attachments: Optional[List[Dict[str, str]]] = None
 ) -> str:
     """Generates a loggable email which can be printed to console in order
     to model sending an email in non production mode.
@@ -242,8 +252,11 @@ def convert_email_to_loggable_string(
                      "alice@example.com": {"first":"Alice", "id":2}}
                 subject = 'Hey, %recipient.first%'
             More info about this format at:
-            https://documentation.mailgun.com/en/
-                latest/user_manual.html#batch-sending
+                https://documentation.mailgun.com/en/latest/user_manual.html
+                #batch-sending.
+        attachments: list(dict)|None. Optional argument. A list of
+            dictionaries, where each dictionary includes the keys `filename`
+            and `path` with their corresponding values.
 
     Returns:
         str. The loggable email string.
@@ -255,6 +268,11 @@ def convert_email_to_loggable_string(
     if len(recipient_emails) > 3:
         recipient_email_list_str += (
             '... Total: %s emails.' % (str(len(recipient_emails))))
+
+    filenames = []
+    if attachments:
+        for attachment in attachments:
+            filenames.append(attachment['filename'])
 
     # Show the first 3 emails in bcc email list.
     if bcc:
@@ -289,6 +307,14 @@ def convert_email_to_loggable_string(
             bcc_email_list_str if bcc else 'None',
             reply_to if reply_to else 'None',
             len(recipient_variables) if recipient_variables else 0))
-    loggable_msg = textwrap.dedent(msg) + textwrap.dedent(
-        optional_msg_description)
+    attachments_msg_description = (
+        """
+        Attachments: %s
+        """ % (', '.join(filenames) if len(filenames) > 0 else 'None')
+    )
+    loggable_msg = (
+        textwrap.dedent(msg) +
+        textwrap.dedent(optional_msg_description) +
+        textwrap.dedent(attachments_msg_description)
+    )
     return loggable_msg

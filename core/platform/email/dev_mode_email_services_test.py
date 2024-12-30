@@ -71,6 +71,8 @@ class EmailTests(test_utils.GenericTestBase):
             Reply_to: None
             Recipient Variables:
                 Length: 0
+
+            Attachments: None
             """ % (
                 self.system_email_address, self.admin_email_address,
                 'subject', 4, 4))
@@ -130,10 +132,12 @@ class EmailTests(test_utils.GenericTestBase):
             Reply_to: %s
             Recipient Variables:
                 Length: %d
+
+            Attachments: %s
             """ % (
                 self.system_email_address, recipient_email_list_str,
                 'subject', 4, 4, bcc_email_list_str, '123',
-                len(recipient_variables)))
+                len(recipient_variables), 'attachment.txt'))
         logging_info_email_body = textwrap.dedent(msg_body)
         logging_info_notification = (
             'You are not currently sending out real emails since this is a '
@@ -148,7 +152,11 @@ class EmailTests(test_utils.GenericTestBase):
                 'subject', 'body', 'html',
                 bcc=['e@e.com', 'f@f.com', 'g@g.com', 'h@h.com'],
                 reply_to='123',
-                recipient_variables=recipient_variables)
+                recipient_variables=recipient_variables,
+                attachments=[{
+                    'filename': 'attachment.txt',
+                    'path': '/dummypath'
+                }])
         self.assertEqual(len(observed_log_messages), 2)
         self.assertEqual(
             observed_log_messages,
