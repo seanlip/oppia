@@ -287,65 +287,10 @@ jobs:
       - name: Install Chrome
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         uses: ./.github/actions/install-chrome
-      - name: Patch lighthouse to increase lighthouse timeout
-        run: |
-          # Replace the 1.5 second timeout in lighthouse for retrieving
-          # sourcemaps with a 10 second timeout. This timeout is not
-          # configurable through Lighthouse's exposed API, so we have
-          # resorted to patching the code instead.
-          set -e
-          FILEPATH=$GITHUB_WORKSPACE/node_modules/lighthouse/lighthouse-core/gather/gatherers/source-maps.js
-          SEARCH_TARGET="1500"
-          REPLACEMENT="10000"
-          occurrences=$(grep -c $SEARCH_TARGET $FILEPATH)
-          echo "Found $occurrences occurrences of '$SEARCH_TARGET'"
-          # Assert that there is only one match for the target string.
-          # If there are ever zero or multiple matches, the lighthouse
-          # code has changed and this logic needs to be reviewed.
-          [[ $occurrences == "1" ]]
-          # Replace the target string with the replacement string.
-          sed -i 's/$SEARCH_TARGET/$REPLACEMENT/' $FILEPATH
-          echo "Replaced '$SEARCH_TARGET' with '$REPLACEMENT' in $FILEPATH"
-          cat $FILEPATH
-        shell: bash
       - name: Run Lighthouse accessibility checks shard ${{ matrix.suite.name }}
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         run: |
-          cat $FILEPATH
           python -m scripts.run_lighthouse_tests --mode accessibility --pages ${{ join(matrix.suite.pages_to_run, ',') }}
-          cat $FILEPATH
-        shell: bash
-      - name: Print Lighthouse file
-        run: |
-          FILEPATH=$GITHUB_WORKSPACE/node_modules/lighthouse/lighthouse-core/gather/gatherers/source-maps.js
-          cat $FILEPATH
-        shell: bash
-      - name: Unpatch lighthouse to clean up files for the cache
-        # This step is needed so that we don't poison our node_modules cache
-        # with the changed lighthouse file. Note that the cache is only written
-        # to if the entire job completes successfully:
-        # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/caching-dependencies-to-speed-up-workflows#cache-hits-and-misses
-        run: |
-          # Undo the changes from the patch above.
-          set -e
-          FILEPATH=$GITHUB_WORKSPACE/node_modules/lighthouse/lighthouse-core/gather/gatherers/source-maps.js
-          echo "Step 0"
-          cat $FILEPATH
-          echo "Step 1"
-          SEARCH_TARGET="10000"
-          echo "Step 2"
-          REPLACEMENT="1500"
-          echo "Step 3"
-          occurrences=$(grep -c $SEARCH_TARGET $FILEPATH)
-          echo "Step 4"
-          echo "Found $occurrences occurrences of '$SEARCH_TARGET'"
-          # Assert that there is only one match for the target string.
-          # If there are ever zero or multiple matches, the lighthouse
-          # code has changed and this logic needs to be reviewed.
-          [[ $occurrences == "1" ]]
-          # Replace the target string with the replacement string.
-          sed -i 's/$SEARCH_TARGET/$REPLACEMENT/' $FILEPATH
-          echo "Replaced '$SEARCH_TARGET' with '$REPLACEMENT' in $FILEPATH"
         shell: bash
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
