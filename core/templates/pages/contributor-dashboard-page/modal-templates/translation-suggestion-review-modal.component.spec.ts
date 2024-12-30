@@ -84,7 +84,7 @@ describe('Translation Suggestion Review Modal Component', function () {
   let snackBarSpy: jasmine.Spy;
   let snackBar: MatSnackBar;
   let mockPlatformFeatureService = new MockPlatformFeatureService();
-  let htmlParsingService: HtmlParsingService;
+  let _htmlParsingService: HtmlParsingService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
