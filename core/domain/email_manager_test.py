@@ -31,6 +31,11 @@ from core.domain import platform_parameter_registry
 from core.domain import platform_parameter_services as param_services
 from core.domain import question_domain
 from core.domain import rights_domain
+from core.domain import story_domain
+from core.domain import subscription_services
+from core.domain import suggestion_registry
+from core.domain import suggestion_services
+from core.domain import translation_domain
 from core.domain import user_services
 from core.platform import models
 from core.tests import test_utils

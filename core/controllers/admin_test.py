@@ -534,11 +534,19 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
         collection_rights = rights_manager.get_collection_rights('0')
 
         self.assertTrue(collection_rights.community_owned)
+        # TODO(release-scripts#137): Update once project ID is verified on
+        # all servers.
         self.assertEqual(
             observed_log_messages,
             [
+                'Logging project ID for debugging: dev-project-id',
+                'Logging project ID for debugging: dev-project-id',
                 '[ADMIN] %s reloaded collection 0' % self.admin_id,
-                'Collection with id 0 was loaded.'
+                'Logging project ID for debugging: dev-project-id',
+                'Logging project ID for debugging: dev-project-id',
+                'Collection with id 0 was loaded.',
+                'Logging project ID for debugging: dev-project-id',
+                'Logging project ID for debugging: dev-project-id',
             ]
         )
 

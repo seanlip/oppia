@@ -1581,7 +1581,7 @@ def send_mail_to_notify_users_to_review(
     # Send email only if recipient wants to receive.
     if can_user_receive_email:
         email_footer = platform_parameter_services.get_platform_parameter_value(
-            EMAIL_FOOTER.name)
+            platform_parameter_list.ParamName.EMAIL_FOOTER.value)
         email_body = email_body_template % (
             recipient_username, category, email_footer)
         noreply_email_address = (

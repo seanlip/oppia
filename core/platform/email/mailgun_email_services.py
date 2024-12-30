@@ -25,7 +25,6 @@ from core import utils
 from core.domain import email_services
 from core.domain import platform_parameter_list
 from core.domain import platform_parameter_services
-from core.domain import email_services
 from core.platform import models
 
 from typing import Dict, List, Optional, Union

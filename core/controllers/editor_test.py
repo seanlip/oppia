@@ -1278,8 +1278,12 @@ class ExplorationDeletionRightsTests(BaseEditorControllerTests):
             self.login(self.OWNER_EMAIL)
             self.delete_json(
                 '/createhandler/data/%s' % exp_id)
-
+            # TODO(release-scripts#137): Update once project ID is verified on
+            # all servers.
             self.assertEqual(observed_log_messages, [
+                'Logging project ID for debugging: dev-project-id',
+                'Logging project ID for debugging: dev-project-id',
+                'Logging project ID for debugging: dev-project-id',
                 '(%s) %s tried to delete exploration %s' %
                 ([feconf.ROLE_ID_FULL_USER], self.owner_id, exp_id),
                 '(%s) %s deleted exploration %s' %
@@ -1297,7 +1301,12 @@ class ExplorationDeletionRightsTests(BaseEditorControllerTests):
 
             self.login(self.MODERATOR_EMAIL)
             self.delete_json('/createhandler/data/%s' % exp_id)
+            # TODO(release-scripts#137): Update once project ID is verified on
+            # all servers.
             self.assertEqual(observed_log_messages, [
+                'Logging project ID for debugging: dev-project-id',
+                'Logging project ID for debugging: dev-project-id',
+                'Logging project ID for debugging: dev-project-id',
                 '(%s) %s tried to delete exploration %s' % (
                     [feconf.ROLE_ID_FULL_USER, feconf.ROLE_ID_MODERATOR],
                     self.moderator_id, exp_id),
