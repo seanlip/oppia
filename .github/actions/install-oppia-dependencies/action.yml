@@ -54,7 +54,8 @@ runs:
           /home/runner/work/oppia/oppia_tools
           /home/runner/work/oppia/yarn_cache
           /home/runner/work/oppia/oppia/node_modules
-          /home/runner/work/oppia/oppia/third_party
+          /home/runner/work/oppia/oppia/third_party/python_libs
+          /home/runner/work/oppia/oppia/third_party/static
     - name: Install third-party libs on cache miss (retries on error)
       if: steps.restore_third_party_and_node_modules_cache.outputs.cache-hit == false
       uses: nick-fields/retry@v3
