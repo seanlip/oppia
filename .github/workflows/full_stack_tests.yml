@@ -86,11 +86,6 @@ jobs:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.suites }}
     name: E2E (${{ matrix.suite.name }})
     steps:
-      # Delete this step.
-      - name: Induce automatic failure.
-        run: |
-          exit 1
-        shell: bash
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
@@ -154,11 +149,6 @@ jobs:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.suites }}
     name: Acceptance (${{ matrix.suite.name }} -- Python installation)
     steps:
-      # Delete this step.
-      - name: Induce automatic failure.
-        run: |
-          exit 1
-        shell: bash
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
@@ -215,11 +205,6 @@ jobs:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.suites }}
     name: Acceptance (${{ matrix.suite.name }})
     steps:
-      # Delete this step.
-      - name: Induce automatic failure.
-        run: |
-          exit 1
-        shell: bash
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Merge develop and set up Python
@@ -307,11 +292,6 @@ jobs:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_performance.suites }}
     name: Lighthouse perf (shard ${{ matrix.suite.name }})
     steps:
-      # Delete this step.
-      - name: Induce automatic failure.
-        run: |
-          exit 1
-        shell: bash
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
