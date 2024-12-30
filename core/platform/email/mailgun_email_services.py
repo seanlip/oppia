@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import logging
 
-from core import feconf
 from core.domain import email_services
 from core.domain import platform_parameter_list
 from core.domain import platform_parameter_services
@@ -143,6 +142,7 @@ def send_email_to_recipients(
         # email to each recipient (This is intended to be a workaround for
         # sending individual emails).
         data['recipient_variables'] = recipient_variables or {}
+        assert isinstance(mailgun_domain_name, str)
         server = 'https://api.mailgun.net/v3/%s/messages' % (
             mailgun_domain_name
         )
