@@ -13,56 +13,67 @@
 // limitations under the License.
 
 /**
- * @fileoverview Component for language banner in the Learner Dashboard
- * page.
+ * @fileoverview Component for language banner.
  */
 
 import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
 import {Component, OnInit} from '@angular/core';
 import {downgradeComponent} from '@angular/upgrade/static';
-import {CookieService} from 'ngx-cookie';
-import {AppConstants} from 'app.constants';
+import {UserService} from 'services/user.service';
+import {LanguageBannerService} from './language-banner.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'language-banner',
   templateUrl: './language-banner.component.html',
 })
 export class LanguageBannerComponent implements OnInit {
-  COOKIE_NAME_COOKIES_ACKNOWLEDGED = 'OPPIA_COOKIES_ACKNOWLEDGED';
-  COOKIE_NAME_DO_NOT_SHOW_LANGUAGE_BANNER = 'DO_NOT_SHOW_LANGUAGE_BANNER';
-  isVisible: boolean = false;
-  isChecked: boolean = false;
+  isVisible: boolean;
+
   constructor(
-    private cookieService: CookieService,
-    private urlInterpolationService: UrlInterpolationService
+    private urlInterpolationService: UrlInterpolationService,
+    private userService: UserService,
+    private languageBannerService: LanguageBannerService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.isVisible = true;
-    return;
+    this.isVisible = false;
 
-    let cookieSetDateMsecs = this.cookieService.get(
-      this.COOKIE_NAME_COOKIES_ACKNOWLEDGED
-    );
-    if (
-      !cookieSetDateMsecs ||
-      Number(cookieSetDateMsecs) < AppConstants.COOKIE_POLICY_LAST_UPDATED_MSECS
-    ) {
-      return;
-    }
-    if (!this.cookieService.get(this.COOKIE_NAME_DO_NOT_SHOW_LANGUAGE_BANNER)) {
-      this.isVisible = navigator.language.slice(0, 2) !== 'en';
-    }
+    this.userService.getUserInfoAsync().then(userInfo => {
+      if (userInfo.isLoggedIn()) {
+        return;
+      }
+
+      if (this.router.url.startsWith('/login')) {
+        return;
+      }
+
+      if (!this.languageBannerService.hasAcceptedCookies()) {
+        return;
+      }
+
+      if (!(this.languageBannerService.getLanguageBannerCookieNum() == 0)) {
+        if (navigator.language.slice(0, 2) !== 'en') {
+          this.isVisible = true;
+
+          let remaining =
+            this.languageBannerService.getLanguageBannerCookieNum();
+          if (!remaining) {
+            this.languageBannerService.setLanguageBannerCookieNum(4);
+          } else {
+            this.languageBannerService.setLanguageBannerCookieNum(
+              remaining - 1
+            );
+          }
+        }
+      }
+    });
   }
 
   onButtonClick(): void {
+    this.languageBannerService.removeLanguageBanner();
     this.isVisible = false;
-    if (this.isChecked) {
-      this.cookieService.put(
-        this.COOKIE_NAME_DO_NOT_SHOW_LANGUAGE_BANNER,
-        'true'
-      );
-    }
   }
 
   getStaticImageUrl(imagePath: string): string {
