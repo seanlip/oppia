@@ -30,5 +30,5 @@ runs:
             repo: process.env.REPO,
             owner: process.env.OWNER,
             issue_number: process.env.ISSUE_NUMBER,
-            body: process.env.message
+            body: process.env.MESSAGE
           });
