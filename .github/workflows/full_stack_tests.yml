@@ -86,6 +86,11 @@ jobs:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.suites }}
     name: E2E (${{ matrix.suite.name }})
     steps:
+      # Delete this step.
+      - name: Induce automatic failure.
+        run: |
+          exit 1
+        shell: bash
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
@@ -149,6 +154,11 @@ jobs:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.python.suites }}
     name: Acceptance (${{ matrix.suite.name }} -- Python installation)
     steps:
+      # Delete this step.
+      - name: Induce automatic failure.
+        run: |
+          exit 1
+        shell: bash
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
@@ -205,6 +215,11 @@ jobs:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.suites }}
     name: Acceptance (${{ matrix.suite.name }})
     steps:
+      # Delete this step.
+      - name: Induce automatic failure.
+        run: |
+          exit 1
+        shell: bash
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Merge develop and set up Python
@@ -269,6 +284,9 @@ jobs:
         uses: ./.github/actions/merge-develop-and-setup-python
       - name: Install Oppia dependencies
         uses: ./.github/actions/install-oppia-dependencies
+      - name: Install Chrome
+        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
+        uses: ./.github/actions/install-chrome
       - name: Patch lighthouse to increase lighthouse timeout
         run: |
           # Replace the 1.5 second timeout in lighthouse for retrieving
@@ -289,9 +307,6 @@ jobs:
           sed -i 's/$SEARCH_TARGET/$REPLACEMENT/' $FILEPATH
           echo "Replaced '$SEARCH_TARGET' with '$REPLACEMENT' in $FILEPATH"
         shell: bash
-      - name: Install Chrome
-        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        uses: ./.github/actions/install-chrome
       - name: Run Lighthouse accessibility checks shard ${{ matrix.suite.name }}
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         run: python -m scripts.run_lighthouse_tests --mode accessibility --pages ${{ join(matrix.suite.pages_to_run, ',') }}
@@ -304,9 +319,15 @@ jobs:
           # Undo the changes from the patch above.
           echo $GITHUB_WORKSPACE
           FILEPATH=$GITHUB_WORKSPACE/node_modules/lighthouse/lighthouse-core/gather/gatherers/source-maps.js
+          echo "Step 0"
+          cat $FILEPATH
+          echo "Step 1"
           SEARCH_TARGET="10000"
+          echo "Step 2"
           REPLACEMENT="1500"
+          echo "Step 3"
           occurrences=$(grep -c $SEARCH_TARGET $FILEPATH)
+          echo "Step 4"
           echo "Found $occurrences occurrences of '$SEARCH_TARGET'"
           # Assert that there is only one match for the target string.
           # If there are ever zero or multiple matches, the lighthouse
@@ -331,6 +352,11 @@ jobs:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).lighthouse_performance.suites }}
     name: Lighthouse perf (shard ${{ matrix.suite.name }})
     steps:
+      # Delete this step.
+      - name: Induce automatic failure.
+        run: |
+          exit 1
+        shell: bash
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
