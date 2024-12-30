@@ -162,7 +162,7 @@ class TranslatedContent:
                 translated.
             content_format: TranslatableContentFormat. The format of the
                 content.
-            needs_update: bool. Whether the translation needs an update or not.
+            needs_update: bool. Whether the translated content needs an update.
         """
         self.content_value = content_value
         self.content_format = content_format
