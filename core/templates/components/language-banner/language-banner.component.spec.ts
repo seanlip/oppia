@@ -16,7 +16,13 @@
  * @fileoverview Unit tests for LanguageBannerComponent.
  */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import {LanguageBannerComponent} from './language-banner.component';
 import {FormsModule} from '@angular/forms';
 import {MockTranslatePipe} from 'tests/unit-test-utils';
@@ -24,120 +30,215 @@ import {CookieService, CookieModule} from 'ngx-cookie';
 import {AppConstants} from 'app.constants';
 import {DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
+import {UserService} from 'services/user.service';
+import {Router} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
+
+class MockUserService {
+  getUserInfoAsync() {
+    return Promise.resolve({
+      isLoggedIn: () => false,
+    });
+  }
+}
+
+class MockRouter {
+  url: String = '/about';
+}
 
 describe('LanguageBannerComponent', () => {
   let component: LanguageBannerComponent;
   let fixture: ComponentFixture<LanguageBannerComponent>;
   let cookieService: CookieService;
   let debugElement: DebugElement;
+  let userService: MockUserService;
+  let router: MockRouter;
+
+  let originalNavigatorLanguage = navigator.language;
 
   let COOKIE_NAME_COOKIES_ACKNOWLEDGED = 'OPPIA_COOKIES_ACKNOWLEDGED';
+  let NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER =
+    'NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER';
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FormsModule, CookieModule.forRoot()],
+      imports: [
+        FormsModule,
+        CookieModule.forRoot(),
+        HttpClientTestingModule,
+        RouterTestingModule,
+      ],
       declarations: [LanguageBannerComponent, MockTranslatePipe],
+      providers: [
+        {provide: Router, useClass: MockRouter},
+        {provide: UserService, useClass: MockUserService},
+      ],
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(LanguageBannerComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
-    cookieService = TestBed.inject(CookieService);
     debugElement = fixture.debugElement;
+    fixture.detectChanges();
+
+    userService = TestBed.inject(UserService);
+    cookieService = TestBed.inject(CookieService);
+    router = TestBed.inject(Router);
+
+    cookieService.put(
+      COOKIE_NAME_COOKIES_ACKNOWLEDGED,
+      String(AppConstants.COOKIE_POLICY_LAST_UPDATED_MSECS + 100000)
+    );
+    Object.defineProperty(navigator, 'language', {
+      value: 'fr-FR',
+      configurable: true,
+    });
+  });
+
+  afterEach(() => {
     cookieService.removeAll();
+  });
+
+  afterAll(() => {
+    // Restore original navigator.language
+    Object.defineProperty(navigator, 'language', {
+      value: originalNavigatorLanguage,
+      configurable: true,
+    });
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should not be visible if the cookies has not been acknowledged', () => {
+  it('should not display banner if user is on the login page', fakeAsync(() => {
+    router.url = '/login';
+
     component.ngOnInit();
+    tick();
+
     expect(component.isVisible).toBeFalse();
-  });
+  }));
 
-  it('should not be visible if the acknowledged cookie is expired', () => {
-    spyOn(cookieService, 'get').and.callFake((key: string) => {
-      if (key === COOKIE_NAME_COOKIES_ACKNOWLEDGED) {
-        return String(AppConstants.COOKIE_POLICY_LAST_UPDATED_MSECS - 100000);
-      }
-      return null;
-    });
-    component.ngOnInit();
-    expect(component.isVisible).toBeFalse();
-  });
-
-  it('should be visible if the language is not English and no cookie is set', () => {
-    spyOn(cookieService, 'get').and.callFake((key: string) => {
-      if (key === COOKIE_NAME_COOKIES_ACKNOWLEDGED) {
-        return String(AppConstants.COOKIE_POLICY_LAST_UPDATED_MSECS + 100000);
-      }
-      return null;
-    });
-
-    spyOnProperty(navigator, 'language', 'get').and.returnValue('fr-FR');
-    component.ngOnInit();
-    expect(component.isVisible).toBeTrue();
-  });
-
-  it('should not be visible if the language is English', () => {
-    spyOn(cookieService, 'get').and.callFake((key: string) => {
-      if (key === COOKIE_NAME_COOKIES_ACKNOWLEDGED) {
-        return String(AppConstants.COOKIE_POLICY_LAST_UPDATED_MSECS + 100000);
-      }
-      return null;
-    });
-
-    spyOnProperty(navigator, 'language', 'get').and.returnValue('en-US');
-    component.ngOnInit();
-    expect(component.isVisible).toBeFalse();
-  });
-
-  it('should not be visible if the DO_NOT_SHOW_LANGUAGE_BANNER cookie is set', () => {
-    cookieService.put(
-      component.COOKIE_NAME_DO_NOT_SHOW_LANGUAGE_BANNER,
-      'true'
+  it('should not display banner if user is logged in', fakeAsync(() => {
+    spyOn(userService, 'getUserInfoAsync').and.returnValue(
+      Promise.resolve({isLoggedIn: () => true})
     );
+
     component.ngOnInit();
-    expect(component.isVisible).toBeFalse();
-  });
-
-  it('should hide the banner when the button is clicked', () => {
-    component.isVisible = true;
-    fixture.detectChanges();
-
-    const button = debugElement.query(By.css('.banner-button')).nativeElement;
-    button.click();
+    tick();
 
     expect(component.isVisible).toBeFalse();
-  });
+  }));
 
-  it('should set the DO_NOT_SHOW_LANGUAGE_BANNER cookie when checkbox is checked and button is clicked', () => {
-    component.isVisible = true;
-    component.isChecked = true;
-    fixture.detectChanges();
+  it('should not display banner if user is on english browser', fakeAsync(() => {
+    Object.defineProperty(navigator, 'language', {
+      value: 'en-US',
+      configurable: true,
+    });
 
-    const button = debugElement.query(By.css('.banner-button')).nativeElement;
-    button.click();
+    component.ngOnInit();
+    tick();
 
+    expect(component.isVisible).toBeFalse();
+  }));
+
+  it('should not display banner if user has not accepted cookies', fakeAsync(() => {
+    cookieService.remove(COOKIE_NAME_COOKIES_ACKNOWLEDGED);
+
+    component.ngOnInit();
+    tick();
+
+    expect(component.isVisible).toBeFalse();
+  }));
+
+  it('should be dislayed if all conditions are correct', fakeAsync(() => {
+    component.ngOnInit();
+    tick();
+
+    expect(component.isVisible).toBeTrue();
+  }));
+
+  it('cookie should start at 4 and countdown for every object', fakeAsync(() => {
     expect(
-      cookieService.get(component.COOKIE_NAME_DO_NOT_SHOW_LANGUAGE_BANNER)
-    ).toBe('true');
-    cookieService.removeAll();
-  });
-
-  it('should not set the DO_NOT_SHOW_LANGUAGE_BANNER cookie when checkbox is not checked and button is clicked', () => {
-    component.isVisible = true;
-    component.isChecked = false;
-    fixture.detectChanges();
-
-    const button = debugElement.query(By.css('.banner-button')).nativeElement;
-    button.click();
-
-    expect(
-      cookieService.get(component.COOKIE_NAME_DO_NOT_SHOW_LANGUAGE_BANNER)
+      cookieService.get(NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER)
     ).toBeUndefined();
+
+    component.ngOnInit();
+    tick();
+
+    expect(cookieService.get(NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER)).toBe(
+      '4'
+    );
+
+    component.ngOnInit();
+    tick();
+    component.ngOnInit();
+    tick();
+
+    expect(cookieService.get(NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER)).toBe(
+      '2'
+    );
+
+    component.ngOnInit();
+    tick();
+    component.ngOnInit();
+    tick();
+
+    expect(cookieService.get(NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER)).toBe(
+      '0'
+    );
+  }));
+
+  it('should not display banner when component initializes the sixth time', fakeAsync(() => {
+    component.ngOnInit();
+    tick();
+
+    expect(component.isVisible).toBeTrue();
+
+    component.ngOnInit();
+    tick();
+    component.ngOnInit();
+    tick();
+    component.ngOnInit();
+    tick();
+    component.ngOnInit();
+    tick();
+
+    expect(component.isVisible).toBeTrue();
+
+    component.ngOnInit();
+    tick();
+
+    expect(component.isVisible).toBeFalse();
+  }));
+
+  it('should not displaye banner when the button is clicked', () => {
+    component.isVisible = true;
+    fixture.detectChanges();
+
+    const button = debugElement.query(By.css('.banner-button')).nativeElement;
+    button.click();
+
+    expect(component.isVisible).toBeFalse();
+  });
+
+  it('should set the NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER cookie to 0 when clicked', () => {
+    component.isVisible = true;
+    fixture.detectChanges();
+
+    const button = debugElement.query(By.css('.banner-button')).nativeElement;
+    button.click();
+
+    expect(cookieService.get(NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER)).toBe(
+      '0'
+    );
+  });
+
+  it('should return static image URL', () => {
+    const imageUrl = component.getStaticImageUrl('/x.svg');
+
+    expect(imageUrl).toBe('/assets/images/x.svg');
   });
 });
