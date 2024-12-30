@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import datetime
 import os
-from github import Github
+from github import Github # pylint: disable=import-error
 
 INACTIVE_DAYS = 7
 
