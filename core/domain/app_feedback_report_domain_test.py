@@ -249,7 +249,9 @@ class AppFeedbackReportDomainTests(test_utils.GenericTestBase):
             'Domain objects for web reports must be implemented.'):
             self.web_report_obj.from_submitted_feedback_dict(REPORT_JSON)
 
-    def test_for_web_platform_feedback(self) -> None:
+    def test_create_web_report_with_submitted_feedback_returns_report(
+        self
+        ) -> None:
         result = self.web_report_obj.from_submitted_feedback_dict(REPORT_JSON)
         self.assertEqual(
             type(result),
@@ -309,7 +311,7 @@ class AppFeedbackReportDomainTests(test_utils.GenericTestBase):
             'The scrubbed_by user id \'%s\' is invalid.' % (
                 self.android_report_obj.scrubbed_by))
 
-    def test_report_scrubber_id_is_bot_id_validation_passes(
+    def test_validate_android_report_with_bot_id_passes(
         self
         ) -> None:
         """Tests that validation passes 
