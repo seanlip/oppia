@@ -49,7 +49,6 @@ import {of, Subject} from 'rxjs';
 import {RteOutputDisplayComponent} from 'rich_text_components/rte-output-display.component';
 import {UndoSnackbarComponent} from 'components/custom-snackbar/undo-snackbar.component';
 import {PlatformFeatureService} from 'services/platform-feature.service';
-import {HtmlParsingService} from '../../../services/html-parsing.service';
 
 class MockChangeDetectorRef {
   detectChanges(): void {}
@@ -84,7 +83,6 @@ describe('Translation Suggestion Review Modal Component', function () {
   let snackBarSpy: jasmine.Spy;
   let snackBar: MatSnackBar;
   let mockPlatformFeatureService = new MockPlatformFeatureService();
-  let _htmlParsingService: HtmlParsingService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -101,7 +99,6 @@ describe('Translation Suggestion Review Modal Component', function () {
         SiteAnalyticsService,
         ThreadDataBackendApiService,
         UserService,
-        HtmlParsingService,
         {
           provide: ChangeDetectorRef,
           useValue: changeDetectorRef,
@@ -129,7 +126,6 @@ describe('Translation Suggestion Review Modal Component', function () {
     userService = TestBed.inject(UserService);
     contributionAndReviewService = TestBed.inject(ContributionAndReviewService);
     languageUtilService = TestBed.inject(LanguageUtilService);
-    htmlParsingService = TestBed.inject(HtmlParsingService);
 
     spyOn(
       siteAnalyticsService,
