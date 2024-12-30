@@ -1,4 +1,5 @@
 name: Backend unit tests
+permissions: read-all
 on:
   merge_group:
     types: [checks_requested]
@@ -11,6 +12,9 @@ on:
       - develop
       - release-*
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
 jobs:
   run_backend_associated_test_file_checks:
     name: Verify associated test files
@@ -131,7 +135,7 @@ jobs:
       - name: Check coverage
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         shell: bash
-        run: make run_tests.check_overall_backend_test_coverage
+        run: make run_tests.check_backend_test_coverage
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
         uses: ./.github/actions/send-webhook-notification
