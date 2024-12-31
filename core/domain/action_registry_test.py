@@ -1,3 +1,5 @@
+# coding: utf-8
+#
 # Copyright 2018 The Oppia Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +17,11 @@
 """Tests for methods in the action registry."""
 
 from __future__ import annotations
+
 from unittest import mock
 from core.domain import action_registry
 from core.tests import test_utils
+
 from typing import Any, Dict
 
 
@@ -68,17 +72,15 @@ class ActionRegistryUnitTests(test_utils.GenericTestBase):
 
         self.assertEqual(len(action_registry.Registry.get_all_actions()), 0)
 
-    def test_refresh_with_valid_actions_has_three_actions(self) -> None:
+    def test_refresh_with_three_valid_actions(self) -> None:
         """Do some sanity checks on the action registry."""
         refresh_method = getattr(action_registry.Registry, '_refresh')
         refresh_method()
         self.assertEqual(
-            len(action_registry.Registry.get_all_actions()), 3
-        )
+            len(action_registry.Registry.get_all_actions()), 3)
 
     def test_cannot_get_action_by_invalid_type(self) -> None:
         """Testing with invalid action type.
-
         Invalid action type raises 'KeyError' with invalid_key
         as the error message.
         """
