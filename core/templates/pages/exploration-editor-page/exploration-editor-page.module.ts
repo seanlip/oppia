@@ -150,18 +150,25 @@ import {AnswerClassificationService} from 'pages/exploration-player-page/service
 import {InteractionRulesRegistryService} from 'services/interaction-rules-registry.service';
 import {SolutionValidityService} from './editor-tab/services/solution-validity.service';
 import {ValidatorsService} from 'services/validators.service';
-import { ExplorationAutomaticTextToSpeechService } from './services/exploration-automatic-text-to-speech.service';
-import { UserService } from 'services/user.service';
-import { ExplorationEditsAllowedBackendApiService } from './services/exploration-edits-allowed-backend-api.service';
-import { ExplorationLanguageCodeService } from './services/exploration-language-code.service';
-import { ExplorationMetadataObjectFactory } from 'domain/exploration/ExplorationMetadataObjectFactory';
-import { ExplorationParamChangesService } from './services/exploration-param-changes.service';
-import { ExplorationParamSpecsService } from './services/exploration-param-specs.service';
-import { ExplorationRightsService } from './services/exploration-rights.service';
-import { ExplorationTagsService } from './services/exploration-tags.service';
-import { SettingTabBackendApiService } from './services/setting-tab-backend-api.service';
-import { UserEmailPreferencesService } from './services/user-email-preferences.service';
-import { ExplorationRightsBackendApiService } from './services/exploration-rights-backend-api.service';
+import {ExplorationAutomaticTextToSpeechService} from './services/exploration-automatic-text-to-speech.service';
+import {UserService} from 'services/user.service';
+import {ExplorationEditsAllowedBackendApiService} from './services/exploration-edits-allowed-backend-api.service';
+import {ExplorationLanguageCodeService} from './services/exploration-language-code.service';
+import {ExplorationMetadataObjectFactory} from 'domain/exploration/ExplorationMetadataObjectFactory';
+import {ExplorationParamChangesService} from './services/exploration-param-changes.service';
+import {ExplorationParamSpecsService} from './services/exploration-param-specs.service';
+import {ExplorationRightsService} from './services/exploration-rights.service';
+import {ExplorationTagsService} from './services/exploration-tags.service';
+import {SettingTabBackendApiService} from './services/setting-tab-backend-api.service';
+import {UserEmailPreferencesService} from './services/user-email-preferences.service';
+import {ExplorationRightsBackendApiService} from './services/exploration-rights-backend-api.service';
+import {EventBusService} from 'app-events/event-bus.service';
+import {PopulateRuleContentIdsService} from './services/populate-rule-content-ids.service';
+import {EditorFirstTimeEventsService} from './services/editor-first-time-events.service';
+import {CurrentInteractionService} from 'pages/exploration-player-page/services/current-interaction.service';
+import {NumericInputRulesService} from 'interactions/NumericInput/directives/numeric-input-rules.service';
+import {NumericInputValidationService} from 'interactions/NumericInput/directives/numeric-input-validation.service';
+import {InteractionAttributesExtractorService} from 'interactions/interaction-attributes-extractor.service';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -373,7 +380,10 @@ import { ExplorationRightsBackendApiService } from './services/exploration-right
     ExplorationTagsService,
     SettingTabBackendApiService,
     UserEmailPreferencesService,
-    ExplorationRightsBackendApiService
+    ExplorationRightsBackendApiService,
+    EventBusService,
+    PopulateRuleContentIdsService,
+    EditorFirstTimeEventsService,
   ],
 })
 export class ExplorationEditorPageModule {}
