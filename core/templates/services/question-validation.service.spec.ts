@@ -320,6 +320,7 @@ describe('Question Validation Service', () => {
         'Please enter a question.'
       );
     });
+
     it(
       'should return an error message if duplicate response is present ' +
         'in the answer groups for any interaction type',
