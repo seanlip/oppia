@@ -47,7 +47,7 @@ export class LanguageBannerService {
   removeLanguageBanner(): void {
     if (
       this.hasAcceptedCookies() &&
-      !(this.getLanguageBannerCookieNum() == 0)
+      !(this.getLanguageBannerCookieNum() === 0)
     ) {
       this.setLanguageBannerCookieNum(0);
     }
