@@ -33,9 +33,7 @@ jobs:
               sort: "created",
               direction: "desc",
             });
-
             const submitterIsNewContributor = mergedPRs.data.length === 0;
-
             console.log(
               `User @${submitterUsername} is ${
                 submitterIsNewContributor
@@ -66,22 +64,21 @@ jobs:
               console.log(
                 "No individual reviewers found in CODEOWNERS. Notifying the team."
               );
-              await github.issues.createComment({
+              await github.pulls.createReviewComment({
                 owner,
                 repo,
-                issue_number: prNumber,
-                body: `No individual reviewers were found by GitHub. Please assign an appropriate reviewer. @oppia/dev-workflow-reviewers, could you please review the issue? Thank you!`,
+                pull_number: prNumber,
+                body: `No individual reviewers were found by GitHub. Please assign an appropriate reviewer. @oppia/dev-workflow-reviewers, could you please review the PR? Thank you!`,
               });
             }
 
             // Add PTAL syntax comment only for new contributors
             if (submitterIsNewContributor) {
               const commentBody = `Hello @${submitterUsername}! Thank you for making a PR. Please ensure your PR is assigned to the correct reviewers -- check the "Assignees" section in the sidebar on the right. Typically, this should match the "Reviewers" section. If it's not correct, you can leave a comment with the syntax \`@reviewer_username PTAL\` to request that a specific reviewer be assigned.\n\n Thanks!`;
-
-              await github.issues.createComment({
+              await github.pulls.createReviewComment({
                 owner,
                 repo,
-                issue_number: prNumber,
+                pull_number: prNumber,
                 body: commentBody,
               });
               console.log(
