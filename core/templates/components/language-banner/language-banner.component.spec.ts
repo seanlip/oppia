@@ -43,7 +43,7 @@ class MockUserService {
 }
 
 class MockRouter {
-  url: String = '/about';
+  url: string = '/about';
 }
 
 describe('LanguageBannerComponent', () => {
@@ -101,7 +101,7 @@ describe('LanguageBannerComponent', () => {
   });
 
   afterAll(() => {
-    // Restore original navigator.language
+    // Restore original navigator language.
     Object.defineProperty(navigator, 'language', {
       value: originalNavigatorLanguage,
       configurable: true,
@@ -169,7 +169,7 @@ describe('LanguageBannerComponent', () => {
     expect(component.isVisible).toBeTrue();
   }));
 
-  it('cookie should start at 4 and countdown for every object', fakeAsync(() => {
+  it('should start at 4 and countdown for every object', fakeAsync(() => {
     expect(
       cookieService.get(NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER)
     ).toBeUndefined();

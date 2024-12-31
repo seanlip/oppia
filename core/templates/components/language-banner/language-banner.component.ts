@@ -57,7 +57,7 @@ export class LanguageBannerComponent implements OnInit {
         return;
       }
 
-      if (!(this.languageBannerService.getLanguageBannerCookieNum() == 0)) {
+      if (!(this.languageBannerService.getLanguageBannerCookieNum() === 0)) {
         if (navigator.language.slice(0, 2) !== 'en') {
           this.isVisible = true;
 
