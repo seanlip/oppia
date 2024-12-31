@@ -121,6 +121,15 @@ describe('LanguageBannerComponent', () => {
     expect(component.isVisible).toBeFalse();
   }));
 
+  it('should not display banner if user is on the signup page', fakeAsync(() => {
+    router.url = '/signup';
+
+    component.ngOnInit();
+    tick();
+
+    expect(component.isVisible).toBeFalse();
+  }));
+
   it('should not display banner if user is logged in', fakeAsync(() => {
     spyOn(userService, 'getUserInfoAsync').and.returnValue(
       Promise.resolve({isLoggedIn: () => true})

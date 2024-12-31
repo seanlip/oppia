@@ -49,6 +49,10 @@ export class LanguageBannerComponent implements OnInit {
         return;
       }
 
+      if (this.router.url.startsWith('/signup')) {
+        return;
+      }
+
       if (!this.languageBannerService.hasAcceptedCookies()) {
         return;
       }
