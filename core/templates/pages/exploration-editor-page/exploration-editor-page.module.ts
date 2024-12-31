@@ -150,6 +150,18 @@ import {AnswerClassificationService} from 'pages/exploration-player-page/service
 import {InteractionRulesRegistryService} from 'services/interaction-rules-registry.service';
 import {SolutionValidityService} from './editor-tab/services/solution-validity.service';
 import {ValidatorsService} from 'services/validators.service';
+import { ExplorationAutomaticTextToSpeechService } from './services/exploration-automatic-text-to-speech.service';
+import { UserService } from 'services/user.service';
+import { ExplorationEditsAllowedBackendApiService } from './services/exploration-edits-allowed-backend-api.service';
+import { ExplorationLanguageCodeService } from './services/exploration-language-code.service';
+import { ExplorationMetadataObjectFactory } from 'domain/exploration/ExplorationMetadataObjectFactory';
+import { ExplorationParamChangesService } from './services/exploration-param-changes.service';
+import { ExplorationParamSpecsService } from './services/exploration-param-specs.service';
+import { ExplorationRightsService } from './services/exploration-rights.service';
+import { ExplorationTagsService } from './services/exploration-tags.service';
+import { SettingTabBackendApiService } from './services/setting-tab-backend-api.service';
+import { UserEmailPreferencesService } from './services/user-email-preferences.service';
+import { ExplorationRightsBackendApiService } from './services/exploration-rights-backend-api.service';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -350,6 +362,18 @@ import {ValidatorsService} from 'services/validators.service';
     InteractionRulesRegistryService,
     SolutionValidityService,
     ValidatorsService,
+    ExplorationAutomaticTextToSpeechService,
+    UserService,
+    ExplorationEditsAllowedBackendApiService,
+    ExplorationLanguageCodeService,
+    ExplorationMetadataObjectFactory,
+    ExplorationParamChangesService,
+    ExplorationParamSpecsService,
+    ExplorationRightsService,
+    ExplorationTagsService,
+    SettingTabBackendApiService,
+    UserEmailPreferencesService,
+    ExplorationRightsBackendApiService
   ],
 })
 export class ExplorationEditorPageModule {}
