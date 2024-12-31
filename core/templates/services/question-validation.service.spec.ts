@@ -321,6 +321,16 @@ describe('Question Validation Service', () => {
       );
     });
 
+    it('should return an error message if there are no answer groups', () => {
+      const question = questionObjectFactory.createFromBackendDict(mockQuestionDict);
+    
+      question._stateData.interaction.answerGroups = [];
+    
+      expect(qvs.getValidationErrorMessage(question)).toEqual(
+        'No answer groups found. Ensure that at least one answer group is added to the question.'
+      );
+    });
+
     it(
       'should return an error message if duplicate response is present ' +
         'in the answer groups for any interaction type',
@@ -378,7 +388,7 @@ describe('Question Validation Service', () => {
         ];
 
         expect(qvs.getValidationErrorMessage(question)).toEqual(
-          'Duplicate rule detected. Ensure that no two rules in any answer group have the same configuration.'
+          'Duplicate rule detected in the answer groups. Please ensure that no two rules in the same answer group have the same configuration. Check the rules in each group carefully.'
         );
       }
     );
