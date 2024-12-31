@@ -81,7 +81,6 @@ export class QuestionValidationService {
 
     return JSON.stringify(normalizedInputs);
   }
-  
 
   // Returns 'null' when the message is valid.
   getValidationErrorMessage(question: Question): string | null {

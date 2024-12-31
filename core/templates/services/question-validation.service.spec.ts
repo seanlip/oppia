@@ -323,9 +323,9 @@ describe('Question Validation Service', () => {
 
     it('should return an error message if there are no answer groups', () => {
       const question = questionObjectFactory.createFromBackendDict(mockQuestionDict);
-    
+
       question._stateData.interaction.answerGroups = [];
-    
+
       expect(qvs.getValidationErrorMessage(question)).toEqual(
         'No answer groups found. Ensure that at least one answer group is added to the question.'
       );
