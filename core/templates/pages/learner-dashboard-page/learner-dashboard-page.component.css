@@ -320,10 +320,9 @@ oppia-learner-dashboard-page .oppia-learner-groups-icon {
 .oppia-learner-dash-sidebar {
   background-color: #00645c;
   border-radius: 4px;
-  height: 97.5%;
+  height: 100%;
   list-style-type: none;
   margin-bottom: 0;
-  max-height: 706px;
   padding: 16px;
   width: 248px;
 }
@@ -356,9 +355,8 @@ oppia-learner-dashboard-page .oppia-learner-groups-icon {
 }
 
 .oppia-learner-dash-sidebar_position {
-  height: 90vh;
-  max-height: 750px;
-  padding: 8px 0;
+  height: calc(100vh - 56px);
+  padding: 16px 0;
   position: sticky;
   top: 56px;
 }
@@ -450,6 +448,10 @@ oppia-learner-dashboard-page .oppia-learner-groups-icon {
 
   .oppia-learner-dash-sidebar > ol li {
     width: max-content;
+  }
+
+  .oppia-learner-dash-tab {
+    min-height: calc(100vh - 128px);
   }
 }
 
