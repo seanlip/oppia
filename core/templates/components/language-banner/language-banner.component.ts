@@ -28,7 +28,7 @@ import {Router} from '@angular/router';
   templateUrl: './language-banner.component.html',
 })
 export class LanguageBannerComponent implements OnInit {
-  isVisible: boolean;
+  isVisible: boolean = false;
 
   constructor(
     private urlInterpolationService: UrlInterpolationService,
