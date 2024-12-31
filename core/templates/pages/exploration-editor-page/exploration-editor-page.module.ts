@@ -165,10 +165,11 @@ import {ExplorationRightsBackendApiService} from './services/exploration-rights-
 import {EventBusService} from 'app-events/event-bus.service';
 import {PopulateRuleContentIdsService} from './services/populate-rule-content-ids.service';
 import {EditorFirstTimeEventsService} from './services/editor-first-time-events.service';
-import {CurrentInteractionService} from 'pages/exploration-player-page/services/current-interaction.service';
-import {NumericInputRulesService} from 'interactions/NumericInput/directives/numeric-input-rules.service';
-import {NumericInputValidationService} from 'interactions/NumericInput/directives/numeric-input-validation.service';
-import {InteractionAttributesExtractorService} from 'interactions/interaction-attributes-extractor.service';
+import { ExternalRteSaveService } from 'services/external-rte-save.service';
+import { AssetsBackendApiService } from 'services/assets-backend-api.service';
+import { ImageLocalStorageService } from 'services/image-local-storage.service';
+import { ImageUploadHelperService } from 'services/image-upload-helper.service';
+import { RteHelperService } from 'services/rte-helper.service';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -384,6 +385,11 @@ import {InteractionAttributesExtractorService} from 'interactions/interaction-at
     EventBusService,
     PopulateRuleContentIdsService,
     EditorFirstTimeEventsService,
+    ExternalRteSaveService,
+    AssetsBackendApiService,
+    ImageLocalStorageService,
+    ImageUploadHelperService,
+    RteHelperService
   ],
 })
 export class ExplorationEditorPageModule {}
