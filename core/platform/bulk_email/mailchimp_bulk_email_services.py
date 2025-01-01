@@ -156,9 +156,9 @@ def permanently_delete_user_from_list(user_email: str) -> None:
     """
     client = _get_mailchimp_class()
     if not client:
-        return None
-    subscriber_hash = _get_subscriber_hash(user_email)
+        return
 
+    subscriber_hash = _get_subscriber_hash(user_email)
     try:
         mailchimp_audience_id = (
             platform_parameter_services.get_platform_parameter_value(
