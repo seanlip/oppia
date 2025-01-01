@@ -325,7 +325,7 @@ URLS = [
         r'%s/can_access_practice_session_page/<classroom_url_fragment>'
         r'/<topic_url_fragment>/practice/session' %
         feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
-        access_validators.PracticeSessionPageValidationHandler
+        access_validators.PracticeSessionAccessValidationPage
     ),
 
     get_redirect_route(

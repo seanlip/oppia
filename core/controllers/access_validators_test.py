@@ -22,7 +22,6 @@ from core import feature_flag_list
 from core import feconf
 from core.constants import constants
 from core.domain import caching_services
-from core.domain import caching_services
 from core.domain import classroom_config_domain
 from core.domain import classroom_config_services
 from core.domain import fs_services
@@ -94,7 +93,7 @@ class ClassroomPageAccessValidationHandlerTests(test_utils.GenericTestBase):
             (ACCESS_VALIDATION_HANDLER_PREFIX, 'history'))
 
 
-class PracticeSessionPageValidationHandlerTests(test_utils.GenericTestBase):
+class PracticeSessionAccessValidationPageTests(test_utils.GenericTestBase):
 
     def setUp(self) -> None:
         """Completes the sign-up process for the various users."""
@@ -197,7 +196,7 @@ class PracticeSessionPageValidationHandlerTests(test_utils.GenericTestBase):
         self
     ) -> None:
         self.get_html_response(
-            '%s/can_access_practice_session_page/staging/%s/practice/session'% (
+            '%s/can_access_practice_session_page/staging/%s/practice/session' % (
                 ACCESS_VALIDATION_HANDLER_PREFIX, 'privateo-topic-name'),
                 params={'selected_subtopic_ids': '[1,2]'},
             expected_status_int=302)

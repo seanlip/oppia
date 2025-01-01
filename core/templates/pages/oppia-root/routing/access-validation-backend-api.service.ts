@@ -185,7 +185,8 @@ export class AccessValidationBackendApiService {
         topic_url_fragment: topicUrlFragment,
       }
     );
-    const params = new HttpParams().set('selected_subtopic_ids', selectedSubtopicIds);
+    const params = new HttpParams().set(
+      'selected_subtopic_ids', selectedSubtopicIds);
     return this.http.get<void>(url, {params}).toPromise();
   }
 

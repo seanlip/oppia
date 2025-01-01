@@ -229,7 +229,7 @@ class ManageOwnAccountValidationHandler(
         pass
 
 
-class PracticeSessionPageValidationHandler(
+class PracticeSessionAccessValidationPage(
     base.BaseHandler[Dict[str, str], Dict[str, str]]
 ):
     """Validates access to practice seesion page.

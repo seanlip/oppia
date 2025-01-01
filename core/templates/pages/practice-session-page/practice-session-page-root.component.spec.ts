@@ -42,10 +42,10 @@ describe('PracticeSessionPageRootComponent', () => {
 
   it('should have the title tag', () => {
     expect(component.title).toEqual(
-      AppConstants.PAGES_REGISTERED_WITH_FRONTEND.TOPIC_VIEWER.TITLE
+      AppConstants.PAGES_REGISTERED_WITH_FRONTEND.PRACTICE_SESSION.TITLE
     );
     expect(component.meta).toEqual(
-      AppConstants.PAGES_REGISTERED_WITH_FRONTEND.TOPIC_VIEWER.META
+      AppConstants.PAGES_REGISTERED_WITH_FRONTEND.PRACTICE_SESSION.META
     );
   });
 });
