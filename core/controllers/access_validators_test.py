@@ -22,6 +22,7 @@ from core import feature_flag_list
 from core import feconf
 from core.constants import constants
 from core.domain import caching_services
+from core.domain import caching_services
 from core.domain import classroom_config_domain
 from core.domain import classroom_config_services
 from core.domain import fs_services
