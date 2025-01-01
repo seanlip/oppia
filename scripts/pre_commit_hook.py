@@ -63,8 +63,7 @@ KEYS_UPDATED_IN_CONSTANTS: Final = [
     b'FIREBASE_CONFIG_APP_ID', b'FIREBASE_CONFIG_AUTH_DOMAIN',
     b'FIREBASE_CONFIG_MESSAGING_SENDER_ID', b'FIREBASE_CONFIG_PROJECT_ID',
     b'FIREBASE_CONFIG_STORAGE_BUCKET', b'FIREBASE_CONFIG_GOOGLE_CLIENT_ID']
-NPX_PATH: Final = os.path.join(
-    os.pardir, 'oppia_tools', 'node-16.13.0', 'bin', 'npx')
+NPX_CMD: Final = 'npx'
 
 
 def install_hook() -> None:
@@ -191,7 +190,7 @@ def check_changes_in_config() -> None:
 
 def run_prettier() -> None:
     """Runs prettier formatter."""
-    subprocess.run([NPX_PATH, 'lint-staged'], shell=True, check=True)
+    subprocess.run([NPX_CMD, 'lint-staged'], shell=True, check=True)
 
 
 def main(args: Optional[List[str]] = None) -> None:
