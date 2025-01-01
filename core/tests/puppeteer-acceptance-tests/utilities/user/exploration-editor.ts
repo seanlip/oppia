@@ -1088,7 +1088,7 @@ export class ExplorationEditor extends BaseUser {
         break;
       case 'Multiple Choice':
         await this.page.waitForSelector(responseModalHeaderSelector);
-        await this.clickOn(multipleChoiceResponseDropdown);
+        await this.page.click(multipleChoiceResponseDropdown);
         await this.page.waitForSelector(multipleChoiceResponseOption, {
           visible: true,
         });
