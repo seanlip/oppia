@@ -1087,10 +1087,6 @@ export class ExplorationEditor extends BaseUser {
         await this.page.type(floatFormInput, answer);
         break;
       case 'Multiple Choice':
-        await this.page.waitForSelector(multipleChoiceResponseDropdown, {
-          visible: true,
-          timeout: 30000
-        });
         await this.clickOn(multipleChoiceResponseDropdown);
         await this.page.waitForSelector(multipleChoiceResponseOption, {
           visible: true,
@@ -1155,6 +1151,7 @@ export class ExplorationEditor extends BaseUser {
         });
     } else {
       await this.clickOn(addAnotherResponseButton);
+      showMessage('Added a response and clicked on addAnotherResponseButton');
     }
   }
 
