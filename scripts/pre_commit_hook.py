@@ -223,7 +223,7 @@ def main(args: Optional[List[str]] = None) -> None:
         )
         sys.exit(1)
     print('Running prettier ...')
-    # run_prettier()
+    run_prettier()
 
     return
 
