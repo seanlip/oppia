@@ -21,76 +21,67 @@ from __future__ import annotations
 from unittest import mock
 from core.domain import action_registry
 from core.tests import test_utils
-
-from typing import Any, Dict
+from extensions.actions import base
 
 
 class ActionRegistryUnitTests(test_utils.GenericTestBase):
-    """Test for the action registry."""
+    """Tests for the action registry methods."""
 
-    @mock.patch('core.domain.action_registry.Registry.get_all_action_types')
     @mock.patch('importlib.import_module')
-    def test_refresh_with_mock_classes_has_no_actions(
-        self,
-        mock_import_module: mock.MagicMock,
-        mock_get_all_action_types: mock.MagicMock
+    def test_action_registry_with_compliant_and_non_compliant_actions(
+        self, mock_import_module: mock.MagicMock
     ) -> None:
-        """Test ancestor name processing in the action registry."""
-        mock_get_all_action_types.return_value = ['ExplorationStart']
+        """Test that only subclasses of BaseLearnerActionSpec 
+        are added to the registry.
+        """
 
-        class MockClass1:
-            """Mock class for testing."""
+        class CompliantAction(base.BaseLearnerActionSpec):
+            """A compliant action subclassing BaseLearnerActionSpec."""
 
-            __name__ = 'MockClass1'
-            # Here we use object because this is a mock base class
-            # and does not have specific attributes or methods.
-            __bases__ = (object,)
+            pass
 
-        mock_classes: Dict[str, type] = {
-            'ExplorationStart': MockClass1,
-        }
-
-        # Here we use type Any because the return value can be anything.
-        def mock_import_module_side_effect(module_name: str) -> Any:
-            """Mock import module.
-
-            Here we use Any because the return type of this function can vary
-            depending on the attributes dynamically added to the mock module.
+        class NonCompliantAction:
+            """A non-compliant action that does not
+            subclass BaseLearnerActionSpec.
             """
-            class MockModule:
-                pass
+
+            pass
+
+        def mock_import_module_side_effect(module_name: str) -> mock.MagicMock:
+            """Mock the import of modules for testing action types."""
+            mock_module = mock.MagicMock()
 
             class_name = module_name.split('.')[-1]
-            if class_name in mock_classes:
-                setattr(MockModule, class_name, mock_classes[class_name])
-            return MockModule()
+            if class_name == 'ExplorationStart':
+                setattr(mock_module, class_name, CompliantAction)
+            elif class_name == 'AnswerSubmit':
+                setattr(mock_module, class_name, NonCompliantAction)
+            elif class_name == 'ExplorationQuit':
+                setattr(mock_module, class_name, NonCompliantAction)
+            return mock_module
 
         mock_import_module.side_effect = mock_import_module_side_effect
+        actions = action_registry.Registry.get_all_actions()
 
-        refresh_method = getattr(action_registry.Registry, '_refresh')
-        refresh_method()
-
-        self.assertEqual(len(action_registry.Registry.get_all_actions()), 0)
+        self.assertEqual(len(actions), 1)
+        self.assertTrue(isinstance(actions[0], CompliantAction))
 
     def test_refresh_with_three_valid_actions(self) -> None:
-        """Do some sanity checks on the action registry."""
-        refresh_method = getattr(action_registry.Registry, '_refresh')
-        refresh_method()
+        """Perform sanity checks on the action registry."""
         self.assertEqual(
-            len(action_registry.Registry.get_all_actions()), 3)
+            len(action_registry.Registry.get_all_actions()), 3
+        )
 
     def test_cannot_get_action_by_invalid_type(self) -> None:
-        """Testing with invalid action type.
-        Invalid action type raises 'KeyError' with invalid_key
-        as the error message.
-        """
+        """Test with an invalid action type. Should raise a KeyError."""
         with self.assertRaisesRegex(KeyError, 'fakeAction'):
             action_registry.Registry.get_action_by_type('fakeAction')
 
     def test_can_get_action_by_valid_type(self) -> None:
-        """Testing with valid action type."""
-        refresh_method = getattr(action_registry.Registry, '_refresh')
-        refresh_method()
-        self.assertIsNotNone(
-            action_registry.Registry.get_action_by_type('ExplorationStart')
-        )
+        """Test with valid action types."""
+        for valid_action in action_registry.Registry.get_all_actions():
+            valid_action_type = valid_action.__class__.__name__
+            self.assertEqual(
+                action_registry.Registry.get_action_by_type(valid_action_type),
+                valid_action
+            )
