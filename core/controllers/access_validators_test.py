@@ -196,7 +196,7 @@ class PracticeSessionAccessValidationPageTests(test_utils.GenericTestBase):
         self
     ) -> None:
         self.get_html_response(
-            '%s/can_access_practice_session_page/staging/%s/practice/session' % (
+            '%s/can_access_practice_session_page/staging/%s/practice/session' % ( # pylint: disable=line-too-long
                 ACCESS_VALIDATION_HANDLER_PREFIX, 'privateo-topic-name'),
                 params={'selected_subtopic_ids': '[1,2]'},
             expected_status_int=302)
