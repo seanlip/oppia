@@ -165,11 +165,16 @@ import {ExplorationRightsBackendApiService} from './services/exploration-rights-
 import {EventBusService} from 'app-events/event-bus.service';
 import {PopulateRuleContentIdsService} from './services/populate-rule-content-ids.service';
 import {EditorFirstTimeEventsService} from './services/editor-first-time-events.service';
-import { ExternalRteSaveService } from 'services/external-rte-save.service';
-import { AssetsBackendApiService } from 'services/assets-backend-api.service';
-import { ImageLocalStorageService } from 'services/image-local-storage.service';
-import { ImageUploadHelperService } from 'services/image-upload-helper.service';
-import { RteHelperService } from 'services/rte-helper.service';
+import {ExternalRteSaveService} from 'services/external-rte-save.service';
+import {AssetsBackendApiService} from 'services/assets-backend-api.service';
+import {ImageLocalStorageService} from 'services/image-local-storage.service';
+import {ImageUploadHelperService} from 'services/image-upload-helper.service';
+import {RteHelperService} from 'services/rte-helper.service';
+import {EntityVoiceoversService} from 'services/entity-voiceovers.services';
+import {TranslationStatusService} from './translation-tab/services/translation-status.service';
+import {TranslationTabActiveModeService} from './translation-tab/services/translation-tab-active-mode.service';
+import {VoiceoverBackendApiService} from 'domain/voiceover/voiceover-backend-api.service';
+import {VoiceoverPlayerService} from 'pages/exploration-player-page/services/voiceover-player.service';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -389,7 +394,12 @@ import { RteHelperService } from 'services/rte-helper.service';
     AssetsBackendApiService,
     ImageLocalStorageService,
     ImageUploadHelperService,
-    RteHelperService
+    RteHelperService,
+    EntityVoiceoversService,
+    TranslationStatusService,
+    TranslationTabActiveModeService,
+    VoiceoverBackendApiService,
+    VoiceoverPlayerService,
   ],
 })
 export class ExplorationEditorPageModule {}
