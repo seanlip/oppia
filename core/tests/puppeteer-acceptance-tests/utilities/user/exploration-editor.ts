@@ -1088,6 +1088,7 @@ export class ExplorationEditor extends BaseUser {
         break;
       case 'Multiple Choice':
         await this.page.waitForSelector(multipleChoiceResponseDropdown, {
+          visible: true,
           timeout: 30000
         });
         await this.clickOn(multipleChoiceResponseDropdown);
