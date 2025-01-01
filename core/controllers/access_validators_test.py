@@ -21,6 +21,9 @@ import datetime
 from core import feature_flag_list
 from core import feconf
 from core.constants import constants
+from core.domain import classroom_config_domain
+from core.domain import classroom_config_services
+from core.domain import fs_services
 from core.domain import learner_group_fetchers
 from core.domain import learner_group_services
 from core.domain import rights_manager
@@ -36,7 +39,7 @@ from core.platform import models
 from core.storage.blog import gae_models as blog_models
 from core.tests import test_utils
 
-from typing import Final
+from typing import Dict, Final
 
 MYPY = False
 if MYPY:  # pragma: no cover
@@ -86,7 +89,7 @@ class ClassroomPageAccessValidationHandlerTests(test_utils.GenericTestBase):
             (ACCESS_VALIDATION_HANDLER_PREFIX, 'history'))
 
 
-class PracticeSessionPageValidationHandlerTests(BasePracticeSessionsControllerTests):
+class PracticeSessionPageValidationHandlerTests(test_utils.GenericTestBase):
 
     def setUp(self) -> None:
         """Completes the sign-up process for the various users."""
@@ -134,26 +137,72 @@ class PracticeSessionPageValidationHandlerTests(BasePracticeSessionsControllerTe
 
         topic_services.publish_topic(self.topic_id, self.admin_id)
 
+        classroom_id_1 = classroom_config_services.get_new_classroom_id()
+        topic_dependency_for_classroom_1: Dict[str, list[str]] = {
+            self.topic_id: [],
+            self.topic_id_1: [],
+        }
+
+        thumbnail_image = b''
+        with open(
+            'core/tests/data/thumbnail.svg', 'rt',
+            encoding='utf-8') as svg_file:
+            svg_file_content = svg_file.read()
+            thumbnail_image = svg_file_content.encode('ascii')
+        fs_services.save_original_and_compressed_versions_of_image(
+            'thumbnail.svg', feconf.ENTITY_TYPE_CLASSROOM, classroom_id_1,
+            thumbnail_image, 'thumbnail', False)
+
+        banner_image = b''
+        with open('core/tests/data/classroom-banner.png', 'rb') as png_file:
+            banner_image = png_file.read()
+        fs_services.save_original_and_compressed_versions_of_image(
+            'banner.png', feconf.ENTITY_TYPE_CLASSROOM, classroom_id_1,
+            banner_image, 'image', False)
+
+        classroom_1 = classroom_config_domain.Classroom(
+                        classroom_id=classroom_id_1,
+                        name='math',
+                        url_fragment='math',
+                        course_details='Math course  details',
+                        teaser_text='Math teaser text',
+                        topic_list_intro='Start with our first topic.',
+                        topic_id_to_prerequisite_topic_ids=(
+                            topic_dependency_for_classroom_1),
+                        is_published=True,
+                        thumbnail_data=classroom_config_domain.ImageData(
+                            'thumbnail.svg', 'transparent', 1000
+                        ),
+                        banner_data=classroom_config_domain.ImageData(
+                            'banner.png', 'transparent', 1000
+                        ),
+                        index=0
+                    )
+
+        classroom_config_services.create_new_classroom(classroom_1)
 
     def test_any_user_can_access_practice_sessions_page(self) -> None:
         self.get_html_response(
-            '/learn/staging/public-topic-name/practice/session?'
-            'selected_subtopic_ids=["1","2"]')
+            '%s/can_access_practice_session_page/%s/%s/practice/session' % (
+                ACCESS_VALIDATION_HANDLER_PREFIX, 'math', 'public-topic-name'),
+                params={'selected_subtopic_ids': '[1,2]'},
+            expected_status_int=200)
 
     def test_no_user_can_access_unpublished_topic_practice_session_page(
         self
     ) -> None:
         self.get_html_response(
-            '/learn/staging/private-topic-name/practice/session?'
-            'selected_subtopic_ids=["1","2"]',
-            expected_status_int=404)
+            '%s/can_access_practice_session_page/staging/%s/practice/session'% (
+                ACCESS_VALIDATION_HANDLER_PREFIX, 'privateo-topic-name'),
+                params={'selected_subtopic_ids': '[1,2]'},
+            expected_status_int=302)
 
     def test_get_fails_when_topic_doesnt_exist(self) -> None:
         self.get_html_response(
-            '/learn/staging/invalid/practice/session?'
-            'selected_subtopic_ids=["1","2"]',
+            '%s/can_access_practice_session_page/%s/%s/practice/session' % (
+                ACCESS_VALIDATION_HANDLER_PREFIX, 'math', 'invalid-topic'),
+                params={'selected_subtopic_ids': '[1,2]'},
             expected_status_int=302)
-
 
 
 class ClassroomsPageAccessValidationHandlerTests(test_utils.GenericTestBase):

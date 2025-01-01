@@ -253,31 +253,6 @@ class PracticeSessionPageValidationHandler(
         """Handles GET requests."""
         pass
 
-    def handle_exception(
-        self, exception: BaseException, unused_debug_mode: bool
-    ) -> None:
-        """Handles exceptions raised by this handler.
-        Args:
-            exception: Exception. The exception raised by the handler.
-            unused_debug_mode: bool. Whether the app is running in debug mode.
-        """
-        if isinstance(exception, self.InvalidInputException):
-            (
-                _,
-                _,
-                classroom_url_fragment,
-                topic_url_fragment,
-                _,
-                _
-            ) = self.request.path.split('/')
-            self.redirect(
-                '/learn/%s/%s/practice' % (
-                    classroom_url_fragment, topic_url_fragment
-                )
-            )
-            return
-        super().handle_exception(exception, unused_debug_mode)
-
 
 class ProfileExistsValidationHandler(
     base.BaseHandler[Dict[str, str], Dict[str, str]]
