@@ -220,6 +220,8 @@ const stayAnonymousCheckbox = '.e2e-test-stay-anonymous-checkbox';
 const responseTextareaSelector = '.e2e-test-feedback-response-textarea';
 const sendButtonSelector = '.e2e-test-oppia-feedback-response-send-btn';
 const errorSavingExplorationModal = '.e2e-test-discard-lost-changes-button';
+const responseRuleDropdown =
+  'oppia-rule-type-selector.e2e-test-answer-description';
 
 const LABEL_FOR_SAVE_DESTINATION_BUTTON = ' Save Destination ';
 export class ExplorationEditor extends BaseUser {
@@ -1095,6 +1097,10 @@ export class ExplorationEditor extends BaseUser {
         await this.page.type(floatFormInput, answer);
         break;
       case 'Multiple Choice':
+        await this.page.waitForSelector(responseModalHeaderSelector, {
+          visible: true,
+        });
+        await this.waitForElementToBeClickable(responseRuleDropdown);
         await this.clickOn(multipleChoiceResponseDropdown);
         await this.page.waitForSelector(multipleChoiceResponseOption, {
           visible: true,
