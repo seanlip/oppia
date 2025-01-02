@@ -63,7 +63,7 @@ const multipleChoiceInteractionButton =
 const addResponseOptionButton = 'button.e2e-test-add-list-entry';
 const addAnotherResponseButton = 'button.e2e-test-add-another-response';
 const multipleChoiceResponseDropdown =
-  'e2e-test-main-html-select-selector';
+  'mat-select.e2e-test-main-html-select-selector';
 const multipleChoiceResponseOption = 'mat-option.e2e-test-html-select-selector';
 const textInputInteractionButton = 'div.e2e-test-interaction-tile-TextInput';
 const textInputInteractionOption =
