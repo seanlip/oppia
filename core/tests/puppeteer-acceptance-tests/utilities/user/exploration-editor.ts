@@ -64,6 +64,7 @@ const addResponseOptionButton = 'button.e2e-test-add-list-entry';
 const addAnotherResponseButton = 'button.e2e-test-add-another-response';
 const multipleChoiceResponseDropdown =
   'mat-select.e2e-test-main-html-select-selector';
+const addResponseButton = 'button.e2e-test-open-add-response-modal';
 const multipleChoiceResponseOption = 'mat-option.e2e-test-html-select-selector';
 const textInputInteractionButton = 'div.e2e-test-interaction-tile-TextInput';
 const textInputInteractionOption =
@@ -1062,6 +1063,14 @@ export class ExplorationEditor extends BaseUser {
       newError.stack = error.stack;
       throw newError;
     }
+  }
+
+  async clickAddResponseButton(): Promise<void> {
+    await this.clickOn(addResponseButton);
+    await this.page
+        .waitForSelector(responseModalHeaderSelector, {
+          visible: true,
+        });
   }
 
   /**

@@ -107,9 +107,9 @@ describe('Exploration Editor', function () {
       '-99',
       'Perfect!',
       CARD_NAME.FINAL_CARD,
-      true,
-      false
+      true
     );
+    await explorationEditor.clickAddResponseButton();
     await explorationEditor.addResponsesToTheInteraction(
       INTERACTION_TYPES.MULTIPLE_CHOICE,
       '-101',
