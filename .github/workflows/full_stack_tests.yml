@@ -257,6 +257,7 @@ jobs:
     strategy:
       matrix:
         suite: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).acceptance.docker.suites }}
+      fast-fail: false
     name: Acceptance (${{ matrix.suite.name }})
     steps:
       - name: Checkout repository
