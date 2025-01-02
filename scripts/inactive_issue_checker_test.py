@@ -21,8 +21,7 @@ from __future__ import annotations
 import datetime
 import unittest.mock
 
-from inactive_issue_checker import (
-    inactive_issues)  # pylint: disable=import-error
+from inactive_issue_checker import inactive_issues  # pylint: disable=import-error
 
 
 class TestCheckInactiveIssues(unittest.TestCase):
