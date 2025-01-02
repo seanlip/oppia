@@ -11,19 +11,27 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       pull-requests: write
-      issues: write
-   
+
     steps:
+      - name: Set environment variables
+        env:
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          REPO: ${{ github.event.repository.name }}
+          OWNER: ${{ github.event.repository.owner.login }}
+        run: |
+          echo "AUTHOR=${AUTHOR}" >> $GITHUB_ENV
+          echo "REPO=${REPO}" >> $GITHUB_ENV
+          echo "OWNER=${OWNER}" >> $GITHUB_ENV
+
       - name: Assign Reviewers
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { pull_request, repository } = context.payload;
-            const owner = repository.owner.login;
-            const repo = repository.name;
-            const prNumber = pull_request.number;
-            const submitterUsername = pull_request.user.login;
+            const prNumber = context.payload.pull_request.number;
+            const submitterUsername = process.env.AUTHOR;
+            const owner = process.env.OWNER;
+            const repo = process.env.REPO;
 
             // Fetch merged PRs of the submitter
             const mergedPRs = await github.pulls.list({
@@ -46,8 +54,8 @@ jobs:
             );
 
             // Get reviewers from CODEOWNERS
-            const requestedReviewers = pull_request.requested_reviewers.map(r => r.login);
-            const requestedTeams = pull_request.requested_teams.map(t => t.slug);
+            const requestedReviewers = context.payload.pull_request.requested_reviewers.map(r => r.login);
+            const requestedTeams = context.payload.pull_request.requested_teams.map(t => t.slug);
 
             // Assign reviewers as assignees
             if (requestedReviewers.length > 0) {
