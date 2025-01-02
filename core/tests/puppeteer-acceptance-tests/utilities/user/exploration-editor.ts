@@ -1091,6 +1091,16 @@ export class ExplorationEditor extends BaseUser {
     responseIsCorrect: boolean,
     isLastResponse: boolean = true
   ): Promise<void> {
+    await this.clickOn(feedbackEditorSelector);
+    await this.type(stateContentInputField, feedback);
+    // The '/' value is used to select the 'a new card called' option in the dropdown.
+    if (destination) {
+      await this.select(destinationCardSelector, '/');
+      await this.type(addStateInput, destination);
+    }
+    if (responseIsCorrect) {
+      await this.clickOn(correctAnswerInTheGroupSelector);
+    }
     switch (interactionType) {
       case 'Number Input':
         await this.page.waitForSelector(floatFormInput);
@@ -1141,17 +1151,6 @@ export class ExplorationEditor extends BaseUser {
       //   break;
       default:
         throw new Error(`Unsupported interaction type: ${interactionType}`);
-    }
-
-    await this.clickOn(feedbackEditorSelector);
-    await this.type(stateContentInputField, feedback);
-    // The '/' value is used to select the 'a new card called' option in the dropdown.
-    if (destination) {
-      await this.select(destinationCardSelector, '/');
-      await this.type(addStateInput, destination);
-    }
-    if (responseIsCorrect) {
-      await this.clickOn(correctAnswerInTheGroupSelector);
     }
     if (isLastResponse) {
       await this.page.waitForSelector(addNewResponseButton, {
