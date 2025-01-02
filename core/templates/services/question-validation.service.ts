@@ -78,12 +78,20 @@ export class QuestionValidationService {
   }
 
 
-  private normalizeRuleInputs(inputs: { [key: string]: string | number | boolean | string[] | number[] | boolean[] }): string {
+  private normalizeRuleInputs(inputs: { [key: string]: unknown }): string {
     const sortedKeys = Object.keys(inputs).sort();
     const normalizedInputs: { [key: string]: string | number | boolean | string[] | number[] | boolean[] } = {};
 
     sortedKeys.forEach((key) => {
-      normalizedInputs[key] = inputs[key];
+      const value = inputs[key];
+
+      if (Array.isArray(value)) {
+        normalizedInputs[key] = value.map(item => String(item));
+      } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+        normalizedInputs[key] = value;
+      } else {
+        throw new Error(`Unsupported input type for key: ${key}`);
+      }
     });
 
     return JSON.stringify(normalizedInputs);

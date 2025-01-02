@@ -324,7 +324,12 @@ describe('Question Validation Service', () => {
     it('should return an error message if there are no answer groups', () => {
       const question = questionObjectFactory.createFromBackendDict(mockQuestionDict);
 
-      question._stateData.interaction.answerGroups = [];
+      const stateData = question.getStateData();
+      const interaction = stateData?.interaction;
+
+      if (interaction) {
+        interaction.answerGroups = [];
+      }
 
       expect(qvs.getValidationErrorMessage(question)).toEqual(
         'No answer groups found. Ensure that at least one answer group is added to the question.'
@@ -338,8 +343,12 @@ describe('Question Validation Service', () => {
         const question =
           questionObjectFactory.createFromBackendDict(mockQuestionDict);
 
-        question._stateData.interaction.answerGroups = [
-          {
+        const stateData = question.getStateData();
+        const interaction = stateData?.interaction;
+
+        if (interaction) {
+           interaction.answerGroups = [
+        {
             rules: [
               {
                 type: 'Equals',
@@ -386,7 +395,7 @@ describe('Question Validation Service', () => {
             taggedSkillMisconceptionId: null,
           },
         ];
-
+      }
         expect(qvs.getValidationErrorMessage(question)).toEqual(
           'Duplicate rule detected in the answer groups. Please ensure that no two rules in the same answer group have the same configuration. Check the rules in each group carefully.'
         );
