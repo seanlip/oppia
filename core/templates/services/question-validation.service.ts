@@ -53,35 +53,41 @@ export class QuestionValidationService {
     );
   }
 
-    hasDuplicateRules(question: Question): boolean {
-      const answerGroups = question.getAnswerGroups();
-      const ruleSet = new Set<string>();
-  
-      for (const group of answerGroups) {
-        for (const rule of group.rules) {
-          const ruleHash = `${rule.type}:${this.normalizeRuleInputs(rule.inputs)}`;
-  
-          if (ruleSet.has(ruleHash)) {
-            return true;
-          }
-          ruleSet.add(ruleHash);
+  hasDuplicateRules(question: Question): boolean {
+    const stateData = question.getStateData();
+    const interaction = stateData?.interaction;
+
+    if (!interaction || !interaction.answerGroups) {
+    return false;
+    }
+
+    const answerGroups = interaction.answerGroups;
+    const ruleSet = new Set<string>();
+
+    for (const group of answerGroups) {
+      for (const rule of group.rules) {
+        const ruleHash = `${rule.type}:${this.normalizeRuleInputs(rule.inputs)}`;
+        if (ruleSet.has(ruleHash)) {
+          return true;
         }
+        ruleSet.add(ruleHash);
       }
-  
-      return false;
     }
-  
-    private normalizeRuleInputs(inputs: Record<string, unknown>): string {
-      const sortedKeys = Object.keys(inputs).sort();
-      const normalizedInputs: Record<string, unknown> = {};
-  
-      for (const key of sortedKeys) {
-        normalizedInputs[key] = inputs[key];
-      }
-  
-      return JSON.stringify(normalizedInputs);
-    }
-  
+
+    return false;
+  }
+
+
+  private normalizeRuleInputs(inputs: { [key: string]: string | number | boolean | string[] | number[] | boolean[] }): string {
+    const sortedKeys = Object.keys(inputs).sort();
+    const normalizedInputs: { [key: string]: string | number | boolean | string[] | number[] | boolean[] } = {};
+
+    sortedKeys.forEach((key) => {
+      normalizedInputs[key] = inputs[key];
+    });
+
+    return JSON.stringify(normalizedInputs);
+  }
 
   // Returns 'null' when the message is valid.
   getValidationErrorMessage(question: Question): string | null {
@@ -125,13 +131,13 @@ export class QuestionValidationService {
       return 'At least one answer should be marked correct';
     }
     if (
-      answerGroups.length > 1 ||
-      answerGroups[0]?.rules.length > 1
+      question._stateData.interaction.answerGroups.length > 1 ||
+      question._stateData.interaction.answerGroups[0].rules.length > 1
     ) {
       if (this.hasDuplicateRules(question)) {
         return (
-          'Duplicate rule detected in the answer groups. Please ensure that no two rules ' +
-          'in the same answer group have the same configuration. Check the rules in each group carefully.'
+          'Duplicate rule detected. Ensure that no two rules in any answer group ' +
+          'have the same configuration.'
         );
       }
     }
