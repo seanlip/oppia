@@ -1067,10 +1067,9 @@ export class ExplorationEditor extends BaseUser {
 
   async clickAddResponseButton(): Promise<void> {
     await this.clickOn(addResponseButton);
-    await this.page
-        .waitForSelector(responseModalHeaderSelector, {
-          visible: true,
-        });
+    await this.page.waitForSelector(responseModalHeaderSelector, {
+      visible: true,
+    });
   }
 
   /**
