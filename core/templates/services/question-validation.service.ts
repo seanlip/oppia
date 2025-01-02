@@ -77,7 +77,6 @@ export class QuestionValidationService {
     return false;
   }
 
-
   private normalizeRuleInputs(inputs: { [key: string]: unknown }): string {
     const sortedKeys = Object.keys(inputs).sort();
     const normalizedInputs: { [key: string]: string | number | boolean | string[] | number[] | boolean[] } = {};
@@ -138,17 +137,19 @@ export class QuestionValidationService {
     if (!atLeastOneAnswerCorrect) {
       return 'At least one answer should be marked correct';
     }
-    if (
-      question._stateData.interaction.answerGroups.length > 1 ||
-      question._stateData.interaction.answerGroups[0].rules.length > 1
-    ) {
-      if (this.hasDuplicateRules(question)) {
-        return (
-          'Duplicate rule detected. Ensure that no two rules in any answer group ' +
-          'have the same configuration.'
-        );
+    if (question.getStateData()?.interaction?.answerGroups.length > 1 ||
+    question.getStateData()?.interaction?.answerGroups[0]?.rules.length > 1) {
+      const stateData = question.getStateData();
+      const interaction = stateData?.interaction;
+
+    if (interaction && this.hasDuplicateRules(question)) {
+      return (
+        'Duplicate rule detected in the answer groups. Please ensure that each rule within an answer group is unique ' +
+        'and that no two rules across different answer groups have the same configuration.'
+       );
       }
     }
+
     return null;
   }
 }
