@@ -21,7 +21,7 @@ from __future__ import annotations
 import datetime
 import unittest.mock
 
-from . import inactive_issue_checker
+from scripts import inactive_issue_checker
 
 
 class TestCheckInactiveIssues(unittest.TestCase):

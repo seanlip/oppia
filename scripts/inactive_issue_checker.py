@@ -25,7 +25,7 @@ from github import Github # pylint: disable=import-error
 INACTIVE_DAYS = 7
 
 
-def inactive_issues(
+def inactive_issue_checker(
     github_token: str, repo_owner: str, repo_name: str
 ) -> None:
     """Checks for inactive issues in the given repository and 
@@ -103,4 +103,4 @@ if __name__ == '__main__':
     GITHUB_TOKEN = os.environ['GITHUB_TOKEN']
     REPO_OWNER = 'oppia'
     REPO_NAME = 'oppia'
-    inactive_issues(GITHUB_TOKEN, REPO_OWNER, REPO_NAME)
+    inactive_issue_checker(GITHUB_TOKEN, REPO_OWNER, REPO_NAME)
