@@ -65,8 +65,6 @@ const addAnotherResponseButton = 'button.e2e-test-add-another-response';
 const multipleChoiceResponseDropdown =
   'mat-select.e2e-test-main-html-select-selector';
 const addResponseButton = 'button.e2e-test-open-add-response-modal';
-const responseRuleDropdown =
-  'oppia-rule-type-selector.e2e-test-answer-description';
 const multipleChoiceResponseOption = 'mat-option.e2e-test-html-select-selector';
 const textInputInteractionButton = 'div.e2e-test-interaction-tile-TextInput';
 const textInputInteractionOption =
@@ -1097,10 +1095,6 @@ export class ExplorationEditor extends BaseUser {
         await this.page.type(floatFormInput, answer);
         break;
       case 'Multiple Choice':
-        await this.page.waitForSelector(responseModalHeaderSelector, {
-          visible: true,
-        });
-        await this.page.waitForSelector(responseRuleDropdown);
         await this.clickOn(multipleChoiceResponseDropdown);
         await this.page.waitForSelector(multipleChoiceResponseOption, {
           visible: true,
