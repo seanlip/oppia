@@ -404,6 +404,3 @@ describe('Question Validation Service', () => {
   });
 });
 
-
-
-
