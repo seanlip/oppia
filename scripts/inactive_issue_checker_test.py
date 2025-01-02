@@ -21,9 +21,8 @@ from __future__ import annotations
 import datetime
 import unittest.mock
 
-from inactive_issue_checker import (
-   inactive_issues)  # pylint: disable=import-error
- 
+from . import inactive_issue_checker
+
 
 class TestCheckInactiveIssues(unittest.TestCase):
     """Test suite for the check_inactive_issues function."""
@@ -47,7 +46,8 @@ class TestCheckInactiveIssues(unittest.TestCase):
         mock_repo.get_collaborators.return_value = []
         mock_repo.get_pulls.return_value = []
 
-        inactive_issues('mock_token', 'mock_owner', 'mock_repo')
+        inactive_issue_checker.inactive_issue_checker(
+            'mock_token', 'mock_owner', 'mock_repo')
 
         mock_issue.remove_from_assignees.assert_called_once_with('user123')
         mock_issue.create_comment.assert_called_once_with(
@@ -74,7 +74,8 @@ class TestCheckInactiveIssues(unittest.TestCase):
                 )
         ]
 
-        inactive_issues('mock_token', 'mock_owner', 'mock_repo')
+        inactive_issue_checker.inactive_issue_checker(
+            'mock_token', 'mock_owner', 'mock_repo')
 
         mock_issue.remove_from_assignees.assert_not_called()
         mock_issue.create_comment.assert_not_called()
@@ -99,7 +100,8 @@ class TestCheckInactiveIssues(unittest.TestCase):
             unittest.mock.MagicMock(body='This fixes issue #3')
         ]
 
-        inactive_issues('mock_token', 'mock_owner', 'mock_repo')
+        inactive_issue_checker.inactive_issue_checker(
+            'mock_token', 'mock_owner', 'mock_repo')
 
         mock_issue.remove_from_assignees.assert_not_called()
         mock_issue.create_comment.assert_not_called()
@@ -124,7 +126,8 @@ class TestCheckInactiveIssues(unittest.TestCase):
             unittest.mock.MagicMock(login='collaborator123')
         ]
 
-        inactive_issues('mock_token', 'mock_owner', 'mock_repo')
+        inactive_issue_checker.inactive_issue_checker(
+            'mock_token', 'mock_owner', 'mock_repo')
 
         mock_issue.remove_from_assignees.assert_not_called()
         mock_issue.create_comment.assert_not_called()
