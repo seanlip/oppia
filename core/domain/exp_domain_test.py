@@ -4085,20 +4085,21 @@ class ExplorationDomainUnitTests(test_utils.GenericTestBase):
             """The operation to store the Exploration object in the cache
             has failed"""
         )
-        self.assertNotEqual(
+        self.assertIsNotNone(
             new_exploration_retrieve_from_cache,
-            None,
             """Expected the Exploration object to be retrieved from the
             cache, but it was None."""
         )
-        if new_exploration_retrieve_from_cache is not None:
-            new_exploration_dict_retrieve_from_cache = (
-                new_exploration_retrieve_from_cache.to_dict())
-            self.assertEqual(
-                new_exploration.to_dict(),
-                new_exploration_dict_retrieve_from_cache,
-                """Exploration object put into cache and retrieved from cache is
-                not same"""
+        # Here we use MyPy ignore because
+        # new_exploration_dict_retrieve_from_cache
+        # is not None as we check above assert check.
+        new_exploration_dict_retrieve_from_cache = (
+            new_exploration_retrieve_from_cache.to_dict()) # type: ignore[union-attr]
+        self.assertEqual(
+            new_exploration.to_dict(),
+            new_exploration_dict_retrieve_from_cache,
+            """Exploration object put into cache and retrieved from cache is
+            not same"""
         )
 
     def test_migrate_state_schema(self) -> None:
@@ -4261,33 +4262,33 @@ title: Title
             sub_namespace=sub_namespace,
             obj_ids=[exploration_id]
         ).get(exploration_id)
-        self.assertNotEqual(
+        self.assertIsNotNone(
             new_exploration_retrieve_from_cache,
-            None,
             """Expected the Exploration object to be retrieved from the
             cache, but it was None."""
         )
-        if new_exploration_retrieve_from_cache is not None:
-            updated_exploration = new_exploration_retrieve_from_cache.to_dict()
-            new_exploration_dict = new_exploration.to_dict()
-            versioned_states = exp_domain.VersionedExplorationStatesDict(
-                states_schema_version=feconf.CURRENT_STATE_SCHEMA_VERSION - 1,
-                states=new_exploration_dict['states'])
-            self.assertEqual(
-                updated_exploration['states_schema_version'],
-                feconf.CURRENT_STATE_SCHEMA_VERSION,
-                'Exploration state schema version failed to update'
-            )
-            self.assertNotEqual(
-                updated_exploration['states'],
-                versioned_states['states'],
-                'Migration to the latest state schema version has failed'
-            )
-            self.assertEqual(
-                updated_exploration['states'],
-                latest_version_exploration.to_dict()['states'],
-                'Migration to the latest state schema version has failed'
-            )
+        # Here we use MyPy ignore because new_exploration_retrieve_from_cache
+        # is not None as we check above assert check.
+        updated_exploration = new_exploration_retrieve_from_cache.to_dict() # type: ignore[union-attr]
+        new_exploration_dict = new_exploration.to_dict()
+        versioned_states = exp_domain.VersionedExplorationStatesDict(
+            states_schema_version=feconf.CURRENT_STATE_SCHEMA_VERSION - 1,
+            states=new_exploration_dict['states'])
+        self.assertEqual(
+            updated_exploration['states_schema_version'],
+            feconf.CURRENT_STATE_SCHEMA_VERSION,
+            'Exploration state schema version failed to update'
+        )
+        self.assertNotEqual(
+            updated_exploration['states'],
+            versioned_states['states'],
+            'Migration to the latest state schema version has failed'
+        )
+        self.assertEqual(
+            updated_exploration['states'],
+            latest_version_exploration.to_dict()['states'],
+            'Migration to the latest state schema version has failed'
+        )
 
     def test_get_all_translatable_content_for_exp(self) -> None:
         """Get all translatable fields from exploration."""

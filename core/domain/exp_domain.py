@@ -5766,14 +5766,14 @@ class Exploration(translation_domain.BaseTranslatableObject):
     def migrate_state_schema(
         cls,
         exploration_dict: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    ) -> ExplorationDict:
         """Migrates the state schema of the exploration to the latest version.
 
         Args:
             exploration_dict: dict. The exploration data as a dictionary.
 
         Returns:
-            dict. The migrated exploration dictionary.
+            ExplorationDict. The migrated exploration dictionary.
         """
         current_dict_states_schema_version = (
             exploration_dict['states_schema_version'])
@@ -5792,7 +5792,10 @@ class Exploration(translation_domain.BaseTranslatableObject):
             current_dict_states_schema_version += 1
             exploration_dict['states_schema_version'] = (
                 current_dict_states_schema_version)
-        return exploration_dict
+        # Here we use MyPy ignore because exploration_dict have to be
+        # ExplorationDict type.
+        exp_dict: ExplorationDict = exploration_dict # type: ignore[assignment]
+        return exp_dict
 
     @classmethod
     def deserialize(cls, json_string: str) -> Exploration:
