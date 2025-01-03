@@ -121,6 +121,8 @@ class TaskThread(threading.Thread):
                 self.task_results = self.func()
                 if self.verbose:
                     for task_result in self.task_results:
+                    # The following section will print the output of the lint
+                    # checks.
                         if self.report_enabled:
                             log(
                                 'Report from %s check\n'
