@@ -110,6 +110,10 @@ describe('Exploration Editor', function () {
       true,
       false
     );
+    await explorationEditor.expectScreenshotToMatch(
+      'blogEditorPageWithPublishedBlogPostTitle',
+      __dirname
+    );
     await explorationEditor.addResponsesToTheInteraction(
       INTERACTION_TYPES.MULTIPLE_CHOICE,
       '-101',

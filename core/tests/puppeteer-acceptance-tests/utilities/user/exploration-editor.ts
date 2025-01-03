@@ -1081,14 +1081,22 @@ export class ExplorationEditor extends BaseUser {
     responseIsCorrect: boolean,
     isLastResponse: boolean = true
   ): Promise<void> {
-    await this.clickOn(feedbackEditorSelector);
-    await this.type(stateContentInputField, feedback);
     switch (interactionType) {
       case 'Number Input':
         await this.page.waitForSelector(floatFormInput);
         await this.page.type(floatFormInput, answer);
         break;
       case 'Multiple Choice':
+        await this.page.waitForSelector(responseModalHeaderSelector, {
+          visible: true,
+        });
+        await this.page.waitForSelector(multipleChoiceResponseDropdown, {
+          visible: true,
+        });
+        await this.expectScreenshotToMatch(
+          'blogEditorPageWithPublishedBlogPostTitle',
+          __dirname
+        );
         await this.clickOn(multipleChoiceResponseDropdown);
         await this.page.waitForSelector(multipleChoiceResponseOption, {
           visible: true,
@@ -1128,6 +1136,8 @@ export class ExplorationEditor extends BaseUser {
       default:
         throw new Error(`Unsupported interaction type: ${interactionType}`);
     }
+    await this.clickOn(feedbackEditorSelector);
+    await this.type(stateContentInputField, feedback);
     // The '/' value is used to select the 'a new card called' option in the dropdown.
     if (destination) {
       await this.select(destinationCardSelector, '/');
