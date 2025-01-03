@@ -49,7 +49,7 @@ jobs:
               }.`
             );
             // Hardcode the requested reviewers
-            const requestedReviewers = ["Fgrdxgu","Mayank77maruti"]; 
+            const requestedReviewers = context.payload.pull_request.requested_reviewers.map(r => r.login); 
             const requestedTeams = context.payload.pull_request.requested_teams.map(t => t.slug);
             // Assign reviewers as assignees
             if (requestedReviewers.length > 0) {
