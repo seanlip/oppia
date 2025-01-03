@@ -1074,7 +1074,9 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             'exploration1', self.target_version_at_submission,
             self.author_id, add_translation_change_dict, 'test description')
 
-    def test_updating_translation_suggestion_raise_error_when_image_is_removed(self) -> None:
+    def test_updating_translation_suggestion_raise_error_when_image_is_removed(
+            self
+        ) -> None:
         translation_html_with_image = (
             '<p>Translation for original content.</p>'
             '<oppia-noninteractive-image '
