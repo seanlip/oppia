@@ -54,6 +54,23 @@ class ConcurrentTaskUtilsTests(test_utils.GenericTestBase):
             self.task_stdout.append(' '.join(str(arg) for arg in args))
         self.print_swap = self.swap(builtins, 'print', mock_print)
 
+    def test_create_task_with_retryable_errors(self) -> None:
+        """Test for create_task method with retryable errors."""
+        test_target = "retryable_task"
+        parsed_args = type("ParsedArgs", (object,), {"verbose": True})  
+        
+        task = concurrent_task_utils.create_task(
+            lambda: None, 
+            parsed_args.verbose, 
+            self.semaphore, 
+            name=test_target,
+            report_enabled=False, 
+            errors_to_retry_on=concurrent_task_utils.ERRORS_TO_RETRY_ON
+        )
+        
+        self.assertIsInstance(task, concurrent_task_utils.TaskThread)
+        self.assertEqual(task.name, test_target)
+        self.assertEqual(task.errors_to_retry_on, concurrent_task_utils.ERRORS_TO_RETRY_ON)
 
 class TaskResultTests(ConcurrentTaskUtilsTests):
     """Tests for TaskResult class."""
