@@ -321,6 +321,7 @@ describe('Classroom backend API service', function () {
       topic_list_intro: 'Start from the basics with our first topic.',
       topic_id_to_prerequisite_topic_ids: {},
       is_published: true,
+      is_diagnostic_test_enabled: true,
       thumbnail_data: {
         filename: 'thumbnail.svg',
         bg_color: 'transparent',
@@ -341,6 +342,7 @@ describe('Classroom backend API service', function () {
       topicListIntro: 'Start from the basics with our first topic.',
       topicIdToPrerequisiteTopicIds: {},
       isPublished: true,
+      is_diagnostic_test_enabled: true,
       thumbnailData: {
         filename: 'thumbnail.svg',
         bg_color: 'transparent',

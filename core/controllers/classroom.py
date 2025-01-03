@@ -132,6 +132,7 @@ class ClassroomDataHandler(
             'teaser_text': classroom.teaser_text,
             'is_published': classroom.is_published,
             'thumbnail_data': classroom.thumbnail_data.to_dict(),
+            'is_diagnostic_test_enabled': classroom.is_diagnostic_test_enabled,
             'banner_data': classroom.banner_data.to_dict(),
             'public_classrooms_count': public_classrooms_count,
             'classroom_id': classroom.classroom_id

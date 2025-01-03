@@ -73,6 +73,7 @@ export interface ClassroomBackendDict {
     [topicId: string]: string[];
   };
   is_published: boolean;
+  is_diagnostic_test_enabled: boolean;
   thumbnail_data: ImageData;
   banner_data: ImageData;
 }
@@ -88,6 +89,7 @@ export interface ClassroomDict {
     [topicId: string]: string[];
   };
   isPublished: boolean;
+  isDiagnosticTestEnabled: boolean;
   thumbnailData: ImageData;
   bannerData: ImageData;
 }
