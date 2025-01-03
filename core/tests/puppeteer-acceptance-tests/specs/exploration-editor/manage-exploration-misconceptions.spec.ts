@@ -110,11 +110,7 @@ describe('Exploration Editor', function () {
       true,
       false
     );
-    await explorationEditor.expectScreenshotToMatch(
-      'blogEditorPageWithPublishedBlogPostTitle',
-      __dirname
-    );
-    await explorationEditor.addResponsesToTheInteraction(
+    await explorationEditor.addResponsesToTheInteraction2(
       INTERACTION_TYPES.MULTIPLE_CHOICE,
       '-101',
       'Wrong! -101 is smaller than -100.',
