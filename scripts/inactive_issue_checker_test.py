@@ -19,15 +19,9 @@
 from __future__ import annotations
 
 import datetime
-import os
-import sys
 import unittest.mock
 
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0, project_root)
-
-from scripts import (
-    inactive_issue_checker) # pylint: disable=wrong-import-position
+from scripts import inactive_issue_checker
 
 MockGithubException = unittest.mock.Mock()
 MockGithubException.__name__ = 'GithubException'
