@@ -1093,95 +1093,10 @@ export class ExplorationEditor extends BaseUser {
         await this.page.waitForSelector(multipleChoiceResponseDropdown, {
           visible: true,
         });
-        await this.clickOn(multipleChoiceResponseDropdown);
-        await this.page.waitForSelector(multipleChoiceResponseOption, {
-          visible: true,
-        });
-
-        await this.page.evaluate(
-          (answer, multipleChoiceResponseOption) => {
-            const optionElements = Array.from(
-              document.querySelectorAll(multipleChoiceResponseOption)
-            );
-            const element = optionElements.find(
-              element => element.textContent?.trim() === answer
-            ) as HTMLElement;
-            if (element) {
-              element.click();
-            } else {
-              throw new Error(`Cannot find "${answer}" in options.`);
-            }
-          },
-          answer,
-          multipleChoiceResponseOption
-        );
-        break;
-      case 'Text Input':
-        await this.clickOn(addResponseOptionButton);
-        await this.page.waitForSelector(textInputInteractionOption);
-        await this.page.type(textInputInteractionOption, answer);
-        break;
-      case 'Fraction Input':
-        await this.clearAllTextFrom(intEditorField);
-        await this.type(intEditorField, answer);
-        break;
-      // Add cases for other interaction types here
-      // case 'otherInteractionType':
-      //   await this.type(otherFormInput, answer);
-      //   break;
-      default:
-        throw new Error(`Unsupported interaction type: ${interactionType}`);
-    }
-    await this.clickOn(feedbackEditorSelector);
-    await this.type(stateContentInputField, feedback);
-    // The '/' value is used to select the 'a new card called' option in the dropdown.
-    if (destination) {
-      await this.select(destinationCardSelector, '/');
-      await this.type(addStateInput, destination);
-    }
-    if (responseIsCorrect) {
-      await this.clickOn(correctAnswerInTheGroupSelector);
-    }
-    if (isLastResponse) {
-      await this.page.waitForSelector(addNewResponseButton, {
-        visible: true,
-      });
-      await this.clickOn(addNewResponseButton);
-      await this.page
-        .waitForSelector(responseModalHeaderSelector, {
-          hidden: true,
-        })
-        .catch(async () => {
-          await this.clickOn(addNewResponseButton);
-        });
-    } else {
-      await this.clickOn(addAnotherResponseButton);
-    }
-  }
-
-  async addResponsesToTheInteraction2(
-    interactionType: string,
-    answer: string,
-    feedback: string,
-    destination: string,
-    responseIsCorrect: boolean,
-    isLastResponse: boolean = true
-  ): Promise<void> {
-    switch (interactionType) {
-      case 'Number Input':
-        await this.page.waitForSelector(floatFormInput);
-        await this.page.type(floatFormInput, answer);
-        break;
-      case 'Multiple Choice':
-        await this.page.waitForSelector(responseModalHeaderSelector, {
-          visible: true,
-        });
-        await this.page.waitForSelector(multipleChoiceResponseDropdown, {
-          visible: true,
-        });
         try {
           await this.clickOn(multipleChoiceResponseDropdown);
         } catch {
+          showMessage('Taking Screenshot');
           await this.expectScreenshotToMatch(
             'blogEditorPageWithPublishedBlogPostTitle',
             __dirname
