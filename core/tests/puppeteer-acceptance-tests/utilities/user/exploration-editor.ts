@@ -1102,6 +1102,11 @@ export class ExplorationEditor extends BaseUser {
             __dirname
           );
         }
+        showMessage('Taking Screenshot');
+          await this.expectScreenshotToMatch(
+            'blogEditorPageWithPublishedBlogPostTitle',
+            __dirname
+          );
         await this.page.waitForSelector(multipleChoiceResponseOption, {
           visible: true,
         });
