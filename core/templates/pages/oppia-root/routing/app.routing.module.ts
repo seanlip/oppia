@@ -450,6 +450,16 @@ const routes: Route[] = [
       ),
   },
   {
+    path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND
+      .TOPICS_AND_SKILLS_DASHBOARD.ROUTE,
+    loadChildren: () =>
+      import(
+        // eslint-disable-next-line max-len
+        'pages/topics-and-skills-dashboard-page/topics-and-skills-dashboard-page.module'
+      ).then(m => m.TopicsAndSkillsDashboardPageModule),
+    canActivate: [IsLoggedInGuard],
+  },
+  {
     path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.VOICEOVER_ADMIN.ROUTE,
     loadChildren: () =>
       import('pages/voiceover-admin-page/voiceover-admin-page.module').then(
@@ -464,6 +474,14 @@ const routes: Route[] = [
       import('pages/collection-player-page/collection-player-page.module').then(
         m => m.CollectionPlayerPageModule
       ),
+  },
+  {
+    path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.SKILL_EDITOR.ROUTE,
+    loadChildren: () =>
+      import('pages/skill-editor-page/skill-editor-page.module').then(
+        m => m.SkillEditorPageModule
+      ),
+    canActivate: [IsLoggedInGuard],
   },
   {
     path: AppConstants.PAGES_REGISTERED_WITH_FRONTEND.REVIEW_TEST.ROUTE,
