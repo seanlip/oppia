@@ -64,7 +64,6 @@ const addResponseOptionButton = 'button.e2e-test-add-list-entry';
 const addAnotherResponseButton = 'button.e2e-test-add-another-response';
 const multipleChoiceResponseDropdown =
   'mat-select.e2e-test-main-html-select-selector';
-const addResponseButton = 'button.e2e-test-open-add-response-modal';
 const multipleChoiceResponseOption = 'mat-option.e2e-test-html-select-selector';
 const textInputInteractionButton = 'div.e2e-test-interaction-tile-TextInput';
 const textInputInteractionOption =
@@ -220,8 +219,6 @@ const stayAnonymousCheckbox = '.e2e-test-stay-anonymous-checkbox';
 const responseTextareaSelector = '.e2e-test-feedback-response-textarea';
 const sendButtonSelector = '.e2e-test-oppia-feedback-response-send-btn';
 const errorSavingExplorationModal = '.e2e-test-discard-lost-changes-button';
-const responseRuleDropdown =
-  'oppia-rule-type-selector.e2e-test-answer-description';
 
 const LABEL_FOR_SAVE_DESTINATION_BUTTON = ' Save Destination ';
 export class ExplorationEditor extends BaseUser {
@@ -1067,13 +1064,6 @@ export class ExplorationEditor extends BaseUser {
     }
   }
 
-  async clickAddResponseButton(): Promise<void> {
-    await this.clickOn(addResponseButton);
-    await this.page.waitForSelector(responseModalHeaderSelector, {
-      visible: true,
-    });
-  }
-
   /**
    * Function to add responses to the interactions. Currently, it only handles 'Number Input' interaction type.
    * @param {string} interactionType - The type of the interaction.
@@ -1093,14 +1083,6 @@ export class ExplorationEditor extends BaseUser {
   ): Promise<void> {
     await this.clickOn(feedbackEditorSelector);
     await this.type(stateContentInputField, feedback);
-    // The '/' value is used to select the 'a new card called' option in the dropdown.
-    if (destination) {
-      await this.select(destinationCardSelector, '/');
-      await this.type(addStateInput, destination);
-    }
-    if (responseIsCorrect) {
-      await this.clickOn(correctAnswerInTheGroupSelector);
-    }
     switch (interactionType) {
       case 'Number Input':
         await this.page.waitForSelector(floatFormInput);
@@ -1152,6 +1134,14 @@ export class ExplorationEditor extends BaseUser {
       default:
         throw new Error(`Unsupported interaction type: ${interactionType}`);
     }
+    // The '/' value is used to select the 'a new card called' option in the dropdown.
+    if (destination) {
+      await this.select(destinationCardSelector, '/');
+      await this.type(addStateInput, destination);
+    }
+    if (responseIsCorrect) {
+      await this.clickOn(correctAnswerInTheGroupSelector);
+    }
     if (isLastResponse) {
       await this.page.waitForSelector(addNewResponseButton, {
         visible: true,
@@ -1166,7 +1156,6 @@ export class ExplorationEditor extends BaseUser {
         });
     } else {
       await this.clickOn(addAnotherResponseButton);
-      showMessage('Added a response and clicked on addAnotherResponseButton');
     }
   }
 

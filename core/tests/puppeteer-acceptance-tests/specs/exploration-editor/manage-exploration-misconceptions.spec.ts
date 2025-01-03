@@ -110,7 +110,6 @@ describe('Exploration Editor', function () {
       true,
       false
     );
-    // await explorationEditor.clickAddResponseButton();
     await explorationEditor.addResponsesToTheInteraction(
       INTERACTION_TYPES.MULTIPLE_CHOICE,
       '-101',
