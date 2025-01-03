@@ -2798,31 +2798,98 @@ describe('Translation Suggestion Review Modal Component', function () {
 
     it('should initialize with correct image count', () => {
       component.translationHtml = htmlWithImage;
+
+      // Pre-checks
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(component.suggestionIdToContribution.suggestion_1).toBeDefined();
+      expect(component.translationHtml).toBeDefined();
+      expect(component.initialImageCount).toBe(0);
+
       component.ngOnInit();
+
       expect(component.initialImageCount).toBe(1);
     });
 
     it('should disable update button when editing removes images', () => {
       component.translationHtml = htmlWithImage;
+
+      // Pre-checks
+      expect(component.translationHtml).toBeDefined();
+      expect(component.translationHtml).toContain(
+        '<oppia-noninteractive-image'
+      );
+      expect(component.initialImageCount).toBe(0);
+
       component.ngOnInit();
+
+      // Post-Initialization Pre-checks
+      expect(component.initialImageCount).toBe(1);
+
       component.startedEditing = true;
       component.editedContent = {html: htmlWithoutImage};
+
+      // Additional Pre-checks
+      expect(component.editedContent.html).toBeDefined();
+      expect(component.editedContent.html).not.toContain(
+        '<oppia-noninteractive-image'
+      );
+
       expect(component.isUpdateDisabled).toBeTrue();
     });
 
     it('should enable update button when no images were removed', () => {
       component.translationHtml = htmlWithImage;
+
+      // Pre-checks
+      expect(component.translationHtml).toBeDefined();
+      expect(component.translationHtml).toContain(
+        '<oppia-noninteractive-image'
+      );
+      expect(component.initialImageCount).toBe(0);
+
       component.ngOnInit();
+
+      // Post-Initialization Pre-checks
+      expect(component.initialImageCount).toBe(1);
+
       component.startedEditing = true;
       component.editedContent = {html: htmlWithImage};
+
+      // Additional Pre-checks
+      expect(component.editedContent.html).toBeDefined();
+      expect(component.editedContent.html).toContain(
+        '<oppia-noninteractive-image'
+      );
+
       expect(component.isUpdateDisabled).toBeFalse();
     });
 
     it('should show error message when attempting to update with removed images', () => {
       component.translationHtml = htmlWithImage;
+
+      // Pre-checks
+      expect(component.translationHtml).toBeDefined();
+      expect(component.translationHtml).toContain(
+        '<oppia-noninteractive-image'
+      );
+      expect(component.initialImageCount).toBe(0);
+
       component.ngOnInit();
+
+      // Post-Initialization Pre-checks
+      expect(component.initialImageCount).toBe(1);
+
       component.editedContent = {html: htmlWithoutImage};
+
+      // Additional Pre-checks
+      expect(component.editedContent.html).toBeDefined();
+      expect(component.editedContent.html).not.toContain(
+        '<oppia-noninteractive-image'
+      );
+
       component.updateSuggestion();
+
       expect(component.errorMessage).toBe(
         'Removing images from the translation is not allowed.'
       );
@@ -2832,17 +2899,56 @@ describe('Translation Suggestion Review Modal Component', function () {
     it('should allow update when no images were present initially', () => {
       component.initialSuggestionId = 'suggestion_2';
       component.translationHtml = htmlWithoutImage;
+
+      // Pre-checks
+      expect(component.translationHtml).toBeDefined();
+      expect(component.translationHtml).not.toContain(
+        '<oppia-noninteractive-image'
+      );
+      expect(component.initialImageCount).toBe(0);
+
       component.ngOnInit();
+
+      // Post-Initialization Pre-checks
+      expect(component.initialImageCount).toBe(0);
+
       component.startedEditing = true;
       component.editedContent = {html: htmlWithoutImage};
+
+      // Additional Pre-checks
+      expect(component.editedContent.html).toBeDefined();
+      expect(component.editedContent.html).not.toContain(
+        '<oppia-noninteractive-image'
+      );
+
       expect(component.isUpdateDisabled).toBeFalse();
     });
 
     it('should allow update when adding images', () => {
+      component.initialSuggestionId = 'suggestion_2';
       component.translationHtml = htmlWithoutImage;
+
+      // Pre-checks
+      expect(component.translationHtml).toBeDefined();
+      expect(component.translationHtml).not.toContain(
+        '<oppia-noninteractive-image'
+      );
+      expect(component.initialImageCount).toBe(0);
+
       component.ngOnInit();
+
+      // Post-Initialization Pre-checks
+      expect(component.initialImageCount).toBe(0);
+
       component.startedEditing = true;
       component.editedContent = {html: htmlWithImage};
+
+      // Additional Pre-checks
+      expect(component.editedContent.html).toBeDefined();
+      expect(component.editedContent.html).toContain(
+        '<oppia-noninteractive-image'
+      );
+
       expect(component.isUpdateDisabled).toBeFalse();
     });
   });
