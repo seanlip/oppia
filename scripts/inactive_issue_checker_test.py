@@ -30,7 +30,7 @@ MockGithubException.__name__ = 'GithubException'
 class TestCheckInactiveIssues(unittest.TestCase):
     """Test suite for the check_inactive_issues function."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Set up test cases."""
         self.patcher = unittest.mock.patch(
         'scripts.inactive_issue_checker.Github')
@@ -39,7 +39,7 @@ class TestCheckInactiveIssues(unittest.TestCase):
         self.mock_repo = self.mock_github.get_repo.return_value
         self.current_time = datetime.datetime.now(datetime.timezone.utc)
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Tear down test cases."""
         self.patcher.stop()
 
