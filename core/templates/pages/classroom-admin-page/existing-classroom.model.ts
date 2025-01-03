@@ -161,6 +161,22 @@ export class ExistingClassroomData
     this._thumbnail_data = thumbnailData;
   }
 
+  getIsDiagnosticTestEnabled(): boolean {
+    return this._isDiagnosticTestEnabled;
+  }
+
+  setIsDiagnosticTestEnabled(status: boolean): void {
+    this._isDiagnosticTestEnabled = status;
+  }
+
+  getUrlFragment(): string {
+    return this._urlFragment;
+  }
+
+  setUrlFragment(value: string): void {
+    this._urlFragment = value;
+  }
+
   setTopicIdToPrerequisiteTopicId(
     topicIdToPrerequisiteTopicIds: TopicIdToPrerequisiteTopicIds
   ): void {

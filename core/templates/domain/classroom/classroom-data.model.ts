@@ -31,6 +31,7 @@ export class ClassroomData {
   _topicListIntro: string;
   _teaserText: string;
   _isPublished: boolean;
+  _isDiagnosticTestEnabled: boolean;
   _thumbnailData: ImageData;
   _bannerData: ImageData;
   _publicClassroomsCount: number;
