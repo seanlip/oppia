@@ -2,20 +2,22 @@ author_notes: ''
 auto_tts_enabled: true
 blurb: ''
 category: Astronomy
-correctness_feedback_enabled: false
 edits_allowed: true
 init_state_name: First State
 language_code: en
+next_content_id_index: 18
 objective: Learn about the planets of the solar system
 param_changes: []
 param_specs: {}
-schema_version: 47
+schema_version: 61
 states:
   END:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_0
       html: <p>Congratulations, you have finished!</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups: []
       confirmed_unclassified_answers: []
@@ -26,26 +28,26 @@ states:
       hints: []
       id: EndExploration
       solution: null
-    next_content_id_index: 0
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
+        content_0: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
   Exit:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_1
       html: <p>Do you want to quit?</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: END
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_3
             html: <p>Thank you for exploring the Solar System!</p>
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -59,8 +61,9 @@ states:
         training_data: []
       - outcome:
           dest: First State
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
+            content_id: feedback_4
             html: <p>Let's learn more about the planets then!</p>
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -76,16 +79,17 @@ states:
       customization_args:
         choices:
           value:
-          - content_id: ca_choices_3
+          - content_id: ca_choices_5
             html: <p>Yes</p>
-          - content_id: ca_choices_4
+          - content_id: ca_choices_6
             html: <p>No</p>
         showChoicesInShuffledOrder:
           value: false
       default_outcome:
         dest: Exit
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_2
           html: <p>Try again.</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -94,39 +98,34 @@ states:
       hints: []
       id: MultipleChoiceInput
       solution: null
-    next_content_id_index: 5
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_choices_3: {}
-        ca_choices_4: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
+        ca_choices_5: {}
+        ca_choices_6: {}
+        content_1: {}
+        default_outcome_2: {}
+        feedback_3: {}
+        feedback_4: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_choices_3: {}
-        ca_choices_4: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
   First State:
+    card_is_checkpoint: true
     classifier_model_id: null
     content:
-      content_id: content
-      html: "<p>Our Solar System consists of nine planets orbiting around our sun:\
-        \ Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune and Pluto.\
-        \ They range from huge gas giants to small icy dwarf planets.</p><p>\xC2\_\
-        </p><p>Click on the planets below to find out more about each one!</p>"
+      content_id: content_7
+      html: '<p>Our Solar System consists of nine planets orbiting around our sun:
+        Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune and Pluto. They
+        range from huge gas giants to small icy dwarf planets.</p><p> </p><p>Click
+        on the planets below to find out more about each one!</p>'
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: First State
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_9
             html: <p>This is Mercury, a small metallic planet closest to the sun.
               Since it is so near to the sun, it only takes 88 days for it to travel
               one entire orbit, so a year on Mercury would only be 88 days long.</p>
@@ -142,8 +141,9 @@ states:
         training_data: []
       - outcome:
           dest: First State
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
+            content_id: feedback_10
             html: <p>This is Venus, the second planet from the sun. It is the brightest
               planet in the Solar System, and can sometimes even be seen during the
               day. Though Mercury is nearer to the sun than Venus, Venus is the hottest
@@ -161,8 +161,9 @@ states:
         training_data: []
       - outcome:
           dest: First State
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_3
+            content_id: feedback_11
             html: <p>Earth! Our home planet is the third planet from the sun. Despite
               the vastness of the Solar System and the rest of space, it is the only
               place that we know life exists on. It is at just the right distance
@@ -179,8 +180,9 @@ states:
         training_data: []
       - outcome:
           dest: First State
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_4
+            content_id: feedback_12
             html: <p>Mars is the fourth planet from the sun. It is often dubbed the
               "red planet" due to its color, which is a result of large quantities
               of iron oxide on its surface. It has a thin atmosphere of carbon dioxide
@@ -198,8 +200,9 @@ states:
         training_data: []
       - outcome:
           dest: First State
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_5
+            content_id: feedback_13
             html: <p>Jupiter, the fifth planet from the sun, is a huge planet that
               is 2.5 times heavier than all of the other planets in our Solar System
               combined. It is mostly formed out of thick gases around a solid core.
@@ -218,12 +221,13 @@ states:
         training_data: []
       - outcome:
           dest: First State
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_6
-            html: "<p>Saturn, the sixth planet from the sun, is most well known for\
-              \ its beautiful rings of ice and dust orbiting around it. Like Jupiter,\
-              \ it is a gas giant, mostly made of layers of hydrogen which get progressively\
-              \ denser towards its solid core.\xC2\_</p>"
+            content_id: feedback_14
+            html: <p>Saturn, the sixth planet from the sun, is most well known for
+              its beautiful rings of ice and dust orbiting around it. Like Jupiter,
+              it is a gas giant, mostly made of layers of hydrogen which get progressively
+              denser towards its solid core. </p>
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
           param_changes: []
@@ -236,8 +240,9 @@ states:
         training_data: []
       - outcome:
           dest: First State
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_7
+            content_id: feedback_15
             html: <p>Uranus is the seventh planet from the sun. It was the first planet
               that was discovered using a telescope, since it is normally too dim
               to be seen with the naked eye. It is the coldest planet, and is formed
@@ -254,8 +259,9 @@ states:
         training_data: []
       - outcome:
           dest: First State
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_8
+            content_id: feedback_16
             html: <p>Neptune is the eighth planet from the sun. It is an "ice giant",
               like Uranus, with an outer layer of hydrogen, helium, and methane enveloping
               an icy core. The methane in its atmosphere absorbs red light, giving
@@ -273,8 +279,9 @@ states:
         training_data: []
       - outcome:
           dest: First State
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_9
+            content_id: feedback_17
             html: <p>Pluto was once considered the ninth planet from the sun, but
               has now been reclassified as a "dwarf planet". It is formed from ice
               and rock, and is even smaller than our moon. The first spacecraft to
@@ -371,8 +378,9 @@ states:
                 regionType: Rectangle
       default_outcome:
         dest: Exit
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_8
           html: <p>Do you want to exit the exploration?</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -381,35 +389,22 @@ states:
       hints: []
       id: ImageClickInput
       solution: null
-    next_content_id_index: 10
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        feedback_3: {}
-        feedback_4: {}
-        feedback_5: {}
-        feedback_6: {}
-        feedback_7: {}
-        feedback_8: {}
+        content_7: {}
+        default_outcome_8: {}
+        feedback_10: {}
+        feedback_11: {}
+        feedback_12: {}
+        feedback_13: {}
+        feedback_14: {}
+        feedback_15: {}
+        feedback_16: {}
+        feedback_17: {}
         feedback_9: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        feedback_3: {}
-        feedback_4: {}
-        feedback_5: {}
-        feedback_6: {}
-        feedback_7: {}
-        feedback_8: {}
-        feedback_9: {}
-states_schema_version: 42
+states_schema_version: 56
 tags: []
 title: The Solar System

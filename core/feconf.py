@@ -774,6 +774,10 @@ DEMO_EXPLORATIONS = {
     # NumericInput interaction.
     '3': 'root_linear_coefficient_theorem',
     '4': 'three_balls',
+    # Exploration with ID 5 was removed as it was generated using a script to
+    # create a large number of states representing cities for the InteractiveMap
+    # interaction (see #1376 for context), and became unsupported after
+    # multiple schema migrations.
     '6': 'boot_verbs.yaml',
     '7': 'hola.yaml',
     # Exploration with ID 8 was removed as it contained string values inside

@@ -2,10 +2,10 @@ author_notes: ''
 auto_tts_enabled: true
 blurb: ''
 category: Test
-correctness_feedback_enabled: false
 edits_allowed: true
 init_state_name: Continue
 language_code: en
+next_content_id_index: 40
 objective: check all the interactions work
 param_changes: []
 param_specs:
@@ -15,19 +15,22 @@ param_specs:
     obj_type: UnicodeString
   c:
     obj_type: UnicodeString
-schema_version: 47
+schema_version: 61
 states:
   Code REPL:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_0
       html: <p>Write a program the prints 12.<br></p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Music notes input
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_2
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -51,8 +54,9 @@ states:
           value: ''
       default_outcome:
         dest: Code REPL
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_1
           html: <p>Wrong.</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -61,46 +65,43 @@ states:
       hints: []
       id: CodeRepl
       solution: null
-    next_content_id_index: 2
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
+        content_0: {}
+        default_outcome_1: {}
+        feedback_2: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
   Continue:
+    card_is_checkpoint: true
     classifier_model_id: null
     content:
-      content_id: content
-      html: "<p>Click continue.<br></p><p>\_</p><p><strong>Parameters</strong></p><p>{{a}}\
-        \ should be 1.</p><p>{{c}} should be 2.</p><p>{{b}} should be 0.5.<br></p><p>{{a*b}}\
-        \ should be 0.5.</p><p>{{-a*b}} should be -0.5.<br></p><p>{{a \_ * b \_}}\
-        \ should be 0.5.</p><p>{{abs(-a*b)}} should be 0.5.</p><p>{{if a + a == c\
-        \ then 'yes' else 'no'}} should be 'yes'</p><p>{{if a == c then 'yes' else\
-        \ 'no'}} should be 'no'<br></p><p>{{floor(a*b)}} should be 0.</p><p>{{log(2,\
-        \ 10)}} should be around 0.3.<br></p><p>{{pow(2, 10)}} should be 1024.</p><p>{{3\
-        \ &lt; 4}} should be true.</p><p>{{3 &gt; 4}} should be false.</p><p>{{4 &lt;=\
-        \ 4}} should be true.</p><p>{{4 &gt;= 3}} should be true.</p><p>&lt; should\
-        \ be an unescaped 'less-than' sign.</p><p>&gt; should be an unescaped 'greater-than'\
-        \ sign.</p>"
+      content_id: content_3
+      html: <p>Click continue.<br></p><p> </p><p><strong>Parameters</strong></p><p>{{a}}
+        should be 1.</p><p>{{c}} should be 2.</p><p>{{b}} should be 0.5.<br></p><p>{{a*b}}
+        should be 0.5.</p><p>{{-a*b}} should be -0.5.<br></p><p>{{a   * b  }} should
+        be 0.5.</p><p>{{abs(-a*b)}} should be 0.5.</p><p>{{if a + a == c then 'yes'
+        else 'no'}} should be 'yes'</p><p>{{if a == c then 'yes' else 'no'}} should
+        be 'no'<br></p><p>{{floor(a*b)}} should be 0.</p><p>{{log(2, 10)}} should
+        be around 0.3.<br></p><p>{{pow(2, 10)}} should be 1024.</p><p>{{3 &lt; 4}}
+        should be true.</p><p>{{3 &gt; 4}} should be false.</p><p>{{4 &lt;= 4}} should
+        be true.</p><p>{{4 &gt;= 3}} should be true.</p><p>&lt; should be an unescaped
+        'less-than' sign.</p><p>&gt; should be an unescaped 'greater-than' sign.</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups: []
       confirmed_unclassified_answers: []
       customization_args:
         buttonText:
           value:
-            content_id: ca_buttonText_0
+            content_id: ca_buttonText_5
             unicode_str: Continue
       default_outcome:
         dest: Multiple choice input
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_4
           html: ''
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -109,7 +110,7 @@ states:
       hints: []
       id: Continue
       solution: null
-    next_content_id_index: 1
+    linked_skill_id: null
     param_changes:
     - customization_args:
         parse_with_jinja: false
@@ -133,20 +134,17 @@ states:
       name: b
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_buttonText_0: {}
-        content: {}
-        default_outcome: {}
+        ca_buttonText_5: {}
+        content_3: {}
+        default_outcome_4: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_buttonText_0: {}
-        content: {}
-        default_outcome: {}
   END:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_6
       html: <p>Congratulations, you have finished!</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups: []
       confirmed_unclassified_answers: []
@@ -157,28 +155,28 @@ states:
       hints: []
       id: EndExploration
       solution: null
-    next_content_id_index: 0
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
+        content_6: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
   Multiple choice input:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
-      html: "<p>Choose option B.<br></p><p>\_</p><p><strong>Parameters</strong></p><p>{{a}}\
-        \ should be 1.</p><p>{{b}} should be 3.<br></p><p>{{c}} should be 2.</p><p>{{a*b}}\
-        \ should be 3.</p>"
+      content_id: content_7
+      html: <p>Choose option B.<br></p><p> </p><p><strong>Parameters</strong></p><p>{{a}}
+        should be 1.</p><p>{{b}} should be 3.<br></p><p>{{c}} should be 2.</p><p>{{a*b}}
+        should be 3.</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Text input
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_9
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -194,14 +192,13 @@ states:
       customization_args:
         choices:
           value:
-          - content_id: ca_choices_2
-            html: "<oppia-noninteractive-image alt-with-value=\"&amp;quot;image&amp;quot;\"\
-              \ caption-with-value=\"&amp;quot;&amp;quot;\" filepath-with-value=\"\
-              &amp;quot;A_height_24_width_24.png&amp;quot;\"></oppia-noninteractive-image><p>\_\
-              </p>"
-          - content_id: ca_choices_3
+          - content_id: ca_choices_10
+            html: <oppia-noninteractive-image alt-with-value="&amp;quot;image&amp;quot;"
+              caption-with-value="&amp;quot;&amp;quot;" filepath-with-value="&amp;quot;A_height_24_width_24.png&amp;quot;"></oppia-noninteractive-image><p>
+              </p>
+          - content_id: ca_choices_11
             html: <p>Option B<br></p>
-          - content_id: ca_choices_4
+          - content_id: ca_choices_12
             html: '<p><oppia-noninteractive-math math_content-with-value="{&amp;quot;raw_latex&amp;quot;:
               &amp;quot;\\frac{x}{y}&amp;quot;, &amp;quot;svg_filename&amp;quot;:
               &amp;quot;mathImg_20200904_152727_0lz7a7ui3f_height_3d205_width_1d784_vertical_1d306.svg&amp;quot;}"></oppia-noninteractive-math><br></p>'
@@ -209,8 +206,9 @@ states:
           value: false
       default_outcome:
         dest: Multiple choice input
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_8
           html: <p>Wrong.</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -219,7 +217,7 @@ states:
       hints: []
       id: MultipleChoiceInput
       solution: null
-    next_content_id_index: 5
+    linked_skill_id: null
     param_changes:
     - customization_args:
         parse_with_jinja: true
@@ -228,32 +226,27 @@ states:
       name: b
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_choices_2: {}
-        ca_choices_3: {}
-        ca_choices_4: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
+        ca_choices_10: {}
+        ca_choices_11: {}
+        ca_choices_12: {}
+        content_7: {}
+        default_outcome_8: {}
+        feedback_9: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_choices_2: {}
-        ca_choices_3: {}
-        ca_choices_4: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
   Music notes input:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_13
       html: <p>Enter two E4 notes (bottom line).<br></p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: World map
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_15
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -289,8 +282,9 @@ states:
             readableNoteName: E4
       default_outcome:
         dest: Music notes input
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_14
           html: <p>Wrong.</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -299,32 +293,30 @@ states:
       hints: []
       id: MusicNotesInput
       solution: null
-    next_content_id_index: 2
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
+        content_13: {}
+        default_outcome_14: {}
+        feedback_15: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
   Network Graph:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_16
       html: <p>Do the following step by step:<br><br>1. Delete Node labelled B</p><p>2.
         Add Node labelled Z</p><p>3. Add Edge of weight 150 connecting A to Z</p><p>4.
         Delete Edge between A and F</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Code REPL
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_18
             html: <p>Correct</p>
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -390,8 +382,9 @@ states:
               y: 155.5
       default_outcome:
         dest: Network Graph
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_17
           html: <p>Incorrect</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -400,30 +393,28 @@ states:
       hints: []
       id: GraphInput
       solution: null
-    next_content_id_index: 2
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
+        content_16: {}
+        default_outcome_17: {}
+        feedback_18: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
   Numeric input:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_19
       html: <p>Enter a number larger than 6.<br></p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Set input
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_21
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -436,11 +427,14 @@ states:
         tagged_skill_misconception_id: null
         training_data: []
       confirmed_unclassified_answers: []
-      customization_args: {}
+      customization_args:
+        requireNonnegativeInput:
+          value: false
       default_outcome:
         dest: Numeric input
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_20
           html: <p>Wrong.</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -449,30 +443,28 @@ states:
       hints: []
       id: NumericInput
       solution: null
-    next_content_id_index: 2
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
+        content_19: {}
+        default_outcome_20: {}
+        feedback_21: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
   Set input:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_22
       html: <p>Enter the set {abc, xyz}<br></p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Network Graph
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_24
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -481,7 +473,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_3
+              contentId: rule_input_25
               unicodeStrSet:
               - abc
               - xyz
@@ -492,12 +484,13 @@ states:
       customization_args:
         buttonText:
           value:
-            content_id: ca_buttonText_2
+            content_id: ca_buttonText_26
             unicode_str: Add item
       default_outcome:
         dest: Set input
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_23
           html: <p>Wrong.</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -506,34 +499,30 @@ states:
       hints: []
       id: SetInput
       solution: null
-    next_content_id_index: 4
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_buttonText_2: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        rule_input_3: {}
+        ca_buttonText_26: {}
+        content_22: {}
+        default_outcome_23: {}
+        feedback_24: {}
+        rule_input_25: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_buttonText_2: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        rule_input_3: {}
   Text Area Input:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_27
       html: <p>Please type hello.</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Numeric input
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_29
             html: <p>Correct</p>
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -542,7 +531,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_3
+              contentId: rule_input_30
               normalizedStrSet:
               - hello
           rule_type: Equals
@@ -550,16 +539,19 @@ states:
         training_data: []
       confirmed_unclassified_answers: []
       customization_args:
+        catchMisspellings:
+          value: false
         placeholder:
           value:
-            content_id: ca_placeholder_2
+            content_id: ca_placeholder_31
             unicode_str: Type your answer here.
         rows:
           value: 10
       default_outcome:
         dest: Text Area Input
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_28
           html: <p>Wrong</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -568,34 +560,30 @@ states:
       hints: []
       id: TextInput
       solution: null
-    next_content_id_index: 4
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_placeholder_2: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        rule_input_3: {}
+        ca_placeholder_31: {}
+        content_27: {}
+        default_outcome_28: {}
+        feedback_29: {}
+        rule_input_30: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_placeholder_2: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        rule_input_3: {}
   Text input:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_32
       html: <p>Enter the string rrrrr<br></p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Text Area Input
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_34
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -604,7 +592,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_3
+              contentId: rule_input_35
               normalizedStrSet:
               - rrrrr
           rule_type: Equals
@@ -612,16 +600,19 @@ states:
         training_data: []
       confirmed_unclassified_answers: []
       customization_args:
+        catchMisspellings:
+          value: false
         placeholder:
           value:
-            content_id: ca_placeholder_2
+            content_id: ca_placeholder_36
             unicode_str: Type your answer here.
         rows:
           value: 1
       default_outcome:
         dest: Text input
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_33
           html: <p>Wrong.</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -630,34 +621,30 @@ states:
       hints: []
       id: TextInput
       solution: null
-    next_content_id_index: 4
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_placeholder_2: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        rule_input_3: {}
+        ca_placeholder_36: {}
+        content_32: {}
+        default_outcome_33: {}
+        feedback_34: {}
+        rule_input_35: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_placeholder_2: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        rule_input_3: {}
   World map:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_37
       html: <p>Click on the USA.<br></p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: END
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_39
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -682,8 +669,9 @@ states:
           value: 0.0
       default_outcome:
         dest: World map
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_38
           html: <p>Wrong.</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -692,19 +680,14 @@ states:
       hints: []
       id: InteractiveMap
       solution: null
-    next_content_id_index: 2
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
+        content_37: {}
+        default_outcome_38: {}
+        feedback_39: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-states_schema_version: 42
+states_schema_version: 56
 tags: []
 title: Test of expressions and interactions

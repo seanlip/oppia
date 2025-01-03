@@ -2,10 +2,10 @@ author_notes: ''
 auto_tts_enabled: true
 blurb: ''
 category: Combinatorics
-correctness_feedback_enabled: false
 edits_allowed: true
 init_state_name: Intro
 language_code: en
+next_content_id_index: 83
 objective: learn how to count permutations accurately and systematically
 param_changes:
 - customization_args:
@@ -16,21 +16,24 @@ param_changes:
 param_specs:
   guess:
     obj_type: UnicodeString
-schema_version: 47
+schema_version: 61
 states:
   Continue Option:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
-      html: "<p>Wow, you got through that really fast!</p><p>\xC2\_</p><p>Would you\
-        \ like to play around with the problem a bit more, and see how this exploration\
-        \ would have presented the material if you didn't figure it out yourself?</p>"
+      content_id: content_0
+      html: <p>Wow, you got through that really fast!</p><p> </p><p>Would you like
+        to play around with the problem a bit more, and see how this exploration would
+        have presented the material if you didn't figure it out yourself?</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Two balls
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_2
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -44,8 +47,9 @@ states:
         training_data: []
       - outcome:
           dest: END
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
+            content_id: feedback_3
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -61,18 +65,19 @@ states:
       customization_args:
         choices:
           value:
-          - content_id: ca_choices_3
+          - content_id: ca_choices_4
             html: <p>Yes, take me to another stage in the exploration that would have
               taught me about permutations</p>
-          - content_id: ca_choices_4
+          - content_id: ca_choices_5
             html: <p>No thanks, I'm done for now. I can always restart it if I want
               to experiment more.</p>
         showChoicesInShuffledOrder:
           value: false
       default_outcome:
         dest: Continue Option
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_1
           html: <p>This will never get hit and this message should not be necessary.</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -81,30 +86,24 @@ states:
       hints: []
       id: MultipleChoiceInput
       solution: null
-    next_content_id_index: 5
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_choices_3: {}
         ca_choices_4: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
+        ca_choices_5: {}
+        content_0: {}
+        default_outcome_1: {}
         feedback_2: {}
+        feedback_3: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_choices_3: {}
-        ca_choices_4: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
   END:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_6
       html: <p>Congratulations, you have finished!</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups: []
       confirmed_unclassified_answers: []
@@ -115,29 +114,29 @@ states:
       hints: []
       id: EndExploration
       solution: null
-    next_content_id_index: 0
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
+        content_6: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
   Final challenge:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_7
       html: '<p>Now here''s a final challenge: using what you''ve learned, can you
         figure out how many ways there are to arrange four balls in a row? Listing
         all the possibilities by hand is going to be tedious, but, by now, you''ve
         learned at least one way to calculate this number quickly and accurately.</p>'
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: END
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_9
             html: '<p>Yes, that is correct: the answer is 4 times the number of ways
               to arrange three balls in a row, so it is 4 times 6, which is 24! Well
               done.</p>'
@@ -153,8 +152,9 @@ states:
         training_data: []
       - outcome:
           dest: Final challenge
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
+            content_id: feedback_10
             html: <p>Ahem. That, I think, is a trick answer, surely? I am pretty sure
               there's at least one way to arrange four balls in a line...</p>
           labelled_as_correct: false
@@ -169,8 +169,9 @@ states:
         training_data: []
       - outcome:
           dest: Final challenge
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_3
+            content_id: feedback_11
             html: '<p>Hmm, that''s close-ish, but not quite. It feels like you may
               not have found all the possible cases. It''s really quite easy to miss
               some of them.
@@ -195,8 +196,9 @@ states:
         training_data: []
       - outcome:
           dest: Final challenge
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_4
+            content_id: feedback_12
             html: '<p>I think you''ve overcounted. This is quite common in counting
               problems, especially if you aren''t working systematically, or aren''t
               explicitly listing the things you''re counting.
@@ -218,8 +220,9 @@ states:
         training_data: []
       - outcome:
           dest: Final challenge
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_5
+            content_id: feedback_13
             html: <p>But we know you can arrange 3 balls in 6 ways. So for 4 balls,
               there couldn't possibly be fewer ways than 6!</p>
           labelled_as_correct: false
@@ -234,8 +237,9 @@ states:
         training_data: []
       - outcome:
           dest: Final challenge
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_6
+            content_id: feedback_14
             html: <p>So adding a fourth ball doesn't give you any more combinations
               than arranging three balls did? I don't think that's right.</p>
           labelled_as_correct: false
@@ -250,14 +254,15 @@ states:
         training_data: []
       - outcome:
           dest: Final challenge
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_7
-            html: "<p>\_Interesting, 12 is twice as much as the number of ways to\
-              \ arrange 3 balls.\_I think there are actually many more ways than 12,\
-              \ but you might be onto something: for each way to arrange 3 balls,\
-              \ there are several ways to add the fourth ball. If you figure out how\
-              \ many, it should be straightforward to arrive at the final number of\
-              \ 4-ball arrangements.</p>"
+            content_id: feedback_15
+            html: '<p>&nbsp;Interesting, 12 is twice as much as the number of ways
+              to arrange 3 balls.&nbsp;I think there are actually many more ways than
+              12, but you might be onto something: for each way to arrange 3 balls,
+              there are several ways to add the fourth ball. If you figure out how
+              many, it should be straightforward to arrive at the final number of
+              4-ball arrangements.</p>'
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
           param_changes: []
@@ -269,11 +274,14 @@ states:
         tagged_skill_misconception_id: null
         training_data: []
       confirmed_unclassified_answers: []
-      customization_args: {}
+      customization_args:
+        requireNonnegativeInput:
+          value: false
       default_outcome:
         dest: Final challenge
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_8
           html: <p>Hmm, I don't think so, there are quite a lot more than that. Check
             your work, and try again.</p>
         labelled_as_correct: false
@@ -283,43 +291,35 @@ states:
       hints: []
       id: NumericInput
       solution: null
-    next_content_id_index: 8
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        feedback_3: {}
-        feedback_4: {}
-        feedback_5: {}
-        feedback_6: {}
-        feedback_7: {}
+        content_7: {}
+        default_outcome_8: {}
+        feedback_10: {}
+        feedback_11: {}
+        feedback_12: {}
+        feedback_13: {}
+        feedback_14: {}
+        feedback_15: {}
+        feedback_9: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        feedback_3: {}
-        feedback_4: {}
-        feedback_5: {}
-        feedback_6: {}
-        feedback_7: {}
   Found all the ways:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_16
       html: <p>So, you've found that there are six ways to arrange these three balls.<br><br>Is
         that the same as your first guess?</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Introspection
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_18
             html: <p>Was it? I think you guessed {{guess}}, but there were actually
               6 ways.</p>
           labelled_as_correct: false
@@ -334,8 +334,9 @@ states:
         training_data: []
       - outcome:
           dest: Introspection
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
+            content_id: feedback_19
             html: <p>Yes, you thought the number of ways was {{guess}}, but it was
               actually 6.</p>
           labelled_as_correct: false
@@ -352,16 +353,17 @@ states:
       customization_args:
         choices:
           value:
-          - content_id: ca_choices_3
+          - content_id: ca_choices_20
             html: <p>Yes</p>
-          - content_id: ca_choices_4
+          - content_id: ca_choices_21
             html: <p>No</p>
         showChoicesInShuffledOrder:
           value: false
       default_outcome:
         dest: Introspection
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_17
           html: ''
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -370,60 +372,53 @@ states:
       hints: []
       id: MultipleChoiceInput
       solution: null
-    next_content_id_index: 5
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_choices_3: {}
-        ca_choices_4: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
+        ca_choices_20: {}
+        ca_choices_21: {}
+        content_16: {}
+        default_outcome_17: {}
+        feedback_18: {}
+        feedback_19: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_choices_3: {}
-        ca_choices_4: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
   General Theory:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
-      html: "<p>So: <br><br>There is 1 way to arrange 1 ball.<br>There are 2 ways\
-        \ to arrange 2 balls.<br>There are\_6 ways to arrange 3 balls.<br><br>Let's\
-        \ give these names. We will say F1 = 1, F2 = 2, F3 = 6. So, if you have n\
-        \ balls (where n is 1, 2, 3, ...), then Fn is the number of ways to arrange\
-        \ them.<br></p><oppia-noninteractive-image alt-with-value=\"&amp;quot;image&amp;quot;\"\
-        \ caption-with-value=\"&amp;quot;&amp;quot;\" filepath-with-value=\"&amp;quot;patterns_height_643_width_670.png&amp;quot;\"\
-        ></oppia-noninteractive-image><p><br><br>Can you see a pattern here, or a\
-        \ systematic way to count them? Let's have a look at the 3-ball case.<br><br>--------------------------------------------------------------------------------------------<br><br>First\
-        \ you pick the ball on the left. This could be red, blue or yellow. There\
-        \ are three cases to consider:<br><br>If the first ball is red, then there\
-        \ are two balls left to arrange in the other two slots. And there are F2 ways\
-        \ to do this.</p><oppia-noninteractive-image alt-with-value=\"&amp;quot;image&amp;quot;\"\
-        \ caption-with-value=\"&amp;quot;&amp;quot;\" filepath-with-value=\"&amp;quot;startRed_height_214_width_643.png&amp;quot;\"\
-        ></oppia-noninteractive-image><p><br><br></p><p>If the first ball is blue,\
-        \ then there are two balls left to ... hey, this is the same thing, it's just\
-        \ F2.</p><oppia-noninteractive-image alt-with-value=\"&amp;quot;image&amp;quot;\"\
-        \ caption-with-value=\"&amp;quot;&amp;quot;\" filepath-with-value=\"&amp;quot;startBlue_height_219_width_633.png&amp;quot;\"\
-        ></oppia-noninteractive-image><p>\_</p><p><br>And, if the first ball is yellow,\
-        \ then ... yada, yada, F2.<br></p><oppia-noninteractive-image alt-with-value=\"\
-        &amp;quot;image&amp;quot;\" caption-with-value=\"&amp;quot;&amp;quot;\" filepath-with-value=\"\
-        &amp;quot;startYellow_height_200_width_635.png&amp;quot;\"></oppia-noninteractive-image><p><br><br>So\
-        \ the total number of ways to arrange 3 balls, F3, is equal to 3 * F2. And\
-        \ all this works out correctly, because F2 = 2, and F3 = 3 * 2 = 6.<br><br>--------------------------------------------------------------------------------------------<br><br>Now,\
-        \ can you write out a similar expression for F2, in terms of F1? Then we'll\
-        \ move on to figuring out F4, which starts to become hard to compute manually.</p>"
+      content_id: content_22
+      html: '<p>So: <br><br>There is 1 way to arrange 1 ball.<br>There are 2 ways
+        to arrange 2 balls.<br>There are 6 ways to arrange 3 balls.<br><br>Let''s
+        give these names. We will say F1 = 1, F2 = 2, F3 = 6. So, if you have n balls
+        (where n is 1, 2, 3, ...), then Fn is the number of ways to arrange them.<br></p><oppia-noninteractive-image
+        alt-with-value="&amp;quot;image&amp;quot;" caption-with-value="&amp;quot;&amp;quot;"
+        filepath-with-value="&amp;quot;patterns_height_643_width_670.png&amp;quot;"></oppia-noninteractive-image><p><br><br>Can
+        you see a pattern here, or a systematic way to count them? Let''s have a look
+        at the 3-ball case.<br><br>--------------------------------------------------------------------------------------------<br><br>First
+        you pick the ball on the left. This could be red, blue or yellow. There are
+        three cases to consider:<br><br>If the first ball is red, then there are two
+        balls left to arrange in the other two slots. And there are F2 ways to do
+        this.</p><oppia-noninteractive-image alt-with-value="&amp;quot;image&amp;quot;"
+        caption-with-value="&amp;quot;&amp;quot;" filepath-with-value="&amp;quot;startRed_height_214_width_643.png&amp;quot;"></oppia-noninteractive-image><p><br><br></p><p>If
+        the first ball is blue, then there are two balls left to ... hey, this is
+        the same thing, it''s just F2.</p><oppia-noninteractive-image alt-with-value="&amp;quot;image&amp;quot;"
+        caption-with-value="&amp;quot;&amp;quot;" filepath-with-value="&amp;quot;startBlue_height_219_width_633.png&amp;quot;"></oppia-noninteractive-image><p>
+        </p><p><br>And, if the first ball is yellow, then ... yada, yada, F2.<br></p><oppia-noninteractive-image
+        alt-with-value="&amp;quot;image&amp;quot;" caption-with-value="&amp;quot;&amp;quot;"
+        filepath-with-value="&amp;quot;startYellow_height_200_width_635.png&amp;quot;"></oppia-noninteractive-image><p><br><br>So
+        the total number of ways to arrange 3 balls, F3, is equal to 3 * F2. And all
+        this works out correctly, because F2 = 2, and F3 = 3 * 2 = 6.<br><br>--------------------------------------------------------------------------------------------<br><br>Now,
+        can you write out a similar expression for F2, in terms of F1? Then we''ll
+        move on to figuring out F4, which starts to become hard to compute manually.</p>'
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Final challenge
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_24
             html: <p>Yes! F2 = 2 * F1, since there are two ways to pick the ball on
               the left, and  for each of these 2 ways, there are F1 ways to arrange
               the other balls.</p>
@@ -434,7 +429,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_7
+              contentId: rule_input_25
               normalizedStrSet:
               - 2F1
           rule_type: Contains
@@ -442,8 +437,9 @@ states:
         training_data: []
       - outcome:
           dest: Final challenge
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
+            content_id: feedback_26
             html: <p>Yes! F2 = 2 * F1, since there are two ways to pick the ball on
               the left, and  for each of these 2 ways, there are F1 ways to arrange
               the other balls.</p>
@@ -454,7 +450,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_8
+              contentId: rule_input_27
               normalizedStrSet:
               - 2*F1
           rule_type: Contains
@@ -462,8 +458,9 @@ states:
         training_data: []
       - outcome:
           dest: Final challenge
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_3
+            content_id: feedback_28
             html: <p>Yes! F2 = 2 * F1, since there are two ways to pick the ball on
               the left, and  for each of these 2 ways, there are F1 ways to arrange
               the other balls.</p>
@@ -474,7 +471,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_9
+              contentId: rule_input_29
               normalizedStrSet:
               - F1*2
           rule_type: Contains
@@ -482,8 +479,9 @@ states:
         training_data: []
       - outcome:
           dest: Final challenge
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_4
+            content_id: feedback_30
             html: <p>Yes! F2 = 2 * F1, since there are two ways to pick the ball on
               the left, and  for each of these 2 ways, there are F1 ways to arrange
               the other balls.</p>
@@ -494,7 +492,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_10
+              contentId: rule_input_31
               normalizedStrSet:
               - 2 * F1
           rule_type: Contains
@@ -502,8 +500,9 @@ states:
         training_data: []
       - outcome:
           dest: Final challenge
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_5
+            content_id: feedback_32
             html: <p>Yes! F2 = 2 * F1, since there are two ways to pick the ball on
               the left, and  for each of these 2 ways, there are F1 ways to arrange
               the other balls.</p>
@@ -514,7 +513,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_11
+              contentId: rule_input_33
               normalizedStrSet:
               - F1 * 2
           rule_type: Contains
@@ -522,16 +521,19 @@ states:
         training_data: []
       confirmed_unclassified_answers: []
       customization_args:
+        catchMisspellings:
+          value: false
         placeholder:
           value:
-            content_id: ca_placeholder_6
+            content_id: ca_placeholder_34
             unicode_str: Type your answer here.
         rows:
           value: 1
       default_outcome:
         dest: Final challenge
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_23
           html: <p>Alas, I don't understand the answer you just typed. Was it something
             like F2 = 2 * F1? If so, you are correct! There are two ways to pick the
             first ball, and F1 ways to pick the second one. This all works out because
@@ -543,43 +545,29 @@ states:
       hints: []
       id: TextInput
       solution: null
-    next_content_id_index: 12
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_placeholder_6: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        feedback_3: {}
-        feedback_4: {}
-        feedback_5: {}
-        rule_input_10: {}
-        rule_input_11: {}
-        rule_input_7: {}
-        rule_input_8: {}
-        rule_input_9: {}
+        ca_placeholder_34: {}
+        content_22: {}
+        default_outcome_23: {}
+        feedback_24: {}
+        feedback_26: {}
+        feedback_28: {}
+        feedback_30: {}
+        feedback_32: {}
+        rule_input_25: {}
+        rule_input_27: {}
+        rule_input_29: {}
+        rule_input_31: {}
+        rule_input_33: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_placeholder_6: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        feedback_3: {}
-        feedback_4: {}
-        feedback_5: {}
-        rule_input_10: {}
-        rule_input_11: {}
-        rule_input_7: {}
-        rule_input_8: {}
-        rule_input_9: {}
   Guess a generalization:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_35
       html: '<p>Now, let''s think about what happens if we had different numbers of
         balls. We know that the answer for three balls is 6. What if we had four balls
         to arrange?<br><br>Here''s a possible idea: 3 times 2 is 6, so the answer
@@ -588,12 +576,14 @@ states:
         works for 3 balls; we can figure out exactly why later.<br><br>Do you believe
         this reasoning? Do you agree that there are exactly 8 ways to arrange four
         balls of different colours in a line?</p>'
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Two balls
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_37
             html: <p>All right! We have an answer. We could check it, I guess, by
               listing all sequences of four balls. But let's do something easier;
               let's try it with just two.</p>
@@ -611,16 +601,17 @@ states:
       customization_args:
         choices:
           value:
-          - content_id: ca_choices_2
+          - content_id: ca_choices_38
             html: <p>Yes! It's clearly 8.</p>
-          - content_id: ca_choices_3
+          - content_id: ca_choices_39
             html: <p>No, I don't think it's 8.</p>
         showChoicesInShuffledOrder:
           value: false
       default_outcome:
         dest: Two balls
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_36
           html: ''
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -629,42 +620,37 @@ states:
       hints: []
       id: MultipleChoiceInput
       solution: null
-    next_content_id_index: 4
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_choices_2: {}
-        ca_choices_3: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
+        ca_choices_38: {}
+        ca_choices_39: {}
+        content_35: {}
+        default_outcome_36: {}
+        feedback_37: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_choices_2: {}
-        ca_choices_3: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
   Intro:
+    card_is_checkpoint: true
     classifier_model_id: null
     content:
-      content_id: content
-      html: "<oppia-noninteractive-image alt-with-value=\"&amp;quot;image&amp;quot;\" caption-with-value=\"\
-        &amp;quot;&amp;quot;\" filepath-with-value=\"&amp;quot;3balls_height_312_width_328.png&amp;quot;\"\
-        ></oppia-noninteractive-image><p>\xC2\_</p><p>Suppose you were given three\
-        \ balls: one red, one blue, and one yellow -- and one day, you are idly playing\
-        \ around with them. Soon, you discover that you can make patterns by arranging\
-        \ the balls in a straight line; let's pretend you're doing this with the line\
-        \ stretching from left to right in front of you.<br><br>How many different\
-        \ ways can you find to arrange the three balls in a straight line? Try to\
-        \ determine all of them.<br></p>"
+      content_id: content_40
+      html: '<oppia-noninteractive-image alt-with-value="&amp;quot;image&amp;quot;"
+        caption-with-value="&amp;quot;&amp;quot;" filepath-with-value="&amp;quot;3balls_height_312_width_328.png&amp;quot;"></oppia-noninteractive-image><p>Â&nbsp;</p><p>Suppose
+        you were given three balls: one red, one blue, and one yellow -- and one day,
+        you are idly playing around with them. Soon, you discover that you can make
+        patterns by arranging the balls in a straight line; let''s pretend you''re
+        doing this with the line stretching from left to right in front of you.<br><br>How
+        many different ways can you find to arrange the three balls in a straight
+        line? Try to determine all of them.<br></p>'
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: correct but why
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_42
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -678,8 +664,9 @@ states:
         training_data: []
       - outcome:
           dest: Intro
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
+            content_id: feedback_43
             html: <p>Surely there's at least one? For example, you might have the
               red ball on the left, the blue ball in the middle, and the yellow ball
               on the right. Now try and find a few more. How many different ways can
@@ -695,11 +682,14 @@ states:
         tagged_skill_misconception_id: null
         training_data: []
       confirmed_unclassified_answers: []
-      customization_args: {}
+      customization_args:
+        requireNonnegativeInput:
+          value: false
       default_outcome:
         dest: Not 6
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_41
           html: ''
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -708,25 +698,20 @@ states:
       hints: []
       id: NumericInput
       solution: null
-    next_content_id_index: 3
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
+        content_40: {}
+        default_outcome_41: {}
+        feedback_42: {}
+        feedback_43: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
   Introspection:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_44
       html: <p>Can you think a little bit about why your answer was different from
         six? Did you count a particular arrangement twice, or did you miss one?<br><br>Making
         sure that you've counted everything can be tricky! Two common mistakes are
@@ -737,12 +722,14 @@ states:
         things, or a systematic way that you could have used to count the balls. Write
         these down here -- you will probably want to refer to them in a future exercise,
         and we'll show your jottings to you again at that point.</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Introspection
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_46
             html: <p>Come on, surely you have something...</p>
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -751,7 +738,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_3
+              contentId: rule_input_47
               normalizedStrSet:
               - ''
           rule_type: Equals
@@ -759,16 +746,19 @@ states:
         training_data: []
       confirmed_unclassified_answers: []
       customization_args:
+        catchMisspellings:
+          value: false
         placeholder:
           value:
-            content_id: ca_placeholder_2
+            content_id: ca_placeholder_48
             unicode_str: Type your answer here.
         rows:
           value: 1
       default_outcome:
         dest: Guess a generalization
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_45
           html: ''
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -777,41 +767,36 @@ states:
       hints: []
       id: TextInput
       solution: null
-    next_content_id_index: 4
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_placeholder_2: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        rule_input_3: {}
+        ca_placeholder_48: {}
+        content_44: {}
+        default_outcome_45: {}
+        feedback_46: {}
+        rule_input_47: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_placeholder_2: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        rule_input_3: {}
   Not 6:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
-      html: "<p>OK, you found {{answer}} ways to do this. I'd be interested in seeing\
-        \ what you came up with; could you list the different ways?\_Write them as\
-        \ three-character words, for example:<br><br>\_ \_ \_RBY<br><br>Means put\
-        \ the red ball on the left, the blue ball in the middle, and the yellow ball\
-        \ on the right, like this:</p><oppia-noninteractive-image alt-with-value=\"\
-        &amp;quot;image&amp;quot;\" caption-with-value=\"&amp;quot;&amp;quot;\" filepath-with-value=\"\
-        &amp;quot;RBY_height_196_width_551.png&amp;quot;\"></oppia-noninteractive-image><p>\_\
-        </p><p>Can you list all the ways you found?<br><br>\_ \_\_</p>"
+      content_id: content_49
+      html: <p>OK, you found {{answer}} ways to do this. I'd be interested in seeing
+        what you came up with; could you list the different ways? Write them as three-character
+        words, for example:<br><br>     RBY<br><br>Means put the red ball on the left,
+        the blue ball in the middle, and the yellow ball on the right, like this:</p><oppia-noninteractive-image
+        alt-with-value="&amp;quot;image&amp;quot;" caption-with-value="&amp;quot;&amp;quot;"
+        filepath-with-value="&amp;quot;RBY_height_196_width_551.png&amp;quot;"></oppia-noninteractive-image><p>
+        </p><p>Can you list all the ways you found?<br><br> </p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Not 6
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_51
             html: <p>Looks like you forgot to capitalize your answers. Sorry, but
               could you use capital letters like RBY instead of lowercase like rby?<br>It's
               easier to read.</p>
@@ -822,7 +807,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_8
+              contentId: rule_input_52
               unicodeStrSet:
               - bry
               - byr
@@ -835,8 +820,9 @@ states:
         training_data: []
       - outcome:
           dest: Not 6
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
+            content_id: feedback_53
             html: <p>At least one of your list elements seems to be wrong. Can you
               check and make sure that each of them is a three-letter uppercase string
               that contains only the letters 'B', 'R' and 'Y' once each?</p>
@@ -847,7 +833,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_9
+              contentId: rule_input_54
               unicodeStrSet:
               - BRY
               - BYR
@@ -860,8 +846,9 @@ states:
         training_data: []
       - outcome:
           dest: Not 6
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_3
+            content_id: feedback_55
             html: <p>You seem to have missed some arrangements with the red ball on
               the left...</p>
           labelled_as_correct: false
@@ -871,7 +858,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_10
+              contentId: rule_input_56
               unicodeStrSet:
               - RBY
               - RYB
@@ -880,8 +867,9 @@ states:
         training_data: []
       - outcome:
           dest: Not 6
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_4
+            content_id: feedback_57
             html: <p>I think you're missing some! Make sure you've listed all the
               arrangements where the yellow ball is on the left</p>
           labelled_as_correct: false
@@ -891,7 +879,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_11
+              contentId: rule_input_58
               unicodeStrSet:
               - YBR
               - YRB
@@ -900,8 +888,9 @@ states:
         training_data: []
       - outcome:
           dest: Not 6
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_5
+            content_id: feedback_59
             html: <p>Have you found all the arrangements with a blue ball on the left?</p>
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -910,7 +899,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_12
+              contentId: rule_input_60
               unicodeStrSet:
               - BRY
               - BYR
@@ -919,8 +908,9 @@ states:
         training_data: []
       - outcome:
           dest: Found all the ways
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_6
+            content_id: feedback_61
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -929,7 +919,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_13
+              contentId: rule_input_62
               unicodeStrSet:
               - BRY
               - BYR
@@ -944,12 +934,13 @@ states:
       customization_args:
         buttonText:
           value:
-            content_id: ca_buttonText_7
+            content_id: ca_buttonText_63
             unicode_str: Add item
       default_outcome:
         dest: Not 6
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_50
           html: <p>(Whoops! If you got here, this is a bug. Please leave some feedback
             and we'll fix it.)<br></p>
         labelled_as_correct: false
@@ -959,7 +950,7 @@ states:
       hints: []
       id: SetInput
       solution: null
-    next_content_id_index: 14
+    linked_skill_id: null
     param_changes:
     - customization_args:
         parse_with_jinja: true
@@ -968,58 +959,43 @@ states:
       name: guess
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_buttonText_7: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        feedback_3: {}
-        feedback_4: {}
-        feedback_5: {}
-        feedback_6: {}
-        rule_input_10: {}
-        rule_input_11: {}
-        rule_input_12: {}
-        rule_input_13: {}
-        rule_input_8: {}
-        rule_input_9: {}
+        ca_buttonText_63: {}
+        content_49: {}
+        default_outcome_50: {}
+        feedback_51: {}
+        feedback_53: {}
+        feedback_55: {}
+        feedback_57: {}
+        feedback_59: {}
+        feedback_61: {}
+        rule_input_52: {}
+        rule_input_54: {}
+        rule_input_56: {}
+        rule_input_58: {}
+        rule_input_60: {}
+        rule_input_62: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_buttonText_7: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        feedback_3: {}
-        feedback_4: {}
-        feedback_5: {}
-        feedback_6: {}
-        rule_input_10: {}
-        rule_input_11: {}
-        rule_input_12: {}
-        rule_input_13: {}
-        rule_input_8: {}
-        rule_input_9: {}
   Two balls:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
-      html: "<p>Let's try to find (or validate) a general pattern by looking at small\
-        \ cases. We do this because it's easy to compute the answers for small cases\
-        \ by hand, and they give us data which we can use to try and figure out a\
-        \ more general pattern.<br><br>The most obvious small case is 1 ball! There's\
-        \ one way to arrange one ball in a line.<br><br>How about 2 balls? How many\
-        \ ways are there to arrange two balls, with different colours, in a line?</p><oppia-noninteractive-image\
-        \ alt-with-value=\"&amp;quot;image&amp;quot;\" caption-with-value=\"&amp;quot;&amp;quot;\"\
-        \ filepath-with-value=\"&amp;quot;2balls_height_248_width_265.png&amp;quot;\"\
-        ></oppia-noninteractive-image><p>\xC2\_</p>"
+      content_id: content_64
+      html: <p>Let's try to find (or validate) a general pattern by looking at small
+        cases. We do this because it's easy to compute the answers for small cases
+        by hand, and they give us data which we can use to try and figure out a more
+        general pattern.<br><br>The most obvious small case is 1 ball! There's one
+        way to arrange one ball in a line.<br><br>How about 2 balls? How many ways
+        are there to arrange two balls, with different colours, in a line?</p><oppia-noninteractive-image
+        alt-with-value="&amp;quot;image&amp;quot;" caption-with-value="&amp;quot;&amp;quot;"
+        filepath-with-value="&amp;quot;2balls_height_248_width_265.png&amp;quot;"></oppia-noninteractive-image><p>Â&nbsp;</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: General Theory
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_66
             html: <p>Yes! That is correct. If the balls are red and blue, either the
               red one comes first, or the blue one comes first. Once you've picked
               the first one, the other choice is fixed.</p>
@@ -1035,8 +1011,9 @@ states:
         training_data: []
       - outcome:
           dest: Two balls
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
+            content_id: feedback_67
             html: '<p>Hm. Might you be thinking that, since the answer for 3 balls
               is 6, the answer for 2 balls must be 4, because you just multiply by
               2?
@@ -1062,8 +1039,9 @@ states:
         training_data: []
       - outcome:
           dest: Two balls
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_3
+            content_id: feedback_68
             html: <p>Nah, that can't be right :-) There's at least one way to arrange
               two balls in a row, isn't there?</p>
           labelled_as_correct: false
@@ -1078,8 +1056,9 @@ states:
         training_data: []
       - outcome:
           dest: Two balls
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_4
+            content_id: feedback_69
             html: <p>There's at least one more way. Try swapping the balls?</p>
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -1092,11 +1071,14 @@ states:
         tagged_skill_misconception_id: null
         training_data: []
       confirmed_unclassified_answers: []
-      customization_args: {}
+      customization_args:
+        requireNonnegativeInput:
+          value: false
       default_outcome:
         dest: Two balls
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_65
           html: <p>I think you may have counted something too many times. Try to remember
             the systematic approach you came up with earlier, and use it here...</p>
         labelled_as_correct: false
@@ -1106,36 +1088,31 @@ states:
       hints: []
       id: NumericInput
       solution: null
-    next_content_id_index: 5
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        feedback_3: {}
-        feedback_4: {}
+        content_64: {}
+        default_outcome_65: {}
+        feedback_66: {}
+        feedback_67: {}
+        feedback_68: {}
+        feedback_69: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        feedback_3: {}
-        feedback_4: {}
   correct but why:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_70
       html: <p>Right! Why do you think it is 6?</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: Continue Option
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_72
             html: <p>Yes, the question is asking for the number of permutations of
               3 different balls, and that is 3! = 3 x 2 x 1. You can think about this
               by noticing that there are 3 ways to pick the first ball -- then, once
@@ -1148,7 +1125,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_7
+              contentId: rule_input_73
               normalizedStrSet:
               - permutation
           rule_type: Contains
@@ -1156,8 +1133,9 @@ states:
         training_data: []
       - outcome:
           dest: END
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
+            content_id: feedback_74
             html: <p>Yes, the question is asking for the number of permutations of
               3 different balls, and that is 3 factorial, or 3 x 2 x 1. You can think
               about this by noticing that there are 3 ways to pick the first ball
@@ -1170,7 +1148,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_8
+              contentId: rule_input_75
               normalizedStrSet:
               - factorial
           rule_type: Contains
@@ -1178,8 +1156,9 @@ states:
         training_data: []
       - outcome:
           dest: END
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_3
+            content_id: feedback_76
             html: <p>Yes, the question is asking for the number of permutations of
               3 different balls, and that is 3! (3 factorial), or 3 x 2 x 1. You can
               think about this by noticing that there are 3 ways to pick the first
@@ -1192,7 +1171,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_9
+              contentId: rule_input_77
               normalizedStrSet:
               - 3!
           rule_type: Contains
@@ -1200,14 +1179,14 @@ states:
         training_data: []
       - outcome:
           dest: END
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_4
-            html: "<p> Yes,\n the question is asking for the number of permutations\
-              \ of 3 different \nballs, and that is 3! (3 factorial), or 3 x 2 x 1.\
-              \ You can think about \nthis by noticing that there are 3 ways to pick\
-              \ the first ball -- then, \nonce you've done that, there are 2 ways\
-              \ to pick the second, and the last\n choice is forced. That's 3 x 2\
-              \ = 6 ways.</p>"
+            content_id: feedback_78
+            html: <p> Yes, the question is asking for the number of permutations of
+              3 different balls, and that is 3! (3 factorial), or 3 x 2 x 1. You can
+              think about this by noticing that there are 3 ways to pick the first
+              ball -- then, once you've done that, there are 2 ways to pick the second,
+              and the last choice is forced. That's 3 x 2 = 6 ways.</p>
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
           param_changes: []
@@ -1215,7 +1194,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_10
+              contentId: rule_input_79
               normalizedStrSet:
               - 3*2*1
           rule_type: Contains
@@ -1223,14 +1202,14 @@ states:
         training_data: []
       - outcome:
           dest: END
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_5
-            html: "<p> Yes,\n the question is asking for the number of permutations\
-              \ of 3 different \nballs, and that is 3! (3 factorial), or 3 x 2 x 1.\
-              \ You can think about \nthis by noticing that there are 3 ways to pick\
-              \ the first ball -- then, \nonce you've done that, there are 2 ways\
-              \ to pick the second, and the last\n choice is forced. That's 3 x 2\
-              \ = 6 ways.</p>"
+            content_id: feedback_80
+            html: <p> Yes, the question is asking for the number of permutations of
+              3 different balls, and that is 3! (3 factorial), or 3 x 2 x 1. You can
+              think about this by noticing that there are 3 ways to pick the first
+              ball -- then, once you've done that, there are 2 ways to pick the second,
+              and the last choice is forced. That's 3 x 2 = 6 ways.</p>
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
           param_changes: []
@@ -1238,7 +1217,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_11
+              contentId: rule_input_81
               normalizedStrSet:
               - 3x2x1
           rule_type: Contains
@@ -1246,25 +1225,25 @@ states:
         training_data: []
       confirmed_unclassified_answers: []
       customization_args:
+        catchMisspellings:
+          value: false
         placeholder:
           value:
-            content_id: ca_placeholder_6
+            content_id: ca_placeholder_82
             unicode_str: Type your answer here.
         rows:
           value: 5
       default_outcome:
         dest: Final challenge
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_71
           html: '<p>OK! There are indeed 6 ways to arrange the balls: there are 3
             ways to choose the leftmost one, and for each of these, there are 2 ways
             to choose the second one; the last choice is then forced. This gives 3
-            x 2 = 6 scenarios.
-
-
-            If you do a quick search for the words ''permutation'' or ''factorial''
-            on the Internet, you''ll also be able to find more information about this
-            topic.</p>'
+            x 2 = 6 scenarios.If you do a quick search for the words ''permutation''
+            or ''factorial'' on the Internet, you''ll also be able to find more information
+            about this topic.</p>'
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
         param_changes: []
@@ -1272,39 +1251,24 @@ states:
       hints: []
       id: TextInput
       solution: null
-    next_content_id_index: 12
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_placeholder_6: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        feedback_3: {}
-        feedback_4: {}
-        feedback_5: {}
-        rule_input_10: {}
-        rule_input_11: {}
-        rule_input_7: {}
-        rule_input_8: {}
-        rule_input_9: {}
+        ca_placeholder_82: {}
+        content_70: {}
+        default_outcome_71: {}
+        feedback_72: {}
+        feedback_74: {}
+        feedback_76: {}
+        feedback_78: {}
+        feedback_80: {}
+        rule_input_73: {}
+        rule_input_75: {}
+        rule_input_77: {}
+        rule_input_79: {}
+        rule_input_81: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_placeholder_6: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        feedback_3: {}
-        feedback_4: {}
-        feedback_5: {}
-        rule_input_10: {}
-        rule_input_11: {}
-        rule_input_7: {}
-        rule_input_8: {}
-        rule_input_9: {}
-states_schema_version: 42
+states_schema_version: 56
 tags: []
 title: Three Balls

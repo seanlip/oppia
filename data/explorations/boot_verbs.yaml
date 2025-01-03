@@ -2,20 +2,22 @@ author_notes: ''
 auto_tts_enabled: false
 blurb: ''
 category: Languages
-correctness_feedback_enabled: false
 edits_allowed: true
 init_state_name: Sentence
 language_code: en
+next_content_id_index: 32
 objective: master the conjugation of Spanish boot verbs
 param_changes: []
 param_specs: {}
-schema_version: 47
+schema_version: 61
 states:
   END:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_0
       html: <p>Congratulations, you have finished!</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups: []
       confirmed_unclassified_answers: []
@@ -26,29 +28,28 @@ states:
       hints: []
       id: EndExploration
       solution: null
-    next_content_id_index: 0
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        content: {}
+        content_0: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        content: {}
   Sentence:
+    card_is_checkpoint: true
     classifier_model_id: null
     content:
-      content_id: content
-      html: "<p><em>This is a brief exploration about conjugations in Spanish.</em><br><br>Consider\
-        \ the following sentence:<br><br>\_\_\_ <em>Yo __________ (jugar) al f\xFA\
-        tbol con amigos los domingos.<br><br></em>What verb conjugation goes in the\
-        \ blank?</p>"
+      content_id: content_1
+      html: <p><em>This is a brief exploration about conjugations in Spanish.</em><br><br>Consider
+        the following sentence:<br><br> <em>Yo __________ (jugar) al fútbol con amigos
+        los domingos.<br><br></em>What verb conjugation goes in the blank?</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: END
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_3
             html: <p>That is correct! Great job!</p>
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -65,8 +66,9 @@ states:
         training_data: []
       - outcome:
           dest: boot verb
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
+            content_id: feedback_5
             html: <p>No, remember jugo means 'juice'. It sounds about right, but it
               isn't quite because jugar is a boot verb.</p>
           labelled_as_correct: false
@@ -76,7 +78,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_5
+              contentId: rule_input_6
               normalizedStrSet:
               - jugo
           rule_type: Equals
@@ -84,16 +86,19 @@ states:
         training_data: []
       confirmed_unclassified_answers: []
       customization_args:
+        catchMisspellings:
+          value: false
         placeholder:
           value:
-            content_id: ca_placeholder_3
+            content_id: ca_placeholder_7
             unicode_str: ''
         rows:
           value: 1
       default_outcome:
         dest: subject
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_2
           html: ''
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -102,39 +107,33 @@ states:
       hints: []
       id: TextInput
       solution: null
-    next_content_id_index: 6
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_placeholder_3: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
+        ca_placeholder_7: {}
+        content_1: {}
+        default_outcome_2: {}
+        feedback_3: {}
+        feedback_5: {}
         rule_input_4: {}
-        rule_input_5: {}
+        rule_input_6: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_placeholder_3: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        rule_input_4: {}
-        rule_input_5: {}
   So...:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_8
       html: <p>OK, now you can join that stem together with the ending. What answer
         do you get?</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: END
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_10
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -143,7 +142,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_3
+              contentId: rule_input_11
               normalizedStrSet:
               - juego
           rule_type: Equals
@@ -151,16 +150,19 @@ states:
         training_data: []
       confirmed_unclassified_answers: []
       customization_args:
+        catchMisspellings:
+          value: false
         placeholder:
           value:
-            content_id: ca_placeholder_2
+            content_id: ca_placeholder_12
             unicode_str: ''
         rows:
           value: 1
       default_outcome:
         dest: So...
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_9
           html: <p>Try that again. Put jueg- together with -o and you get...?</p>
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
@@ -169,42 +171,36 @@ states:
       hints: []
       id: TextInput
       solution: null
-    next_content_id_index: 4
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_placeholder_2: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        rule_input_3: {}
+        ca_placeholder_12: {}
+        content_8: {}
+        default_outcome_9: {}
+        feedback_10: {}
+        rule_input_11: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_placeholder_2: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        rule_input_3: {}
   boot verb:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
-      html: "<p>Boot verbs can also be called stem-changing verbs.<br><br>\nWhat is\
-        \ it that makes it a boot verb? Well, if you use the normal way of writing\
-        \ out verb conjugations, it looks like this:<br><br>\nyo                 \
-        \         nosotros<br>\nt\xFA                          vosotros<br>\n\xE9\
-        l/ella/usted               ustedes<br>\n<br>\nAnd in a boot verb the stem\
-        \ changes only in the yo, t\xFA, \xE9l/ella/usted and ustedes forms. If you\
-        \ draw a line around these, it looks like a boot.<br>\n<br>\nIn the case of\
-        \ jugar, since it is a verb ending in -gar, it uses the u &gt; ue stem, so\
-        \ what does the stem become?</p>"
+      content_id: content_13
+      html: <p>Boot verbs can also be called stem-changing verbs.<br><br>What is it
+        that makes it a boot verb? Well, if you use the normal way of writing out
+        verb conjugations, it looks like this:<br><br>yo                          nosotros<br>tú                          vosotros<br>él/ella/usted               ustedes<br><br>And
+        in a boot verb the stem changes only in the yo, tú, él/ella/usted and ustedes
+        forms. If you draw a line around these, it looks like a boot.<br><br>In the
+        case of jugar, since it is a verb ending in -gar, it uses the u &gt; ue stem,
+        so what does the stem become?</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: So...
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_15
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -213,7 +209,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_4
+              contentId: rule_input_16
               normalizedStrSet:
               - jueg
           rule_type: Equals
@@ -221,11 +217,12 @@ states:
         training_data: []
       - outcome:
           dest: END
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
-            html: "<p>That was quick! I was asking just for the stem, which is <strong>jueg-</strong>.\
-              \ But you already gave the entire conjugated verb\xC2\_<strong>juego</strong>\
-              \ (stem + ending). Great job!</p>"
+            content_id: feedback_17
+            html: <p>That was quick! I was asking just for the stem, which is <strong>jueg-</strong>.
+              But you already gave the entire conjugated verb <strong>juego</strong>
+              (stem + ending). Great job!</p>
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
           param_changes: []
@@ -233,7 +230,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_5
+              contentId: rule_input_18
               normalizedStrSet:
               - juego
           rule_type: Equals
@@ -241,16 +238,19 @@ states:
         training_data: []
       confirmed_unclassified_answers: []
       customization_args:
+        catchMisspellings:
+          value: false
         placeholder:
           value:
-            content_id: ca_placeholder_3
+            content_id: ca_placeholder_19
             unicode_str: ''
         rows:
           value: 1
       default_outcome:
         dest: So...
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_14
           html: <p>Not quite. Just change the <strong>u</strong> to a <strong>ue</strong>
             and you get <strong>jueg-.</strong></p>
         labelled_as_correct: false
@@ -260,39 +260,33 @@ states:
       hints: []
       id: TextInput
       solution: null
-    next_content_id_index: 6
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_placeholder_3: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        rule_input_4: {}
-        rule_input_5: {}
+        ca_placeholder_19: {}
+        content_13: {}
+        default_outcome_14: {}
+        feedback_15: {}
+        feedback_17: {}
+        rule_input_16: {}
+        rule_input_18: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_placeholder_3: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        rule_input_4: {}
-        rule_input_5: {}
   subject:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_20
       html: <p>In order to figure out how to conjugate the verb properly, we should
         look at the subject of the sentence. Can you identify what the subject is?</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: verb endings
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_22
             html: ''
           labelled_as_correct: false
           missing_prerequisite_skill_id: null
@@ -301,7 +295,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_3
+              contentId: rule_input_23
               normalizedStrSet:
               - yo
           rule_type: Equals
@@ -309,16 +303,19 @@ states:
         training_data: []
       confirmed_unclassified_answers: []
       customization_args:
+        catchMisspellings:
+          value: false
         placeholder:
           value:
-            content_id: ca_placeholder_2
+            content_id: ca_placeholder_24
             unicode_str: ''
         rows:
           value: 1
       default_outcome:
         dest: subject
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
+          content_id: default_outcome_21
           html: <p>Remember, the subject of the sentence is the noun in the sentence
             that is doing the action. It is usually near the beginning of the sentence.</p>
         labelled_as_correct: false
@@ -328,34 +325,30 @@ states:
       hints: []
       id: TextInput
       solution: null
-    next_content_id_index: 4
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_placeholder_2: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        rule_input_3: {}
+        ca_placeholder_24: {}
+        content_20: {}
+        default_outcome_21: {}
+        feedback_22: {}
+        rule_input_23: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_placeholder_2: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        rule_input_3: {}
   verb endings:
+    card_is_checkpoint: false
     classifier_model_id: null
     content:
-      content_id: content
+      content_id: content_25
       html: <p>So what is the correct verb ending for yo?</p>
+    inapplicable_skill_misconception_ids: []
     interaction:
       answer_groups:
       - outcome:
           dest: boot verb
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_1
+            content_id: feedback_27
             html: <p>But if you just drop the -ar and at -o, you get jugo which means
               juice, so that's not quite right. That's because jugar is a boot verb!</p>
           labelled_as_correct: false
@@ -365,7 +358,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_4
+              contentId: rule_input_28
               normalizedStrSet:
               - -o
           rule_type: Equals
@@ -373,8 +366,9 @@ states:
         training_data: []
       - outcome:
           dest: boot verb
+          dest_if_really_stuck: null
           feedback:
-            content_id: feedback_2
+            content_id: feedback_29
             html: <p>But if you just drop the -ar and at -o, you get jugo which means
               juice, so that's not quite right. That's because jugar is a boot verb!</p>
           labelled_as_correct: false
@@ -384,7 +378,7 @@ states:
         rule_specs:
         - inputs:
             x:
-              contentId: rule_input_5
+              contentId: rule_input_30
               normalizedStrSet:
               - o
           rule_type: Equals
@@ -392,20 +386,23 @@ states:
         training_data: []
       confirmed_unclassified_answers: []
       customization_args:
+        catchMisspellings:
+          value: false
         placeholder:
           value:
-            content_id: ca_placeholder_3
+            content_id: ca_placeholder_31
             unicode_str: ''
         rows:
           value: 1
       default_outcome:
         dest: verb endings
+        dest_if_really_stuck: null
         feedback:
-          content_id: default_outcome
-          html: "<p>That doesn't look right. Here is the conjugation of hablo (to\
-            \ speak): yo hablo, t\xFA hablas, usted/\xE9l/ella habla, nosotros/as\
-            \ hablamos, vosotros/as habl\xE1is, ustedes/ellos/ellas hablan. From this\
-            \ list, what do you think the corresponding ending for 'yo' is?</p>"
+          content_id: default_outcome_26
+          html: '<p>That doesn''t look right. Here is the conjugation of hablo (to
+            speak): yo hablo, tú hablas, usted/él/ella habla, nosotros/as hablamos,
+            vosotros/as habláis, ustedes/ellos/ellas hablan. From this list, what
+            do you think the corresponding ending for ''yo'' is?</p>'
         labelled_as_correct: false
         missing_prerequisite_skill_id: null
         param_changes: []
@@ -413,27 +410,18 @@ states:
       hints: []
       id: TextInput
       solution: null
-    next_content_id_index: 6
+    linked_skill_id: null
     param_changes: []
     recorded_voiceovers:
       voiceovers_mapping:
-        ca_placeholder_3: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        rule_input_4: {}
-        rule_input_5: {}
+        ca_placeholder_31: {}
+        content_25: {}
+        default_outcome_26: {}
+        feedback_27: {}
+        feedback_29: {}
+        rule_input_28: {}
+        rule_input_30: {}
     solicit_answer_details: false
-    written_translations:
-      translations_mapping:
-        ca_placeholder_3: {}
-        content: {}
-        default_outcome: {}
-        feedback_1: {}
-        feedback_2: {}
-        rule_input_4: {}
-        rule_input_5: {}
-states_schema_version: 42
+states_schema_version: 56
 tags: []
 title: Boot Verbs
