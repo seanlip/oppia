@@ -273,17 +273,10 @@ var TopicEditorPage = function () {
   };
 
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
-
-    await browser.setTimeout({ 'pageLoad': 30000 });
-    // var uncategorizedSkillHeader = await $('.subtopic-name-header');
-    await waitFor.pageToFullyLoad();
-    // var isExisting = await uncategorizedSkillHeader.isExisting();
-    // console.log('isExisting:', isExisting);
-    var uncategorizedSkillItem = await $('.e2e-test-skill-item');
+    await browser.setTimeout({ 'pageLoad': 45000 });
+    // await waitFor.pageToFullyLoad();
+    // var uncategorizedSkillItem = await $('.e2e-test-skill-item');
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
-    console.log('uncategorizedSkillItems:', uncategorizedSkillItems);
-    console.log(uncategorizedSkillItem.length);
-    console.log(uncategorizedSkillItems.length);
     expect(uncategorizedSkillItems.length).toEqual(count);
   };
 
