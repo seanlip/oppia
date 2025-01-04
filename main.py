@@ -388,9 +388,6 @@ URLS = [
         r'/translationcontributionstatshandler',
         contributor_dashboard_admin.TranslationContributionStatsHandler),
     get_redirect_route(
-        r'%s' % feconf.CONTRIBUTOR_DASHBOARD_URL,
-        contributor_dashboard.ContributorDashboardPage),
-    get_redirect_route(
         r'%s/<contribution_type>/<contribution_subtype>/<username>' % (
             feconf.CONTRIBUTOR_STATS_SUMMARIES_URL),
         contributor_dashboard.ContributorStatsSummariesHandler),
@@ -986,8 +983,9 @@ URLS = [
         r'%s' % feconf.FETCH_SKILLS_URL_PREFIX,
         skill_editor.FetchSkillsHandler),
     get_redirect_route(
-        r'%s/<skill_id>' % feconf.SKILL_EDITOR_URL_PREFIX,
-        skill_editor.SkillEditorPage),
+        r'%s/can_access_skill_editor/<skill_id>' %
+        feconf.ACCESS_VALIDATION_HANDLER_PREFIX,
+        access_validators.SkillEditorPageAccessValidationHandler),
     get_redirect_route(
         r'%s/<skill_id>' % feconf.SKILL_EDITOR_DATA_URL_PREFIX,
         skill_editor.EditableSkillDataHandler),
@@ -1253,6 +1251,10 @@ URLS.extend((
     get_redirect_route(
         r'%s/<author_username>' % feconf.BLOG_AUTHOR_PROFILE_PAGE_URL_PREFIX,
         oppia_root.OppiaRootPage
+    ),
+    get_redirect_route(
+        r'%s/<skill_id>' % feconf.SKILL_EDITOR_URL_PREFIX,
+      oppia_root.OppiaRootPage
     ),
     get_redirect_route(
         r'%s/<story_id>' % feconf.STORY_EDITOR_URL_PREFIX,
