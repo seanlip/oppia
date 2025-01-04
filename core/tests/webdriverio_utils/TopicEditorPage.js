@@ -275,7 +275,7 @@ var TopicEditorPage = function () {
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
     await browser.setTimeout({ 'pageLoad': 30000 });
     // var uncategorizedSkillHeader = await $('.subtopic-name-header');
-    // await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
     // var isExisting = await uncategorizedSkillHeader.isExisting();
     // console.log('isExisting:', isExisting);
     // var uncategorizedSkillItem = $('.e2e-test-skill-item');
