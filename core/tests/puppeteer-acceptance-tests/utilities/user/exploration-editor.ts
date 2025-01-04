@@ -1093,20 +1093,7 @@ export class ExplorationEditor extends BaseUser {
         await this.page.waitForSelector(multipleChoiceResponseDropdown, {
           visible: true,
         });
-        try {
-          await this.clickOn(multipleChoiceResponseDropdown);
-        } catch {
-          showMessage('Taking Screenshot');
-          await this.expectScreenshotToMatch(
-            'blogEditorPageWithPublishedBlogPostTitle',
-            __dirname
-          );
-        }
-        showMessage('Taking Screenshot');
-          await this.expectScreenshotToMatch(
-            'blogEditorPageWithPublishedBlogPostTitle',
-            __dirname
-          );
+        await this.clickOn(multipleChoiceResponseDropdown);
         await this.page.waitForSelector(multipleChoiceResponseOption, {
           visible: true,
         });
