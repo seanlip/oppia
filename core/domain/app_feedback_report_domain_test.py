@@ -1207,8 +1207,6 @@ class RevisionCardEntryPointDomainTests(test_utils.GenericTestBase):
         # codebase we plan to get rid of the tests that intentionally
         # test wrong inputs that we can normally catch by typing.
         self.entry_point.subtopic_id = 42 # type: ignore[assignment]
-        # There should be no exception raised when trying to validate.
-        # If exception is raised, the test fails.
         self.entry_point.validate()
 
     def _assert_validation_error(
@@ -1901,8 +1899,6 @@ class AppFeedbackReportFilterDomainTests(test_utils.GenericTestBase):
     def test_validation_passes_with_valid_filter_options_list(self) -> None:
         """Tests that validation passes when filter_options is a valid list."""
         self.filter.filter_options = ['web', 'android']
-        # There should be no exception raised when trying to validate.
-        # If exception is raised, the test fails.
         self.filter.validate()
 
     def _assert_validation_error(
