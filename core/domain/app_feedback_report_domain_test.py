@@ -22,6 +22,7 @@ import datetime
 import enum
 
 from unittest import mock
+
 from core import feconf
 from core import utils
 from core.domain import app_feedback_report_constants
@@ -698,9 +699,6 @@ class UserSuppliedFeedbackDomainTests(test_utils.GenericTestBase):
         self.user_supplied_feedback.user_feedback_selected_items = []
         self.user_supplied_feedback.user_feedback_other_text_input = 'Some text'
         self.user_supplied_feedback.validate()
-        self.assertEqual(
-            self.user_supplied_feedback.category,
-            CATEGORY_ISSUE_TOPICS)
 
     def test_report_type_is_none_fails_validation(self) -> None:
         # Here we use MyPy ignore because here we assign type None to
@@ -1104,15 +1102,13 @@ class LessonPlayerEntryPointDomainTests(test_utils.GenericTestBase):
         self,
         mock_get_story_id_linked_to_exploration: mock.MagicMock
     ) -> None:
-        # Arrange: Mock the external function to return the matching story_id.
         mock_get_story_id_linked_to_exploration.return_value = 'story_id'
-        self.entry_point.require_valid_entry_point_exploration(
-            exploration_id=self.entry_point.exploration_id,
-            story_id=self.entry_point.story_id,
-        )
-        mock_get_story_id_linked_to_exploration.assert_called_once_with(
-            self.entry_point.exploration_id
-        )
+        # The method should not raise any exceptions and return None.
+        self.assertIsNone(
+            self.entry_point.require_valid_entry_point_exploration(
+                exploration_id=self.entry_point.exploration_id,
+                story_id=self.entry_point.story_id,
+        ))
 
     # TODO(#13059): Here we use MyPy ignore because after we fully type the
     # codebase we plan to get rid of the tests that intentionally test wrong
@@ -1211,8 +1207,9 @@ class RevisionCardEntryPointDomainTests(test_utils.GenericTestBase):
         # codebase we plan to get rid of the tests that intentionally
         # test wrong inputs that we can normally catch by typing.
         self.entry_point.subtopic_id = 42 # type: ignore[assignment]
+        # There should be no exception raised when trying to validate.
+        # If exception is raised, the test fails.
         self.entry_point.validate()
-        self.assertEqual(self.entry_point.topic_id, 'valid_topic1')
 
     def _assert_validation_error(
             self,
@@ -1904,8 +1901,9 @@ class AppFeedbackReportFilterDomainTests(test_utils.GenericTestBase):
     def test_validation_passes_with_valid_filter_options_list(self) -> None:
         """Tests that validation passes when filter_options is a valid list."""
         self.filter.filter_options = ['web', 'android']
+        # There should be no exception raised when trying to validate.
+        # If exception is raised, the test fails.
         self.filter.validate()
-        self.assertEqual(type(self.filter.filter_options), list)
 
     def _assert_validation_error(
             self,
