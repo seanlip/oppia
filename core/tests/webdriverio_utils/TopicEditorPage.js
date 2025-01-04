@@ -278,7 +278,7 @@ var TopicEditorPage = function () {
     await waitFor.pageToFullyLoad();
     var isExisting = await uncategorizedSkillHeader.isExisting();
     console.log('isExisting:', isExisting);
-    var uncategorizedSkillItem = $('.e2e-test-skill-item');
+    var uncategorizedSkillItem = await $('.e2e-test-skill-item');
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
     console.log('uncategorizedSkillItems:', uncategorizedSkillItems);
     console.log(uncategorizedSkillItem.length);
