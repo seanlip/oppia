@@ -47,6 +47,7 @@ export class UrlFragmentEditorComponent {
       .toLowerCase()
       .replace(/\s+/g, '-');
   }
+
   onChange(): void {
     if (!this.urlFragment) {
       this.urlFragment = '';
