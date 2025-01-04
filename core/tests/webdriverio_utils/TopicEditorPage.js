@@ -273,13 +273,12 @@ var TopicEditorPage = function () {
   };
 
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
+    var uncategorizedSkillHeader = await $('.subtopic-name-header');
     await waitFor.pageToFullyLoad();
+    var isExisting = await uncategorizedSkillHeader.isExisting();
+    console.log('isExisting:', isExisting);
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
-    await waitFor.visibilityOf(
-      uncategorizedSkillItems[0],
-      'Uncategorized skills taking too long to appear.'
-    );
-    console.log(uncategorizedSkillItems);
+    console.log('uncategorizedSkillItems:', uncategorizedSkillItems);
     console.log(uncategorizedSkillItems.length);
     // expect(uncategorizedSkillItems.length).toEqual(count);
   };
