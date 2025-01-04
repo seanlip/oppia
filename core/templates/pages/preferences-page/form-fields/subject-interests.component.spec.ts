@@ -139,6 +139,15 @@ describe('Subject interests form field Component', () => {
     componentInstance.registerOnTouched(fn);
     expect(componentInstance.onTouched).toBe(fn);
   });
+
+  it('should detect save button', () => {
+    fixture.detectChanges();
+    const saveButton = fixture.debugElement.nativeElement.querySelector(
+      '.e2e-test-save-changes-button'
+    );
+    expect(saveButton).not.toBeNull();
+  });
+
   it('should enable the save button when input is entered', async () => {
     spyOn(componentInstance, 'onInput').and.callThrough();
 
@@ -147,6 +156,8 @@ describe('Subject interests form field Component', () => {
         value: 'science',
       },
     } as unknown as Event;
+
+    fixture.detectChanges();
 
     let saveButton = fixture.debugElement.nativeElement.querySelector(
       '.e2e-test-save-changes-button'
