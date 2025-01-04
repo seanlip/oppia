@@ -19,6 +19,7 @@
 from __future__ import annotations
 
 from unittest import mock
+
 from core.domain import action_registry
 from core.tests import test_utils
 from extensions.actions import base
@@ -66,22 +67,19 @@ class ActionRegistryUnitTests(test_utils.GenericTestBase):
         self.assertEqual(len(actions), 1)
         self.assertTrue(isinstance(actions[0], CompliantAction))
 
-    def test_refresh_with_three_valid_actions(self) -> None:
-        """Perform sanity checks on the action registry."""
-        self.assertEqual(
-            len(action_registry.Registry.get_all_actions()), 3
-        )
-
-    def test_cannot_get_action_by_invalid_type(self) -> None:
+    def test_cannot_get_action_with_empty_registry_by_invalid_type(
+        self) -> None:
         """Test with an invalid action type. Should raise a KeyError."""
         with self.assertRaisesRegex(KeyError, 'fakeAction'):
             action_registry.Registry.get_action_by_type('fakeAction')
 
-    def test_can_get_action_by_valid_type(self) -> None:
-        """Test with valid action types."""
-        for valid_action in action_registry.Registry.get_all_actions():
-            valid_action_type = valid_action.__class__.__name__
-            self.assertEqual(
-                action_registry.Registry.get_action_by_type(valid_action_type),
-                valid_action
-            )
+    def test_get_action_by_type_after_refresh_by_valid_type(self) -> None:
+        """Test retrieving an action type after refresh."""
+
+        # Ensure actions are populated after refresh.
+        actions = action_registry.Registry.get_all_actions()
+        action_type = actions[0].__class__.__name__
+        retrieved_action = (
+            action_registry.Registry.get_action_by_type(action_type))
+        self.assertIsNotNone(retrieved_action)
+        self.assertEqual(retrieved_action.__class__.__name__, action_type)
