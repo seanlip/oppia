@@ -274,14 +274,14 @@ var TopicEditorPage = function () {
 
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
     await browser.setTimeout({ 'pageLoad': 30000 });
-    // var uncategorizedSkillHeader = await $('.subtopic-name-header');
+    var uncategorizedSkillHeader = await $('.subtopic-name-header');
     await waitFor.pageToFullyLoad();
-    // var isExisting = await uncategorizedSkillHeader.isExisting();
-    // console.log('isExisting:', isExisting);
-    // var uncategorizedSkillItem = $('.e2e-test-skill-item');
+    var isExisting = await uncategorizedSkillHeader.isExisting();
+    console.log('isExisting:', isExisting);
+    var uncategorizedSkillItem = $('.e2e-test-skill-item');
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
     console.log('uncategorizedSkillItems:', uncategorizedSkillItems);
-    // console.log(uncategorizedSkillItem.length);
+    console.log(uncategorizedSkillItem.length);
     console.log(uncategorizedSkillItems.length);
     expect(uncategorizedSkillItems.length).toEqual(count);
   };
