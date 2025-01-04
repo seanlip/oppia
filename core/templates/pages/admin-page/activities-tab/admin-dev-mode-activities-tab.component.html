@@ -205,8 +205,8 @@
                placeholder="Stories to generate" type="number" min="0"
                id="label-stories-to-generate">
 
-        <label for="label-target-topic-selection">Select topic for suggestion questions</label>
-        <select id="label-target-topic-selection" class="form-control" (change)="selectedOptionForStory=$event.target.value">
+        <label for="label-target-topic-selection">Select topic for stories</label>
+        <select id="label-target-topic-selection" class="form-control" (change)="selectedTopicForStory=$event.target.value">
           <option selected [value]="''">Choose...</option>
           <option *ngFor=" let topic of topicList; let i = index" [value]="i">{{topic.name}}</option>
         </select>
@@ -217,7 +217,7 @@
 
         <button type="button"
                 class="btn btn-primary oppia-generate-exploration-text"
-                (click)="generateDummyStories(selectedOptionForStory)"
+                (click)="generateDummyStories(selectedTopicForStory)"
                 [disabled]="!numDummyStoriesToGenerate || !selectedOptionForStory">
           Generate Stories
         </button>

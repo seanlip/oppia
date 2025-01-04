@@ -41,7 +41,7 @@ export class AdminDevModeActivitiesTabComponent implements OnInit {
   topicList: CreatorTopicSummary[] = [];
   skillList: SkillSummary[] = [];
   selectedOption: string = '';
-  selectedOptionForStory: string = '';
+  selectedTopicForStory: string = '';
   numDummyTranslationOpportunitiesToGenerate: number = 0;
   DEMO_COLLECTIONS: string[][] = [[]];
   DEMO_EXPLORATIONS: string[][] = [[]];
@@ -255,9 +255,9 @@ export class AdminDevModeActivitiesTabComponent implements OnInit {
     this.adminTaskManagerService.finishTask();
   }
 
-  generateDummyStories(selectedOptionForStory: string): void {
+  generateDummyStories(selectedTopicForStory: string): void {
     // Generate dummy story for the selected topic.
-    const selectedIndex = Number(selectedOptionForStory);
+    const selectedIndex = Number(selectedTopicForStory);
     let selectedTopic = this.topicList[selectedIndex];
     this.adminTaskManagerService.startTask();
     this.setStatusMessage.emit('Processing...');

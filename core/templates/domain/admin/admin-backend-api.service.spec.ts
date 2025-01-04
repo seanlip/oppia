@@ -1429,7 +1429,7 @@ describe('Admin backend api service', () => {
 
   it('should generate dummy stories', fakeAsync(() => {
     let action = 'generate_dummy_stories';
-    let topicId = 'dc3k2ldd'; // random ??
+    let topicId = 'topic_id';
     let numDummyStoriesToGenerate = 2;
     let payload = {
       action: action,
@@ -1453,7 +1453,7 @@ describe('Admin backend api service', () => {
 
   it('should handle generate dummy stories request failure', fakeAsync(() => {
     let action = 'generate_dummy_stories';
-    let topicId = 'dc3k2ldd'; // random ??
+    let topicId = 'topic_id';
     let numDummyStoriesToGenerate = 2;
     let payload = {
       action: action,
