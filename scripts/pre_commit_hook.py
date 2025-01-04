@@ -205,7 +205,7 @@ def check_changes_in_config() -> None:
 
 def run_formatters() -> None:
     """Runs prettier and black formatters."""
-    subprocess.run([NPX_PATH, 'lint-staged'], check=True)
+    subprocess.run([NPX_PATH, 'lint-staged'], shell=False, check=True)
 
 
 def main(args: Optional[List[str]] = None) -> None:
