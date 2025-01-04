@@ -41,4 +41,3 @@ jobs:
       with:
         message: "Inactive issue check failed on the upstream develop branch."
         webhook-url: ${{ secrets.BUILD_FAILURE_ROOM_WEBHOOK_URL }}
-        
