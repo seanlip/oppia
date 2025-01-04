@@ -1,15 +1,15 @@
 <div class="url-fragment-editor">
   <label for="{{ inputId }}" class="form-heading">{{ label }}*</label>
-    <input id="{{ inputId }}"
-        type="text"
-        class="form-control"
-        [(ngModel)]="urlFragment"
-        (blur)="blur"
-        [ngModelOptions]="{ standalone: true }"
-        placeholder={{placeholder}}
-        maxlength={{maxLength}}
-        [ngClass]="{ 'is-invalid': fragmentExists || !validUrlFragmentRegex.test(urlFragment.trim()) }"
-        (change)="onChange()"/>
+  <input id="{{ inputId }}"
+         type="text"
+         class="form-control"
+         [(ngModel)]="urlFragment"
+         (blur)="blur"
+         [ngModelOptions]="{ standalone: true }"
+         placeholder="{{placeholder}}"
+         maxlength="{{maxLength}}"
+         [ngClass]="{ 'is-invalid': fragmentExists || !validUrlFragmentRegex.test(urlFragment.trim()) }"
+         (change)="onChange()">
   <span class="oppia-input-box-subtitle">
     <em>
       The {{ fragmentType }} is used to uniquely access the {{ accessingPage }} page. It should consist of one or
@@ -17,12 +17,12 @@
       hyphen-separated words, all in lowercase, with at most {{ maxLength }} characters in total. Please use
       meaningful
       keywords, and avoid using words like "and", "of", or "the". This {{ fragmentType }} can be accessed at the
-      following URL:<br />
+      following URL:<br>
       {{ generatedUrlPrefix }}/{{urlFragment}}
     </em>
   </span>
   <div class="oppia-input-box-subtitle text-danger"
-    [hidden]="urlFragment === '' || validUrlFragmentRegex.test(urlFragment.trim())">
+       [hidden]="urlFragment === '' || validUrlFragmentRegex.test(urlFragment.trim())">
     <b>Please use only lowercase letters, optionally separated by hyphen.</b>
   </div>
   <div *ngIf="fragmentExists" class="oppia-input-box-subtitle text-danger">

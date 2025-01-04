@@ -57,7 +57,7 @@ export class CreateNewSubtopicModalComponent
   subtopicPage!: SubtopicPage;
   MAX_CHARS_IN_SUBTOPIC_URL_FRAGMENT!: number;
   MAX_CHARS_IN_SUBTOPIC_TITLE!: number;
-  generateUrlFormat: string;
+  generateUrlFormat: string = '';
 
   constructor(
     private ngbActiveModal: NgbActiveModal,

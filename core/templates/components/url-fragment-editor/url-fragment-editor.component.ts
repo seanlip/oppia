@@ -31,9 +31,9 @@ export class UrlFragmentEditorComponent {
   @Input() generatedUrlPrefix!: string;
   @Input() fragmentExists: boolean = false;
   @Input() inputId: string = 'urlFragment';
-  @Input() accessingPage: string;
+  @Input() accessingPage: string = '';
   @Input() tabIndex!: number;
-  @Input() disabled: boolean;
+  @Input() disabled: boolean = false;
   @Input() blur!: boolean;
   @Input() urlFragment: string = '';
   @Output() urlFragmentChange: EventEmitter<string> =
