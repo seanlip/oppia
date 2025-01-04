@@ -39,6 +39,69 @@ class TestCheckInactiveIssues(unittest.TestCase):
         self.mock_delete_patcher.stop()
         self.mock_post_patcher.stop()
 
+    def test_invalid_issue_format(self) -> None:
+        """Test handling of invalid issue format (line 52)."""
+        mock_issues_response = unittest.mock.Mock()
+        mock_issues_response.json.return_value = [None, 'not_a_dict', {}]
+        self.mock_get.return_value = mock_issues_response
+
+        inactive_issue_checker.inactive_issue_checker(
+            'mock_token', 'mock_owner', 'mock_repo')
+
+        self.assertEqual(self.mock_get.call_count, 1)
+        self.mock_delete.assert_not_called()
+        self.mock_post.assert_not_called()
+
+    def test_empty_events(self) -> None:
+        """Test handling of empty events list (line 61)."""
+        mock_issues_response = unittest.mock.Mock()
+        mock_issues_response.json.return_value = [{
+            'number': 1,
+            'assignee': {'login': 'user123'},
+            'events_url': 'mock_events_url',
+            'body': ''
+        }]
+        self.mock_get.side_effect = [
+            mock_issues_response,
+            unittest.mock.Mock(json=lambda: []),
+        ]
+
+        inactive_issue_checker.inactive_issue_checker(
+            'mock_token', 'mock_owner', 'mock_repo')
+
+        self.assertEqual(self.mock_get.call_count, 2)
+        self.mock_delete.assert_not_called()
+        self.mock_post.assert_not_called()
+
+    def test_error_during_unassignment(self) -> None:
+        """Test handling of errors during unassignment (lines 141-146)."""
+        mock_issues_response = unittest.mock.Mock()
+        mock_issues_response.json.return_value = [{
+            'number': 1,
+            'assignee': {'login': 'user123'},
+            'events_url': 'mock_events_url',
+            'body': ''
+        }]
+        self.mock_get.side_effect = [
+            mock_issues_response,
+            unittest.mock.Mock(json=lambda: [{
+                'created_at': (
+                    self.current_time - datetime.timedelta(days=10))
+                    .strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'event': 'assigned'
+            }]),
+            unittest.mock.Mock(json=lambda: []),
+            unittest.mock.Mock(json=lambda: [])
+        ]
+        mock_delete_response = unittest.mock.Mock(status_code=500)
+        self.mock_delete.return_value = mock_delete_response
+
+        inactive_issue_checker.inactive_issue_checker(
+            'mock_token', 'mock_owner', 'mock_repo')
+
+        self.mock_delete.assert_called_once()
+        self.mock_post.assert_not_called()
+
     def test_inactive_issue_unassigned(self) -> None:
         """Test that inactive issues are unassigned correctly."""
         mock_issues_response = unittest.mock.Mock()
@@ -124,6 +187,34 @@ class TestCheckInactiveIssues(unittest.TestCase):
             'mock_token', 'mock_owner', 'mock_repo')
 
         self.mock_delete.assert_not_called()
+        self.mock_post.assert_not_called()
+
+    def test_error_in_api_request(self) -> None:
+        """Test handling of API request errors (lines 150-153)."""
+        mock_issues_response = unittest.mock.Mock()
+        mock_issues_response.json.return_value = [{
+            'number': 1,
+            'assignee': {'login': 'user123'},
+            'events_url': 'mock_events_url',
+            'body': ''
+        }]
+        self.mock_get.side_effect = [
+            mock_issues_response,
+            unittest.mock.Mock(json=lambda: [{
+                'created_at': (
+                    self.current_time - datetime.timedelta(days=10))
+                    .strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'event': 'assigned'
+            }]),
+            unittest.mock.Mock(json=lambda: []),
+            unittest.mock.Mock(json=lambda: [])
+        ]
+        self.mock_delete.side_effect = Exception('API Error')
+
+        inactive_issue_checker.inactive_issue_checker(
+            'mock_token', 'mock_owner', 'mock_repo')
+
+        self.mock_delete.assert_called_once()
         self.mock_post.assert_not_called()
 
 
