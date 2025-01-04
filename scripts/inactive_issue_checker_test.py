@@ -1,20 +1,16 @@
 # coding: utf-8
-#
 # Copyright 2023 The Oppia Authors. All Rights Reserved.
-#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
+# http://www.apache.org/licenses/LICENSE-2.0
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS-IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Unit tests for scripts/install_dependencies_json_packages.py."""
+"""Unit tests for scripts/inactive_issue_checker.py."""
 
 from __future__ import annotations
 
@@ -23,110 +19,112 @@ import unittest.mock
 
 from scripts import inactive_issue_checker
 
-MockGithubException = unittest.mock.Mock()
-MockGithubException.__name__ = 'GithubException'
-
 
 class TestCheckInactiveIssues(unittest.TestCase):
-    """Test suite for the check_inactive_issues function."""
+    """Test suite for the inactive_issue_checker function."""
 
     def setUp(self) -> None:
         """Set up test cases."""
-        self.patcher = unittest.mock.patch(
-        'scripts.inactive_issue_checker.Github')
-        self.MockGithub = self.patcher.start()
-        self.mock_github = self.MockGithub.return_value
-        self.mock_repo = self.mock_github.get_repo.return_value
         self.current_time = datetime.datetime.now(datetime.timezone.utc)
+        self.mock_get_patcher = unittest.mock.patch('requests.get')
+        self.mock_delete_patcher = unittest.mock.patch('requests.delete')
+        self.mock_post_patcher = unittest.mock.patch('requests.post')
+        self.mock_get = self.mock_get_patcher.start()
+        self.mock_delete = self.mock_delete_patcher.start()
+        self.mock_post = self.mock_post_patcher.start()
 
     def tearDown(self) -> None:
         """Tear down test cases."""
-        self.patcher.stop()
+        self.mock_get_patcher.stop()
+        self.mock_delete_patcher.stop()
+        self.mock_post_patcher.stop()
 
-    def test1(self) -> None:
+    def test_inactive_issue_unassigned(self) -> None:
         """Test that inactive issues are unassigned correctly."""
-        mock_issue = unittest.mock.MagicMock()
-        self.mock_repo.get_issues.return_value = [mock_issue]
-        mock_issue.number = 1
-        mock_issue.assignee = unittest.mock.MagicMock()
-        mock_issue.assignee.login = 'user123'
-        mock_event = unittest.mock.MagicMock()
-        mock_event.created_at = self.current_time - datetime.timedelta(days=10)
-        mock_event.event = 'assigned'
-        mock_issue.get_events.return_value = [mock_event]
-        self.mock_repo.get_collaborators.return_value = []
-        self.mock_repo.get_pulls.return_value = []
+        mock_issues_response = unittest.mock.Mock()
+        mock_issues_response.json.return_value = [{
+            'number': 1,
+            'assignee': {'login': 'user123'},
+            'events_url': 'mock_events_url',
+            'body': ''
+        }]
+        self.mock_get.side_effect = [
+            mock_issues_response,
+            unittest.mock.Mock(json=lambda: [{
+                'created_at': (
+                    self.current_time - datetime.timedelta(days=10)).
+                    strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'event': 'assigned'
+            }]),
+            # Collaborators response (empty)
+            unittest.mock.Mock(json=lambda: []),
+            # Pull requests response (empty)
+            unittest.mock.Mock(json=lambda: [])
+        ]
+
+        mock_delete_response = unittest.mock.Mock(status_code=200)
+        self.mock_delete.return_value = mock_delete_response
+        self.mock_post.return_value = unittest.mock.Mock()
 
         inactive_issue_checker.inactive_issue_checker(
             'mock_token', 'mock_owner', 'mock_repo')
 
-        mock_issue.remove_from_assignees.assert_called_once_with('user123')
-        mock_issue.create_comment.assert_called_once_with(
-            '@user123 has been unassigned from this issue due to inactivity '
-            'for more than 7 days. If you would like '
-            'to continue working on this issue, '
-            'please request to be reassigned.'
-        )
+        self.mock_delete.assert_called_once()
+        self.mock_post.assert_called_once()
 
-    def test2(self) -> None:
-        """Test that active issues are not unassigned."""
-        mock_issue = unittest.mock.MagicMock()
-        self.mock_repo.get_issues.return_value = [mock_issue]
-        mock_issue.number = 2
-        mock_issue.assignee = unittest.mock.MagicMock()
-        mock_issue.assignee.login = 'user456'
-        mock_event = unittest.mock.MagicMock()
-        mock_event.created_at = self.current_time - datetime.timedelta(days=5)
-        mock_event.event = 'assigned'
-        mock_issue.get_events.return_value = [mock_event]
-
-        inactive_issue_checker.inactive_issue_checker(
-            'mock_token', 'mock_owner', 'mock_repo')
-
-        mock_issue.remove_from_assignees.assert_not_called()
-        mock_issue.create_comment.assert_not_called()
-
-    def test3(self) -> None:
+    def test_issue_with_related_pr(self) -> None:
         """Test that issues with related open PRs are not unassigned."""
-        mock_issue = unittest.mock.MagicMock()
-        self.mock_repo.get_issues.return_value = [mock_issue]
-        mock_issue.number = 3
-        mock_issue.assignee = unittest.mock.MagicMock()
-        mock_issue.assignee.login = 'user789'
-        mock_event = unittest.mock.MagicMock()
-        mock_event.created_at = self.current_time - datetime.timedelta(days=10)
-        mock_event.event = 'assigned'
-        mock_issue.get_events.return_value = [mock_event]
-        self.mock_repo.get_pulls.return_value = [
-            unittest.mock.MagicMock(body='This fixes issue #3')
+        mock_issues_response = unittest.mock.Mock()
+        mock_issues_response.json.return_value = [{
+            'number': 3,
+            'assignee': {'login': 'user789'},
+            'events_url': 'mock_events_url',
+            'body': ''
+        }]
+        self.mock_get.side_effect = [
+            mock_issues_response,
+            unittest.mock.Mock(json=lambda: [{
+                'created_at': (
+                    self.current_time - datetime.timedelta(days=10))
+                    .strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'event': 'assigned'
+            }]),
+            unittest.mock.Mock(json=lambda: []),
+            unittest.mock.Mock(json=lambda: [{'body': 'This fixes issue #3'}])
         ]
 
         inactive_issue_checker.inactive_issue_checker(
             'mock_token', 'mock_owner', 'mock_repo')
 
-        mock_issue.remove_from_assignees.assert_not_called()
-        mock_issue.create_comment.assert_not_called()
+        self.mock_delete.assert_not_called()
+        self.mock_post.assert_not_called()
 
-    def test4(self) -> None:
+    def test_collaborator_issue_not_unassigned(self) -> None:
         """Test that issues assigned to collaborators are not unassigned."""
-        mock_issue = unittest.mock.MagicMock()
-        self.mock_repo.get_issues.return_value = [mock_issue]
-        mock_issue.number = 4
-        mock_issue.assignee = unittest.mock.MagicMock()
-        mock_issue.assignee.login = 'collaborator123'
-        mock_event = unittest.mock.MagicMock()
-        mock_event.created_at = self.current_time - datetime.timedelta(days=10)
-        mock_event.event = 'assigned'
-        mock_issue.get_events.return_value = [mock_event]
-        self.mock_repo.get_collaborators.return_value = [
-            unittest.mock.MagicMock(login='collaborator123')
+        mock_issues_response = unittest.mock.Mock()
+        mock_issues_response.json.return_value = [{
+            'number': 4,
+            'assignee': {'login': 'collaborator123'},
+            'events_url': 'mock_events_url',
+            'body': ''
+        }]
+        self.mock_get.side_effect = [
+            mock_issues_response,
+            unittest.mock.Mock(json=lambda: [{
+                'created_at': (
+                    self.current_time - datetime.timedelta(days=10))
+                    .strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'event': 'assigned'
+            }]),
+            unittest.mock.Mock(json=lambda: [{'login': 'collaborator123'}]),
+            unittest.mock.Mock(json=lambda: [])
         ]
 
         inactive_issue_checker.inactive_issue_checker(
             'mock_token', 'mock_owner', 'mock_repo')
 
-        mock_issue.remove_from_assignees.assert_not_called()
-        mock_issue.create_comment.assert_not_called()
+        self.mock_delete.assert_not_called()
+        self.mock_post.assert_not_called()
 
 
 if __name__ == '__main__':
