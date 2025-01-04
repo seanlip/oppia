@@ -275,7 +275,7 @@ var TopicEditorPage = function () {
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
     await browser.setTimeout({ 'pageLoad': 45000 });
     // await waitFor.pageToFullyLoad();
-    // var uncategorizedSkillItem = await $('.e2e-test-skill-item');
+    var uncategorizedSkillItem = await $('.e2e-test-skill-item');
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
     expect(uncategorizedSkillItems.length).toEqual(count);
   };
