@@ -189,8 +189,8 @@ def check_changes_in_config() -> None:
                 CONSTANTS_FILEPATH))
 
 
-def run_prettier() -> None:
-    """Runs prettier formatter."""
+def run_formatters() -> None:
+    """Runs prettier and black formatters."""
     subprocess.run([NPX_PATH, 'lint-staged'], shell=True, check=True)
 
 
@@ -222,8 +222,8 @@ def main(args: Optional[List[str]] = None) -> None:
             'on how to use yarn, see https://yarnpkg.com/en/docs/usage.'
         )
         sys.exit(1)
-    print('Running prettier ...')
-    run_prettier()
+    print('Running prettier and black ...')
+    run_formatters()
 
     return
 
