@@ -109,6 +109,7 @@ describe('Classroom backend API service', function () {
     topic_id_to_prerequisite_topic_ids: {},
     teaser_text: 'Teaser text of the classroom',
     is_published: true,
+    is_diagnostic_test_enabled: true,
     thumbnail_data: {
       filename: 'thumbnail.svg',
       bg_color: 'transparent',

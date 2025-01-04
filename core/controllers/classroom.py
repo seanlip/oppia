@@ -131,8 +131,8 @@ class ClassroomDataHandler(
             'url_fragment': classroom.url_fragment,
             'teaser_text': classroom.teaser_text,
             'is_published': classroom.is_published,
-            'thumbnail_data': classroom.thumbnail_data.to_dict(),
             'is_diagnostic_test_enabled': classroom.is_diagnostic_test_enabled,
+            'thumbnail_data': classroom.thumbnail_data.to_dict(),
             'banner_data': classroom.banner_data.to_dict(),
             'public_classrooms_count': public_classrooms_count,
             'classroom_id': classroom.classroom_id

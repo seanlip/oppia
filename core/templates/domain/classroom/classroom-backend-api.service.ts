@@ -188,6 +188,10 @@ export class ClassroomBackendApiService {
         }
       );
   }
+  getClassroomData(classroomName: string): Promise<ClassroomData> {
+    return this.http.get<ClassroomData>(`/classroom_data_handler/${classroomName}`).toPromise();
+  }
+
 
   async fetchClassroomDataAsync(
     classroomUrlFragment: string
