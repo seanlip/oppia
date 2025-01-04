@@ -238,7 +238,7 @@ class DocstringParameterChecker(checkers.BaseChecker):  # type: ignore[misc]
     name = 'parameter_documentation'
     msgs = {
         'W9005': (
-            '"%s" has constructor parameters ' 'documented in class and __init__',
+            '"%s" has constructor parameters documented in class and __init__',
             'multiple-constructor-doc',
             'Please remove parameter declarations in the class or constructor.',
         ),
