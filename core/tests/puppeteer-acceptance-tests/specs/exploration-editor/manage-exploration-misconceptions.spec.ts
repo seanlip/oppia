@@ -111,7 +111,7 @@ describe('Exploration Editor', function () {
       false
     );
     await explorationEditor.expectScreenshotToMatch(
-      'blogEditorPageWithPublishedBlogPostTitle',
+      'testScreenshot',
       __dirname
     );
     await explorationEditor.addResponsesToTheInteraction(
