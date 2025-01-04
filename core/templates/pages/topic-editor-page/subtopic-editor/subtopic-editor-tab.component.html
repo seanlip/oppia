@@ -59,18 +59,17 @@
               <em>The maximum length of subtopic title is {{ maxCharsInSubtopicTitle }} characters.</em>
             </span>
           </div>
-          <URLFragmentEditorComponent label="Url Fragment"
-            [maxLength]="maxCharsInSubtopicUrlFragment"
-            [fragmentType]="'subtopic'"
-            [generatedUrlPrefix]="generateUrlFormat"
-            [(fragmentExists)]="subtopicUrlFragmentExists"
-            [inputId]="'subTopicUrlFragment'"
-            [e2eTestUrlFragment]="'e2e-test-subtopic-url-fragment-field'"
-            [accessingPage]="'subtopic viewer'"
-            [(urlFragment)]="editableUrlFragment"
-            [disabled]="false"
-            (urlFragmentChange)="onSubtopicUrlFragmentChange($event)">
-          </URLFragmentEditorComponent>
+          <UrlFragmentEditorComponent label="Url Fragment"
+                                      [maxLength]="maxCharsInSubtopicUrlFragment"
+                                      fragmentType="subtopic"
+                                      [generatedUrlPrefix]="generateUrlFormat"
+                                      [(fragmentExists)]="subtopicUrlFragmentExists"
+                                      inputId="subTopicUrlFragment"
+                                      accessingPage="subtopic viewer"
+                                      [(urlFragment)]="editableUrlFragment"
+                                      [disabled]="false"
+                                      (urlFragmentChange)="onSubtopicUrlFragmentChange($event)">
+          </UrlFragmentEditorComponent>
           <div class="subtopic-html" tabindex="0">
             <div (click)="showSchemaEditor()"
                  class="e2e-test-edit-html-content"

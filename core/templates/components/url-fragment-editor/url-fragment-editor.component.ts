@@ -20,10 +20,10 @@ import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {AppConstants} from 'app.constants';
 
 @Component({
-  selector: 'URLFragmentEditorComponent',
+  selector: 'UrlFragmentEditorComponent',
   templateUrl: './url-fragment-editor.component.html',
 })
-export class URLFragmentEditorComponent {
+export class UrlFragmentEditorComponent {
   @Input() label!: string;
   @Input() placeholder!: string;
   @Input() maxLength: number = 50;
@@ -31,9 +31,7 @@ export class URLFragmentEditorComponent {
   @Input() generatedUrlPrefix!: string;
   @Input() fragmentExists: boolean = false;
   @Input() inputId: string = 'urlFragment';
-  @Input() e2eTestUrlFragment!: string;
   @Input() accessingPage: string;
-  @Input() e2eTestUrlFragmentHeadingClass!: string;
   @Input() tabIndex!: number;
   @Input() disabled: boolean;
   @Input() blur!: boolean;
@@ -43,7 +41,7 @@ export class URLFragmentEditorComponent {
 
   validUrlFragmentRegex = new RegExp(AppConstants.VALID_URL_FRAGMENT_REGEX);
 
-  generalTransformationUrlFragment(): void {
+  formatUrlFragment(): void {
     this.urlFragment = this.urlFragment
       .trim()
       .toLowerCase()
@@ -53,7 +51,7 @@ export class URLFragmentEditorComponent {
     if (!this.urlFragment) {
       this.urlFragment = '';
     }
-    this.generalTransformationUrlFragment();
+    this.formatUrlFragment();
     this.urlFragmentChange.emit(this.urlFragment);
   }
 }

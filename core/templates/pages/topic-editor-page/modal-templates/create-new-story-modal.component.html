@@ -42,19 +42,18 @@
         </em>
       </span>
     </div>
-    <URLFragmentEditorComponent label="Url Fragment"
-      [placeholder]="'Enter url fragment for the story.'"
-      [maxLength]="MAX_CHARS_IN_STORY_URL_FRAGMENT"
-      [fragmentType]="'story'"
-      [generatedUrlPrefix]="generateUrlFormat"
-      [(fragmentExists)]="storyUrlFragmentExists"
-      [inputId]="'storyUrlFragment'"
-      [e2eTestUrlFragment]="'e2e-test-new-story-url-fragment-field'"
-      [accessingPage]="'story viewer'"
-      [(urlFragment)]="story.urlFragment"
-      [disabled]="false"
-      (urlFragmentChange)="onUrlFragmentChange($event)">
-    </URLFragmentEditorComponent>
+    <UrlFragmentEditorComponent label="Url Fragment"
+                                placeholder="Enter url fragment for the story."
+                                [maxLength]="MAX_CHARS_IN_STORY_URL_FRAGMENT"
+                                fragmentType="story"
+                                [generatedUrlPrefix]="generateUrlFormat"
+                                [(fragmentExists)]="storyUrlFragmentExists"
+                                inputId="storyUrlFragment"
+                                accessingPage="story viewer"
+                                [(urlFragment)]="story.urlFragment"
+                                [disabled]="false"
+                                (urlFragmentChange)="onUrlFragmentChange($event)">
+    </UrlFragmentEditorComponent>
     <div class="story-input story-input-thumbnail">
       <div class="story-input-header">
         <span>Thumbnail Image*</span>

@@ -74,21 +74,19 @@
                         [oppiaFocusOn]="metaTagInputField">
               </textarea>
             </div>
-            <URLFragmentEditorComponent label="Url Fragment"
-              [placeholder]="'Enter url fragment for the story.'"
-              [maxLength]="MAX_CHARS_IN_STORY_URL_FRAGMENT"
-              [fragmentType]="'story'"
-              [generatedUrlPrefix]="generateUrlFormat"
-              [(fragmentExists)]="storyUrlFragmentExists"
-              [inputId]="'storyUrlFragment'"
-              [e2eTestUrlFragment]="'e2e-test-story-url-fragment-field'"
-              [accessingPage]="'story viewer'"
-              [(urlFragment)]="editableUrlFragment"
-              [disabled]="false"
-              (blur)="updateStoryUrlFragment(editableUrlFragment)"
-              (urlFragmentChange)="onStoryEditorUrlFragmentChange($event)"
-              >
-            </URLFragmentEditorComponent>
+            <UrlFragmentEditorComponent label="Url Fragment"
+                                        placeholder="Enter url fragment for the story."
+                                        [maxLength]="MAX_CHARS_IN_STORY_URL_FRAGMENT"
+                                        fragmentType="story"
+                                        [generatedUrlPrefix]="generateUrlFormat"
+                                        [(fragmentExists)]="storyUrlFragmentExists"
+                                        inputId="storyUrlFragment"
+                                        accessingPage="story viewer"
+                                        [(urlFragment)]="editableUrlFragment"
+                                        [disabled]="false"
+                                        (blur)="updateStoryUrlFragment(editableUrlFragment)"
+                                        (urlFragmentChange)="onStoryEditorUrlFragmentChange($event)">
+            </UrlFragmentEditorComponent>
 
             <div class="story-thumbnail e2e-test-story-thumbnail">
               <label class="form-heading">Thumbnail Image*</label>

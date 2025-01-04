@@ -51,19 +51,18 @@
                 </em>
               </div>
             </div>
-            <URLFragmentEditorComponent label="Topic URL Fragment"
-              [maxLength]="maxCharsInTopicUrlFragment"
-              [fragmentType]="'topic'"
-              [generatedUrlPrefix]="generateUrlFormat"
-              [(fragmentExists)]="topicUrlFragmentExists"
-              [inputId]="'topicUrlFragment'"
-              [e2eTestUrlFragment]="'e2e-test-topic-url-fragment-heading'"
-              [accessingPage]="'topic viewer'"
-              [(urlFragment)]="editableTopicUrlFragment"
-              [disabled]="!topicRights.canEditTopic()"
-              (blur)="updateTopicUrlFragment(editableTopicUrlFragment)"
-              (urlFragmentChange)="onChangeTopicEditorUrlFragment($event)">
-            </URLFragmentEditorComponent>
+            <UrlFragmentEditorComponent label="Topic URL Fragment"
+                                        [maxLength]="maxCharsInTopicUrlFragment"
+                                        fragmentType="topic"
+                                        [generatedUrlPrefix]="generateUrlFormat"
+                                        [(fragmentExists)]="topicUrlFragmentExists"
+                                        inputId="topicUrlFragment"
+                                        accessingPage="topic viewer"
+                                        [(urlFragment)]="editableTopicUrlFragment"
+                                        [disabled]="!topicRights.canEditTopic()"
+                                        (blur)="updateTopicUrlFragment(editableTopicUrlFragment)"
+                                        (urlFragmentChange)="onChangeTopicEditorUrlFragment($event)">
+            </UrlFragmentEditorComponent>
             <div class="topic-description" [ngClass]="{'has-error': editableDescriptionIsEmpty && topicDescriptionChanged}" tabindex="0">
               <label for="topicDescription"
                      class="form-heading e2e-test-topic-description-heading">
