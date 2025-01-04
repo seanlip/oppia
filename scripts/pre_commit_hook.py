@@ -46,12 +46,12 @@ import sys
 # rather than the opipa/oppia root. To correct this problem, we add the
 # current working directory to sys.path.
 sys.path.append(os.getcwd())
-from typing import (
+from typing import (  # isort:skip  # pylint: disable=wrong-import-position
     Final,
     List,
     Optional,
     Tuple,
-)  # isort:skip  # pylint: disable=wrong-import-position
+)
 
 FECONF_FILEPATH: Final = os.path.join('core', 'feconf.py')
 CONSTANTS_FILEPATH: Final = os.path.join('.', 'assets', 'constants.ts')
