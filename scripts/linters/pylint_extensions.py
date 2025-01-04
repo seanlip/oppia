@@ -240,17 +240,17 @@ class DocstringParameterChecker(checkers.BaseChecker):  # type: ignore[misc]
         'W9005': (
             '"%s" has constructor parameters ' 'documented in class and __init__',
             'multiple-constructor-doc',
-            'Please remove parameter declarations ' 'in the class or constructor.',
+            'Please remove parameter declarations in the class or constructor.',
         ),
         'W9006': (
             '"%s" not documented as being raised',
             'missing-raises-doc',
-            'Please document exceptions for ' 'all raised exception types.',
+            'Please document exceptions for all raised exception types.',
         ),
         'W9008': (
             'Redundant returns documentation',
             'redundant-returns-doc',
-            'Please remove the return/rtype ' 'documentation from this method.',
+            'Please remove the return/rtype documentation from this method.',
         ),
         'W9010': (
             'Redundant yields documentation',
@@ -1822,7 +1822,7 @@ class SingleLinePragmaChecker(checkers.BaseChecker):  # type: ignore[misc]
     priority = -1
     msgs = {
         'C0028': (
-            'Pylint pragmas should be used to disable a rule ' 'for a single line only',
+            'Pylint pragmas should be used to disable a rule for a single line only',
             'single-line-pragma',
             'Please use pylint pragmas to disable a rule for a single line only',
         )
@@ -1879,7 +1879,7 @@ class TypeIgnoreCommentChecker(checkers.BaseChecker):  # type: ignore[misc]
             ' of comments should be -> Here we use MyPy ignore because ...',
         ),
         'C0046': (
-            'Extra comment is present for MyPy type: ignore. Please' ' remove it.',
+            'Extra comment is present for MyPy type: ignore. Please remove it.',
             'redundant-type-comment',
             'No corresponding \'type: ignore\' is found for the comment.',
         ),
@@ -2474,7 +2474,7 @@ class InequalityWithNoneChecker(checkers.BaseChecker):  # type: ignore[misc]
     priority = -1
     msgs = {
         'C0030': (
-            'Please refrain from using "x != None" ' 'and use "x is not None" instead.',
+            'Please refrain from using "x != None" and use "x is not None" instead.',
             'inequality-with-none',
             'Use "is" to assert equality or inequality against None.',
         )
@@ -2556,7 +2556,7 @@ class DisallowedFunctionsChecker(checkers.BaseChecker):  # type: ignore[misc]
         'C0032': (
             'Please remove the call to %s.',
             'remove-disallowed-function-calls',
-            ('Disallows usage of black-listed functions that ' 'should be removed.'),
+            ('Disallows usage of black-listed functions that should be removed.'),
         ),
         'C0033': (
             'Please replace the call to %s with %s.',
