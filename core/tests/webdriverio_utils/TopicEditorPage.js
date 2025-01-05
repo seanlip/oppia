@@ -275,14 +275,14 @@ var TopicEditorPage = function () {
 
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
     await waitFor.pageToFullyLoad();
-    var uncategorizedSkillItem = await $('.e2e-test-skill-item');
+    // var uncategorizedSkillItem = await $('.e2e-test-skill-item');
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
     await waitFor.pageToFullyLoad();
     await waitFor.pageToFullyLoad();
     await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
+    // await waitFor.pageToFullyLoad();
+    // await waitFor.pageToFullyLoad();
+    // await waitFor.pageToFullyLoad();
     expect(uncategorizedSkillItems.length).toEqual(count);
   };
 
