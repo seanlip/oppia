@@ -23,6 +23,7 @@ var general = require('../webdriverio_utils/general.js');
 var waitFor = require('./waitFor.js');
 var workflow = require('../webdriverio_utils/workflow.js');
 var forms = require('../webdriverio_utils/forms.js');
+const { default: waitForExist } = require('webdriverio/build/commands/element/waitForExist.js');
 
 var TopicEditorPage = function () {
   var EDITOR_URL_PREFIX = '/topic_editor/';
@@ -276,8 +277,8 @@ var TopicEditorPage = function () {
     await waitFor.pageToFullyLoad();
     var uncategorizedSkillItem = await $('.e2e-test-skill-item');
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
-    await browser.pause(30000);
-    // await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
+    await waitForExist(uncategorizedSkillItem, 'Skill item not found');
     expect(uncategorizedSkillItems.length).toEqual(count);
   };
 
