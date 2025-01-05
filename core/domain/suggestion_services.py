@@ -2179,7 +2179,8 @@ def update_translation_suggestion(
 
     if updated_image_count != original_image_count:
         raise utils.InvalidInputException(
-            'The number of images in the translation must match the original content.'
+        'The number of images in the translation must match '
+        'the original content.'
         )
 
     suggestion.change_cmd.translation_html = (
