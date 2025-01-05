@@ -273,10 +273,11 @@ var TopicEditorPage = function () {
   };
 
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
-    await browser.setTimeout({ 'pageLoad': 45000 });
     await waitFor.pageToFullyLoad();
     var uncategorizedSkillItem = await $('.e2e-test-skill-item');
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
+    await browser.pause(30000);
+    // await waitFor.pageToFullyLoad();
     expect(uncategorizedSkillItems.length).toEqual(count);
   };
 
