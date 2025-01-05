@@ -278,7 +278,7 @@ var TopicEditorPage = function () {
     var uncategorizedSkillItem = await $('.e2e-test-skill-item');
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
     await waitFor.pageToFullyLoad();
-    await waitForExist(uncategorizedSkillItem, 'Skill item not found');
+    await waitForExist(uncategorizedSkillItems[0], 'Skill item not found');
     expect(uncategorizedSkillItems.length).toEqual(count);
   };
 
