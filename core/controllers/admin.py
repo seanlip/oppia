@@ -1772,7 +1772,6 @@ class AdminHandler(
                     topic_id, url_fragment)
                 story_services.save_new_story(self.user_id, story)
                 topic_services.add_canonical_story(self.user_id, topic_id, story_id)
-                #topic_services.publish_story(topic_id, story_id, self.user_id)
         else:
             raise Exception(
                 'Cannot generate dummy stories in production.')
