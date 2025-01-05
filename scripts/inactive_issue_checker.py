@@ -144,10 +144,6 @@ def inactive_issue_checker(
 
             except Exception as error:
                 print(f'Error processing issue #{issue_number}: {error}')
-        else:
-            print(
-                f'Skipping issue #{issue_number} as it is still active.'
-            )
 
 
 if __name__ == '__main__': # pragma: no cover
