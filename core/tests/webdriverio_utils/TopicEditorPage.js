@@ -283,6 +283,17 @@ var TopicEditorPage = function () {
     await waitFor.pageToFullyLoad();
     await waitFor.pageToFullyLoad();
     await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
+    await waitFor.pageToFullyLoad();
     expect(uncategorizedSkillItems.length).toEqual(count);
   };
 
