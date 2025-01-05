@@ -75,13 +75,25 @@ describe('HtmlParsingService', () => {
       ).toBeFalse();
     });
 
-    it('should return false when images are added', () => {
+    it('should return false when updated HTML matches the original HTML', () => {
       expect(
-        htmlParsingService.isImageRemoved(htmlWithoutImage, htmlWithImage)
+        htmlParsingService.isImageRemoved(htmlWithImage, htmlWithImage)
       ).toBeFalse();
     });
 
-    it('should handle multiple images being partially removed', () => {
+    it('should return true when images are removed compared to the original content', () => {
+      expect(
+        htmlParsingService.isImageRemoved(htmlWithImage, htmlWithoutImage)
+      ).toBeTrue();
+    });
+
+    it('should return false when no images exist in the original and updated HTML', () => {
+      expect(
+        htmlParsingService.isImageRemoved(htmlWithoutImage, htmlWithoutImage)
+      ).toBeFalse();
+    });
+
+    it('should handle multiple images being partially removed compared to the original content', () => {
       const multipleImages = `${htmlWithImage}${htmlWithImage}`;
       expect(
         htmlParsingService.isImageRemoved(multipleImages, htmlWithImage)

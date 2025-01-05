@@ -61,7 +61,7 @@ interface ActiveContributionDetailsDict {
   topic_name: string;
 }
 
-interface SuggestionChangeDict {
+export interface SuggestionChangeDict {
   cmd: string;
   content_html: string | string[];
   content_id: string;
@@ -71,7 +71,7 @@ interface SuggestionChangeDict {
   translation_html: string;
 }
 
-interface ActiveSuggestionDict {
+export interface ActiveSuggestionDict {
   author_name: string;
   change_cmd: SuggestionChangeDict;
   exploration_content_html: string | string[] | null;
@@ -250,10 +250,10 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     this.allContributions = this.suggestionIdToContribution;
     this.allContributions[this.activeSuggestionId] = this.activeContribution;
     this.refreshActiveContributionState();
-    this.initialImageCount = this.htmlParsingService.countImageTags(
-      this.translationHtml
-    );
-
+    const originalContentHtml = this.activeSuggestion.change_cmd
+      .content_html as string;
+    this.initialImageCount =
+      this.htmlParsingService.countImageTags(originalContentHtml);
     // The 'html' value is passed as an object as it is required for
     // schema-based-editor. Otherwise the corrrectly updated value for
     // the translation is not received from the editor when the translation
@@ -375,8 +375,9 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   }
 
   isImageRemoved(): boolean {
+    const originalContentHtml = this.activeSuggestion.change_cmd.content_html;
     return this.htmlParsingService.isImageRemoved(
-      this.translationHtml,
+      originalContentHtml as string,
       this.editedContent.html
     );
   }
@@ -388,15 +389,16 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   updateSuggestion(): void {
     const updatedTranslation = this.editedContent.html;
     const suggestionId = this.activeSuggestion.suggestion_id;
-    if (
-      this.initialImageCount > 0 &&
-      this.htmlParsingService.isImageRemoved(
-        this.translationHtml,
-        updatedTranslation
-      )
-    ) {
+
+    const originalContentHtml = this.activeSuggestion.change_cmd.content_html;
+    const originalImageCount = this.htmlParsingService.countImageTags(
+      originalContentHtml as string
+    );
+    const updatedImageCount =
+      this.htmlParsingService.countImageTags(updatedTranslation);
+    if (updatedImageCount !== originalImageCount) {
       this.errorMessage =
-        'Removing images from the translation is not allowed.';
+        'The number of images in the translation must match the original content.';
       this.errorFound = true;
       return;
     }

@@ -2173,14 +2173,15 @@ def update_translation_suggestion(
             'Expected SuggestionTranslateContent suggestion but found: %s.'
             % type(suggestion).__name__
         )
-    original_html = suggestion.change_cmd.translation_html
-    original_image_count = count_images(original_html)
+    original_text_html = suggestion.change_cmd.content_html
+    original_image_count = count_images(original_text_html)
     updated_image_count = count_images(translation_html)
 
-    if updated_image_count < original_image_count:
+    if updated_image_count != original_image_count:
         raise utils.InvalidInputException(
-            'Removing images from the translation is not allowed.'
+            'The number of images in the translation must match the original content.'
         )
+
     suggestion.change_cmd.translation_html = (
         html_cleaner.clean(translation_html)
         if isinstance(translation_html, str)
