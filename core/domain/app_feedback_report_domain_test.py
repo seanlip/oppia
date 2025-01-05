@@ -1113,7 +1113,7 @@ class LessonPlayerEntryPointDomainTests(test_utils.GenericTestBase):
     # TODO(#13059): Here we use MyPy ignore because after we fully type the
     # codebase we plan to get rid of the tests that intentionally test wrong
     # inputs that we can normally catch by typing.
-    def test_validation_with_invalid_exploration_type_fails(self) -> None:
+    def test_validation_fails_if_exploration_id_is_not_a_string(self) -> None:
         self.entry_point.topic_id = 'valid_topic1'
         self.entry_point.story_id = 'valid_story1'
         self.entry_point.exploration_id = 123  # type: ignore[assignment]
@@ -1207,6 +1207,8 @@ class RevisionCardEntryPointDomainTests(test_utils.GenericTestBase):
         # codebase we plan to get rid of the tests that intentionally
         # test wrong inputs that we can normally catch by typing.
         self.entry_point.subtopic_id = 42 # type: ignore[assignment]
+        # There should be no exception raised when trying to validate.
+        # If exception is raised, the test fails.
         self.entry_point.validate()
 
     def _assert_validation_error(
@@ -1899,6 +1901,8 @@ class AppFeedbackReportFilterDomainTests(test_utils.GenericTestBase):
     def test_validation_passes_with_valid_filter_options_list(self) -> None:
         """Tests that validation passes when filter_options is a valid list."""
         self.filter.filter_options = ['web', 'android']
+        # There should be no exception raised when trying to validate.
+        # If exception is raised, the test fails.
         self.filter.validate()
 
     def _assert_validation_error(
