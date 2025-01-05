@@ -110,16 +110,16 @@ describe('Exploration Editor', function () {
       true,
       false
     );
-    await explorationEditor.expectScreenshotToMatch(
-      'testScreenshot',
-      __dirname
-    );
     await explorationEditor.addResponsesToTheInteraction(
       INTERACTION_TYPES.MULTIPLE_CHOICE,
       '-101',
       'Wrong! -101 is smaller than -100.',
       '',
       false
+    );
+    await explorationEditor.expectScreenshotToMatch(
+      'testScreenshot',
+      __dirname
     );
     await explorationEditor.editDefaultResponseFeedback('Wrong.');
     await explorationEditor.addHintToState(
