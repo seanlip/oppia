@@ -21,6 +21,10 @@
       "module": "core/tests/puppeteer-acceptance-tests/specs/logged-out-user/play-lesson-in-different-languages-and-listen-to-voiceovers.spec.ts"
     },
     {
+      "name": "logged-out-user/play-through-lesson-while-getting-feedback-and-hints",
+      "module": "core/tests/puppeteer-acceptance-tests/specs/logged-out-user/play-through-lesson-while-getting-feedback-and-hints.spec.ts"
+    },
+    {
       "name": "logged-out-user/visit-classroom-index-page",
       "module": "core/tests/puppeteer-acceptance-tests/specs/logged-out-user/visit-classroom-index-page.spec.ts"
     },
@@ -189,10 +193,6 @@
     {
       "name": "logged-out-user/share-and-give-feedback-for-exploration-but-not-report-and-rate-it",
       "module": "core/tests/puppeteer-acceptance-tests/specs/logged-out-user/share-and-give-feedback-for-exploration-but-not-report-and-rate-it.spec.ts"
-    },
-    {
-      "name": "logged-out-user/play-through-lesson-while-getting-feedback-and-hints",
-      "module": "core/tests/puppeteer-acceptance-tests/specs/logged-out-user/play-through-lesson-while-getting-feedback-and-hints.spec.ts"
     },
     {
       "name": "logged-out-user/change-site-language-and-engage-with-original-exploration",
