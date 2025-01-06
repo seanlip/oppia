@@ -2260,6 +2260,7 @@ class AutomaticVoiceoverAdminControlHandler(
 ):
     """Retrieves and updates automatic voiceover admin control."""
 
+    GET_HANDLER_ERROR_RETURN_TYPE = feconf.HANDLER_TYPE_JSON
     URL_PATH_ARGS_SCHEMAS: Dict[str, str] = {}
     HANDLER_ARGS_SCHEMAS = {
         'GET': {},
