@@ -299,8 +299,9 @@ class WipeoutServicePreDeleteTests(test_utils.GenericTestBase):
             observed_log_messages,
             ['Email ID %s permanently deleted from bulk email provider\'s db. '
              'Cannot access API, since this is a dev environment'
-             % self.USER_1_EMAIL,
-             'Logging project ID for debugging: dev-project-id'])
+             % self.USER_1_EMAIL] + 
+                 (['Logging project ID for debugging: dev-project-id'] * 6)
+             )
         self.assertFalse(email_preferences.can_receive_email_updates)
         self.assertFalse(email_preferences.can_receive_editor_role_email)
         self.assertFalse(email_preferences.can_receive_feedback_message_email)
@@ -5700,6 +5701,10 @@ class PendingUserDeletionTaskServiceTests(test_utils.GenericTestBase):
             (
                 platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
                 'system@example.com'
+            ),
+            (
+                platform_parameter_list.ParamName.OPPIA_PROJECT_ID,
+                'dev-project-id'
             )
         ]
     )
@@ -5753,6 +5758,10 @@ class PendingUserDeletionTaskServiceTests(test_utils.GenericTestBase):
             (
                 platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
                 'system@example.com'
+            ),
+            (
+                platform_parameter_list.ParamName.OPPIA_PROJECT_ID,
+                'dev-project-id'
             )
         ]
     )

@@ -70,7 +70,8 @@ class EmailToAdminTest(test_utils.EmailTestBase):
             (param_list.ParamName.EMAIL_FOOTER, EMAIL_FOOTER),
             (param_list.ParamName.ADMIN_EMAIL_ADDRESS, 'admin@system.com'),
             (param_list.ParamName.SYSTEM_EMAIL_ADDRESS, 'dummy@system.com'),
-            (param_list.ParamName.SYSTEM_EMAIL_NAME, 'DUMMY_SYSTEM_NAME')
+            (param_list.ParamName.SYSTEM_EMAIL_NAME, 'DUMMY_SYSTEM_NAME'),
+            (param_list.ParamName.OPPIA_PROJECT_ID, 'dev-project-id')
         ]
     )
     def test_email_to_admin_is_sent_correctly(self) -> None:
@@ -807,7 +808,7 @@ class SignupEmailTests(test_utils.EmailTestBase):
             (param_list.ParamName.EMAIL_FOOTER, EMAIL_FOOTER),
             (
                 param_list.ParamName.SIGNUP_EMAIL_SUBJECT_CONTENT,
-                ''
+                'dummy subject'
             ),
             (
                 param_list.ParamName.SIGNUP_EMAIL_BODY_CONTENT,
