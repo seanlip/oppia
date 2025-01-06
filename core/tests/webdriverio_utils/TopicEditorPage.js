@@ -274,23 +274,11 @@ var TopicEditorPage = function () {
   };
 
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
-    await waitFor.pageToFullyLoad();
-    await browser.execute(() => {
-      window.scrollTo(0, document.body.scrollHeight);
-    });
     await browser.pause(60000);
-    var uncategorizedSkillItem = await $('.e2e-test-skill-item');
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
-    var isScrolledToBottom = await browser.execute(() => {
-      return window.innerHeight + window.scrollY >= document.body.scrollHeight;
-    });
     await browser.pause(60000);
-    console.log('Scrolled to bottom of the page:', isScrolledToBottom);
-    console.log('Uncategorized skill item:', uncategorizedSkillItem);
-    console.log('Uncategorized skill item:', uncategorizedSkillItem.length);
     console.log('Uncategorized skill items:', uncategorizedSkillItems);
     console.log('Uncategorized skill items:', uncategorizedSkillItems.length);
-
     expect(uncategorizedSkillItems.length).toEqual(count);
   };
 
