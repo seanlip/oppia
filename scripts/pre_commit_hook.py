@@ -66,6 +66,7 @@ KEYS_UPDATED_IN_CONSTANTS: Final = [
 NPX_PATH: Final = os.path.join(
     os.pardir, 'oppia_tools', 'node-16.13.0', 'bin', 'npx')
 
+
 def install_hook() -> None:
     """Installs the pre_commit_hook script and makes it executable.
     It ensures that oppia/ is the root folder.
