@@ -1,6 +1,6 @@
 name: CI Failure Report
 description: Create a report to help us improve
-title: "[Flake]: "
+title: "[CI Failure]: "
 labels: [triage needed, bug, CI breakage]
 body:
   - type: markdown
@@ -17,7 +17,7 @@ body:
     id: ci-test-type
     attributes:
       label: CI Test Type
-      description: In which CI test did this Flake occur?
+      description: In which CI test did this failure occur?
       options:
         - E2E
         - Acceptance
