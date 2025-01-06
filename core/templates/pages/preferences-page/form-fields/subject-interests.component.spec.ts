@@ -179,7 +179,6 @@ describe('Subject interests form field Component', () => {
         value: '',
       },
     } as unknown as Event;
-
     componentInstance.onInput(inputEvent);
     expect(componentInstance.formCtrl.pristine).toBeTrue();
     expect(componentInstance.onChange).toHaveBeenCalledWith([]);
