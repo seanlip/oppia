@@ -73,10 +73,9 @@ class ActionRegistryUnitTests(test_utils.GenericTestBase):
         with self.assertRaisesRegex(KeyError, 'fakeAction'):
             action_registry.Registry.get_action_by_type('fakeAction')
 
-    def test_get_action_by_type_after_refresh_by_valid_type(self) -> None:
-        """Test retrieving an action type after refresh."""
+    def test_get_action_by_valid_type(self) -> None:
+        """Test retrieving an action using valid action type."""
 
-        # Ensure actions are populated after refresh.
         actions = action_registry.Registry.get_all_actions()
         action_type = actions[0].__class__.__name__
         retrieved_action = (
