@@ -1590,7 +1590,7 @@ class GenerateDummyStoriesTest(test_utils.GenericTestBase):
         prod_mode_swap = self.swap(constants, 'DEV_MODE', False)
         assert_raises_regexp_context_manager = self.assertRaisesRegex(
             Exception, 'Cannot generate dummy stories in production.')
-        
+
         topic = topic_domain.Topic.create_default_topic(
             'topic', 'topic_name', 'url',
             'description', 'fragm'
@@ -1622,7 +1622,7 @@ class GenerateDummyStoriesTest(test_utils.GenericTestBase):
 
         assert_raises_regexp = self.assertRaisesRegex(
             Exception, 'User must be a curriculum admin in order to generate stories.')
-        
+
         topic = topic_domain.Topic.create_default_topic(
             'topic', 'topic_name', 'url',
             'description', 'fragm'
@@ -1644,6 +1644,7 @@ class GenerateDummyStoriesTest(test_utils.GenericTestBase):
         generated_stories_count = len(topic.get_all_story_references())
         self.assertNotEqual(generated_stories_count, 5)
         self.logout()
+
 
 class GenerateDummyTranslationOpportunitiesTest(test_utils.GenericTestBase):
     """Checks the conditions for generation of dummy translation
