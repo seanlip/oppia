@@ -143,16 +143,13 @@ describe('Subject interests form field Component', () => {
   it('should handle blur event correctly', () => {
     spyOn(componentInstance, 'onChange');
     spyOn(componentInstance, 'validInput').and.returnValue(true);
-    
     componentInstance.subjectInterests = [];
     componentInstance.subjectInterestInput = {
       nativeElement: {
         value: 'math',
       },
     } as ElementRef;
-  
     componentInstance.onBlur();
-  
     expect(componentInstance.validInput).toHaveBeenCalledWith('math');
     expect(componentInstance.subjectInterests).toEqual(['math']);
     expect(componentInstance.subjectInterestInput.nativeElement.value).toBe('');
@@ -162,16 +159,13 @@ describe('Subject interests form field Component', () => {
   it('should handle input event correctly', () => {
     spyOn(componentInstance, 'onChange');
     spyOn(componentInstance, 'validInput').and.returnValue(true);
-  
     componentInstance.formCtrl = new FormControl();
     const inputEvent = {
       target: {
         value: 'math',
       },
     } as unknown as Event;
-  
     componentInstance.onInput(inputEvent);
-  
     expect(componentInstance.validInput).toHaveBeenCalledWith('math');
     expect(componentInstance.formCtrl.dirty).toBeTrue();
     expect(componentInstance.onChange).toHaveBeenCalledWith([]);
@@ -179,16 +173,13 @@ describe('Subject interests form field Component', () => {
   
   it('should mark input as pristine when input is empty', () => {
     spyOn(componentInstance, 'onChange');
-    
     componentInstance.formCtrl = new FormControl();
     const inputEvent = {
       target: {
         value: '',
       },
     } as unknown as Event;
-  
     componentInstance.onInput(inputEvent);
-  
     expect(componentInstance.formCtrl.pristine).toBeTrue();
     expect(componentInstance.onChange).toHaveBeenCalledWith([]);
   });
