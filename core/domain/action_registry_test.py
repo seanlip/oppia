@@ -27,8 +27,7 @@ class ActionRegistryUnitTests(test_utils.GenericTestBase):
 
     def test_action_registry(self) -> None:
         """Do some sanity checks on the action registry."""
-        self.assertEqual(
-            len(action_registry.Registry.get_all_actions()), 3)
+        self.assertEqual(len(action_registry.Registry.get_all_actions()), 3)
 
     def test_cannot_get_action_by_invalid_type(self) -> None:
         # Testing with invalid action type.
@@ -40,4 +39,5 @@ class ActionRegistryUnitTests(test_utils.GenericTestBase):
     def test_can_get_action_by_valid_type(self) -> None:
         # Testing with valid action type.
         self.assertIsNotNone(
-            action_registry.Registry.get_action_by_type('ExplorationStart'))
+            action_registry.Registry.get_action_by_type('ExplorationStart')
+        )
