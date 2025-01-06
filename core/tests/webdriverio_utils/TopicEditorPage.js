@@ -276,9 +276,7 @@ var TopicEditorPage = function () {
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
     await browser.pause(60000);
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
-    await browser.pause(60000);
-    console.log('Uncategorized skill items:', uncategorizedSkillItems);
-    console.log('Uncategorized skill items:', uncategorizedSkillItems.length);
+    await browser.pause(30000);
     expect(uncategorizedSkillItems.length).toEqual(count);
   };
 
