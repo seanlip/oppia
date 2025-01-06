@@ -46,7 +46,7 @@ export class CreateNewTopicModalComponent extends ConfirmOrCancelModal {
   topicNameExists: boolean = false;
   maxWebTitleFrag = AppConstants.MAX_CHARS_IN_PAGE_TITLE_FRAGMENT_FOR_WEB;
   minWebTitleFrag = AppConstants.MIN_CHARS_IN_PAGE_TITLE_FRAGMENT_FOR_WEB;
-  generateUrlFormat = `${this.hostname}/learn/staging`;
+  generatedUrlPrefix = `${this.hostname}/learn/staging`;
 
   constructor(
     private contextService: ContextService,

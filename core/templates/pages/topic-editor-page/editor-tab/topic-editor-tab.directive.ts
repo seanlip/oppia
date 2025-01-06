@@ -102,7 +102,7 @@ export class TopicEditorTabComponent implements OnInit, OnDestroy {
   classroomUrlFragment: string | null = null;
   classroomName: string | null = null;
   curriculumAdminUsernames: string[] = [];
-  generateUrlFormat: string;
+  generatedUrlPrefix: string;
 
   constructor(
     private contextService: ContextService,
@@ -188,7 +188,7 @@ export class TopicEditorTabComponent implements OnInit, OnDestroy {
         this.contextService.getEntityType(),
         this.contextService.getEntityId()
       );
-    this.generateUrlFormat = `${this.hostname}/learn/${this.classroomUrlFragment}`;
+    this.generatedUrlPrefix = `${this.hostname}/learn/${this.classroomUrlFragment}`;
   }
 
   getEligibleSkillSummariesForDiagnosticTest(): ShortSkillSummary[] {

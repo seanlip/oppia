@@ -75,10 +75,10 @@
               </textarea>
             </div>
             <UrlFragmentEditorComponent label="Url Fragment"
-                                        placeholder="Enter url fragment for the story."
+                                        placeholder="Enter the URL fragment for the story."
                                         [maxLength]="MAX_CHARS_IN_STORY_URL_FRAGMENT"
                                         fragmentType="story"
-                                        [generatedUrlPrefix]="generateUrlFormat"
+                                        [generatedUrlPrefix]="generatedUrlPrefix"
                                         [(fragmentExists)]="storyUrlFragmentExists"
                                         inputId="storyUrlFragment"
                                         accessingPage="story viewer"

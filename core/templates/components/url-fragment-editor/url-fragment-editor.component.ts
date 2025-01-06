@@ -30,14 +30,12 @@ export class UrlFragmentEditorComponent {
   @Input() fragmentType: string = 'story';
   @Input() generatedUrlPrefix!: string;
   @Input() fragmentExists: boolean = false;
-  @Input() inputId: string = 'urlFragment';
   @Input() accessingPage: string = '';
-  @Input() tabIndex!: number;
   @Input() disabled: boolean = false;
-  @Input() blur!: boolean;
   @Input() urlFragment: string = '';
   @Output() urlFragmentChange: EventEmitter<string> =
     new EventEmitter<string>();
+  @Output() blur: EventEmitter<void> = new EventEmitter<void>();
 
   validUrlFragmentRegex = new RegExp(AppConstants.VALID_URL_FRAGMENT_REGEX);
 
@@ -46,6 +44,10 @@ export class UrlFragmentEditorComponent {
       .trim()
       .toLowerCase()
       .replace(/\s+/g, '-');
+  }
+
+  onBlur(): void {
+    this.blur.emit();
   }
 
   onChange(): void {

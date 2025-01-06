@@ -70,7 +70,7 @@ export class SubtopicEditorTabComponent implements OnInit, OnDestroy {
   maxCharsInSubtopicTitle!: number;
   maxCharsInSubtopicUrlFragment!: number;
   SUBTOPIC_PAGE_SCHEMA: {type: string; ui_config: {rows: number}};
-  generateUrlFormat: string;
+  generatedUrlPrefix: string;
 
   constructor(
     private questionBackendApiService: QuestionBackendApiService,
@@ -91,7 +91,7 @@ export class SubtopicEditorTabComponent implements OnInit, OnDestroy {
     this.topic = this.topicEditorStateService.getTopic();
     this.classroomUrlFragment =
       this.topicEditorStateService.getClassroomUrlFragment();
-    this.generateUrlFormat = `${this.hostname}/learn/${this.classroomUrlFragment}/${this.topic?.getUrlFragment()}/revision`;
+    this.generatedUrlPrefix = `${this.hostname}/learn/${this.classroomUrlFragment}/${this.topic?.getUrlFragment()}/revision`;
     this.subtopicId = this.topicEditorRoutingService.getSubtopicIdFromUrl();
     this.subtopic = this.topic.getSubtopicById(this.subtopicId);
     if (!this.subtopic) {
