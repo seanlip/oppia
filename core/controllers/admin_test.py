@@ -1540,6 +1540,108 @@ class GenerateDummyQuestionSuggestionsTest(test_utils.GenericTestBase):
         self.logout()
 
 
+class GenerateDummyStoriesTest(test_utils.GenericTestBase):
+    """Test the conditions for generation of dummy stories."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.signup(
+            self.CURRICULUM_ADMIN_EMAIL,
+            self.CURRICULUM_ADMIN_USERNAME,
+            is_super_admin=True)
+        self.add_user_role(
+            self.CURRICULUM_ADMIN_USERNAME,
+            feconf.ROLE_ID_CURRICULUM_ADMIN)
+
+    def test_generate_dummy_stories(self) -> None:
+        self.login(self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
+        csrf_token = self.get_new_csrf_token()
+
+        topic = topic_domain.Topic.create_default_topic(
+            'topic', 'topic_name', 'url',
+            'description', 'fragm'
+        )
+        topic_services.save_new_topic(
+            self.get_user_id_from_email(
+                self.CURRICULUM_ADMIN_EMAIL
+            ), topic
+        )
+
+        self.post_json(
+            '/adminhandler', {
+                'action': 'generate_dummy_stories',
+                'topic_id': 'topic',
+                'num_dummy_stories_to_generate': 5
+            }, csrf_token=csrf_token)
+
+        generated_stories_count = len(topic.get_all_story_references())
+        self.assertNotEqual(generated_stories_count, 5)
+        self.logout()
+
+    def test_cannot_generate_dummy_stories_in_prod_mode(# pylint: disable=line-too-long
+            self
+        ) -> None:
+        self.login(self.QUESTION_ADMIN_EMAIL, is_super_admin=True)
+        csrf_token = self.get_new_csrf_token()
+
+        prod_mode_swap = self.swap(constants, 'DEV_MODE', False)
+        assert_raises_regexp_context_manager = self.assertRaisesRegex(
+            Exception, 'Cannot generate dummy stories in production.')
+        
+        topic = topic_domain.Topic.create_default_topic(
+            'topic', 'topic_name', 'url',
+            'description', 'fragm'
+        )
+        topic_services.save_new_topic(
+            self.get_user_id_from_email(
+                self.CURRICULUM_ADMIN_EMAIL
+            ), topic
+        )
+
+        with assert_raises_regexp_context_manager, prod_mode_swap:
+            self.post_json(
+                '/adminhandler', {
+                    'action': 'generate_dummy_stories',
+                    'topic_id': 'topic', 
+                    'num_dummy_stories_to_generate': 5
+                }, csrf_token=csrf_token)
+
+        generated_stories_count = len(topic.get_all_story_references())
+        self.assertNotEqual(generated_stories_count, 5)
+        self.logout()
+
+    def test_raises_error_if_not_curriculum_admin(# pylint: disable=line-too-long
+            self
+        ) -> None:
+        self.login(
+            self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
+        csrf_token = self.get_new_csrf_token()
+
+        assert_raises_regexp = self.assertRaisesRegex(
+            Exception, 'User must be a curriculum admin in order to generate stories.')
+        
+        topic = topic_domain.Topic.create_default_topic(
+            'topic', 'topic_name', 'url',
+            'description', 'fragm'
+        )
+        topic_services.save_new_topic(
+            self.get_user_id_from_email(
+                self.CURRICULUM_ADMIN_EMAIL
+            ), topic
+        )
+
+        with assert_raises_regexp:
+            self.post_json(
+                '/adminhandler', {
+                    'action': 'generate_dummy_stories',
+                    'topic_id': 'topic', 
+                    'num_dummy_stories_to_generate': 5
+                }, csrf_token=csrf_token)
+
+        generated_stories_count = len(topic.get_all_story_references())
+        self.assertNotEqual(generated_stories_count, 5)
+        self.logout()
+
 class GenerateDummyTranslationOpportunitiesTest(test_utils.GenericTestBase):
     """Checks the conditions for generation of dummy translation 
     opportunities."""
