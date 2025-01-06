@@ -235,7 +235,7 @@ describe('LanguageBannerComponent', () => {
     expect(component.bannerIsVisible).toBeFalse();
   });
 
-  it('should set the NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER cookie to 0 when clicked', () => {
+  it('should set the NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER cookie to 0 when clicked', fakeAsync(() => {
     component.ngOnInit();
     tick();
 
@@ -252,7 +252,7 @@ describe('LanguageBannerComponent', () => {
     expect(cookieService.get(NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER)).toBe(
       '0'
     );
-  });
+  }));
 
   it('should return static image URL', () => {
     const imageUrl = component.getStaticImageUrl('/x.svg');
