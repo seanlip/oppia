@@ -8,7 +8,10 @@ body:
       value: |
         Thanks for taking the time to file a CI failure report!
 
-        If the CI failure is happening on a PR (and not on develop), please read "[If CI checks fail on your PR](https://github.com/oppia/oppia/wiki/If-CI-checks-fail-on-your-PR)" if you haven't already.
+        If the CI failure is happening on a PR (and not on develop), please
+        ensure you've read [this wiki page](https://github.com/oppia/oppia/wiki/If-CI-checks-fail-on-your-PR)
+        and are filing this issue as part of the process described there.
+        Thanks!
   - type: dropdown
     id: ci-test-type
     attributes:
