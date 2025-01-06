@@ -277,23 +277,10 @@ var TopicEditorPage = function () {
     await waitFor.pageToFullyLoad();
     var uncategorizedSkillItem = await $('.e2e-test-skill-item');
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
-    await waitFor.pageToFullyLoad();
+    await waitFor.visibilityOf(
+      uncategorizedSkillItem,
+      'Uncategorized skill item takes too long to appear.'
+    );
     expect(uncategorizedSkillItems.length).toEqual(count);
   };
 
