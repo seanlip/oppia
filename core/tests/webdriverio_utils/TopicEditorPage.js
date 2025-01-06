@@ -275,6 +275,12 @@ var TopicEditorPage = function () {
 
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
     await waitFor.pageToFullyLoad();
+    await browser.execute(() => {
+      window.scrollTo(0, 200);
+    });
+    await browser.execute(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+    });
     var uncategorizedSkillItem = await $('.e2e-test-skill-item');
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
     await waitFor.visibilityOf(
