@@ -1103,7 +1103,7 @@ class LessonPlayerEntryPointDomainTests(test_utils.GenericTestBase):
         mock_get_story_id_linked_to_exploration: mock.MagicMock
     ) -> None:
         mock_get_story_id_linked_to_exploration.return_value = 'story_id'
-        # The method should not raise any exceptions and return None.
+        # Here the method should return None and not raise any exceptions.
         self.assertIsNone(
             self.entry_point.require_valid_entry_point_exploration(
                 exploration_id=self.entry_point.exploration_id,
