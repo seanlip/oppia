@@ -388,7 +388,7 @@ export class TopNavigationBarComponent implements OnInit, OnDestroy {
 
   changeLanguage(languageCode: string): void {
     this.i18nService.updateUserPreferredLanguage(languageCode);
-    this.languageBannerService.removeLanguageBanner();
+    this.languageBannerService.markLanguageBannerAsDismissed();
   }
 
   isLanguageRTL(): boolean {

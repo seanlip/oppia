@@ -1,4 +1,4 @@
-// Copyright 2021 The Oppia Authors. All Rights Reserved.
+// Copyright 2025 The Oppia Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the 'License');
 // you may not use this file except in compliance with the License.
@@ -83,15 +83,17 @@ describe('LanguageBannerService', () => {
   it('should reset banner count when removing language banner', () => {
     spyOn(service, 'hasAcceptedCookies').and.returnValue(true);
     spyOn(service, 'getLanguageBannerCookieNum').and.returnValue(4);
-    spyOn(service, 'setLanguageBannerCookieNum');
+    spyOn(service, 'setNumTimesRemainingToShowLanguageBanner');
 
-    service.removeLanguageBanner();
+    service.markLanguageBannerAsDismissed();
 
-    expect(service.setLanguageBannerCookieNum).toHaveBeenCalledWith(0);
+    expect(
+      service.setNumTimesRemainingToShowLanguageBanner
+    ).toHaveBeenCalledWith(0);
   });
 
   it('should set the language banner cookie number', () => {
-    service.setLanguageBannerCookieNum(4);
+    service.setNumTimesRemainingToShowLanguageBanner(4);
 
     expect(cookieService.put).toHaveBeenCalledWith(
       NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER,

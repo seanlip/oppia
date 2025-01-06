@@ -1,4 +1,4 @@
-// Copyright 2021 The Oppia Authors. All Rights Reserved.
+// Copyright 2025 The Oppia Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ describe('LanguageBannerComponent', () => {
     component.ngOnInit();
     tick();
 
-    expect(component.isVisible).toBeFalse();
+    expect(component.bannerIsVisible).toBeFalse();
   }));
 
   it('should not display banner if user is on the signup page', fakeAsync(() => {
@@ -127,7 +127,7 @@ describe('LanguageBannerComponent', () => {
     component.ngOnInit();
     tick();
 
-    expect(component.isVisible).toBeFalse();
+    expect(component.bannerIsVisible).toBeFalse();
   }));
 
   it('should not display banner if user is logged in', fakeAsync(() => {
@@ -138,10 +138,10 @@ describe('LanguageBannerComponent', () => {
     component.ngOnInit();
     tick();
 
-    expect(component.isVisible).toBeFalse();
+    expect(component.bannerIsVisible).toBeFalse();
   }));
 
-  it('should not display banner if user is on english browser', fakeAsync(() => {
+  it("should not display banner if the user's browser language is english", fakeAsync(() => {
     Object.defineProperty(navigator, 'language', {
       value: 'en-US',
       configurable: true,
@@ -150,7 +150,7 @@ describe('LanguageBannerComponent', () => {
     component.ngOnInit();
     tick();
 
-    expect(component.isVisible).toBeFalse();
+    expect(component.bannerIsVisible).toBeFalse();
   }));
 
   it('should not display banner if user has not accepted cookies', fakeAsync(() => {
@@ -159,17 +159,17 @@ describe('LanguageBannerComponent', () => {
     component.ngOnInit();
     tick();
 
-    expect(component.isVisible).toBeFalse();
+    expect(component.bannerIsVisible).toBeFalse();
   }));
 
-  it('should be dislayed if all conditions are correct', fakeAsync(() => {
+  it('should be dislayed if cookies are accepted, browser is not in english and user is not on the sign in page', fakeAsync(() => {
     component.ngOnInit();
     tick();
 
-    expect(component.isVisible).toBeTrue();
+    expect(component.bannerIsVisible).toBeTrue();
   }));
 
-  it('should start at 4 and countdown for every object', fakeAsync(() => {
+  it('should decrement the number of times remaining to show the banner', fakeAsync(() => {
     expect(
       cookieService.get(NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER)
     ).toBeUndefined();
@@ -204,7 +204,7 @@ describe('LanguageBannerComponent', () => {
     component.ngOnInit();
     tick();
 
-    expect(component.isVisible).toBeTrue();
+    expect(component.bannerIsVisible).toBeTrue();
 
     component.ngOnInit();
     tick();
@@ -215,30 +215,39 @@ describe('LanguageBannerComponent', () => {
     component.ngOnInit();
     tick();
 
-    expect(component.isVisible).toBeTrue();
+    expect(component.bannerIsVisible).toBeTrue();
 
     component.ngOnInit();
     tick();
 
-    expect(component.isVisible).toBeFalse();
+    expect(component.bannerIsVisible).toBeFalse();
   }));
 
-  it('should not displaye banner when the button is clicked', () => {
-    component.isVisible = true;
+  it('should not display banner when the "Got it!" button is clicked', () => {
+    component.bannerIsVisible = true;
     fixture.detectChanges();
 
-    const button = debugElement.query(By.css('.banner-button')).nativeElement;
-    button.click();
+    const bannerButton = debugElement.query(
+      By.css('.banner-button')
+    ).nativeElement;
+    bannerButton.click();
 
-    expect(component.isVisible).toBeFalse();
+    expect(component.bannerIsVisible).toBeFalse();
   });
 
   it('should set the NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER cookie to 0 when clicked', () => {
-    component.isVisible = true;
+    component.ngOnInit();
+    tick();
+
+    expect(cookieService.get(NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER)).toBe(
+      '4'
+    );
     fixture.detectChanges();
 
-    const button = debugElement.query(By.css('.banner-button')).nativeElement;
-    button.click();
+    const bannerButton = debugElement.query(
+      By.css('.banner-button')
+    ).nativeElement;
+    bannerButton.click();
 
     expect(cookieService.get(NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER)).toBe(
       '0'

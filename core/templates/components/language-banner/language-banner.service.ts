@@ -1,4 +1,4 @@
-// Copyright 2014 The Oppia Authors. All Rights Reserved.
+// Copyright 2025 The Oppia Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
  */
 
 import {Injectable} from '@angular/core';
-import {downgradeInjectable} from '@angular/upgrade/static';
 import {CookieService} from 'ngx-cookie';
 import {AppConstants} from 'app.constants';
 
@@ -44,16 +43,16 @@ export class LanguageBannerService {
     return true;
   }
 
-  removeLanguageBanner(): void {
+  markLanguageBannerAsDismissed(): void {
     if (
       this.hasAcceptedCookies() &&
       !(this.getLanguageBannerCookieNum() === 0)
     ) {
-      this.setLanguageBannerCookieNum(0);
+      this.setNumTimesRemainingToShowLanguageBanner(0);
     }
   }
 
-  setLanguageBannerCookieNum(n: number): void {
+  setNumTimesRemainingToShowLanguageBanner(n: number): void {
     this.cookieService.put(
       this.NUM_TIMES_REMAINING_TO_SHOW_LANGUAGE_BANNER,
       String(n)
@@ -66,7 +65,3 @@ export class LanguageBannerService {
     );
   }
 }
-
-angular
-  .module('oppia')
-  .factory('LanguageBannerService', downgradeInjectable(LanguageBannerService));

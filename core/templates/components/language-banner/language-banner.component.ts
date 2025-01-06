@@ -1,4 +1,4 @@
-// Copyright 2021 The Oppia Authors. All Rights Reserved.
+// Copyright 2025 The Oppia Authors. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 
 import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
 import {Component, OnInit} from '@angular/core';
-import {downgradeComponent} from '@angular/upgrade/static';
 import {UserService} from 'services/user.service';
 import {LanguageBannerService} from './language-banner.service';
 import {Router} from '@angular/router';
@@ -28,7 +27,7 @@ import {Router} from '@angular/router';
   templateUrl: './language-banner.component.html',
 })
 export class LanguageBannerComponent implements OnInit {
-  isVisible: boolean = false;
+  bannerIsVisible: boolean = false;
 
   constructor(
     private urlInterpolationService: UrlInterpolationService,
@@ -38,7 +37,7 @@ export class LanguageBannerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isVisible = false;
+    this.bannerIsVisible = false;
 
     this.userService.getUserInfoAsync().then(userInfo => {
       if (userInfo.isLoggedIn()) {
@@ -58,16 +57,23 @@ export class LanguageBannerComponent implements OnInit {
       }
 
       if (!(this.languageBannerService.getLanguageBannerCookieNum() === 0)) {
+        // Here the browser language is checked as we only want to notify users
+        // who’s browser language is not in english, that the site language can be changed.
         if (navigator.language.slice(0, 2) !== 'en') {
-          this.isVisible = true;
+          this.bannerIsVisible = true;
 
-          let remaining =
+          // Every time the banner is loaded this number is decreased by 1 starting at 4.
+          // This makes sure the banner is shown a maximum of 5 times for the user and
+          // then disappears forever.
+          let remainingTimesToShowLanguageBanner =
             this.languageBannerService.getLanguageBannerCookieNum();
-          if (!remaining) {
-            this.languageBannerService.setLanguageBannerCookieNum(4);
+          if (!remainingTimesToShowLanguageBanner) {
+            this.languageBannerService.setNumTimesRemainingToShowLanguageBanner(
+              4
+            );
           } else {
-            this.languageBannerService.setLanguageBannerCookieNum(
-              remaining - 1
+            this.languageBannerService.setNumTimesRemainingToShowLanguageBanner(
+              remainingTimesToShowLanguageBanner - 1
             );
           }
         }
@@ -76,18 +82,11 @@ export class LanguageBannerComponent implements OnInit {
   }
 
   onButtonClick(): void {
-    this.languageBannerService.removeLanguageBanner();
-    this.isVisible = false;
+    this.languageBannerService.markLanguageBannerAsDismissed();
+    this.bannerIsVisible = false;
   }
 
   getStaticImageUrl(imagePath: string): string {
     return this.urlInterpolationService.getStaticImageUrl(imagePath);
   }
 }
-
-angular
-  .module('oppia')
-  .directive(
-    'languageBannerComponent',
-    downgradeComponent({component: LanguageBannerComponent})
-  );
