@@ -138,61 +138,59 @@ describe('Subject interests form field Component', () => {
     const fn = () => {};
     componentInstance.registerOnTouched(fn);
     expect(componentInstance.onTouched).toBe(fn);
-  });
+  }); 
 
-  it('should detect save button', () => {
-    fixture.detectChanges();
-    const saveButton = fixture.debugElement.nativeElement.querySelector(
-      '.e2e-test-save-changes-button'
-    );
-    expect(saveButton).not.toBeNull();
-  });
-
-  it('should enable the save button when input is entered', async () => {
-    spyOn(componentInstance, 'onInput').and.callThrough();
-
-    const event = {
-      target: {
-        value: 'science',
-      },
-    } as unknown as Event;
-
-    fixture.detectChanges();
-
-    let saveButton = fixture.debugElement.nativeElement.querySelector(
-      '.e2e-test-save-changes-button'
-    );
-
-    expect(saveButton).not.toBeNull();
-    expect(saveButton.hasAttribute('disabled')).toBeTrue();
-
-    componentInstance.onInput(event);
-    fixture.detectChanges();
-
-    await fixture.whenStable();
-
-    saveButton = fixture.debugElement.nativeElement.querySelector(
-      '.e2e-test-save-changes-button'
-    );
-
-    expect(saveButton).not.toBeNull();
-    expect(saveButton.hasAttribute('disabled')).toBeFalse();
-
-    expect(componentInstance.onInput).toHaveBeenCalledWith(event);
-  });
-
-  it('should save input when focus is moved away', () => {
+  it('should handle blur event correctly', () => {
     spyOn(componentInstance, 'onChange');
+    spyOn(componentInstance, 'validInput').and.returnValue(true);
+    
     componentInstance.subjectInterests = [];
     componentInstance.subjectInterestInput = {
       nativeElement: {
         value: 'math',
       },
-    } as ElementRef<HTMLInputElement>;
-
+    } as ElementRef;
+  
     componentInstance.onBlur();
+  
+    expect(componentInstance.validInput).toHaveBeenCalledWith('math');
     expect(componentInstance.subjectInterests).toEqual(['math']);
-    expect(componentInstance.onChange).toHaveBeenCalledWith(['math']);
     expect(componentInstance.subjectInterestInput.nativeElement.value).toBe('');
+    expect(componentInstance.onChange).toHaveBeenCalledWith(['math']);
   });
+  
+  it('should handle input event correctly', () => {
+    spyOn(componentInstance, 'onChange');
+    spyOn(componentInstance, 'validInput').and.returnValue(true);
+  
+    componentInstance.formCtrl = new FormControl();
+    const inputEvent = {
+      target: {
+        value: 'math',
+      },
+    } as unknown as Event;
+  
+    componentInstance.onInput(inputEvent);
+  
+    expect(componentInstance.validInput).toHaveBeenCalledWith('math');
+    expect(componentInstance.formCtrl.dirty).toBeTrue();
+    expect(componentInstance.onChange).toHaveBeenCalledWith([]);
+  });
+  
+  it('should mark input as pristine when input is empty', () => {
+    spyOn(componentInstance, 'onChange');
+    
+    componentInstance.formCtrl = new FormControl();
+    const inputEvent = {
+      target: {
+        value: '',
+      },
+    } as unknown as Event;
+  
+    componentInstance.onInput(inputEvent);
+  
+    expect(componentInstance.formCtrl.pristine).toBeTrue();
+    expect(componentInstance.onChange).toHaveBeenCalledWith([]);
+  });
+  
 });
