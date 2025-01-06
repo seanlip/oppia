@@ -8,6 +8,7 @@ body:
       value: >
         Thanks for taking the time to file a CI failure report!
 
+
         If the CI failure is happening on a PR (and not on develop), please
         ensure you've read
         [this wiki page](https://github.com/oppia/oppia/wiki/If-CI-checks-fail-on-your-PR)
@@ -54,6 +55,7 @@ body:
       description: >
         For e2e CI failures, include screenshots/videos of the failure here,
         since these get wiped from GitHub Actions after a few days.
+
 
         To do this: Click on "Summary" at the top-left of the test log page,
         scroll to the bottom, download the appropriate
