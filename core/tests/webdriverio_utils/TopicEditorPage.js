@@ -276,13 +276,18 @@ var TopicEditorPage = function () {
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
     await waitFor.pageToFullyLoad();
     await browser.execute(() => {
-      window.scrollTo(0, 200);
-    });
-    await browser.execute(() => {
       window.scrollTo(0, document.body.scrollHeight);
     });
     var uncategorizedSkillItem = await $('.e2e-test-skill-item');
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
+    var isScrolledToBottom = await browser.execute(() => {
+      return window.innerHeight + window.scrollY >= document.body.scrollHeight;
+    });
+    console.log('Scrolled to bottom of the page:', isScrolledToBottom);
+    console.log('Uncategorized skill item:', uncategorizedSkillItem);
+    console.log('Uncategorized skill item:', uncategorizedSkillItem.length);
+    console.log('Uncategorized skill items:', uncategorizedSkillItems);
+    console.log('Uncategorized skill items:', uncategorizedSkillItems.length);
     await waitFor.visibilityOf(
       uncategorizedSkillItem,
       'Uncategorized skill item takes too long to appear.'
