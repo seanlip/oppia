@@ -1584,11 +1584,12 @@ class GenerateDummyStoriesTest(test_utils.GenericTestBase):
     def test_cannot_generate_dummy_stories_in_prod_mode(# pylint: disable=line-too-long
             self
         ) -> None:
-        self.login(self.QUESTION_ADMIN_EMAIL, is_super_admin=True)
+        self.login(
+            self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
         csrf_token = self.get_new_csrf_token()
 
         prod_mode_swap = self.swap(constants, 'DEV_MODE', False)
-        assert_raises_regexp_context_manager = self.assertRaisesRegex(
+        assert_raises_regex = self.assertRaisesRegex(
             Exception, 'Cannot generate dummy stories in production.')
 
         topic = topic_domain.Topic.create_default_topic(
@@ -1601,7 +1602,7 @@ class GenerateDummyStoriesTest(test_utils.GenericTestBase):
             ), topic
         )
 
-        with assert_raises_regexp_context_manager, prod_mode_swap:
+        with assert_raises_regex, prod_mode_swap:
             self.post_json(
                 '/adminhandler', {
                     'action': 'generate_dummy_stories',
@@ -1616,12 +1617,15 @@ class GenerateDummyStoriesTest(test_utils.GenericTestBase):
     def test_raises_error_if_not_curriculum_admin(# pylint: disable=line-too-long
             self
         ) -> None:
-        self.login(
-            self.CURRICULUM_ADMIN_EMAIL, is_super_admin=True)
+        user_email = 'user1@example.com'
+        username = 'user1'
+        self.signup(user_email, username)
+        self.login(user_email, is_super_admin=True)
         csrf_token = self.get_new_csrf_token()
 
-        assert_raises_regexp = self.assertRaisesRegex(
-            Exception, 'User must be a curriculum admin in order to generate stories.')
+        assert_raises_regex = self.assertRaisesRegex(
+            Exception, 'User \'user1\' must be a curriculum admin'
+            ' in order to generate stories.')
 
         topic = topic_domain.Topic.create_default_topic(
             'topic', 'topic_name', 'url',
@@ -1633,7 +1637,7 @@ class GenerateDummyStoriesTest(test_utils.GenericTestBase):
             ), topic
         )
 
-        with assert_raises_regexp:
+        with assert_raises_regex:
             self.post_json(
                 '/adminhandler', {
                     'action': 'generate_dummy_stories',
