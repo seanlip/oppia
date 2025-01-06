@@ -262,15 +262,13 @@ export class AdminDevModeActivitiesTabComponent implements OnInit {
     this.adminTaskManagerService.startTask();
     this.setStatusMessage.emit('Processing...');
     this.adminBackendApiService
-      .generateDummyStoriesAsync(  
+      .generateDummyStoriesAsync(
         selectedTopic.id,
-        this.numDummyStoriesToGenerate 
+        this.numDummyStoriesToGenerate
       )
       .then(
         () => {
-          this.setStatusMessage.emit(
-            'Dummy stories generated successfully.'
-          );
+          this.setStatusMessage.emit('Dummy stories generated successfully.');
         },
         errorResponse => {
           this.setStatusMessage.emit('Server error: ' + errorResponse);

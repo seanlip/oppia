@@ -298,7 +298,7 @@ class AdminIntegrationTest(test_utils.GenericTestBase):
                 }, csrf_token=csrf_token)
 
         self.logout()
-    
+
     def test_without_num_dummy_stories_to_generate_action_is_not_performed( # pylint: disable=line-too-long
         self
     ) -> None:

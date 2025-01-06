@@ -578,7 +578,7 @@ class AdminHandler(
                         'The \'num_dummy_stories_to_generate\' must'
                         ' be provided when the action is '
                         'generate_dummy_stories.'
-                    ) 
+                    )
                 self._generate_dummy_stories(
                     topic_id, num_dummy_stories_to_generate)
             elif action == 'upload_topic_similarities':
@@ -1746,7 +1746,7 @@ class AdminHandler(
         else:
             raise Exception(
                 'Cannot generate dummy question suggestion in production.')
-    
+
     def _generate_dummy_stories(
             self, topic_id: str,
             num_dummy_stories_to_generate: int) -> None:
@@ -1758,7 +1758,7 @@ class AdminHandler(
             Exception. User does not have enough rights to generate data.
         """
         if constants.DEV_MODE:
-            if (feconf.ROLE_ID_CURRICULUM_ADMIN not in self.user.roles):
+            if feconf.ROLE_ID_CURRICULUM_ADMIN not in self.user.roles:
                 raise Exception((
                     'User \'%s\' must be a curriculum admin'
                     ' in order to generate stories.'
@@ -1768,10 +1768,11 @@ class AdminHandler(
                 url_fragment = ''.join(random.choices(
                     string.ascii_lowercase, k=10))
                 story = story_domain.Story.create_default_story(
-                    story_id, f'dummy_title{i}', 'description', 
+                    story_id, f'dummy_title{i}', 'description',
                     topic_id, url_fragment)
-                story_services.save_new_story(self.user_id, story)
-                topic_services.add_canonical_story(self.user_id, topic_id, story_id)
+                story_services.save_new_story(str(self.user_id), story)
+                topic_services.add_canonical_story(
+                    str(self.user_id), topic_id, story_id)
         else:
             raise Exception(
                 'Cannot generate dummy stories in production.')

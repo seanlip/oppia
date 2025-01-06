@@ -58,7 +58,7 @@ describe('Admin dev mode activities tab', () => {
         id: 'topid_id',
         name: 'topic_name',
         description: 'description',
-      }
+      },
     ],
   } as AdminPageData;
   let mockConfirmResult: (val: boolean) => void;
@@ -767,31 +767,26 @@ describe('Admin dev mode activities tab', () => {
       });
     });
 
-    it(
-      'should show error message when dummy stories are not generated',
-      async () => {
-        spyOn(
-          adminBackendApiService,
-          'generateDummyStoriesAsync'
-        ).and.returnValue(
-          Promise.reject('Dummy stories not generated.')
-        );
-        spyOn(component.setStatusMessage, 'emit');
+    it('should show error message when dummy stories are not generated', async () => {
+      spyOn(
+        adminBackendApiService,
+        'generateDummyStoriesAsync'
+      ).and.returnValue(Promise.reject('Dummy stories not generated.'));
+      spyOn(component.setStatusMessage, 'emit');
 
-        component.numDummyStoriesToGenerate = 2;
+      component.numDummyStoriesToGenerate = 2;
 
-        component.generateDummyStories('0');
+      component.generateDummyStories('0');
 
+      expect(component.setStatusMessage.emit).toHaveBeenCalledWith(
+        'Processing...'
+      );
+      fixture.whenStable().then(() => {
         expect(component.setStatusMessage.emit).toHaveBeenCalledWith(
-          'Processing...'
+          'Server error: Dummy stories not generated.'
         );
-        fixture.whenStable().then(() => {
-          expect(component.setStatusMessage.emit).toHaveBeenCalledWith(
-            'Server error: Dummy stories not generated.'
-          );
-        });
-      }
-    );
+      });
+    });
   });
 
   describe('.reloadCollection', () => {
