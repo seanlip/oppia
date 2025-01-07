@@ -162,7 +162,7 @@ describe('LanguageBannerComponent', () => {
     expect(component.bannerIsVisible).toBeFalse();
   }));
 
-  it('should be dislayed if cookies are accepted, browser is not in english and user is not on the sign in page', fakeAsync(() => {
+  it("should be dislayed if cookies are accepted, browser's language is not english and user is not on the sign in page", fakeAsync(() => {
     component.ngOnInit();
     tick();
 
@@ -223,7 +223,7 @@ describe('LanguageBannerComponent', () => {
     expect(component.bannerIsVisible).toBeFalse();
   }));
 
-  it('should not display banner when the "Got it!" button is clicked', () => {
+  it('should not display banner when the banner button is clicked', () => {
     component.bannerIsVisible = true;
     fixture.detectChanges();
 
