@@ -102,6 +102,7 @@ def send_email_to_recipients(
         raise Exception(
             'Mailgun API key is not available. '
             'Here is the email that failed sending: %s' % email_msg)
+    assert isinstance(mailgun_api_key, str)
 
     mailgun_domain_name = (
         platform_parameter_services.get_platform_parameter_value(
@@ -114,6 +115,7 @@ def send_email_to_recipients(
         raise Exception(
             'Mailgun domain name is not set. '
             'Here is the email that failed sending: %s' % email_msg)
+    assert isinstance(mailgun_domain_name, str)
 
     # To send bulk emails we pass list of recipients in 'to' paarameter of
     # post data. Maximum limit of recipients per request is 1000.
@@ -142,7 +144,7 @@ def send_email_to_recipients(
         # email to each recipient (This is intended to be a workaround for
         # sending individual emails).
         data['recipient_variables'] = recipient_variables or {}
-        assert isinstance(mailgun_domain_name, str)
+
         server = 'https://api.mailgun.net/v3/%s/messages' % (
             mailgun_domain_name
         )
