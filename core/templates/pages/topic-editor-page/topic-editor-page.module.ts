@@ -43,6 +43,9 @@ import {ToastrModule} from 'ngx-toastr';
 import {TopicEditorPageRootComponent} from './topic-editor-page-root.component';
 import {TopicEditorAuthGuard} from './topic-editor-auth.guard';
 import {TopicPlayerViewerCommonModule} from 'pages/topic-viewer-page/topic-viewer-player-common.module';
+import {StoryCreationBackendApiService} from 'components/entity-creation-services/story-creation-backend-api.service';
+import {EntityCreationService} from './services/entity-creation.service';
+import {CreateNewSkillModalService} from './services/create-new-skill-modal.service';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -97,6 +100,11 @@ import {TopicPlayerViewerCommonModule} from 'pages/topic-viewer-page/topic-viewe
     TopicEditorTabComponent,
     TopicEditorPageComponent,
     SubtopicEditorTabComponent,
-  ]
+  ],
+  providers: [
+    StoryCreationBackendApiService,
+    EntityCreationService,
+    CreateNewSkillModalService,
+  ],
 })
 export class TopicEditorPageModule {}
