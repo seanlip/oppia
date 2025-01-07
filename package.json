@@ -15,7 +15,8 @@
     "url": "https://github.com/oppia/oppia/issues"
   },
   "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown"
+    "**/*": "prettier --write --ignore-unknown",
+    "*.py": "yapf --i"
   },
   "homepage": "https://github.com/oppia/oppia#readme",
   "devDependencies": {
