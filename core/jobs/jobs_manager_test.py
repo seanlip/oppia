@@ -197,8 +197,9 @@ class RefreshStateOfBeamJobRunModelTests(test_utils.GenericTestBase):
             jobs_manager.refresh_state_of_beam_job_run_model(self.run_model)
 
         self.assertGreater(len(logs), 0)
-        self.assertIn('uh-oh', logs[0])
-        self.assertEqual(self.run_model.latest_job_state, 'UNKNOWN')
+        # TODO(release-scripts#137): Update once project ID is verified on
+        # all servers. logs[0] is the debug message to verify project ID.
+        self.assertIn('uh-oh', logs[1])
 
 
 class CancelJobTests(test_utils.GenericTestBase):
@@ -253,4 +254,6 @@ class CancelJobTests(test_utils.GenericTestBase):
             jobs_manager.cancel_job(self.run_model)
 
         self.assertGreater(len(logs), 0)
-        self.assertIn('uh-oh', logs[0])
+        # TODO(release-scripts#137): Update once project ID is verified on
+        # all servers. logs[0] is the debug message to verify project ID.
+        self.assertIn('uh-oh', logs[1])

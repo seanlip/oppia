@@ -896,7 +896,7 @@ class SignupEmailTests(test_utils.EmailTestBase):
             (param_list.ParamName.EMAIL_FOOTER, EMAIL_FOOTER),
             (
                 param_list.ParamName.SIGNUP_EMAIL_SUBJECT_CONTENT,
-                ''
+                'dummy subject'
             ),
             (
                 param_list.ParamName.SIGNUP_EMAIL_BODY_CONTENT,

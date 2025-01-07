@@ -264,7 +264,17 @@ class EmailServicesTest(test_utils.EmailTestBase):
                 'subject', 'body', 'html', bcc_admin=True)
 
     @test_utils.set_platform_parameters(
-        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True)]
+        [
+            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
+            (
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS,
+                'testadmin@example.com'
+            ),
+            (
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+                'system@example.com'
+            )
+        ]
     )
     def test_loggable_email_string_generation(self) -> None:
         """Tests that loggable email string is generated correctly."""

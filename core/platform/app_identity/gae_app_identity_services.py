@@ -48,7 +48,7 @@ def get_application_id() -> str:
         platform_parameter_services.get_platform_parameter_value(
             platform_parameter_list.ParamName.OPPIA_PROJECT_ID.value))
     assert isinstance(oppia_project_id, str)
-    if not len(oppia_project_id):
+    if not oppia_project_id:
         raise ValueError('Value None for application id is invalid.')
     return oppia_project_id
 
