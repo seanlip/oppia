@@ -58,14 +58,12 @@ KEYS_UPDATED_IN_FECONF: Final = [
     b'EMAIL_SERVICE_PROVIDER', b'SYSTEM_EMAIL_NAME', b'MAILGUN_DOMAIN_NAME'
 ]
 KEYS_UPDATED_IN_CONSTANTS: Final = [
-    b'SITE_FEEDBACK_FORM_URL', b'FIREBASE_CONFIG_API_KEY',
-    b'FIREBASE_CONFIG_APP_ID', b'FIREBASE_CONFIG_AUTH_DOMAIN',
-    b'FIREBASE_CONFIG_MESSAGING_SENDER_ID', b'FIREBASE_CONFIG_PROJECT_ID',
-    b'FIREBASE_CONFIG_STORAGE_BUCKET', b'FIREBASE_CONFIG_GOOGLE_CLIENT_ID'
+    b'SITE_FEEDBACK_FORM_URL', b'FIREBASE_CONFIG_API_KEY', b'FIREBASE_CONFIG_APP_ID',
+    b'FIREBASE_CONFIG_AUTH_DOMAIN', b'FIREBASE_CONFIG_MESSAGING_SENDER_ID',
+    b'FIREBASE_CONFIG_PROJECT_ID', b'FIREBASE_CONFIG_STORAGE_BUCKET',
+    b'FIREBASE_CONFIG_GOOGLE_CLIENT_ID'
 ]
-NPX_PATH: Final = os.path.join(
-    os.pardir, 'oppia_tools', 'node-16.13.0', 'bin', 'npx'
-)
+NPX_PATH: Final = os.path.join(os.pardir, 'oppia_tools', 'node-16.13.0', 'bin', 'npx')
 
 
 def install_hook() -> None:
@@ -162,8 +160,7 @@ def check_changes(filetype: str) -> bool:
     else:
         return True
 
-    diff_output = subprocess.check_output(['git', 'diff',
-                                           filepath])[:-1].split(b'\n')
+    diff_output = subprocess.check_output(['git', 'diff', filepath])[:-1].split(b'\n')
     for line in diff_output:
         if (line.startswith(b'-') or line.startswith(b'+')) and any(
                 key in line for key in keys_to_check):
