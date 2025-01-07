@@ -1093,7 +1093,7 @@ export class ExplorationEditor extends BaseUser {
         await this.page.waitForSelector(multipleChoiceResponseDropdown, {
           visible: true,
         });
-          await this.clickOn(multipleChoiceResponseDropdown);
+        await this.clickOn(multipleChoiceResponseDropdown);
         await this.page.waitForSelector(multipleChoiceResponseOption, {
           visible: true,
         });
