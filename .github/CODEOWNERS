@@ -197,7 +197,7 @@
 /scripts/linters/codeowner_linter*.py @oppia/dev-workflow-reviewers
 /scripts/linters/pylint_extensions*.py @oppia/dev-workflow-reviewers
 /scripts/linters/python_linter*.py @oppia/dev-workflow-reviewers
-
+/.style.yapf @oppia/dev-workflow-reviewers
 
 # Exploration project.
 /core/controllers/editor*.py @oppia/lace-backend-reviewers
