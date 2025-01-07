@@ -17,6 +17,7 @@
  */
 
 import {Injectable} from '@angular/core';
+import {downgradeInjectable} from '@angular/upgrade/static';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {SkillCreationBackendApiService} from 'domain/skill/skill-creation-backend-api.service';
 import {TopicsAndSkillsDashboardBackendApiService} from 'domain/topics_and_skills_dashboard/topics-and-skills-dashboard-backend-api.service';
@@ -107,3 +108,10 @@ export class CreateNewSkillModalService {
     );
   }
 }
+
+angular
+  .module('oppia')
+  .service(
+    'CreateNewSkillModalService',
+    downgradeInjectable(CreateNewSkillModalService)
+  );

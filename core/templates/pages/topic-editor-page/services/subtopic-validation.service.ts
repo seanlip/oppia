@@ -17,6 +17,7 @@
  */
 
 import {Injectable} from '@angular/core';
+import {downgradeInjectable} from '@angular/upgrade/static';
 import {TopicEditorStateService} from './topic-editor-state.service';
 import {AppConstants} from 'app.constants';
 
@@ -50,3 +51,10 @@ export class SubtopicValidationService {
     return this._VALID_URL_FRAGMENT_REGEX.test(urlFragment);
   }
 }
+
+angular
+  .module('oppia')
+  .factory(
+    'SubtopicValidationService',
+    downgradeInjectable(SubtopicValidationService)
+  );

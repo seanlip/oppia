@@ -19,6 +19,7 @@
  */
 
 import {EventEmitter, Injectable} from '@angular/core';
+import {downgradeInjectable} from '@angular/upgrade/static';
 import {UndoRedoService} from 'domain/editor/undo_redo/undo-redo.service';
 import {Rubric, RubricBackendDict} from 'domain/skill/rubric.model';
 import {SkillSummaryBackendDict} from 'domain/skill/skill-summary.model';
@@ -763,3 +764,10 @@ export class TopicEditorStateService {
     return this._subtopicPageLoadedEventEmitter;
   }
 }
+
+angular
+  .module('oppia')
+  .factory(
+    'TopicEditorStateService',
+    downgradeInjectable(TopicEditorStateService)
+  );
