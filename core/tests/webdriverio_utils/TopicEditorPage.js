@@ -284,6 +284,7 @@ var TopicEditorPage = function () {
   };
 
   this.expectNumberOfSubtopicsToBe = async function (count) {
+    browser.pause(15000);
     var subtopics = await subtopicsSelector();
     expect(subtopics.length).toEqual(count);
   };
