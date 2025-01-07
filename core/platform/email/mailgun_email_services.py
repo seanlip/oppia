@@ -102,7 +102,6 @@ def send_email_to_recipients(
         raise Exception(
             'Mailgun API key is not available. '
             'Here is the email that failed sending: %s' % email_msg)
-    assert isinstance(mailgun_api_key, str)
 
     mailgun_domain_name = (
         platform_parameter_services.get_platform_parameter_value(
