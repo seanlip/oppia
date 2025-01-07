@@ -184,7 +184,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: diff-snapshots-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
-          path: /home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots-${{ steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME }}.txt
+          path: /home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots
+          if-no-files-found: warn
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{
           failure() &&
@@ -242,7 +243,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: diff-snapshots-${{steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME}}
-          path: /home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots-${{ steps.generate_suite_name_for_artifacts.outputs.MODIFIED_SUITE_NAME }}.txt
+          path: /home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots
+          if-no-files-found: warn
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{
           failure() &&
