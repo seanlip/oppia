@@ -518,7 +518,8 @@ GOOGLE_APP_ENGINE_REGION = 'us-central1'
 
 # This flag is used for distinguishing the prod/test environments for feature
 # gating.
-ENV_IS_OPPIA_ORG_PRODUCTION_SERVER = bool(OPPIA_PROJECT_ID == 'oppiaserver')
+ENV_IS_OPPIA_ORG_PRODUCTION_SERVER = bool(
+    os.environ['GOOGLE_CLOUD_PROJECT'] == 'oppiaserver')
 
 DATAFLOW_TEMP_LOCATION_TEMPLATE = 'gs://%s-beam-jobs-temp/'
 DATAFLOW_STAGING_LOCATION_TEMPLATE = 'gs://%s-beam-jobs-staging/'
