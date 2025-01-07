@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-22.04
     if: ${{ fromJSON(needs.check_test_suites_to_run.outputs.TEST_SUITES_TO_RUN).e2e.count > 0 }}
     strategy:
-      max-parellel: 10
+      max-parallel: 10
       matrix:
         num_runs: ${{ fromJson(needs.generate-job-strategy-matrix.outputs.job-strategy-matrix) }}
         suite:
