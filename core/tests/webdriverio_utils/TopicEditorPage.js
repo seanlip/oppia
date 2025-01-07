@@ -23,7 +23,6 @@ var general = require('../webdriverio_utils/general.js');
 var waitFor = require('./waitFor.js');
 var workflow = require('../webdriverio_utils/workflow.js');
 var forms = require('../webdriverio_utils/forms.js');
-const { default: waitForExist } = require('webdriverio/build/commands/element/waitForExist.js');
 
 var TopicEditorPage = function () {
   var EDITOR_URL_PREFIX = '/topic_editor/';
@@ -113,14 +112,6 @@ var TopicEditorPage = function () {
     return $$('.e2e-test-subtopic-column');
   };
   var subtopicDescriptionEditor = $('.e2e-test-subtopic-description-editor');
-  var subtopicsSelector = async function (count = 0) {
-    if (count) {
-      let singleSubtopic = $('.e2e-test-subtopic');
-      await waitFor.presenceOf(
-        singleSubtopic,
-        'Subtopic taking too long to appear'
-      );
-    }
     return $$('.e2e-test-subtopic');
   };
   var subtopicTitleField = $('.e2e-test-subtopic-title-field');
@@ -274,7 +265,7 @@ var TopicEditorPage = function () {
   };
 
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
-    // await browser.pause(60000);
+    await browser.pause(60000);
     var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
     await browser.pause(30000);
     expect(uncategorizedSkillItems.length).toEqual(count);
@@ -292,7 +283,7 @@ var TopicEditorPage = function () {
   };
 
   this.expectNumberOfSubtopicsToBe = async function (count) {
-    var subtopics = await subtopicsSelector(count);
+    var subtopics = await subtopicsSelector();
     expect(subtopics.length).toEqual(count);
   };
 
