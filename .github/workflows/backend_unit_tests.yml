@@ -22,8 +22,8 @@ jobs:
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
-      - name: Merge develop and set up Python
-        uses: ./.github/actions/merge-develop-and-setup-python
+      - name: Merge develop and set up dependencies
+        uses: ./.github/actions/merge-develop-and-set-up-dependencies
       - name: Run backend associated test file check
         run: python -m scripts.check_backend_associated_test_file
       - name: Report failure if failed on oppia/oppia develop branch
@@ -41,11 +41,8 @@ jobs:
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
-      - name: Merge develop and set up Python
-        uses: ./.github/actions/merge-develop-and-setup-python
-      - name: Install Oppia dependencies
-        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        uses: ./.github/actions/install-oppia-dependencies
+      - name: Merge develop and set up dependencies
+        uses: ./.github/actions/merge-develop-and-set-up-dependencies
       - name: Run backend test shard
         id: run_backend_test_shard
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
@@ -77,14 +74,8 @@ jobs:
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
-      - name: Merge develop and set up Python
-        uses: ./.github/actions/merge-develop-and-setup-python
-      - name: Install coverage
-        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        run: pip install coverage
-      - name: Install Oppia dependencies
-        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        uses: ./.github/actions/install-oppia-dependencies
+      - name: Merge develop and set up dependencies
+        uses: ./.github/actions/merge-develop-and-set-up-dependencies
       - name: Download coverage report for shard 1
         if: startsWith(github.head_ref, 'update-changelog-for-release') == false
         uses: actions/download-artifact@v4
@@ -158,8 +149,8 @@ jobs:
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
-      - name: Merge develop and set up Python
-        uses: ./.github/actions/merge-develop-and-setup-python
+      - name: Merge develop and set up dependencies
+        uses: ./.github/actions/merge-develop-and-set-up-dependencies
       - name: Download time report for shard 1
         uses: actions/download-artifact@v4
         with:

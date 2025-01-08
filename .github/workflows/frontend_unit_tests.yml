@@ -48,8 +48,8 @@ jobs:
     steps:
       - name: Checkout repository so that local actions can be used
         uses: actions/checkout@v4
-      - name: Merge develop and set up Python
-        uses: ./.github/actions/merge-develop-and-setup-python
+      - name: Merge develop and set up dependencies
+        uses: ./.github/actions/merge-develop-and-set-up-dependencies
       - name: Describe filesystem
         run: |
           pwd
@@ -59,8 +59,6 @@ jobs:
           echo $GITHUB_WORKSPACE
       - name: Suppress ENOSPC error from chokidar file watcher. See https://stackoverflow.com/a/32600959.
         run: echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-      - name: Install Oppia dependencies
-        uses: ./.github/actions/install-oppia-dependencies
       - name: Run frontend tests (attempt ${{ matrix.num_runs }})
         id: run_frontend_tests
         run: python -m scripts.run_frontend_tests --check_coverage
