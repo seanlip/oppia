@@ -24,13 +24,10 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-      - name: Initialize Docker containers
-        run: |
-          make build
-          make stop
+      - name: Install Oppia dependencies
+        uses: ./.github/actions/install-oppia-dependencies
       - name: Run Mypy type checks
-        if: startsWith(github.head_ref, 'update-changelog-for-release') == false
-        run: make run_tests.mypy
+        run: python -m scripts.run_mypy_checks
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
         uses: ./.github/actions/send-webhook-notification
@@ -45,14 +42,12 @@ jobs:
         uses: actions/checkout@v4
       - name: Merge develop and set up Python
         uses: ./.github/actions/merge-develop-and-setup-python
-      - name: Install Chrome
-        uses: ./.github/actions/install-chrome
-      - name: Initialize Docker Containers
-        uses: ./.github/actions/install-oppia-dependencies-docker
+      - name: Install Oppia dependencies
+        uses: ./.github/actions/install-oppia-dependencies
       - name: Run typescript tests
-        run: make run_tests.typescript
+        run: python -m scripts.run_typescript_checks
       - name: Run typescript tests in strict mode
-        run: make run_tests.typescript PYTHON_ARGS="--strict_checks"
+        run: python -m scripts.run_typescript_checks --strict_checks
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{ failure() && github.event_name == 'push' && github.repository == 'oppia/oppia' && github.ref == 'refs/heads/develop'}}
         uses: ./.github/actions/send-webhook-notification
