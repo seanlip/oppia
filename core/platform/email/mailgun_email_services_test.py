@@ -22,7 +22,6 @@ import os
 import textwrap
 from unittest import mock
 
-from core import feconf
 from core.domain import platform_parameter_list
 from core.platform import models
 from core.platform.email import mailgun_email_services
