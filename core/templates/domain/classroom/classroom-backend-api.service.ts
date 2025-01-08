@@ -248,6 +248,7 @@ export class ClassroomBackendApiService {
                 topicIdToPrerequisiteTopicIds:
                   response.classroom_dict.topic_id_to_prerequisite_topic_ids,
                 isPublished: response.classroom_dict.is_published,
+                isDiagnosticTestEnabled: response.classroom_dict.is_diagnostic_test_enabled ?? false,
                 thumbnailData: response.classroom_dict.thumbnail_data,
                 bannerData: response.classroom_dict.banner_data,
               },
@@ -285,6 +286,7 @@ export class ClassroomBackendApiService {
               classroomDict.topic_id_to_prerequisite_topic_ids,
             teaser_text: classroomDict.teaser_text,
             is_published: classroomDict.is_published,
+            is_diagnostic_test_enabled: classroomDict.is_diagnostic_test_enabled,
             thumbnail_data: {
               filename: classroomDict.thumbnail_data.filename,
               bg_color: classroomDict.thumbnail_data.bg_color,

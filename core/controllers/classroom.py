@@ -134,7 +134,8 @@ class ClassroomDataHandler(
             'thumbnail_data': classroom.thumbnail_data.to_dict(),
             'banner_data': classroom.banner_data.to_dict(),
             'public_classrooms_count': public_classrooms_count,
-            'classroom_id': classroom.classroom_id
+            'classroom_id': classroom.classroom_id,
+            'is_diagnostic_test_enabled': classroom.is_diagnostic_test_enabled
         })
         self.render_json(self.values)
 
@@ -368,7 +369,13 @@ class ClassroomHandler(
                 classroom.index = cls.index
 
         classroom_config_services.update_classroom(
-            classroom, strict=classroom.is_published
+           classroom_id=classroom['classroom_id'],
+           name=classroom['name'],
+           url_fragment=classroom['url_fragment'],
+           course_details=classroom['course_details'],
+           topic_list_intro=classroom['topic_list_intro'],
+           is_diagnostic_test_enabled=classroom['is_diagnostic_test_enabled'],
+           strict=classroom['is_published']
         )
         self.render_json(self.values)
 
