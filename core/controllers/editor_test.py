@@ -3800,13 +3800,16 @@ class ImageUploadHandlerTests(BaseEditorControllerTests):
             upload_files=[('image', 'unused_filename', raw_image)]
         )
 
-        self.assertIn('Schema validation for \'filename\' failed', response['error'])
+        self.assertIn('Schema validation for \'filename\' failed',
+                      response['error']
+                    )
 
         fs = fs_services.GcsFileSystem(feconf.ENTITY_TYPE_EXPLORATION, exp_id)
         filepath = '%s/%s' % (filename_prefix, filename)
         self.assertFalse(fs.isfile(filepath))
 
         self.logout()
+
 
 class EntityTranslationsBulkHandlerTest(test_utils.GenericTestBase):
     """Test fetching all translations of a given entity in bulk."""
