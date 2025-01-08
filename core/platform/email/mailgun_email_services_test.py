@@ -23,6 +23,7 @@ import textwrap
 from unittest import mock
 
 from core import feconf
+from core.domain import platform_parameter_list
 from core.platform import models
 from core.platform.email import mailgun_email_services
 from core.tests import test_utils
@@ -71,7 +72,7 @@ class EmailTests(test_utils.GenericTestBase):
         html_body = 'Hi abc,<br> 😂'
         attachments = None
 
-        with self.swap_api_key_secrets_return_secret, swap_domain:
+        with self.swap_api_key_secrets_return_secret:
             resp = mailgun_email_services.send_email_to_recipients(
                 sender_email,
                 recipient_emails,
@@ -119,7 +120,7 @@ class EmailTests(test_utils.GenericTestBase):
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write('This is a test file.')
 
-        with self.swap_api_key_secrets_return_secret, swap_domain:
+        with self.swap_api_key_secrets_return_secret:
             resp = mailgun_email_services.send_email_to_recipients(
                 sender_email,
                 recipient_emails,
@@ -165,7 +166,7 @@ class EmailTests(test_utils.GenericTestBase):
         reply_to = 'abc'
         attachments = None
 
-        with self.swap_api_key_secrets_return_secret, swap_domain:
+        with self.swap_api_key_secrets_return_secret:
             resp = mailgun_email_services.send_email_to_recipients(
                 sender_email,
                 recipient_emails,
@@ -219,7 +220,7 @@ class EmailTests(test_utils.GenericTestBase):
         reply_to = 'abc'
         attachments = None
 
-        with self.swap_api_key_secrets_return_secret, swap_domain:
+        with self.swap_api_key_secrets_return_secret:
             resp = mailgun_email_services.send_email_to_recipients(
                 sender_email,
                 recipient_emails,
@@ -268,7 +269,7 @@ class EmailTests(test_utils.GenericTestBase):
         html_body = 'Hi abc,<br> 😂'
         attachments = None
 
-        with self.swap_api_key_secrets_return_secret, swap_domain:
+        with self.swap_api_key_secrets_return_secret:
             resp = mailgun_email_services.send_email_to_recipients(
                 sender_email,
                 recipient_emails,
@@ -391,7 +392,7 @@ class EmailTests(test_utils.GenericTestBase):
         html_body = 'Hi abc,<br> 😂'
         attachments = None
 
-        with self.swap_api_key_secrets_return_secret, swap_domain:
+        with self.swap_api_key_secrets_return_secret:
             resp = mailgun_email_services.send_email_to_recipients(
                 sender_email,
                 recipient_emails,
