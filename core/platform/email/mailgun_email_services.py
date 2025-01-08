@@ -142,7 +142,10 @@ def send_email_to_recipients(
         # 'recipient-variable' in post data forces mailgun to send individual
         # email to each recipient (This is intended to be a workaround for
         # sending individual emails).
-        data['recipient_variables'] = recipient_variables or dict()
+        if recipient_variables:
+            data['recipient_variables'] = recipient_variables
+        else:
+            data['recipient_variables'] = {}
         server = 'https://api.mailgun.net/v3/%s/messages' % (
             mailgun_domain_name
         )
