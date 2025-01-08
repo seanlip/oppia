@@ -696,7 +696,7 @@ class GoogleCloudSdkInstallationTests(test_utils.GenericTestBase):
             self.check_function_calls['extractall_is_called'] = True
         def mock_close(unused_self: str) -> None:
             self.check_function_calls['close_is_called'] = True
-        def mock_copytree(src: str, dst: str) -> None:
+        def mock_copytree(unused_src: str, unused_dst: str) -> None:  # pylint: disable=unused-argument
             self.check_function_calls['copytree_is_called'] = True
         def mock_isdir(path: str) -> bool:
             if path.endswith(('google/appengine', 'google/pyglib')):
@@ -714,7 +714,7 @@ class GoogleCloudSdkInstallationTests(test_utils.GenericTestBase):
         with self.remove_swap, self.makedirs_swap, self.print_swap:
             with self.url_retrieve_swap, exists_swap, isdir_swap:
                 with open_swap, extractall_swap, close_swap, copytree_swap:
-                        install_third_party_libs.install_gcloud_sdk()
+                    install_third_party_libs.install_gcloud_sdk()
         self.assertEqual(
             self.check_function_calls, self.expected_check_function_calls)
         self.assertTrue(
