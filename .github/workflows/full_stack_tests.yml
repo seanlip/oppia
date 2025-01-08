@@ -187,7 +187,6 @@ jobs:
           # Note: The path must be kept in sync with the one specified in
           # core/tests/puppeteer-acceptance-tests/utilities/common/puppeteer-utils.ts
           path: /home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots
-          if-no-files-found: warn
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{
           failure() &&
@@ -248,7 +247,6 @@ jobs:
           # Note: The path must be kept in sync with the one specified in
           # core/tests/puppeteer-acceptance-tests/utilities/common/puppeteer-utils.ts
           path: /home/runner/work/oppia/oppia/core/tests/puppeteer-acceptance-tests/diff-snapshots
-          if-no-files-found: warn
       - name: Report failure if failed on oppia/oppia develop branch
         if: ${{
           failure() &&
