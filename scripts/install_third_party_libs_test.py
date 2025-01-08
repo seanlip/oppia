@@ -660,7 +660,7 @@ class GoogleCloudSdkInstallationTests(test_utils.GenericTestBase):
         self.raise_error = False
         def mock_remove(unused_path: str) -> None:
             self.check_function_calls['remove_is_called'] = True
-        def mock_makedirs(unused_path: str) -> None:
+        def mock_makedirs(unused_path: str, exist_ok=False) -> None:
             self.check_function_calls['makedirs_is_called'] = True
         self.print_arr: List[str] = []
         def mock_print(msg: str) -> None:
