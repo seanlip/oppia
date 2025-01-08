@@ -679,9 +679,11 @@ class GoogleCloudSdkInstallationTests(test_utils.GenericTestBase):
         self.check_function_calls['open_is_called'] = False
         self.check_function_calls['extractall_is_called'] = False
         self.check_function_calls['close_is_called'] = False
+        self.check_function_calls['copytree_is_called'] = False
         self.expected_check_function_calls['open_is_called'] = True
         self.expected_check_function_calls['extractall_is_called'] = True
         self.expected_check_function_calls['close_is_called'] = True
+        self.expected_check_function_calls['copytree_is_called'] = True
         def mock_exists(path: str) -> bool:
             if path == common.GOOGLE_CLOUD_SDK_HOME:
                 return False
@@ -694,16 +696,25 @@ class GoogleCloudSdkInstallationTests(test_utils.GenericTestBase):
             self.check_function_calls['extractall_is_called'] = True
         def mock_close(unused_self: str) -> None:
             self.check_function_calls['close_is_called'] = True
+        def mock_copytree(src: str, dst: str) -> None:
+            self.check_function_calls['copytree_is_called'] = True
+        def mock_isdir(path: str) -> bool:
+            if path.endswith(('google/appengine', 'google/pyglib')):
+                return False
+            return True
+
         exists_swap = self.swap(os.path, 'exists', mock_exists)
         open_swap = self.swap(tarfile, 'open', mock_open)
         extractall_swap = self.swap(
             tarfile.TarFile, 'extractall', mock_extractall)
         close_swap = self.swap(tarfile.TarFile, 'close', mock_close)
+        copytree_swap = self.swap(shutil, 'copytree', mock_copytree)
+        isdir_swap = self.swap(os.path, 'isdir', mock_isdir)
 
-        with self.remove_swap, self.makedirs_swap:
-            with self.print_swap, self.url_retrieve_swap, exists_swap:
-                with open_swap, extractall_swap, close_swap:
-                    install_third_party_libs.install_gcloud_sdk()
+        with self.remove_swap, self.makedirs_swap, self.print_swap:
+            with self.url_retrieve_swap, exists_swap, isdir_swap:
+                with open_swap, extractall_swap, close_swap, copytree_swap:
+                        install_third_party_libs.install_gcloud_sdk()
         self.assertEqual(
             self.check_function_calls, self.expected_check_function_calls)
         self.assertTrue(
