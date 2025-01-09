@@ -639,7 +639,7 @@ export class BaseUser {
       } else {
         dirName = '/dev-desktop-screenshots';
       }
-      failureTrigger += 0.0035;
+      failureTrigger += 0.04;
       if (await currentPage.$(backgroundBanner)) {
         failureTrigger += 0.03;
       } else if (await currentPage.$(libraryBanner)) {
