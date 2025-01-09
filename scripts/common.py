@@ -857,7 +857,8 @@ def url_retrieve(
     # Try downloading using curl initially.
     print('Downloading %s to %s using curl...' % (url, output_path))
     curl_task = subprocess.Popen(
-        ['curl', url, '--output', output_path],
+    # The -L flag is for following redirects.
+        ['curl', '-L', url, '--output', output_path],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     with curl_task:
         out, err = curl_task.communicate()
