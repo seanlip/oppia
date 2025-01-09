@@ -861,6 +861,8 @@ def url_retrieve(
     out, err = task.communicate()
     if task.returncode == 0:
         # The download was successful.
+        print(out)
+        print(err)
         return
 
     # Download with urlopen if curl fails.
