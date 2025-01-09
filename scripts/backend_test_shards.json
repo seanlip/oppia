@@ -52,9 +52,7 @@
         "core.jobs.batch_jobs.translation_migration_jobs_test",
         "core.controllers.release_coordinator_test",
         "core.platform.secrets.dev_mode_secrets_services_test",
-        "scripts.generate_root_files_mapping_test"
-    ],
-    "2": [
+        "scripts.generate_root_files_mapping_test",
         "core.domain.rights_manager_test",
         "core.domain.skill_services_test",
         "core.domain.story_domain_test",
@@ -94,8 +92,12 @@
         "core.controllers.blog_dashboard_test",
         "core.controllers.blog_homepage_test",
         "core.domain.learner_goals_services_test",
-        "scripts.scripts_test_utils_test",
-        "scripts.servers_test",
+        "scripts.scripts_test_utils_test"
+    ],
+    "2": [
+        "scripts.servers_test"
+    ],
+    "3": [
         "scripts.generate_build_directory_test",
         "scripts.concurrent_task_utils_test",
         "core.storage.storage_models_test",
@@ -146,9 +148,7 @@
         "extensions.interactions.PencilCodeEditor.PencilCodeEditor_test",
         "extensions.interactions.Continue.Continue_test",
         "extensions.interactions.ImageClickInput.ImageClickInput_test",
-        "extensions.interactions.AlgebraicExpressionInput.AlgebraicExpressionInput_test"
-    ],
-    "3": [
+        "extensions.interactions.AlgebraicExpressionInput.AlgebraicExpressionInput_test",
         "core.controllers.incoming_app_feedback_report_test",
         "core.domain.app_feedback_report_domain_test",
         "core.domain.object_registry_test",
