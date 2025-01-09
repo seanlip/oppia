@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import logging
 
-from core import feconf
 from core.domain import email_services
 from core.domain import platform_parameter_list
 from core.domain import platform_parameter_services
@@ -126,7 +125,9 @@ def send_email_to_recipients(
         recipient_emails[i:i + 1000]
         for i in range(0, len(recipient_emails), 1000)]
     for email_list in recipient_email_lists:
-        data: Dict[str, Any] = {
+        data: Dict[
+            str, Union[str, List[str], Dict[str, Dict[str, Union[str, float]]]]
+        ] = {
             'from': sender_email,
             'subject': subject,
             'text': plaintext_body,
