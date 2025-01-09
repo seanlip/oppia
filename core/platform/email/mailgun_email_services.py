@@ -20,13 +20,14 @@ from __future__ import annotations
 
 import logging
 
+from core import feconf
 from core.domain import email_services
 from core.domain import platform_parameter_list
 from core.domain import platform_parameter_services
 from core.platform import models
 
 import requests
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 MYPY = False
 if MYPY: # pragma: no cover
@@ -85,7 +86,7 @@ def send_email_to_recipients(
 
     Raises:
         Exception. The mailgun api key is not stored in
-            feconf.MAILGUN_API_KEY.
+            MAILGUN_API_KEY cloud secret.
         Exception. The mailgun domain name is not stored in
             MAILGUN_DOMAIN_NAME platform param.
 
@@ -125,7 +126,7 @@ def send_email_to_recipients(
         recipient_emails[i:i + 1000]
         for i in range(0, len(recipient_emails), 1000)]
     for email_list in recipient_email_lists:
-        data = {
+        data: Dict[str, Any] = {
             'from': sender_email,
             'subject': subject,
             'text': plaintext_body,
@@ -147,7 +148,7 @@ def send_email_to_recipients(
             mailgun_domain_name
         )
 
-       # Adding attachments to the email.
+        # Adding attachments to the email.
         files = [(
             'attachment',
             (attachment['filename'], open(attachment['path'], 'rb')))
