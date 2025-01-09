@@ -1094,7 +1094,7 @@ export class ExplorationEditor extends BaseUser {
           visible: true,
         });
         await this.page.click(multipleChoiceResponseDropdown);
-        // await this.expectScreenshotToMatch('testScreenshot', __dirname);
+        await this.expectScreenshotToMatch('testScreenshot', __dirname);
         await this.page.waitForSelector(multipleChoiceResponseOption, {
           visible: true,
         });
