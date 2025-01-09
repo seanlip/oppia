@@ -18,6 +18,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from core import feconf
 from core.domain import topic_fetchers
 from core.jobs import base_jobs
@@ -173,7 +175,7 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 beam.MapTuple(self.transform_translation_review_stats)
         )
 
-        question_submitter_total_stats_models = (
+        question_submitter_total_stats_models_and_logs = (
             {
                 'question_contribution_stats':
                     question_contribution_stats,
@@ -192,12 +194,40 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 )
         )
 
-        question_reviewer_total_stats_models = (
+        question_submitter_total_stats_models = (
+            question_submitter_total_stats_models_and_logs
+            | 'Unpack contribution models' >> beam.Map(lambda element: element[0])
+        )
+
+        question_submitter_debug_logs = (
+            question_submitter_total_stats_models_and_logs
+            | 'Unpack and get debug logs result1' >> beam.Map(
+                lambda element: (
+                    job_run_result.JobRunResult.as_stdout(element[1])
+                )
+            )
+        )
+
+        question_reviewer_total_stats_models_and_logs = (
             question_reviewer_stats
             | 'Group QuestionReviewerTotalContributionStatsModel by key' >>
                 beam.GroupByKey()
             | 'Transform question reviewer stats' >>
                 beam.MapTuple(self.transform_question_review_stats)
+        )
+
+        question_reviewer_total_stats_models = (
+            question_reviewer_total_stats_models_and_logs
+            | 'Unpack review models' >> beam.Map(lambda element: element[0])
+        )
+
+        question_reviewer_debug_logs = (
+            question_reviewer_total_stats_models_and_logs
+            | 'Unpack and get debug logs result' >> beam.Map(
+                lambda element: (
+                    job_run_result.JobRunResult.as_stdout(element[1])
+                )
+            )
         )
 
         if self.DATASTORE_UPDATES_ALLOWED:
@@ -262,7 +292,9 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 translation_submitter_models_job_run_results,
                 translation_reviewer_models_job_run_results,
                 question_submitter_models_job_run_results,
-                question_reviewer_models_job_run_results
+                question_reviewer_models_job_run_results,
+                question_submitter_debug_logs,
+                question_reviewer_debug_logs
             )
             | 'Merge job run results' >> beam.Flatten()
         )
@@ -493,8 +525,8 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
         question_contribution_stats:
             Iterable[suggestion_models.QuestionContributionStatsModel],
         question_general_suggestions_stats:
-            Iterable[suggestion_models.GeneralSuggestionModel]) -> (
-        suggestion_models.QuestionSubmitterTotalContributionStatsModel):
+            Iterable[suggestion_models.GeneralSuggestionModel]) -> Tuple[
+        suggestion_models.QuestionSubmitterTotalContributionStatsModel, str]:
         """Transforms QuestionContributionStatsModel and GeneralSuggestionModel
         to QuestionSubmitterTotalContributionStatsModel.
 
@@ -509,13 +541,19 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 GeneralSuggestionModel grouped by author_id.
 
         Returns:
-            suggestion_models.QuestionSubmitterTotalContributionStatsModel.
+            A 2-tuple with the following elements:
+            - suggestion_models.QuestionSubmitterTotalContributionStatsModel.
             New QuestionSubmitterTotalContributionStatsModel model.
+            - The debug logs.
         """
         # The key for sorting is defined separately because of a mypy bug.
         # A [no-any-return] is thrown if key is defined in the sort() method
         # instead. Reference: https://github.com/python/mypy/issues/9590.
         by_created_on = lambda m: m.created_on
+        question_contribution_stats = sorted(
+            question_contribution_stats,
+            key=by_created_on
+        )
         question_general_suggestions_sorted_stats = sorted(
             question_general_suggestions_stats,
             key=by_created_on
@@ -558,10 +596,38 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
 
         entity_id = contributor_user_id
 
+        # Collects all the debug logs.
+        debug_logs: str = (
+            'Question submitter ID: %s.\n' % contributor_user_id)
+
+        skill_ids_with_question_suggestions = set(
+            [v.target_id for v in general_suggestion_stats])
+        debug_logs += (
+            'Unique skill IDs with question suggestion: \n')
+        for skill_id in skill_ids_with_question_suggestions:
+            debug_logs += (
+                '- %s\n' % skill_id)
+
+        topic_ids_with_contribution_stats = set(
+            [v.topic_id for v in question_contribution_stats])
+        debug_logs += (
+            'Unique topic IDs with contribution stats: \n')
+        for topic_id in topic_ids_with_contribution_stats:  
+            debug_logs += (
+                '- %s\n' % topic_id)
+
         for stat in question_contribution_stats:
             if GenerateContributorAdminStatsJob.not_validate_topic(
                 stat.topic_id):
                 question_contribution_stats.remove(stat)
+
+        valid_topic_ids_with_contribution_stats = set(
+            [v.topic_id for v in question_contribution_stats])
+        debug_logs += (
+            'Unique valid topic IDs with contribution stats: \n')
+        for topic_id in valid_topic_ids_with_contribution_stats:  
+            debug_logs += (
+                '- %s\n' % topic_id)
 
         topic_ids = (
             [v.topic_id for v in question_contribution_stats])
@@ -606,14 +672,14 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 )
             )
             question_submit_stats_models.update_timestamps()
-            return question_submit_stats_models
+            return (question_submit_stats_models, debug_logs)
 
     @staticmethod
     def transform_question_review_stats(
         reviewer_user_id: str,
         question_reviewer_stats:
-            Iterable[suggestion_models.QuestionReviewStatsModel]) -> (
-        suggestion_models.QuestionReviewerTotalContributionStatsModel):
+            Iterable[suggestion_models.QuestionReviewStatsModel]) -> Tuple[
+        suggestion_models.QuestionReviewerTotalContributionStatsModel, str]:
         """Transforms QuestionReviewStatsModel to
         QuestionReviewerTotalContributionStatsModel.
 
@@ -625,17 +691,44 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 reviewer_user_id.
 
         Returns:
-            suggestion_models.QuestionReviewerTotalContributionStatsModel.
+            A 2-tuple with the following elements:
+            - suggestion_models.QuestionReviewerTotalContributionStatsModel.
             New QuestionReviewerTotalContributionStatsModel model.
+            - The debug logs.
         """
 
+        by_created_on = lambda m: m.created_on
+        question_reviewer_stats = sorted(
+            question_reviewer_stats,
+            key=by_created_on
+        )
         question_reviewer_stats = list(question_reviewer_stats)
         entity_id = reviewer_user_id
+
+        # Collects all the debug logs.
+        debug_logs: str = (
+            'Question reviewer ID: %s.\n' % reviewer_user_id)
+        
+        topic_ids_with_reviewer_stats = set(
+            [v.topic_id for v in question_reviewer_stats])
+        debug_logs += (
+            'Unique topic IDs with contribution stats: \n')
+        for topic_id in topic_ids_with_reviewer_stats:  
+            debug_logs += (
+                '- %s\n' % topic_id)
 
         for stat in question_reviewer_stats:
             if GenerateContributorAdminStatsJob.not_validate_topic(
                 stat.topic_id):
                 question_reviewer_stats.remove(stat)
+        
+        valid_topic_ids_with_reviewer_stats = set(
+            [v.topic_id for v in question_reviewer_stats])
+        debug_logs += (
+            'Unique valid topic IDs with contribution stats: \n')
+        for topic_id in valid_topic_ids_with_reviewer_stats:  
+            debug_logs += (
+                '- %s\n' % topic_id)
 
         topic_ids = (
             [v.topic_id for v in question_reviewer_stats])
@@ -672,7 +765,7 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 )
             )
             question_review_stats_models.update_timestamps()
-            return question_review_stats_models
+            return (question_review_stats_models, debug_logs)
 
     @staticmethod
     def not_validate_topic(topic_id: str) -> bool:
