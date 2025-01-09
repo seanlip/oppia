@@ -40,7 +40,7 @@ from core import utils
 from core.tests import test_utils
 from scripts import servers
 
-from typing import Generator, List, Literal, NoReturn
+from typing import Generator, List, Literal, NoReturn, Tuple
 import yaml
 
 from . import common
@@ -1355,6 +1355,7 @@ class UrlRetrieveTests(CommonTests):
                 self.assertEqual(url, 'https://example.com')
                 self._assert_ssl_context_matches_default(context)
                 urlopen_is_called = True
+                return io.BytesIO(b'content')
 
             urlopen_swap = self.swap(urlrequest, 'urlopen', mock_urlopen)
             with urlopen_swap, self.swap_curl_success:
