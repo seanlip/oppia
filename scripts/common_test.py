@@ -1319,8 +1319,8 @@ class UrlRetrieveTests(CommonTests):
         successful_mock_curl_process = subprocess.Popen(
             ['echo', 'test'], stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
-        def mock_successful_curl_popen( # pylint: disable=unused-argument
-            cmd_tokens: List[str], stdout: int, stderr: int
+        def mock_successful_curl_popen(  # pylint: disable=unused-argument
+            cmd_tokens: List[str], stdout: int, stderr: int, encoding: str
         ) -> subprocess.Popen[bytes]:
             self.assertEqual(cmd_tokens[0], 'curl')
             self.curl_is_called = True
@@ -1331,10 +1331,17 @@ class UrlRetrieveTests(CommonTests):
                 self.returncode = 1
 
             def communicate(self) -> Tuple[str, str]:
+                """Return required method."""
                 return '', 'Failure starting curl'
 
-        def mock_failing_curl_popen(
-            cmd_tokens: List[str], **kwargs: str
+            def __enter__(self) -> None:
+                pass
+
+            def __exit__(self, *unused_args: str) -> None:
+                pass
+
+        def mock_failing_curl_popen(  # pylint: disable=unused-argument
+            cmd_tokens: List[str], stdout: int, stderr: int, encoding: str
         ) -> MockErrorProcess:
             self.assertEqual(cmd_tokens[0], 'curl')
             return MockErrorProcess()
@@ -1348,20 +1355,22 @@ class UrlRetrieveTests(CommonTests):
         with tempfile.TemporaryDirectory() as tempdir:
             output_path = os.path.join(tempdir, 'output')
 
-            urlopen_is_called = False
+            function_call_records = {
+                'urlopen': False,
+            }
             def mock_urlopen(
                 url: str, context: ssl.SSLContext
             ) -> io.BufferedIOBase:
                 self.assertEqual(url, 'https://example.com')
                 self._assert_ssl_context_matches_default(context)
-                urlopen_is_called = True
+                function_call_records['urlopen'] = True
                 return io.BytesIO(b'content')
 
             urlopen_swap = self.swap(urlrequest, 'urlopen', mock_urlopen)
             with urlopen_swap, self.swap_curl_success:
                 common.url_retrieve('https://example.com', output_path)
             self.assertTrue(self.curl_is_called)
-            self.assertFalse(urlopen_is_called)
+            self.assertFalse(function_call_records['urlopen'])
 
     def test_url_retrieve_with_successful_https_works(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:

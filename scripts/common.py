@@ -859,7 +859,7 @@ def url_retrieve(
     curl_task = subprocess.Popen(
     # The -L flag is for following redirects.
         ['curl', '-L', url, '--output', output_path],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
     with curl_task:
         out, err = curl_task.communicate()
     if curl_task.returncode == 0:
