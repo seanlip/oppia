@@ -850,11 +850,24 @@ def url_retrieve(
         Exception. Raised when the provided URL does not use HTTPS but
             enforce_https is True.
     """
-    failures = 0
-    success = False
     if enforce_https and not url.startswith('https://'):
         raise Exception(
             'The URL %s should use HTTPS.' % url)
+
+    # Try downloading using curl initially.
+    task = subprocess.Popen(
+        ['curl', url, '--output', output_path],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = task.communicate()
+    if task.returncode == 0:
+        # The download was successful.
+        return
+
+    # Download with urlopen if curl fails.
+    print('Downloading using curl failed. Trying with urlopen.')
+    print('Error log for curl: %s' % err)
+    failures = 0
+    success = False
     while not success and failures < max_attempts:
         try:
             with urlrequest.urlopen(
@@ -869,6 +882,7 @@ def url_retrieve(
             failures += 1
             print('Attempt %d of %d failed when downloading %s.' % (
                 failures, max_attempts, url))
+            print('Error in common.url_retrieve: %s' % exception)
             if failures >= max_attempts:
                 raise exception
             print('Error: %s' % exception)
