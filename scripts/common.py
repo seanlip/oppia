@@ -855,11 +855,13 @@ def url_retrieve(
             'The URL %s should use HTTPS.' % url)
 
     # Try downloading using curl initially.
-    task = subprocess.Popen(
+    print('Downloading %s to %s using curl...' % (url, output_path))
+    curl_task = subprocess.Popen(
         ['curl', url, '--output', output_path],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    out, err = task.communicate()
-    if task.returncode == 0:
+    with curl_task:
+        out, err = curl_task.communicate()
+    if curl_task.returncode == 0:
         # The download was successful.
         print(out)
         print(err)
