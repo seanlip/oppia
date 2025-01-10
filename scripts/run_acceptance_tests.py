@@ -29,6 +29,7 @@ from scripts import common
 from scripts import servers
 
 from typing import Final, List, Optional, Tuple
+from scripts.utils.color_utils import colorize_error, colorize_warning , colorize_success
 
 _PARSER: Final = argparse.ArgumentParser(
     description="""
@@ -177,12 +178,23 @@ def run_tests(args: argparse.Namespace) -> Tuple[List[bytes], int]:
 
 def main(args: Optional[List[str]] = None) -> None:
     """Run acceptance tests."""
-    parsed_args = _PARSER.parse_args(args=args)
+    try:
+        parsed_args = _PARSER.parse_args(args=args)
+        print(colorize_success("Starting acceptance tests..."))
 
-    with servers.managed_portserver():
-        _, return_code = run_tests(parsed_args)
+        with servers.managed_portserver():
+            _, return_code = run_tests(parsed_args)
 
-    sys.exit(return_code)
+            if return_code != 0:
+                print(colorize_error('Tests failed. Please check the error messages above.'))
+            sys.exit(return_code)
+
+    except KeyboardInterrupt:
+        print(colorize_warning('\nTest run interrupted by user.'))
+        sys.exit(130)
+    except Exception as e:
+        print(colorize_error(f'Unexpected error: {str(e)}'))
+        sys.exit(1)
 
 
 if __name__ == '__main__':  # pragma: no cover
