@@ -26,7 +26,7 @@ from core.domain import platform_parameter_services
 from core.platform import models
 
 import requests
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 
 MYPY = False
 if MYPY: # pragma: no cover
