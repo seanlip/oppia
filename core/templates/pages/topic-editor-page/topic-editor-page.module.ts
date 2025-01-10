@@ -46,6 +46,19 @@ import {TopicPlayerViewerCommonModule} from 'pages/topic-viewer-page/topic-viewe
 import {StoryCreationBackendApiService} from 'components/entity-creation-services/story-creation-backend-api.service';
 import {EntityCreationService} from './services/entity-creation.service';
 import {CreateNewSkillModalService} from './services/create-new-skill-modal.service';
+import {ContextService} from 'services/context.service';
+import {FocusManagerService} from 'services/stateful/focus-manager.service';
+import {ImageUploadHelperService} from 'services/image-upload-helper.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {PageTitleService} from 'services/page-title.service';
+import {TopicsAndSkillsDashboardBackendApiService} from 'domain/topics_and_skills_dashboard/topics-and-skills-dashboard-backend-api.service';
+import {TopicEditorStateService} from './services/topic-editor-state.service';
+import {TopicEditorRoutingService} from './services/topic-editor-routing.service';
+import {TopicUpdateService} from 'domain/topic/topic-update.service';
+import {UndoRedoService} from 'domain/editor/undo_redo/undo-redo.service';
+import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
+import {WindowDimensionsService} from 'services/contextual/window-dimensions.service';
+import {WindowRef} from 'services/contextual/window-ref.service';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -105,6 +118,19 @@ import {CreateNewSkillModalService} from './services/create-new-skill-modal.serv
     StoryCreationBackendApiService,
     EntityCreationService,
     CreateNewSkillModalService,
+    ContextService,
+    FocusManagerService,
+    ImageUploadHelperService,
+    NgbModal,
+    PageTitleService,
+    TopicsAndSkillsDashboardBackendApiService,
+    TopicEditorStateService,
+    TopicEditorRoutingService,
+    TopicUpdateService,
+    UndoRedoService,
+    UrlInterpolationService,
+    WindowDimensionsService,
+    WindowRef
   ],
 })
 export class TopicEditorPageModule {}

@@ -113,7 +113,7 @@ var TopicEditorPage = function () {
   };
   var subtopicDescriptionEditor = $('.e2e-test-subtopic-description-editor');
   var subtopicsSelector = function () {
-    return $('.e2e-test-subtopic');
+    return $$('.e2e-test-subtopic');
   };
   var subtopicTitleField = $('.e2e-test-subtopic-title-field');
   var subtopicThumbnailImageElement = $(
@@ -266,7 +266,7 @@ var TopicEditorPage = function () {
   };
 
   this.expectNumberOfUncategorizedSkillsToBe = async function (count) {
-    var uncategorizedSkillItems = $('.e2e-test-skill-item');
+    var uncategorizedSkillItems = await $$('.e2e-test-skill-item');
     expect(uncategorizedSkillItems.length).toEqual(count);
   };
 
@@ -283,8 +283,6 @@ var TopicEditorPage = function () {
 
   this.expectNumberOfSubtopicsToBe = async function (count) {
     var subtopics = await subtopicsSelector();
-    console.log(subtopics);
-    console.log(subtopics.length);
     expect(subtopics.length).toEqual(count);
   };
 
