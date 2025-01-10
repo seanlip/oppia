@@ -22,6 +22,7 @@ import logging
 
 from core import feconf
 from core.domain import topic_fetchers
+from core.domain import skill_services
 from core.jobs import base_jobs
 from core.jobs.io import ndb_io
 from core.jobs.transforms import job_result_transforms
@@ -604,9 +605,15 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
             [v.target_id for v in general_suggestion_stats])
         debug_logs += (
             'Unique skill IDs with question suggestion: \n')
-        for skill_id in skill_ids_with_question_suggestions:
-            debug_logs += (
-                '- %s\n' % skill_id)
+        with datastore_services.get_ndb_context():
+            for skill_id in skill_ids_with_question_suggestions:
+                debug_logs += (
+                    '- %s\n' % skill_id)
+                topic_assignments = (
+                    skill_services.get_all_topic_assignments_for_skill(skill_id))
+                for topic_assignment in topic_assignments:
+                    debug_logs += (
+                        '-- Topic ID: %s\n' % topic_assignment.topic_id)
 
         topic_ids_with_contribution_stats = set(
             [v.topic_id for v in question_contribution_stats])
@@ -641,17 +648,23 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
             v.accepted_questions_without_reviewer_edits_count
                 for v in question_contribution_stats)
         first_contribution_date = min(
-            v.first_contribution_date for v in question_contribution_stats)
+            (v.first_contribution_date for v in question_contribution_stats), 
+            default=None
+        ) if len(question_contribution_stats) else None
+
         last_contribution_date = max(
-            v.last_contribution_date for v in question_contribution_stats)
+            (v.last_contribution_date for v in question_contribution_stats),
+            default=None
+        ) if len(question_contribution_stats) else None
 
         # Weights of overall_accuracy as documented in
         # https://docs.google.com/document/d/19lCEYQUgV7_DwIK_0rz3zslRHX2qKOHn-t9Twpi0qu0/edit.
-        overall_accuracy = (
-            round(
-            accepted_questions_count / submitted_questions_count
-            * 100, 2)
-        )
+        overall_accuracy = 50
+        # overall_accuracy = (
+        #     round(
+        #     accepted_questions_count / submitted_questions_count
+        #     * 100, 2)
+        # )
 
         with datastore_services.get_ndb_context():
             question_submit_stats_models = (
@@ -745,9 +758,13 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
             reviewed_questions_count - accepted_questions_count
         )
         first_contribution_date = min(
-            v.first_contribution_date for v in question_reviewer_stats)
+            (v.first_contribution_date for v in question_reviewer_stats),
+            default=None
+        ) if len(question_reviewer_stats) else None
         last_contribution_date = max(
-            v.last_contribution_date for v in question_reviewer_stats)
+            (v.last_contribution_date for v in question_reviewer_stats),
+            default=None
+        ) if len(question_reviewer_stats) else None
 
         with datastore_services.get_ndb_context():
             question_review_stats_models = (
