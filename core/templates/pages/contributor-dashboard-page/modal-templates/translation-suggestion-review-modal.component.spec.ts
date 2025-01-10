@@ -30,7 +30,6 @@ import {ChangeDetectorRef, ElementRef, NO_ERRORS_SCHEMA} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConstants} from 'app.constants';
 import {AlertsService} from 'services/alerts.service';
-import {ContextService} from 'services/context.service';
 import {ContributionAndReviewService} from '../services/contribution-and-review.service';
 import {LanguageUtilService} from 'domain/utilities/language-util.service';
 import {SiteAnalyticsService} from 'services/site-analytics.service';
@@ -84,7 +83,6 @@ describe('Translation Suggestion Review Modal Component', function () {
   let snackBarSpy: jasmine.Spy;
   let snackBar: MatSnackBar;
   let mockPlatformFeatureService = new MockPlatformFeatureService();
-  let contextService: ContextService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -101,7 +99,6 @@ describe('Translation Suggestion Review Modal Component', function () {
         SiteAnalyticsService,
         ThreadDataBackendApiService,
         UserService,
-        ContextService,
         {
           provide: ChangeDetectorRef,
           useValue: changeDetectorRef,
@@ -129,7 +126,6 @@ describe('Translation Suggestion Review Modal Component', function () {
     userService = TestBed.inject(UserService);
     contributionAndReviewService = TestBed.inject(ContributionAndReviewService);
     languageUtilService = TestBed.inject(LanguageUtilService);
-    contextService = TestBed.inject(ContextService);
 
     spyOn(
       siteAnalyticsService,
@@ -2898,7 +2894,7 @@ describe('Translation Suggestion Review Modal Component', function () {
         component.suggestionIdToContribution.suggestion_3.suggestion.change_cmd.content_html
       ).toBe(htmlWithTwoImages);
       expect(component.initialImageCount).toBe(0);
-  
+
       component.ngOnInit();
       expect(component.initialImageCount).toBe(2);
 
@@ -2935,7 +2931,7 @@ describe('Translation Suggestion Review Modal Component', function () {
       expect(component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html).toBe(htmlWithImage);
       expect(component.initialImageCount).toBe(0);
       expect(component.errorFound).toBeFalse();
-      
+
       const updateSpy = spyOn(contributionAndReviewService, 'updateTranslationSuggestionAsync');
       expect(updateSpy).not.toHaveBeenCalled();
 
@@ -2955,7 +2951,7 @@ describe('Translation Suggestion Review Modal Component', function () {
         jasmine.any(Function)
       );
     });
-  
+
     it('should handle malformed HTML content', () => {
       expect(component.initialSuggestionId).toBeDefined();
       expect(component.suggestionIdToContribution).toBeDefined();
@@ -2980,13 +2976,13 @@ describe('Translation Suggestion Review Modal Component', function () {
       expect(
         component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html
       ).toBe(htmlWithImage);
-    
+
       component.translationHtml = htmlWithImage;
       component.ngOnInit();
-    
+
       component.editedContent = { html: htmlWithoutImage };
       component.updateSuggestion();
-    
+
       expect(component.errorMessage).toBe(
         'The number of images in the translation must match the original content.'
       );

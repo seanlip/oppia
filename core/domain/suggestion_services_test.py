@@ -1074,7 +1074,6 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             'exploration1', self.target_version_at_submission,
             self.author_id, add_translation_change_dict, 'test description')
 
-
     def test_updating_translation_suggestion_raise_error_when_image_is_removed(
             self
         ) -> None:
@@ -1111,15 +1110,15 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
 
         with self.assertRaisesRegex(
             utils.InvalidInputException,
-                'The number of images in the updated translation \\(0\\) must match '
-                'the original content \\(1\\). Adding or removing images is not '
+                'The number of images in the updated translation \\(0\\) '
+                'must match the original content \\(1\\). '
+                'Adding or removing images is not '
                 'allowed.'
         ):
             suggestion_services.update_translation_suggestion(
                 suggestion.suggestion_id,
                 updated_translation_without_image
             )
-
 
     def test_update_translation_suggestion_raises_error_when_image_is_added(
         self
@@ -1146,15 +1145,15 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
 
         with self.assertRaisesRegex(
             utils.InvalidInputException,
-                'The number of images in the updated translation \\(1\\) must match '
-                'the original content \\(0\\). Adding or removing images is not '
+                'The number of images in the updated translation \\(1\\) '
+                'must match the original content \\(0\\). '
+                'Adding or removing images is not '
                 'allowed.'
         ):
             suggestion_services.update_translation_suggestion(
                 suggestion.suggestion_id,
                 new_translation_html_with_image
             )
-
 
     def test_update_translation_suggestion_rejects_image_count_reduction(
         self
@@ -1202,8 +1201,9 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
         with self.assertRaisesRegex(
             utils.InvalidInputException,
             (
-                'The number of images in the updated translation \\(1\\) must match '
-                'the original content \\(2\\). Adding or removing images is not '
+                'The number of images in the updated translation \\(1\\) '
+                'must match the original content \\(2\\). '
+                'Adding or removing images is not '
                 'allowed.'
             )
         ):
@@ -1219,8 +1219,9 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
         with self.assertRaisesRegex(
             utils.InvalidInputException,
             (
-                'The number of images in the updated translation \\(0\\) must match '
-                'the original content \\(2\\). Adding or removing images is not '
+                'The number of images in the updated translation \\(0\\) '
+                'must match the original content \\(2\\). '
+                'Adding or removing images is not '
                 'allowed.'
             )
         ):
@@ -1238,7 +1239,6 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
         self.assertEqual(
             original_image_count, 2
         )
-
 
     def test_update_translation_suggestion_raises_error_when_images_are_added(
         self
@@ -1288,8 +1288,9 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
         with self.assertRaisesRegex(
             utils.InvalidInputException,
             (
-                'The number of images in the updated translation \\(2\\) must match '
-                'the original content \\(1\\). Adding or removing images is not '
+                'The number of images in the updated translation \\(2\\) '
+                'must match the original content \\(1\\). '
+                'Adding or removing images is not '
                 'allowed.'
             )
         ):
@@ -1311,7 +1312,6 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
         self.assertEqual(
             updated_image_count, 1
         )
-
 
     def test_wrong_suggestion_raise_error_when_updating_add_question_suggestion(
         self

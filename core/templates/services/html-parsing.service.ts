@@ -55,5 +55,4 @@ export class HtmlParsingService {
     const updatedImageCount = this.countImageTags(updatedHtml);
     return originalImageCount !== updatedImageCount;
   }
-
 }

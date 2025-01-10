@@ -54,21 +54,21 @@ describe('HtmlParsingService', () => {
       expect(htmlParsingService).toBeDefined();
       expect(htmlWithImage).toContain('oppia-noninteractive-image');
       expect(htmlWithImage).toContain('filepath-with-value');
-      
+
       expect(htmlParsingService.countImageTags(htmlWithImage)).toBe(1);
     });
 
     it('should return 0 when no image tags are present', () => {
       expect(htmlParsingService).toBeDefined();
       expect(htmlWithoutImage).not.toContain('oppia-noninteractive-image');
-      
+
       expect(htmlParsingService.countImageTags(htmlWithoutImage)).toBe(0);
     });
 
     it('should count multiple image tags correctly', () => {
       expect(htmlParsingService).toBeDefined();
       expect(htmlWithTwoImages).toContain('oppia-noninteractive-image');
-      
+
       expect(htmlParsingService.countImageTags(htmlWithTwoImages)).toBe(2);
     });
 
@@ -79,13 +79,13 @@ describe('HtmlParsingService', () => {
 
     it('should only count images with filepath-with-value attribute', () => {
       expect(htmlParsingService).toBeDefined();
-      
+
       const htmlWithIncompleteImage = `
         <p>Content with incomplete image tag</p>
         <oppia-noninteractive-image alt-with-value="test">
         </oppia-noninteractive-image>
       `;
-      
+
       expect(htmlParsingService.countImageTags(htmlWithIncompleteImage)).toBe(0);
     });
   });
@@ -95,7 +95,7 @@ describe('HtmlParsingService', () => {
       expect(htmlParsingService).toBeDefined();
       expect(htmlWithImage).toContain('oppia-noninteractive-image');
       expect(htmlWithoutImage).not.toContain('oppia-noninteractive-image');
-      
+
       expect(htmlParsingService.isImageCountMismatched(htmlWithImage, htmlWithoutImage))
         .toBeTrue();
     });
@@ -104,7 +104,7 @@ describe('HtmlParsingService', () => {
       expect(htmlParsingService).toBeDefined();
       expect(htmlWithoutImage).not.toContain('oppia-noninteractive-image');
       expect(htmlWithImage).toContain('oppia-noninteractive-image');
-      
+
       expect(htmlParsingService.isImageCountMismatched(htmlWithoutImage, htmlWithImage))
         .toBeTrue();
     });
@@ -112,7 +112,7 @@ describe('HtmlParsingService', () => {
     it('should return false when image counts match', () => {
       expect(htmlParsingService).toBeDefined();
       expect(htmlWithImage).toContain('oppia-noninteractive-image');
-      
+
       expect(htmlParsingService.isImageCountMismatched(htmlWithImage, htmlWithImage))
         .toBeFalse();
     });
@@ -120,7 +120,7 @@ describe('HtmlParsingService', () => {
     it('should return false when no images exist in either content', () => {
       expect(htmlParsingService).toBeDefined();
       expect(htmlWithoutImage).not.toContain('oppia-noninteractive-image');
-      
+
       expect(htmlParsingService.isImageCountMismatched(htmlWithoutImage, htmlWithoutImage))
         .toBeFalse();
     });
@@ -128,11 +128,11 @@ describe('HtmlParsingService', () => {
     it('should handle multiple images correctly', () => {
       expect(htmlParsingService).toBeDefined();
       expect(htmlWithTwoImages).toContain('oppia-noninteractive-image');
-      
+
       expect(htmlParsingService.isImageCountMismatched(htmlWithTwoImages, htmlWithTwoImages))
         .toBeFalse();
       expect(htmlParsingService.isImageCountMismatched(htmlWithTwoImages, htmlWithImage))
         .toBeTrue();
-    }); 
+    });
   });
 });
