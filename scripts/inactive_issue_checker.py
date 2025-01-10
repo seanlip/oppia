@@ -19,9 +19,9 @@
 from __future__ import annotations
 
 import datetime
+import logging
 import os
 import requests
-import logging
 INACTIVE_DAYS = 7
 
 
