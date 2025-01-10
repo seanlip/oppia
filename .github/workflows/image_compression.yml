@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - develop 
-      - feat#21274
+      - test-feat#21274
       - release-*
   pull_request:
     branches:
