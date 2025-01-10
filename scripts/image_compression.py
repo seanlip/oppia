@@ -26,7 +26,7 @@ import tempfile
 from PIL import Image # pylint: disable=import-error
 
 
-def check_graphicsmagick():
+def check_graphicsmagick() -> None:
     """Verify GraphicsMagick installation
         and return full path to gm executable.
     """
@@ -52,7 +52,7 @@ def check_graphicsmagick():
     )
 
 
-def check_and_compress_images(repo_path):
+def check_and_compress_images(repo_path) -> None:
     """Check and compress images using GraphicsMagick
         with lossless compression for specific formats.
     """
@@ -126,7 +126,7 @@ def check_and_compress_images(repo_path):
     return compressed_images
 
 
-def main():
+def main() -> None:
     """Main function to check and compress images in the repository."""
     repo_path = pathlib.Path('./assets')
     compressed_images = check_and_compress_images(repo_path)
