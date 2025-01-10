@@ -1083,15 +1083,8 @@ export class ExplorationEditor extends BaseUser {
   ): Promise<void> {
      await this.page.evaluate(() => {
       const logActiveElement = () => {
-        const active = document.activeElement;
-        showMessage(`Focus changed to:, ${
-          active?.tagName,
-          active?.id,
-          active?.className,
-          (active as HTMLInputElement)?.type,
-          (active as HTMLInputElement)?.value,
-          new Date().toISOString()
-        }`);
+        const active = document.activeElement.className;
+        showMessage(`Focus changed to:, ${active}`);
       };
       document.addEventListener('focusin', logActiveElement);
       logActiveElement();
@@ -1174,19 +1167,7 @@ export class ExplorationEditor extends BaseUser {
       await this.clickOn(addAnotherResponseButton);
     }
     await this.page.evaluate(() => {
-      const logActiveElement = () => {
-        const active = document.activeElement;
-        console.log('Focus changed to:', {
-          tagName: active?.tagName,
-          id: active?.id,
-          className: active?.className,
-          type: (active as HTMLInputElement)?.type,
-          value: (active as HTMLInputElement)?.value,
-          timestamp: new Date().toISOString()
-        });
-      };
-      
-      document.removeEventListener('focusin', logActiveElement);
+      document.removeEventListener('focusin', document['logActiveElement']);
     });
   }
 
