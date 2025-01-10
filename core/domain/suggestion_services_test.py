@@ -1295,7 +1295,8 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             )
         ):
             suggestion_services.update_translation_suggestion(
-                suggestion.suggestion_id, new_translation_html_with_additional_images
+                suggestion.suggestion_id,
+                new_translation_html_with_additional_images
             )
 
         updated_suggestion = suggestion_services.get_suggestion_by_id(
@@ -2179,7 +2180,8 @@ class SuggestionGetServicesUnitTests(test_utils.GenericTestBase):
         )
 
         self.assertCountEqual(
-            target_ids, [fetched_target_id_1, fetched_target_id_2]
+            target_ids, [fetched_target_id_1,
+                         fetched_target_id_2]
         )
 
     def test_get_no_translation_target_ids_when_user_cannot_review_in_given_language( # pylint: disable=line-too-long
