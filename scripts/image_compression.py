@@ -24,9 +24,10 @@ import subprocess
 import sys
 import tempfile
 from PIL import Image # pylint: disable=import-error
+from typing import List, Dict
 
 
-def check_graphicsmagick() -> None:
+def check_graphicsmagick() -> str:
     """Verify GraphicsMagick installation
         and return full path to gm executable.
     """
@@ -52,7 +53,7 @@ def check_graphicsmagick() -> None:
     )
 
 
-def check_and_compress_images(repo_path) -> None:
+def check_and_compress_images(repo_path) -> any: # type: ignore
     """Check and compress images using GraphicsMagick
         with lossless compression for specific formats.
     """
@@ -122,7 +123,6 @@ def check_and_compress_images(repo_path) -> None:
 
         except Exception as e:
             print(f'[ERROR] Could not process {file_path}: {e}')
-
     return compressed_images
 
 
@@ -131,19 +131,15 @@ def main() -> None:
     repo_path = pathlib.Path('./assets')
     compressed_images = check_and_compress_images(repo_path)
     i = 1
-    while compressed_images:
-        print('\nSummary of compressed images on iteration# ', i)
+    while i <= 10:
         total_saved = 0
+        compressed_images = check_and_compress_images(repo_path)
         for image in compressed_images:
             saved = image['original_size'] - image['new_size']
             total_saved += saved
-        print(f'Total space saved: {total_saved} bytes')
-        compressed_images = check_and_compress_images(repo_path)
+        print('Summary of compressed images on iteration# ', i)
+        print(f'Total space saved: {total_saved} bytes\n')
         i = i + 1
-
-    if not compressed_images:
-        print('\nNo images required compression.')
-        return
 
 
 if __name__ == '__main__': # pragma: no cover
