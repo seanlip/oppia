@@ -1081,9 +1081,21 @@ export class ExplorationEditor extends BaseUser {
     responseIsCorrect: boolean,
     isLastResponse: boolean = true
   ): Promise<void> {
-    document.addEventListener('focus', function() {
-      console.log('focused: ', document.activeElement);
-    }, true);
+     await this.page.evaluate(() => {
+      const logActiveElement = () => {
+        const active = document.activeElement;
+        console.log('Focus changed to:', {
+          tagName: active?.tagName,
+          id: active?.id,
+          className: active?.className,
+          type: (active as HTMLInputElement)?.type,
+          value: (active as HTMLInputElement)?.value,
+          timestamp: new Date().toISOString()
+        });
+      };
+      document.addEventListener('focusin', logActiveElement);
+      logActiveElement();
+    });
     switch (interactionType) {
       case 'Number Input':
         await this.page.waitForSelector(floatFormInput);
@@ -1161,6 +1173,21 @@ export class ExplorationEditor extends BaseUser {
     } else {
       await this.clickOn(addAnotherResponseButton);
     }
+    await this.page.evaluate(() => {
+      const logActiveElement = () => {
+        const active = document.activeElement;
+        console.log('Focus changed to:', {
+          tagName: active?.tagName,
+          id: active?.id,
+          className: active?.className,
+          type: (active as HTMLInputElement)?.type,
+          value: (active as HTMLInputElement)?.value,
+          timestamp: new Date().toISOString()
+        });
+      };
+      
+      document.removeEventListener('focusin', logActiveElement);
+    });
   }
 
   /**
