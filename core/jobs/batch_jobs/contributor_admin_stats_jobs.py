@@ -636,56 +636,60 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
             debug_logs += (
                 '- %s\n' % topic_id)
 
-        topic_ids = (
-            [v.topic_id for v in question_contribution_stats])
-        submitted_questions_count = sum(
-            v.submitted_questions_count
-                for v in question_contribution_stats)
-        accepted_questions_count = sum(
-            v.accepted_questions_count
-                for v in question_contribution_stats)
-        accepted_questions_without_reviewer_edits_count = sum(
-            v.accepted_questions_without_reviewer_edits_count
-                for v in question_contribution_stats)
-        first_contribution_date = min(
-            (v.first_contribution_date for v in question_contribution_stats), 
-            default=None
-        ) if len(question_contribution_stats) else None
+        try:
+            topic_ids = (
+                [v.topic_id for v in question_contribution_stats])
+            submitted_questions_count = sum(
+                v.submitted_questions_count
+                    for v in question_contribution_stats)
+            accepted_questions_count = sum(
+                v.accepted_questions_count
+                    for v in question_contribution_stats)
+            accepted_questions_without_reviewer_edits_count = sum(
+                v.accepted_questions_without_reviewer_edits_count
+                    for v in question_contribution_stats)
+            first_contribution_date = min(
+                (v.first_contribution_date for v in question_contribution_stats), 
+                default=None
+            ) if len(question_contribution_stats) else None
 
-        last_contribution_date = max(
-            (v.last_contribution_date for v in question_contribution_stats),
-            default=None
-        ) if len(question_contribution_stats) else None
+            last_contribution_date = max(
+                (v.last_contribution_date for v in question_contribution_stats),
+                default=None
+            ) if len(question_contribution_stats) else None
 
-        # Weights of overall_accuracy as documented in
-        # https://docs.google.com/document/d/19lCEYQUgV7_DwIK_0rz3zslRHX2qKOHn-t9Twpi0qu0/edit.
-        overall_accuracy = 50
-        # overall_accuracy = (
-        #     round(
-        #     accepted_questions_count / submitted_questions_count
-        #     * 100, 2)
-        # )
-
-        with datastore_services.get_ndb_context():
-            question_submit_stats_models = (
-                suggestion_models.QuestionSubmitterTotalContributionStatsModel(
-                id=entity_id,
-                contributor_id=contributor_user_id,
-                topic_ids_with_question_submissions=topic_ids,
-                recent_review_outcomes=recent_review_outcomes,
-                recent_performance=recent_performance,
-                overall_accuracy=overall_accuracy,
-                submitted_questions_count=submitted_questions_count,
-                accepted_questions_count=accepted_questions_count,
-                accepted_questions_without_reviewer_edits_count=(
-                    accepted_questions_without_reviewer_edits_count),
-                rejected_questions_count=rejected_questions_count,
-                first_contribution_date=first_contribution_date,
-                last_contribution_date=last_contribution_date
-                )
+            # Weights of overall_accuracy as documented in
+            # https://docs.google.com/document/d/19lCEYQUgV7_DwIK_0rz3zslRHX2qKOHn-t9Twpi0qu0/edit.
+            overall_accuracy = (
+                round(
+                accepted_questions_count / submitted_questions_count
+                * 100, 2)
             )
-            question_submit_stats_models.update_timestamps()
-            return (question_submit_stats_models, debug_logs)
+
+            with datastore_services.get_ndb_context():
+                question_submit_stats_models = (
+                    suggestion_models.QuestionSubmitterTotalContributionStatsModel(
+                    id=entity_id,
+                    contributor_id=contributor_user_id,
+                    topic_ids_with_question_submissions=topic_ids,
+                    recent_review_outcomes=recent_review_outcomes,
+                    recent_performance=recent_performance,
+                    overall_accuracy=overall_accuracy,
+                    submitted_questions_count=submitted_questions_count,
+                    accepted_questions_count=accepted_questions_count,
+                    accepted_questions_without_reviewer_edits_count=(
+                        accepted_questions_without_reviewer_edits_count),
+                    rejected_questions_count=rejected_questions_count,
+                    first_contribution_date=first_contribution_date,
+                    last_contribution_date=last_contribution_date
+                    )
+                )
+                question_submit_stats_models.update_timestamps()
+                return (question_submit_stats_models, debug_logs)
+        
+        except Exception as e:
+            logging.exception(e)
+            return (None, debug_logs)
 
     @staticmethod
     def transform_question_review_stats(
@@ -743,46 +747,51 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
             debug_logs += (
                 '- %s\n' % topic_id)
 
-        topic_ids = (
-            [v.topic_id for v in question_reviewer_stats])
-        reviewed_questions_count = sum(
-            v.reviewed_questions_count
-                for v in question_reviewer_stats)
-        accepted_questions_count = sum(
-            v.accepted_questions_count
-                for v in question_reviewer_stats)
-        accepted_questions_with_reviewer_edits_count = sum(
-            v.accepted_questions_with_reviewer_edits_count
-                for v in question_reviewer_stats)
-        rejected_questions_count = (
-            reviewed_questions_count - accepted_questions_count
-        )
-        first_contribution_date = min(
-            (v.first_contribution_date for v in question_reviewer_stats),
-            default=None
-        ) if len(question_reviewer_stats) else None
-        last_contribution_date = max(
-            (v.last_contribution_date for v in question_reviewer_stats),
-            default=None
-        ) if len(question_reviewer_stats) else None
-
-        with datastore_services.get_ndb_context():
-            question_review_stats_models = (
-                suggestion_models.QuestionReviewerTotalContributionStatsModel(
-                id=entity_id,
-                contributor_id=reviewer_user_id,
-                topic_ids_with_question_reviews=topic_ids,
-                reviewed_questions_count=reviewed_questions_count,
-                accepted_questions_count=accepted_questions_count,
-                accepted_questions_with_reviewer_edits_count=(
-                    accepted_questions_with_reviewer_edits_count),
-                rejected_questions_count=rejected_questions_count,
-                first_contribution_date=first_contribution_date,
-                last_contribution_date=last_contribution_date
-                )
+        try:
+            topic_ids = (
+                [v.topic_id for v in question_reviewer_stats])
+            reviewed_questions_count = sum(
+                v.reviewed_questions_count
+                    for v in question_reviewer_stats)
+            accepted_questions_count = sum(
+                v.accepted_questions_count
+                    for v in question_reviewer_stats)
+            accepted_questions_with_reviewer_edits_count = sum(
+                v.accepted_questions_with_reviewer_edits_count
+                    for v in question_reviewer_stats)
+            rejected_questions_count = (
+                reviewed_questions_count - accepted_questions_count
             )
-            question_review_stats_models.update_timestamps()
-            return (question_review_stats_models, debug_logs)
+            first_contribution_date = min(
+                (v.first_contribution_date for v in question_reviewer_stats),
+                default=None
+            ) if len(question_reviewer_stats) else None
+            last_contribution_date = max(
+                (v.last_contribution_date for v in question_reviewer_stats),
+                default=None
+            ) if len(question_reviewer_stats) else None
+
+            with datastore_services.get_ndb_context():
+                question_review_stats_models = (
+                    suggestion_models.QuestionReviewerTotalContributionStatsModel(
+                    id=entity_id,
+                    contributor_id=reviewer_user_id,
+                    topic_ids_with_question_reviews=topic_ids,
+                    reviewed_questions_count=reviewed_questions_count,
+                    accepted_questions_count=accepted_questions_count,
+                    accepted_questions_with_reviewer_edits_count=(
+                        accepted_questions_with_reviewer_edits_count),
+                    rejected_questions_count=rejected_questions_count,
+                    first_contribution_date=first_contribution_date,
+                    last_contribution_date=last_contribution_date
+                    )
+                )
+                question_review_stats_models.update_timestamps()
+                return (question_review_stats_models, debug_logs)
+            
+        except Exception as e:
+            logging.exception(e)
+            return (None, debug_logs)
 
     @staticmethod
     def not_validate_topic(topic_id: str) -> bool:
