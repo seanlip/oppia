@@ -2,14 +2,14 @@
 #
 # Copyright 2023 The Oppia Authors. All Rights Reserved.
 #
-# Licensed under the Apache License, Version 2.0 (the "License");
+# Licensed under the Apache License, Version 2.0 (the 'License');
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS-IS" BASIS,
+# distributed under the License is distributed on an 'AS-IS' BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
@@ -643,36 +643,42 @@ class GenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             job_run_result.JobRunResult(
                 stdout='Question Reviewer Models SUCCESS: 3'),
             job_run_result.JobRunResult(
-                stdout=("Question reviewer ID: user1.\nUnique topic IDs " +
-                    "with contribution stats: \n- topic1\n- topic2\nUnique " +
-                    "valid topic IDs with contribution stats: \n- topic1\n- " +
-                    "topic2\n")),
+                stdout=(
+                    'Question reviewer ID: user1.\nUnique topic IDs '
+                    'with contribution stats: \n- topic1\n- topic2\nUnique '
+                    'valid topic IDs with contribution stats: \n- topic1\n- '
+                    'topic2\n')),
             job_run_result.JobRunResult(
-                stdout=("Question reviewer ID: user2.\nUnique topic IDs " +
-                    "with contribution stats: \n- topic1\nUnique valid " +
-                    "topic IDs with contribution stats: \n- topic1\n")),
+                stdout=(
+                    'Question reviewer ID: user2.\nUnique topic IDs '
+                    'with contribution stats: \n- topic1\nUnique valid '
+                    'topic IDs with contribution stats: \n- topic1\n')),
             job_run_result.JobRunResult(
-                stdout=("Question reviewer ID: user3.\nUnique topic IDs " +
-                    "with contribution stats: \n- topic1\n- invalid_topic" +
-                    "\nUnique valid topic IDs with contribution stats: \n- " +
-                    "topic1\n")),
+                stdout=(
+                    'Question reviewer ID: user3.\nUnique topic IDs '
+                    'with contribution stats: \n- topic1\n- invalid_topic'
+                    '\nUnique valid topic IDs with contribution stats: \n- '
+                    'topic1\n')),
             job_run_result.JobRunResult(
-                stdout=("Question submitter ID: user1.\nUnique skill IDs " +
-                    "with question suggestion: \n- exp1\nUnique topic IDs " +
-                    "with contribution stats: \n- topic1\n- topic2\nUnique " +
-                    "valid topic IDs with contribution stats: \n- topic1\n- " +
-                    "topic2\n")),
+                stdout=(
+                    'Question submitter ID: user1.\nUnique skill IDs '
+                    'with question suggestion: \n- exp1\nUnique topic IDs '
+                    'with contribution stats: \n- topic1\n- topic2\nUnique '
+                    'valid topic IDs with contribution stats: \n- topic1\n- '
+                    'topic2\n')),
             job_run_result.JobRunResult(
-                stdout=("Question submitter ID: user2.\nUnique skill IDs " +
-                    "with question suggestion: \nUnique topic IDs with " +
-                    "contribution stats: \n- topic1\nUnique valid topic IDs " +
-                    "with contribution stats: \n- topic1\n")),
+                stdout=(
+                    'Question submitter ID: user2.\nUnique skill IDs '
+                    'with question suggestion: \nUnique topic IDs with '
+                    'contribution stats: \n- topic1\nUnique valid topic IDs '
+                    'with contribution stats: \n- topic1\n')),
             job_run_result.JobRunResult(
-                stdout=("Question submitter ID: user3.\nUnique skill IDs " +
-                    "with question suggestion: \nUnique topic IDs with " +
-                    "contribution stats: \n- topic1\n- invalid_topic" +
-                    "\nUnique valid topic IDs with contribution stats: " +
-                    "\n- topic1\n"))
+                stdout=(
+                    'Question submitter ID: user3.\nUnique skill IDs '
+                    'with question suggestion: \nUnique topic IDs with '
+                    'contribution stats: \n- topic1\n- invalid_topic'
+                    '\nUnique valid topic IDs with contribution stats: '
+                    '\n- topic1\n'))
         ])
 
         # Check for TranslationSubmitterTotalContributionStatsModel.
@@ -1019,10 +1025,11 @@ class GenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             job_run_result.JobRunResult(
                 stdout='Translation Submitter Models SUCCESS: 1'),
             job_run_result.JobRunResult(
-                stdout=("Question submitter ID: user1.\nUnique skill IDs " +
-                    "with question suggestion: \n- exp1\nUnique topic IDs " +
-                    "with contribution stats: \n- topic1\nUnique valid " +
-                    "topic IDs with contribution stats: \n- topic1\n"))
+                stdout=(
+                    'Question submitter ID: user1.\nUnique skill IDs '
+                    'with question suggestion: \n- exp1\nUnique topic IDs '
+                    'with contribution stats: \n- topic1\nUnique valid '
+                    'topic IDs with contribution stats: \n- topic1\n'))
         ])
 
         translation_model = (
@@ -1117,34 +1124,40 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             job_run_result.JobRunResult(
                 stdout='Question Reviewer Models SUCCESS: 3'),
             job_run_result.JobRunResult(
-                stdout=("Question reviewer ID: user1.\nUnique topic IDs " +
-                    "with contribution stats: \n- topic1\n- topic2\nUnique " +
-                    "valid topic IDs with contribution stats: \n- topic1\n- " +
-                    "topic2\n")),
+                stdout=(
+                    'Question reviewer ID: user1.\nUnique topic IDs '
+                    'with contribution stats: \n- topic1\n- topic2\nUnique '
+                    'valid topic IDs with contribution stats: \n- topic1\n- '
+                    'topic2\n')),
             job_run_result.JobRunResult(
-                stdout=("Question reviewer ID: user2.\nUnique topic IDs " +
-                    "with contribution stats: \n- topic1\nUnique valid " +
-                    "topic IDs with contribution stats: \n- topic1\n")),
+                stdout=(
+                    'Question reviewer ID: user2.\nUnique topic IDs '
+                    'with contribution stats: \n- topic1\nUnique valid '
+                    'topic IDs with contribution stats: \n- topic1\n')),
             job_run_result.JobRunResult(
-                stdout=("Question reviewer ID: user3.\nUnique topic IDs " +
-                    "with contribution stats: \n- topic1\nUnique valid " +
-                    "topic IDs with contribution stats: \n- topic1\n")),
+                stdout=(
+                    'Question reviewer ID: user3.\nUnique topic IDs '
+                    'with contribution stats: \n- topic1\nUnique valid '
+                    'topic IDs with contribution stats: \n- topic1\n')),
             job_run_result.JobRunResult(
-                stdout=("Question submitter ID: user1.\nUnique skill IDs " +
-                    "with question suggestion: \n- exp1\nUnique topic IDs " +
-                    "with contribution stats: \n- topic1\n- topic2\nUnique " +
-                    "valid topic IDs with contribution stats: \n- topic1\n- " +
-                    "topic2\n")),
+                stdout=(
+                    'Question submitter ID: user1.\nUnique skill IDs '
+                    'with question suggestion: \n- exp1\nUnique topic IDs '
+                    'with contribution stats: \n- topic1\n- topic2\nUnique '
+                    'valid topic IDs with contribution stats: \n- topic1\n- '
+                    'topic2\n')),
             job_run_result.JobRunResult(
-                stdout=("Question submitter ID: user2.\nUnique skill IDs " +
-                    "with question suggestion: \nUnique topic IDs with " +
-                    "contribution stats: \n- topic1\nUnique valid topic IDs " +
-                    "with contribution stats: \n- topic1\n")),
+                stdout=(
+                    'Question submitter ID: user2.\nUnique skill IDs '
+                    'with question suggestion: \nUnique topic IDs with '
+                    'contribution stats: \n- topic1\nUnique valid topic IDs '
+                    'with contribution stats: \n- topic1\n')),
             job_run_result.JobRunResult(
-                stdout=("Question submitter ID: user3.\nUnique skill IDs " +
-                    "with question suggestion: \nUnique topic IDs with " +
-                    "contribution stats: \n- topic1\nUnique valid topic IDs " +
-                    "with contribution stats: \n- topic1\n"))
+                stdout=(
+                    'Question submitter ID: user3.\nUnique skill IDs '
+                    'with question suggestion: \nUnique topic IDs with '
+                    'contribution stats: \n- topic1\nUnique valid topic IDs '
+                    'with contribution stats: \n- topic1\n'))
         ])
 
     def test_job_for_recent_review_outcomes_limit(self) -> None:
@@ -1189,8 +1202,9 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             job_run_result.JobRunResult(
                 stdout='Question Submitter Models SUCCESS: 1'),
             job_run_result.JobRunResult(
-                stdout=("Question submitter ID: user1.\nUnique skill IDs " +
-                "with question suggestion: \n- exp1\nUnique topic IDs with " +
-                "contribution stats: \n- topic1\nUnique valid topic IDs " +
-                "with contribution stats: \n- topic1\n")),
+                stdout=(
+                    'Question submitter ID: user1.\nUnique skill IDs '
+                    'with question suggestion: \n- exp1\nUnique topic IDs '
+                    'with contribution stats: \n- topic1\nUnique valid '
+                    'topic IDs with contribution stats: \n- topic1\n')),
         ])

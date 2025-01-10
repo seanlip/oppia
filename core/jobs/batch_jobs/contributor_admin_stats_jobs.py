@@ -21,8 +21,8 @@ from __future__ import annotations
 import logging
 
 from core import feconf
-from core.domain import topic_fetchers
 from core.domain import skill_services
+from core.domain import topic_fetchers
 from core.jobs import base_jobs
 from core.jobs.io import ndb_io
 from core.jobs.transforms import job_result_transforms
@@ -30,8 +30,7 @@ from core.jobs.types import job_run_result
 from core.platform import models
 
 import apache_beam as beam
-
-from typing import Iterable, Tuple
+from typing import Iterable, Tuple, Union
 
 MYPY = False
 if MYPY: # pragma: no cover
@@ -197,7 +196,8 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
 
         question_submitter_total_stats_models = (
             question_submitter_total_stats_models_and_logs
-            | 'Unpack contribution models' >> beam.Map(lambda element: element[0])
+            | 'Unpack contribution models' >> beam.Map(
+                lambda element: element[0])
         )
 
         question_submitter_debug_logs = (
@@ -526,8 +526,9 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
         question_contribution_stats:
             Iterable[suggestion_models.QuestionContributionStatsModel],
         question_general_suggestions_stats:
-            Iterable[suggestion_models.GeneralSuggestionModel]) -> Tuple[
-        suggestion_models.QuestionSubmitterTotalContributionStatsModel, str]:
+            Iterable[suggestion_models.GeneralSuggestionModel]) -> Union[
+                Tuple[None, str],
+                Tuple[suggestion_models.QuestionSubmitterTotalContributionStatsModel, str]]:  # pylint: disable=line-too-long
         """Transforms QuestionContributionStatsModel and GeneralSuggestionModel
         to QuestionSubmitterTotalContributionStatsModel.
 
@@ -601,8 +602,8 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
         debug_logs: str = (
             'Question submitter ID: %s.\n' % contributor_user_id)
 
-        skill_ids_with_question_suggestions = set(
-            [v.target_id for v in general_suggestion_stats])
+        skill_ids_with_question_suggestions = {
+            v.target_id for v in general_suggestion_stats}
         debug_logs += (
             'Unique skill IDs with question suggestion: \n')
         with datastore_services.get_ndb_context():
@@ -610,16 +611,17 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 debug_logs += (
                     '- %s\n' % skill_id)
                 topic_assignments = (
-                    skill_services.get_all_topic_assignments_for_skill(skill_id))
+                    skill_services.get_all_topic_assignments_for_skill(
+                        skill_id))
                 for topic_assignment in topic_assignments:
                     debug_logs += (
                         '-- Topic ID: %s\n' % topic_assignment.topic_id)
 
-        topic_ids_with_contribution_stats = set(
-            [v.topic_id for v in question_contribution_stats])
+        topic_ids_with_contribution_stats = {
+            v.topic_id for v in question_contribution_stats}
         debug_logs += (
             'Unique topic IDs with contribution stats: \n')
-        for topic_id in topic_ids_with_contribution_stats:  
+        for topic_id in topic_ids_with_contribution_stats:
             debug_logs += (
                 '- %s\n' % topic_id)
 
@@ -628,11 +630,11 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 stat.topic_id):
                 question_contribution_stats.remove(stat)
 
-        valid_topic_ids_with_contribution_stats = set(
-            [v.topic_id for v in question_contribution_stats])
+        valid_topic_ids_with_contribution_stats = {
+            v.topic_id for v in question_contribution_stats}
         debug_logs += (
             'Unique valid topic IDs with contribution stats: \n')
-        for topic_id in valid_topic_ids_with_contribution_stats:  
+        for topic_id in valid_topic_ids_with_contribution_stats:
             debug_logs += (
                 '- %s\n' % topic_id)
 
@@ -649,14 +651,12 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 v.accepted_questions_without_reviewer_edits_count
                     for v in question_contribution_stats)
             first_contribution_date = min(
-                (v.first_contribution_date for v in question_contribution_stats), 
-                default=None
-            ) if len(question_contribution_stats) else None
+                (v.first_contribution_date for v in (
+                    question_contribution_stats)))
 
             last_contribution_date = max(
-                (v.last_contribution_date for v in question_contribution_stats),
-                default=None
-            ) if len(question_contribution_stats) else None
+                (v.last_contribution_date for v in (
+                    question_contribution_stats)))
 
             # Weights of overall_accuracy as documented in
             # https://docs.google.com/document/d/19lCEYQUgV7_DwIK_0rz3zslRHX2qKOHn-t9Twpi0qu0/edit.
@@ -668,7 +668,7 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
 
             with datastore_services.get_ndb_context():
                 question_submit_stats_models = (
-                    suggestion_models.QuestionSubmitterTotalContributionStatsModel(
+                    suggestion_models.QuestionSubmitterTotalContributionStatsModel( # pylint: disable=line-too-long
                     id=entity_id,
                     contributor_id=contributor_user_id,
                     topic_ids_with_question_submissions=topic_ids,
@@ -686,7 +686,7 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 )
                 question_submit_stats_models.update_timestamps()
                 return (question_submit_stats_models, debug_logs)
-        
+
         except Exception as e:
             logging.exception(e)
             return (None, debug_logs)
@@ -695,8 +695,9 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
     def transform_question_review_stats(
         reviewer_user_id: str,
         question_reviewer_stats:
-            Iterable[suggestion_models.QuestionReviewStatsModel]) -> Tuple[
-        suggestion_models.QuestionReviewerTotalContributionStatsModel, str]:
+            Iterable[suggestion_models.QuestionReviewStatsModel]) -> Union[
+                Tuple[None, str],
+                Tuple[suggestion_models.QuestionReviewerTotalContributionStatsModel, str]]:  # pylint: disable=line-too-long
         """Transforms QuestionReviewStatsModel to
         QuestionReviewerTotalContributionStatsModel.
 
@@ -725,12 +726,12 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
         # Collects all the debug logs.
         debug_logs: str = (
             'Question reviewer ID: %s.\n' % reviewer_user_id)
-        
-        topic_ids_with_reviewer_stats = set(
-            [v.topic_id for v in question_reviewer_stats])
+
+        topic_ids_with_reviewer_stats = {
+            v.topic_id for v in question_reviewer_stats}
         debug_logs += (
             'Unique topic IDs with contribution stats: \n')
-        for topic_id in topic_ids_with_reviewer_stats:  
+        for topic_id in topic_ids_with_reviewer_stats:
             debug_logs += (
                 '- %s\n' % topic_id)
 
@@ -738,12 +739,12 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
             if GenerateContributorAdminStatsJob.not_validate_topic(
                 stat.topic_id):
                 question_reviewer_stats.remove(stat)
-        
-        valid_topic_ids_with_reviewer_stats = set(
-            [v.topic_id for v in question_reviewer_stats])
+
+        valid_topic_ids_with_reviewer_stats = {
+            v.topic_id for v in question_reviewer_stats}
         debug_logs += (
             'Unique valid topic IDs with contribution stats: \n')
-        for topic_id in valid_topic_ids_with_reviewer_stats:  
+        for topic_id in valid_topic_ids_with_reviewer_stats:
             debug_logs += (
                 '- %s\n' % topic_id)
 
@@ -763,17 +764,13 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 reviewed_questions_count - accepted_questions_count
             )
             first_contribution_date = min(
-                (v.first_contribution_date for v in question_reviewer_stats),
-                default=None
-            ) if len(question_reviewer_stats) else None
+                (v.first_contribution_date for v in question_reviewer_stats))
             last_contribution_date = max(
-                (v.last_contribution_date for v in question_reviewer_stats),
-                default=None
-            ) if len(question_reviewer_stats) else None
+                (v.last_contribution_date for v in question_reviewer_stats))
 
             with datastore_services.get_ndb_context():
                 question_review_stats_models = (
-                    suggestion_models.QuestionReviewerTotalContributionStatsModel(
+                    suggestion_models.QuestionReviewerTotalContributionStatsModel( # pylint: disable=line-too-long
                     id=entity_id,
                     contributor_id=reviewer_user_id,
                     topic_ids_with_question_reviews=topic_ids,
@@ -788,7 +785,7 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 )
                 question_review_stats_models.update_timestamps()
                 return (question_review_stats_models, debug_logs)
-            
+
         except Exception as e:
             logging.exception(e)
             return (None, debug_logs)
