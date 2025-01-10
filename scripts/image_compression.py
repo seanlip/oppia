@@ -1,19 +1,40 @@
+# coding: utf-8
+#
+# Copyright 2023 The Oppia Authors. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS-IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""Script to compress images in the repository using GraphicsMagick."""
+
+from __future__ import annotations
 import os
-import subprocess
-from pathlib import Path
-from PIL import Image
-import tempfile
-import sys
+import pathlib
 import shutil
+import subprocess
+import sys
+import tempfile
+from PIL import Image # pylint: disable=import-error
+
 
 def check_graphicsmagick():
-    """Verify GraphicsMagick installation and return full path to gm executable."""
-    # First check if 'gm' is in PATH
+    """Verify GraphicsMagick installation
+        and return full path to gm executable.
+    """
+
     gm_path = shutil.which('gm')
     if gm_path:
         return gm_path
 
-    # Common installation paths to check
     common_paths = [
         '/usr/bin/gm',
         '/usr/local/bin/gm',
@@ -26,44 +47,44 @@ def check_graphicsmagick():
             return path
 
     raise RuntimeError(
-        "GraphicsMagick ('gm') not found in PATH or common locations. "
-        "Please ensure GraphicsMagick is installed and accessible.\n"
-        "Installation commands:\n"
-        "- Ubuntu/Debian: sudo apt-get install graphicsmagick\n"
-        "- macOS: brew install graphicsmagick\n"
-        "- Windows: choco install graphicsmagick"
+        'GraphicsMagick not found in PATH or common locations.'
+        'Please ensure GraphicsMagick is installed and accessible.\n'
     )
 
+
 def check_and_compress_images(repo_path):
-    """Check and compress images using GraphicsMagick with lossless compression for specific formats."""
+    """Check and compress images using GraphicsMagick
+        with lossless compression for specific formats.
+    """
 
     try:
-        gm_path = check_graphicsmagick()
+        check_graphicsmagick()
     except RuntimeError as e:
-        print(f"ERROR: {e}", file=sys.stderr)
+        print(f'ERROR: {e}', file=sys.stderr)
         sys.exit(1)
 
     compressed_images = []
-    supported_extensions = {".png", ".jpg", ".jpeg", ".webp"}
+    supported_extensions = {'.png', '.jpg', '.jpeg', '.webp'}
 
-    for file_path in Path(repo_path).glob("**/*.*"):
+    for file_path in pathlib.Path(repo_path).glob('**/*.*'):
         if file_path.suffix.lower() not in supported_extensions:
             continue
 
         try:
-            with Image.open(file_path) as img:
-                with tempfile.TemporaryDirectory() as tmpdirname:
-                    temp_compressed = Path(tmpdirname) / f"compressed_{file_path.name}"
+            with Image.open(file_path):
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    temp_compressed = (
+                        pathlib.Path(tmpdir) / f'compressed_{file_path.name}'
+                    )
 
-                    # Configure compression based on file type
                     if file_path.suffix.lower() == '.png':
-                            cmd = [
-                                'gm', 'convert',
-                                str(file_path),
-                                '-strip',
-                                '-compress', 'Zip',
-                                str(temp_compressed)
-                            ]
+                        cmd = [
+                            'gm', 'convert',
+                            str(file_path),
+                            '-strip',
+                            '-compress', 'Zip',
+                            str(temp_compressed)
+                        ]
                     elif file_path.suffix.lower() in {'.jpg', '.webp'}:
                         cmd = [
                             'gm', 'convert',
@@ -73,7 +94,9 @@ def check_and_compress_images(repo_path):
                             str(temp_compressed)
                         ]
 
-                    result = subprocess.run(cmd, capture_output=True, text=True)
+                    result = subprocess.run(
+                        cmd, capture_output=True, text=True, check=False
+                        )
 
                     if result.returncode == 0 and temp_compressed.exists():
                         original_size = file_path.stat().st_size
@@ -90,38 +113,38 @@ def check_and_compress_images(repo_path):
                                 'original_size': original_size,
                                 'new_size': new_size
                             })
-                            print(f"[COMPRESSED] {file_path}")
-                            print(f"Size: {original_size/1024:.1f}KB → {new_size/1024:.1f}KB ({(1 - new_size/original_size)*100:.1f}%)")
-                            # print(f"  Original: {original_size} bytes")
-                            # print(f"  New: {new_size} bytes")
-                            # print(f"  Reduction: {(1 - new_size/original_size)*100:.2f}%")
+                            print(f'[COMPRESSED] {file_path}')
+                            print(
+                                f'Size: {original_size/1024:.1f}KB '
+                                f'→ {new_size/1024:.1f}KB '
+                                f'({(1 - new_size/original_size)*100:.1f}%)'
+                            )
 
         except Exception as e:
-            print(f"[ERROR] Could not process {file_path}: {e}")
+            print(f'[ERROR] Could not process {file_path}: {e}')
 
     return compressed_images
 
+
 def main():
-    repo_path = Path("./assets")
-    # run this compress funnction till compressed image is not empty
+    """Main function to check and compress images in the repository."""
+    repo_path = pathlib.Path('./assets')
     compressed_images = check_and_compress_images(repo_path)
-    i=1
+    i = 1
     while compressed_images:
-        print("\nSummary of compressed images on iteration# ",i)
+        print('\nSummary of compressed images on iteration# ', i)
         total_saved = 0
         for image in compressed_images:
-            saved = image['original_size'] - image['new_size']  
+            saved = image['original_size'] - image['new_size']
             total_saved += saved
-            # print(f"- {image['path']}: Saved {saved} bytes")
-        print(f"Total space saved: {total_saved} bytes")
+        print(f'Total space saved: {total_saved} bytes')
         compressed_images = check_and_compress_images(repo_path)
-        i+=1
+        i = i + 1
 
     if not compressed_images:
-        print("\nNo images required compression.")
+        print('\nNo images required compression.')
         return
 
 
-
-if __name__ == "__main__":
+if __name__ == '__main__': # pragma: no cover
     main()
