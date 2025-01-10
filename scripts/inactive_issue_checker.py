@@ -21,8 +21,8 @@ from __future__ import annotations
 import datetime
 import os
 import requests
-
-INACTIVE_DAYS = 0.7
+import logging
+INACTIVE_DAYS = 7
 
 
 def inactive_issue_checker(
@@ -52,7 +52,7 @@ def inactive_issue_checker(
             continue
 
         issue_number = issue['number']
-        print(f'Checking issue #{issue_number}')
+        logging.info(f'Checking issue #{issue_number}')
         events_url = issue['events_url']
         events_response = requests.get(events_url, headers=headers, timeout=10)
         events = events_response.json()
@@ -83,7 +83,7 @@ def inactive_issue_checker(
             collaborator['login'] == assignee_login for collaborator
             in collaborators
         ):
-            print(
+            logging.info(
                 f'Skipping issue #{issue_number} as '
                 f'{assignee_login} is a collaborator.'
             )
@@ -93,16 +93,16 @@ def inactive_issue_checker(
         pulls_response = requests.get(pulls_url, headers=headers, timeout=10)
         pull_requests = pulls_response.json()
         related_pull_requests = [
-            pr for pr in pull_requests
-            if pr.get('body') and issue_number in {
+            pull_reques for pull_reques in pull_requests
+            if pull_reques.get('body') and issue_number in {
                 int(word.strip('#'))
-                for word in pr.get('body', '').split()
+                for word in pull_reques.get('body', '').split()
                 if word.strip('#').isdigit()
             }
         ]
 
         if related_pull_requests:
-            print(
+            logging.info(
                 f'Skipping issue #{issue_number} '
                 'as there are related open pull requests.'
             )
@@ -133,17 +133,17 @@ def inactive_issue_checker(
                         json={'body': comment_body}, timeout=10
                     )
 
-                    print(
+                    logging.info(
                         f'Unassigned issue #{issue_number} from '
                         f'{assignee_login} due to inactivity.'
                     )
                 else:
-                    print(
+                    logging.error(
                         f'Failed to unassign issue #{issue_number}: '
                     )
 
             except Exception as error:
-                print(f'Error processing issue #{issue_number}: {error}')
+                logging.error(f'Error processing issue #{issue_number}: {error}')
 
 
 if __name__ == '__main__': # pragma: no cover
