@@ -1081,6 +1081,9 @@ export class ExplorationEditor extends BaseUser {
     responseIsCorrect: boolean,
     isLastResponse: boolean = true
   ): Promise<void> {
+    document.addEventListener('focus', function() {
+      console.log('focused: ', document.activeElement);
+    }, true);
     switch (interactionType) {
       case 'Number Input':
         await this.page.waitForSelector(floatFormInput);
