@@ -69,6 +69,13 @@ jobs:
           git rebase origin/${{ github.head_ref }}
           git push -u origin feat#21274 --no-verify
 
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.BOT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
+            -d '{"body":"Over-Sized image on PR is compressed. Thanks."}'
+
       - name: Comment on PR
         if: steps.compression.outputs.changes_made != '0' && github.event_name == 'pull_request'
         uses: actions/github-script@v6
