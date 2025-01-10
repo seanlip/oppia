@@ -61,21 +61,21 @@ describe('Exploration Editor', function () {
       'exploration_editor@example.com',
       [ROLES.CURRICULUM_ADMIN]
     );
-    // curriculumAdmin = await UserFactory.createNewUser(
-    //   'curriculumAdm',
-    //   'curriculum_admin@example.com',
-    //   [ROLES.CURRICULUM_ADMIN]
-    // );
-    // releaseCoordinator = await UserFactory.createNewUser(
-    //   'releaseCoordinator',
-    //   'release_coordinator@example.com',
-    //   [ROLES.RELEASE_COORDINATOR]
-    // );
+    curriculumAdmin = await UserFactory.createNewUser(
+      'curriculumAdm',
+      'curriculum_admin@example.com',
+      [ROLES.CURRICULUM_ADMIN]
+    );
+    releaseCoordinator = await UserFactory.createNewUser(
+      'releaseCoordinator',
+      'release_coordinator@example.com',
+      [ROLES.RELEASE_COORDINATOR]
+    );
 
-    // // Enable the feature flag.
-    // await releaseCoordinator.enableFeatureFlag(
-    //   'exploration_editor_can_tag_misconceptions'
-    // );
+    // Enable the feature flag.
+    await releaseCoordinator.enableFeatureFlag(
+      'exploration_editor_can_tag_misconceptions'
+    );
 
     // Navigate to the creator dashboard and create a new exploration.
     await explorationEditor.navigateToCreatorDashboardPage();
