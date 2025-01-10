@@ -52,7 +52,7 @@ def inactive_issue_checker(
             continue
 
         issue_number = issue['number']
-        logging.info(f'Checking issue #{issue_number}')
+        logging.info('Checking issue #%s', issue_number)
         events_url = issue['events_url']
         events_response = requests.get(events_url, headers=headers, timeout=10)
         events = events_response.json()
@@ -84,8 +84,8 @@ def inactive_issue_checker(
             in collaborators
         ):
             logging.info(
-                f'Skipping issue #{issue_number} as '
-                f'{assignee_login} is a collaborator.'
+                'Skipping issue #%s as %s is a collaborator.',
+                issue_number, assignee_login
             )
             continue
 
@@ -103,8 +103,8 @@ def inactive_issue_checker(
 
         if related_pull_requests:
             logging.info(
-                f'Skipping issue #{issue_number} '
-                'as there are related open pull requests.'
+                'Skipping issue #%s as there are related open pull requests.',
+                issue_number
             )
             continue
 
@@ -134,16 +134,20 @@ def inactive_issue_checker(
                     )
 
                     logging.info(
-                        f'Unassigned issue #{issue_number} from '
-                        f'{assignee_login} due to inactivity.'
+                        'Unassigned issue #%s from %s due to inactivity.',
+                        issue_number, assignee_login
                     )
                 else:
                     logging.error(
-                        f'Failed to unassign issue #{issue_number}: '
+                        'Failed to unassign issue #%s:',
+                        issue_number
                     )
 
             except Exception as error:
-                logging.error(f'Error processing issue #{issue_number}: {error}')
+                logging.error(
+                    'Error processing issue #%s: %s',
+                    issue_number, error
+                )
 
 
 if __name__ == '__main__': # pragma: no cover
