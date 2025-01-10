@@ -1084,14 +1084,14 @@ export class ExplorationEditor extends BaseUser {
      await this.page.evaluate(() => {
       const logActiveElement = () => {
         const active = document.activeElement;
-        console.log('Focus changed to:', {
-          tagName: active?.tagName,
-          id: active?.id,
-          className: active?.className,
-          type: (active as HTMLInputElement)?.type,
-          value: (active as HTMLInputElement)?.value,
-          timestamp: new Date().toISOString()
-        });
+        showMessage(`Focus changed to:, ${
+          active?.tagName,
+          active?.id,
+          active?.className,
+          (active as HTMLInputElement)?.type,
+          (active as HTMLInputElement)?.value,
+          new Date().toISOString()
+        }`);
       };
       document.addEventListener('focusin', logActiveElement);
       logActiveElement();
