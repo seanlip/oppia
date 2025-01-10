@@ -1081,10 +1081,12 @@ export class ExplorationEditor extends BaseUser {
     responseIsCorrect: boolean,
     isLastResponse: boolean = true
   ): Promise<void> {
+    this.page.on('console', msg => console.log(`Browser Log: ${msg.text()}`));
      await this.page.evaluate(() => {
       const logActiveElement = () => {
-        const active = document.activeElement.className;
-        showMessage(`Focus changed to:, ${active}`);
+        const activeTag = document.activeElement?.tagName;
+        const activeClass = document.activeElement?.className;
+        console.log(`Focus changed to: Tag: ${activeTag} Class: ${activeClass}`);
       };
       document.addEventListener('focusin', logActiveElement);
       logActiveElement();
@@ -1169,6 +1171,7 @@ export class ExplorationEditor extends BaseUser {
     await this.page.evaluate(() => {
       document.removeEventListener('focusin', document['logActiveElement']);
     });
+    this.page.removeListener('console', msg => console.log(`Browser Log: ${msg.text()}`));
   }
 
   /**
