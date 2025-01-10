@@ -30,6 +30,7 @@ import {ChangeDetectorRef, ElementRef, NO_ERRORS_SCHEMA} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {AppConstants} from 'app.constants';
 import {AlertsService} from 'services/alerts.service';
+import {ContextService} from 'services/context.service';
 import {ContributionAndReviewService} from '../services/contribution-and-review.service';
 import {LanguageUtilService} from 'domain/utilities/language-util.service';
 import {SiteAnalyticsService} from 'services/site-analytics.service';
@@ -83,6 +84,7 @@ describe('Translation Suggestion Review Modal Component', function () {
   let snackBarSpy: jasmine.Spy;
   let snackBar: MatSnackBar;
   let mockPlatformFeatureService = new MockPlatformFeatureService();
+  let contextService: ContextService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -99,6 +101,7 @@ describe('Translation Suggestion Review Modal Component', function () {
         SiteAnalyticsService,
         ThreadDataBackendApiService,
         UserService,
+        ContextService,
         {
           provide: ChangeDetectorRef,
           useValue: changeDetectorRef,
@@ -126,6 +129,7 @@ describe('Translation Suggestion Review Modal Component', function () {
     userService = TestBed.inject(UserService);
     contributionAndReviewService = TestBed.inject(ContributionAndReviewService);
     languageUtilService = TestBed.inject(LanguageUtilService);
+    contextService = TestBed.inject(ContextService);
 
     spyOn(
       siteAnalyticsService,
@@ -305,21 +309,6 @@ describe('Translation Suggestion Review Modal Component', function () {
         expect(component.remainingContributionIds).toEqual(['suggestion_3']);
       }
     );
-
-    it('should allow the update button if images are added instead of being removed', () => {
-      component.translationHtml = '<p>Content without an image</p>';
-      component.ngOnInit();
-
-      component.startedEditing = true;
-      component.editedContent = {
-        html: `
-            <p>Updated content with an image</p>
-            <oppia-noninteractive-image alt-with-value="&amp;quot;Image description&amp;quot;" filepath-with-value="&amp;quot;img_20241109_030945_oc195e5356_height_350_width_450.svg&amp;quot;"></oppia-noninteractive-image>
-          `,
-      };
-
-      expect(component.isUpdateDisabled).toBeFalse();
-    });
 
     it(
       'should be able to navigate to only previous suggestion ' +
@@ -2735,6 +2724,17 @@ describe('Translation Suggestion Review Modal Component', function () {
       </oppia-noninteractive-image>
     `;
     const htmlWithoutImage = '<p>Content without image</p>';
+    const htmlWithTwoImages = `
+    <p>Content with two images</p>
+    <oppia-noninteractive-image
+      alt-with-value="&amp;quot;Image 1&amp;quot;"
+      filepath-with-value="&amp;quot;img1.svg&amp;quot;">
+    </oppia-noninteractive-image>
+    <oppia-noninteractive-image
+      alt-with-value="&amp;quot;Image 2&amp;quot;"
+      filepath-with-value="&amp;quot;img2.svg&amp;quot;">
+    </oppia-noninteractive-image>
+  `;
 
     beforeEach(() => {
       component.initialSuggestionId = 'suggestion_1';
@@ -2751,7 +2751,7 @@ describe('Translation Suggestion Review Modal Component', function () {
             suggestion_type: 'translate_content',
             change_cmd: {
               content_id: 'hint_1',
-              content_html: '<p>content</p>',
+              content_html: htmlWithImage,
               translation_html: htmlWithImage,
               state_name: 'StateName',
               cmd: 'edit_state_property',
@@ -2778,7 +2778,7 @@ describe('Translation Suggestion Review Modal Component', function () {
             suggestion_type: 'translate_content',
             change_cmd: {
               content_id: 'hint_2',
-              content_html: '<p>content</p>',
+              content_html: htmlWithoutImage,
               translation_html: htmlWithoutImage,
               state_name: 'StateName',
               cmd: 'edit_state_property',
@@ -2793,147 +2793,204 @@ describe('Translation Suggestion Review Modal Component', function () {
             chapter_title: 'chapter_2',
           },
         },
+        suggestion_3: {
+          suggestion: {
+            author_name: 'author_name',
+            language_code: 'language_code',
+            last_updated_msecs: 1559074000000,
+            status: 'status',
+            suggestion_id: 'suggestion_3',
+            target_id: '3',
+            target_type: 'target_type',
+            suggestion_type: 'translate_content',
+            change_cmd: {
+              content_id: 'hint_3',
+              content_html: htmlWithTwoImages,
+              translation_html: htmlWithTwoImages,
+              state_name: 'StateName',
+              cmd: 'edit_state_property',
+              data_format: 'html',
+              language_code: 'language_code',
+            },
+            exploration_content_html: '<p>content</p>',
+          },
+          details: {
+            topic_name: 'topic_3',
+            story_title: 'story_3',
+            chapter_title: 'chapter_3',
+          },
+        },
       };
     });
 
-    it('should initialize with correct image count', () => {
-      component.translationHtml = htmlWithImage;
-
+    it('should initialize with correct image count from original content', () => {
       expect(component.initialSuggestionId).toBeDefined();
       expect(component.suggestionIdToContribution).toBeDefined();
       expect(component.suggestionIdToContribution.suggestion_1).toBeDefined();
-      expect(component.translationHtml).toBeDefined();
+      expect(component.suggestionIdToContribution.suggestion_1.suggestion).toBeDefined();
+      expect(component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html
+      ).toBe(htmlWithImage);
       expect(component.initialImageCount).toBe(0);
 
       component.ngOnInit();
-
       expect(component.initialImageCount).toBe(1);
     });
 
-    it('should disable update button when editing removes images', () => {
-      component.translationHtml = htmlWithImage;
-
-      expect(component.translationHtml).toBeDefined();
-      expect(component.translationHtml).toContain(
-        '<oppia-noninteractive-image'
-      );
+    it('should detect image count mismatch when removing images', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html
+      ).toBe(htmlWithImage);
       expect(component.initialImageCount).toBe(0);
 
       component.ngOnInit();
+      expect(component.initialImageCount).toBe(1);
 
+      component.editedContent = { html: htmlWithoutImage };
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(htmlWithoutImage);
+      expect(component.isImageCountMismatched()).toBeTrue();
+    });
+
+    it('should detect image count mismatch when adding images', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      component.initialSuggestionId = 'suggestion_2';
+      expect(
+        component.suggestionIdToContribution.suggestion_2.suggestion.change_cmd.content_html
+      ).toBe(htmlWithoutImage);
+      expect(component.initialImageCount).toBe(0);
+
+      component.ngOnInit();
+      expect(component.initialImageCount).toBe(0);
+
+      component.editedContent = { html: htmlWithImage };
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(htmlWithImage);
+      expect(component.isImageCountMismatched()).toBeTrue();
+    });
+
+    it('should detect no mismatch when image count is the same', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html
+      ).toBe(htmlWithImage);
+      expect(component.initialImageCount).toBe(0);
+
+      component.ngOnInit();
+      expect(component.initialImageCount).toBe(1);
+
+      component.editedContent = { html: htmlWithImage };
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(htmlWithImage);
+      expect(component.isImageCountMismatched()).toBeFalse();
+    });
+
+    it('should handle multiple images correctly', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      component.initialSuggestionId = 'suggestion_3';
+      expect(
+        component.suggestionIdToContribution.suggestion_3.suggestion.change_cmd.content_html
+      ).toBe(htmlWithTwoImages);
+      expect(component.initialImageCount).toBe(0);
+  
+      component.ngOnInit();
+      expect(component.initialImageCount).toBe(2);
+
+      component.editedContent = { html: htmlWithTwoImages };
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(htmlWithTwoImages);
+      expect(component.isImageCountMismatched()).toBeFalse();
+    });
+
+    it('should disable update button when image count mismatches', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html
+      ).toBe(htmlWithImage);
+      expect(component.initialImageCount).toBe(0);
+      expect(component.startedEditing).toBeFalse();
+
+      component.ngOnInit();
       expect(component.initialImageCount).toBe(1);
 
       component.startedEditing = true;
-      component.editedContent = {html: htmlWithoutImage};
+      expect(component.startedEditing).toBeTrue();
 
-      expect(component.editedContent.html).toBeDefined();
-      expect(component.editedContent.html).not.toContain(
-        '<oppia-noninteractive-image'
-      );
-
+      component.editedContent = { html: htmlWithoutImage };
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(htmlWithoutImage);
       expect(component.isUpdateDisabled).toBeTrue();
     });
 
-    it('should enable update button when no images were removed', () => {
-      component.translationHtml = htmlWithImage;
-
-      expect(component.translationHtml).toBeDefined();
-      expect(component.translationHtml).toContain(
-        '<oppia-noninteractive-image'
-      );
+    it('should handle successful update when image counts match', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html).toBe(htmlWithImage);
       expect(component.initialImageCount).toBe(0);
+      expect(component.errorFound).toBeFalse();
+      
+      const updateSpy = spyOn(contributionAndReviewService, 'updateTranslationSuggestionAsync');
+      expect(updateSpy).not.toHaveBeenCalled();
 
       component.ngOnInit();
-
       expect(component.initialImageCount).toBe(1);
 
-      component.startedEditing = true;
-      component.editedContent = {html: htmlWithImage};
-
-      expect(component.editedContent.html).toBeDefined();
-      expect(component.editedContent.html).toContain(
-        '<oppia-noninteractive-image'
-      );
-
-      expect(component.isUpdateDisabled).toBeFalse();
-    });
-
-    it('should show error message when attempting to update with removed images', () => {
-      component.translationHtml = htmlWithImage;
-
-      expect(component.translationHtml).toBeDefined();
-      expect(component.translationHtml).toContain(
-        '<oppia-noninteractive-image'
-      );
-      expect(component.initialImageCount).toBe(0);
-
-      component.ngOnInit();
-
-      expect(component.initialImageCount).toBe(1);
-
-      component.editedContent = {html: htmlWithoutImage};
-
-      expect(component.editedContent.html).toBeDefined();
-      expect(component.editedContent.html).not.toContain(
-        '<oppia-noninteractive-image'
-      );
+      component.editedContent = { html: htmlWithImage };
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(htmlWithImage);
 
       component.updateSuggestion();
+      expect(component.errorFound).toBeFalse();
+      expect(updateSpy).toHaveBeenCalledWith(
+        component.initialSuggestionId,
+        htmlWithImage,
+        jasmine.any(Function),
+        jasmine.any(Function)
+      );
+    });
+  
+    it('should handle malformed HTML content', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html).toBe(htmlWithImage);
+      expect(component.initialImageCount).toBe(0);
 
+      component.ngOnInit();
+      expect(component.initialImageCount).toBe(1);
+
+      const malformedHtml = '<oppia-noninteractive-image alt-with-value="test">';
+      component.editedContent = { html: malformedHtml };
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(malformedHtml);
+      expect(component.isImageCountMismatched()).toBeTrue();
+    });
+
+    it(
+      'should show error message when attempting update with mismatched images',
+      () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html
+      ).toBe(htmlWithImage);
+    
+      component.translationHtml = htmlWithImage;
+      component.ngOnInit();
+    
+      component.editedContent = { html: htmlWithoutImage };
+      component.updateSuggestion();
+    
       expect(component.errorMessage).toBe(
-        'Removing images from the translation is not allowed.'
+        'The number of images in the translation must match the original content.'
       );
       expect(component.errorFound).toBeTrue();
-    });
-
-    it('should allow update when no images were present initially', () => {
-      component.initialSuggestionId = 'suggestion_2';
-      component.translationHtml = htmlWithoutImage;
-
-      expect(component.translationHtml).toBeDefined();
-      expect(component.translationHtml).not.toContain(
-        '<oppia-noninteractive-image'
-      );
-      expect(component.initialImageCount).toBe(0);
-
-      component.ngOnInit();
-
-      expect(component.initialImageCount).toBe(0);
-
-      component.startedEditing = true;
-      component.editedContent = {html: htmlWithoutImage};
-
-      expect(component.editedContent.html).toBeDefined();
-      expect(component.editedContent.html).not.toContain(
-        '<oppia-noninteractive-image'
-      );
-
-      expect(component.isUpdateDisabled).toBeFalse();
-    });
-
-    it('should allow update when adding images', () => {
-      component.initialSuggestionId = 'suggestion_2';
-      component.translationHtml = htmlWithoutImage;
-
-      expect(component.translationHtml).toBeDefined();
-      expect(component.translationHtml).not.toContain(
-        '<oppia-noninteractive-image'
-      );
-      expect(component.initialImageCount).toBe(0);
-
-      component.ngOnInit();
-
-      expect(component.initialImageCount).toBe(0);
-
-      component.startedEditing = true;
-      component.editedContent = {html: htmlWithImage};
-
-      expect(component.editedContent.html).toBeDefined();
-      expect(component.editedContent.html).toContain(
-        '<oppia-noninteractive-image'
-      );
-
-      expect(component.isUpdateDisabled).toBeFalse();
     });
   });
 });

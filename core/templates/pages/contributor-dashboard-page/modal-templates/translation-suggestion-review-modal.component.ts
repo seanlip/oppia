@@ -374,29 +374,24 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     }
   }
 
-  isImageRemoved(): boolean {
+  isImageCountMismatched(): boolean {
     const originalContentHtml = this.activeSuggestion.change_cmd.content_html;
-    return this.htmlParsingService.isImageRemoved(
+    const updatedTranslationHtml = this.editedContent.html;
+    return this.htmlParsingService.isImageCountMismatched(
       originalContentHtml as string,
-      this.editedContent.html
+      updatedTranslationHtml
     );
   }
 
   get isUpdateDisabled(): boolean {
-    return this.startedEditing && this.isImageRemoved();
+    return this.startedEditing && this.isImageCountMismatched();
   }
 
   updateSuggestion(): void {
     const updatedTranslation = this.editedContent.html;
     const suggestionId = this.activeSuggestion.suggestion_id;
 
-    const originalContentHtml = this.activeSuggestion.change_cmd.content_html;
-    const originalImageCount = this.htmlParsingService.countImageTags(
-      originalContentHtml as string
-    );
-    const updatedImageCount =
-      this.htmlParsingService.countImageTags(updatedTranslation);
-    if (updatedImageCount !== originalImageCount) {
+    if (this.isImageCountMismatched()) {
       this.errorMessage =
         'The number of images in the translation must match the original content.';
       this.errorFound = true;

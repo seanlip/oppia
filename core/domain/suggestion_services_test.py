@@ -1035,7 +1035,7 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             )
 
     def create_translation_suggestion(
-            self, translation_html: str
+            self, content_html: str, translation_html: str
         ) -> suggestion_registry.SuggestionTranslateContent:
 
         """Creates a translation suggestion for testing purposes."""
@@ -1044,7 +1044,7 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
                 'exploration1', self.author_id, ['state 1'], ['TextInput'],
                 category='Algebra'))
         old_content = state_domain.SubtitledHtml(
-            'content', '<p>old content html</p>').to_dict()
+            'content', content_html).to_dict()
         exploration.states['state 1'].update_content(
             state_domain.SubtitledHtml.from_dict(old_content))
         change_list = [exp_domain.ExplorationChange({
@@ -1053,7 +1053,7 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             'state_name': 'state 1',
             'new_value': {
                 'content_id': 'content_0',
-                'html': '<p>old content html</p>'
+                'html': content_html
             }
         })]
         exp_services.update_exploration(
@@ -1064,7 +1064,7 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             'state_name': 'state 1',
             'content_id': 'content_0',
             'language_code': 'hi',
-            'content_html': '<p>old content html</p>',
+            'content_html': content_html,
             'translation_html': translation_html,
             'data_format': 'html'
         }
@@ -1074,19 +1074,29 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             'exploration1', self.target_version_at_submission,
             self.author_id, add_translation_change_dict, 'test description')
 
+
     def test_updating_translation_suggestion_raise_error_when_image_is_removed(
             self
         ) -> None:
-        translation_html_with_image = (
-            '<p>Translation for original content.</p>'
+        content_html_with_image = (
+            '<p>Original content with image.</p>'
             '<oppia-noninteractive-image '
             'alt-with-value="Image description" '
             'caption-with-value="Sample caption" '
             'filepath-with-value="img.svg"> '
-            '</oppia-noninteractive-image> '
+            '</oppia-noninteractive-image>'
+        )
+        translation_html_with_image = (
+            '<p>Translation for original content with image.</p>'
+            '<oppia-noninteractive-image '
+            'alt-with-value="Image description" '
+            'caption-with-value="Sample caption" '
+            'filepath-with-value="img.svg"> '
+            '</oppia-noninteractive-image>'
         )
         suggestion = self.create_translation_suggestion(
-            translation_html_with_image
+            content_html=content_html_with_image,
+            translation_html=translation_html_with_image
         )
 
         self.assertIn(
@@ -1101,28 +1111,30 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
 
         with self.assertRaisesRegex(
             utils.InvalidInputException,
-            'Removing images from the translation is not allowed.'
+                'The number of images in the updated translation \\(0\\) must match '
+                'the original content \\(1\\). Adding or removing images is not '
+                'allowed.'
         ):
             suggestion_services.update_translation_suggestion(
                 suggestion.suggestion_id,
                 updated_translation_without_image
             )
 
-    def test_update_translation_suggestion_allows_adding_single_image(
+
+    def test_update_translation_suggestion_raises_error_when_image_is_added(
         self
     ) -> None:
-        translation_html_with_image = (
-            '<p>Translation for original content.</p>'
-            '<oppia-noninteractive-image '
-            'alt-with-value="Image description" '
-            'caption-with-value="Sample caption" '
-            'filepath-with-value="img.svg"> '
-            '</oppia-noninteractive-image>'
+        content_html_without_image = (
+            '<p>Original content without image.</p>'
         )
-        suggestion = self.create_translation_suggestion(
-            translation_html_with_image
+        translation_html_without_image = (
+            '<p>Translation for original content without image.</p>'
         )
 
+        suggestion = self.create_translation_suggestion(
+            content_html_without_image,
+            translation_html_without_image
+        )
         new_translation_html_with_image = (
             '<p><oppia-noninteractive-image '
             'alt-with-value="Another description" '
@@ -1131,22 +1143,35 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             '</oppia-noninteractive-image> '
             'Updated translation with image</p>'
         )
-        suggestion_services.update_translation_suggestion(
-            suggestion.suggestion_id,
-            new_translation_html_with_image
-        )
 
-        updated_suggestion = suggestion_services.get_suggestion_by_id(
-            suggestion.suggestion_id
-        )
-        self.assertEqual(
-            updated_suggestion.change_cmd.translation_html,
-            new_translation_html_with_image
-        )
+        with self.assertRaisesRegex(
+            utils.InvalidInputException,
+                'The number of images in the updated translation \\(1\\) must match '
+                'the original content \\(0\\). Adding or removing images is not '
+                'allowed.'
+        ):
+            suggestion_services.update_translation_suggestion(
+                suggestion.suggestion_id,
+                new_translation_html_with_image
+            )
+
 
     def test_update_translation_suggestion_rejects_image_count_reduction(
-            self
-        ) -> None:
+        self
+    ) -> None:
+        content_html_with_multiple_images = (
+            '<p>Original content with multiple images.</p>'
+            '<oppia-noninteractive-image '
+            'alt-with-value="Image description 1" '
+            'caption-with-value="Sample Caption 1" '
+            'filepath-with-value="img1.svg"> '
+            '</oppia-noninteractive-image>'
+            '<oppia-noninteractive-image '
+            'alt-with-value="Image description 2" '
+            'caption-with-value="Sample Caption 2" '
+            'filepath-with-value="img2.svg"> '
+            '</oppia-noninteractive-image>'
+        )
         translation_html_with_multiple_images = (
             '<p>Translation with multiple images.</p>'
             '<oppia-noninteractive-image '
@@ -1158,33 +1183,50 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             'alt-with-value="Image description 2" '
             'caption-with-value="Sample Caption 2" '
             'filepath-with-value="img2.svg"> '
-            '</oppia-noninteractive-image> '
+            '</oppia-noninteractive-image>'
         )
         suggestion = self.create_translation_suggestion(
+            content_html_with_multiple_images,
             translation_html_with_multiple_images
         )
 
+        # Test case for removing one image.
+        updated_translation_with_one_image_removed = (
+            '<p>Updated translation with one image removed.</p>'
+            '<oppia-noninteractive-image '
+            'alt-with-value="Image description 1" '
+            'caption-with-value="Sample Caption 1" '
+            'filepath-with-value="img1.svg"> '
+            '</oppia-noninteractive-image>'
+        )
         with self.assertRaisesRegex(
             utils.InvalidInputException,
-            'Removing images from the translation is not allowed.'
+            (
+                'The number of images in the updated translation \\(1\\) must match '
+                'the original content \\(2\\). Adding or removing images is not '
+                'allowed.'
+            )
         ):
             suggestion_services.update_translation_suggestion(
                 suggestion.suggestion_id,
-                '<p>Updated translation with one image removed.</p>'
-                '<oppia-noninteractive-image '
-                'alt-with-value="Image description 1" '
-                'caption-with-value="Sample Caption 1" '
-                'filepath-with-value="img1.svg"> '
-                '</oppia-noninteractive-image> '
+                updated_translation_with_one_image_removed
             )
 
+        # Test case for removing all images.
+        updated_translation_with_all_images_removed = (
+            '<p>Updated translation with all images removed.</p>'
+        )
         with self.assertRaisesRegex(
             utils.InvalidInputException,
-            'Removing images from the translation is not allowed.'
+            (
+                'The number of images in the updated translation \\(0\\) must match '
+                'the original content \\(2\\). Adding or removing images is not '
+                'allowed.'
+            )
         ):
             suggestion_services.update_translation_suggestion(
                 suggestion.suggestion_id,
-                '<p>Updated translation with all images removed.</p>'
+                updated_translation_with_all_images_removed
             )
 
         updated_suggestion = suggestion_services.get_suggestion_by_id(
@@ -1197,19 +1239,29 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             original_image_count, 2
         )
 
-    def test_update_translation_suggestion_allows_adding_multiple_images(
-            self
-        ) -> None:
-        translation_html_with_image = (
+
+    def test_update_translation_suggestion_raises_error_when_images_are_added(
+        self
+    ) -> None:
+        content_html_with_single_image = (
+            '<p>Original content with one image.</p>'
+            '<oppia-noninteractive-image '
+            'alt-with-value="Image description 1" '
+            'caption-with-value="Caption 1" '
+            'filepath-with-value="img1.svg"> '
+            '</oppia-noninteractive-image>'
+        )
+        translation_html_with_single_image = (
             '<p>Translation with one image.</p>'
             '<oppia-noninteractive-image '
             'alt-with-value="Image description 1" '
             'caption-with-value="Caption 1" '
             'filepath-with-value="img1.svg"> '
-            '</oppia-noninteractive-image> '
+            '</oppia-noninteractive-image>'
         )
         suggestion = self.create_translation_suggestion(
-            translation_html_with_image
+            content_html_with_single_image,
+            translation_html_with_single_image
         )
 
         original_image_count = suggestion_services.count_images(
@@ -1219,7 +1271,7 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             original_image_count, 1
         )
 
-        new_translation_html_with_more_images = (
+        new_translation_html_with_additional_images = (
             '<p>Translation with additional images.</p>'
             '<oppia-noninteractive-image '
             'alt-with-value="Image description 1" '
@@ -1233,25 +1285,33 @@ class SuggestionServicesUnitTests(test_utils.GenericTestBase):
             '</oppia-noninteractive-image>'
         )
 
-        suggestion_services.update_translation_suggestion(
-            suggestion.suggestion_id, new_translation_html_with_more_images
-        )
+        with self.assertRaisesRegex(
+            utils.InvalidInputException,
+            (
+                'The number of images in the updated translation \\(2\\) must match '
+                'the original content \\(1\\). Adding or removing images is not '
+                'allowed.'
+            )
+        ):
+            suggestion_services.update_translation_suggestion(
+                suggestion.suggestion_id, new_translation_html_with_additional_images
+            )
 
         updated_suggestion = suggestion_services.get_suggestion_by_id(
             suggestion.suggestion_id
         )
-
         self.assertEqual(
             updated_suggestion.change_cmd.translation_html,
-            new_translation_html_with_more_images
+            translation_html_with_single_image
         )
 
         updated_image_count = suggestion_services.count_images(
             updated_suggestion.change_cmd.translation_html
         )
         self.assertEqual(
-            updated_image_count, 2
+            updated_image_count, 1
         )
+
 
     def test_wrong_suggestion_raise_error_when_updating_add_question_suggestion(
         self

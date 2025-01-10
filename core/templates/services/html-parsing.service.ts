@@ -34,20 +34,26 @@ export class HtmlParsingService {
    * @returns {number} The number of image tags found.
    */
   countImageTags(htmlString: string): number {
+    if (!htmlString || typeof htmlString !== 'string') {
+      return 0;
+    }
+
     const imageTags = htmlString.match(this.IMAGE_TAG_REGEX);
     return imageTags ? imageTags.length : 0;
   }
 
   /**
-   * Compares the initial and current HTML strings to determine if any image tags were removed.
-   * This is the main public method to test.
-   * @param {string} initialHtml - The initial HTML string with image tags.
-   * @param {string} currentHtml - The current (edited) HTML string with image tags.
-   * @returns {boolean} True if the number of image tags in the current HTML is less than the initial HTML.
+   * Compares the original and updated HTML strings to determine if the number
+   * of images is mismatched.
+   * @param {string} originalHtml - The original HTML string with image tags.
+   * @param {string} updatedHtml - The updated (edited) HTML string with image tags.
+   * @returns {boolean} True if the number of image tags in the updated HTML
+   * does not match the original HTML.
    */
-  isImageRemoved(initialHtml: string, currentHtml: string): boolean {
-    const initialImageCount = this.countImageTags(initialHtml);
-    const currentImageCount = this.countImageTags(currentHtml);
-    return currentImageCount < initialImageCount;
+  isImageCountMismatched(originalHtml: string, updatedHtml: string): boolean {
+    const originalImageCount = this.countImageTags(originalHtml);
+    const updatedImageCount = this.countImageTags(updatedHtml);
+    return originalImageCount !== updatedImageCount;
   }
+
 }
