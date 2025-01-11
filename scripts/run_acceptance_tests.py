@@ -180,13 +180,17 @@ def main(args: Optional[List[str]] = None) -> None:
     """Run acceptance tests."""
     try:
         parsed_args = _PARSER.parse_args(args=args)
-        print(color_utils.colorize_success("Starting acceptance tests..."))
+        print(color_utils.colorize_success('Starting acceptance tests...'))
 
         with servers.managed_portserver():
             _, return_code = run_tests(parsed_args)
 
             if return_code != 0:
-                print(color_utils.colorize_error('Tests failed. Please check the error messages above.'))
+                print(
+                    color_utils.colorize_error(
+                        'Tests failed. Please check the error messages above.'
+                    )
+                )
             sys.exit(return_code)
 
     except KeyboardInterrupt:
