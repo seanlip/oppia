@@ -26,6 +26,7 @@ import {showMessage} from './show-message';
 var path = require('path');
 
 import {toMatchImageSnapshot} from 'jest-image-snapshot';
+import {PuppeteerScreenRecorder} from 'puppeteer-screen-recorder';
 expect.extend({toMatchImageSnapshot});
 const backgroundBanner = '.oppia-background-image';
 const libraryBanner = '.e2e-test-library-banner';
@@ -68,6 +69,7 @@ export class BaseUser {
   email: string = '';
   username: string = '';
   startTimeInMilliseconds: number = -1;
+  screenRecorder!: PuppeteerScreenRecorder;
 
   constructor() {}
 
@@ -130,6 +132,16 @@ export class BaseUser {
         } else {
           this.page.setViewport({width: 1920, height: 1080});
         }
+
+        if (process.env.VIDEO_RECORDING_IS_ENABLED === '1') {
+          const filePath =
+            `${specName}-${new Date().toISOString()}.mp4`.replace(
+              /[^a-z0-9.-]/gi,
+              '_'
+            );
+          await this.setupVideoRecording(filePath);
+        }
+
         this.page.on('dialog', async dialog => {
           const alertText = dialog.message();
           if (acceptedBrowserAlerts.includes(alertText)) {
@@ -453,6 +465,9 @@ export class BaseUser {
    * This function closes the current Puppeteer browser instance.
    */
   async closeBrowser(): Promise<void> {
+    if (this.screenRecorder) {
+      await this.screenRecorder.stop();
+    }
     await this.browserObject.close();
   }
 
@@ -758,6 +773,29 @@ export class BaseUser {
     await newPage.bringToFront();
     this.page = newPage;
     return newPage;
+  }
+
+  /**
+   * This function sets up video recording for the current test.
+   */
+  async setupVideoRecording(outputFilePath: string): Promise<void> {
+    if (this.page) {
+      const config = {
+        followNewTab: true,
+        fps: 25,
+        ffmpeg_Path: null,
+        videoFrame: {
+          width: this.page.viewport()?.width || 1920,
+          height: this.page.viewport()?.height || 1080,
+        },
+        aspectRatio: '16:9',
+      };
+
+      this.screenRecorder = new PuppeteerScreenRecorder(this.page, config);
+      await this.screenRecorder.start(
+        path.join(testConstants.TEST_VIDEO_DIR, outputFilePath)
+      );
+    }
   }
 }
 
