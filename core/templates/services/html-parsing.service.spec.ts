@@ -48,7 +48,6 @@ describe('HtmlParsingService', () => {
     htmlParsingService = TestBed.inject(HtmlParsingService);
   });
 
-
   describe('countImageTags', () => {
     it('should count single image tag correctly', () => {
       expect(htmlParsingService).toBeDefined();
@@ -86,7 +85,9 @@ describe('HtmlParsingService', () => {
         </oppia-noninteractive-image>
       `;
 
-      expect(htmlParsingService.countImageTags(htmlWithIncompleteImage)).toBe(0);
+      expect(htmlParsingService.countImageTags(htmlWithIncompleteImage)).toBe(
+        0
+      );
     });
   });
 
@@ -96,8 +97,12 @@ describe('HtmlParsingService', () => {
       expect(htmlWithImage).toContain('oppia-noninteractive-image');
       expect(htmlWithoutImage).not.toContain('oppia-noninteractive-image');
 
-      expect(htmlParsingService.isImageCountMismatched(htmlWithImage, htmlWithoutImage))
-        .toBeTrue();
+      expect(
+        htmlParsingService.isImageCountMismatched(
+          htmlWithImage,
+          htmlWithoutImage
+        )
+      ).toBeTrue();
     });
 
     it('should detect mismatch when images are added', () => {
@@ -105,34 +110,51 @@ describe('HtmlParsingService', () => {
       expect(htmlWithoutImage).not.toContain('oppia-noninteractive-image');
       expect(htmlWithImage).toContain('oppia-noninteractive-image');
 
-      expect(htmlParsingService.isImageCountMismatched(htmlWithoutImage, htmlWithImage))
-        .toBeTrue();
+      expect(
+        htmlParsingService.isImageCountMismatched(
+          htmlWithoutImage,
+          htmlWithImage
+        )
+      ).toBeTrue();
     });
 
     it('should return false when image counts match', () => {
       expect(htmlParsingService).toBeDefined();
       expect(htmlWithImage).toContain('oppia-noninteractive-image');
 
-      expect(htmlParsingService.isImageCountMismatched(htmlWithImage, htmlWithImage))
-        .toBeFalse();
+      expect(
+        htmlParsingService.isImageCountMismatched(htmlWithImage, htmlWithImage)
+      ).toBeFalse();
     });
 
     it('should return false when no images exist in either content', () => {
       expect(htmlParsingService).toBeDefined();
       expect(htmlWithoutImage).not.toContain('oppia-noninteractive-image');
 
-      expect(htmlParsingService.isImageCountMismatched(htmlWithoutImage, htmlWithoutImage))
-        .toBeFalse();
+      expect(
+        htmlParsingService.isImageCountMismatched(
+          htmlWithoutImage,
+          htmlWithoutImage
+        )
+      ).toBeFalse();
     });
 
     it('should handle multiple images correctly', () => {
       expect(htmlParsingService).toBeDefined();
       expect(htmlWithTwoImages).toContain('oppia-noninteractive-image');
 
-      expect(htmlParsingService.isImageCountMismatched(htmlWithTwoImages, htmlWithTwoImages))
-        .toBeFalse();
-      expect(htmlParsingService.isImageCountMismatched(htmlWithTwoImages, htmlWithImage))
-        .toBeTrue();
+      expect(
+        htmlParsingService.isImageCountMismatched(
+          htmlWithTwoImages,
+          htmlWithTwoImages
+        )
+      ).toBeFalse();
+      expect(
+        htmlParsingService.isImageCountMismatched(
+          htmlWithTwoImages,
+          htmlWithImage
+        )
+      ).toBeTrue();
     });
   });
 });

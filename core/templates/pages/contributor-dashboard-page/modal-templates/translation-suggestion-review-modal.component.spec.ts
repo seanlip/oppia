@@ -2823,10 +2823,15 @@ describe('Translation Suggestion Review Modal Component', function () {
       expect(component.initialSuggestionId).toBeDefined();
       expect(component.suggestionIdToContribution).toBeDefined();
       expect(component.suggestionIdToContribution.suggestion_1).toBeDefined();
-      expect(component.suggestionIdToContribution.suggestion_1.suggestion).toBeDefined();
-      expect(component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd).toBeDefined();
       expect(
-        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html
+        component.suggestionIdToContribution.suggestion_1.suggestion
+      ).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+      ).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
       ).toBe(htmlWithImage);
       expect(component.initialImageCount).toBe(0);
 
@@ -2838,14 +2843,15 @@ describe('Translation Suggestion Review Modal Component', function () {
       expect(component.initialSuggestionId).toBeDefined();
       expect(component.suggestionIdToContribution).toBeDefined();
       expect(
-        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
       ).toBe(htmlWithImage);
       expect(component.initialImageCount).toBe(0);
 
       component.ngOnInit();
       expect(component.initialImageCount).toBe(1);
 
-      component.editedContent = { html: htmlWithoutImage };
+      component.editedContent = {html: htmlWithoutImage};
       expect(component.editedContent).toBeDefined();
       expect(component.editedContent.html).toBe(htmlWithoutImage);
       expect(component.isImageCountMismatched()).toBeTrue();
@@ -2856,14 +2862,15 @@ describe('Translation Suggestion Review Modal Component', function () {
       expect(component.suggestionIdToContribution).toBeDefined();
       component.initialSuggestionId = 'suggestion_2';
       expect(
-        component.suggestionIdToContribution.suggestion_2.suggestion.change_cmd.content_html
+        component.suggestionIdToContribution.suggestion_2.suggestion.change_cmd
+          .content_html
       ).toBe(htmlWithoutImage);
       expect(component.initialImageCount).toBe(0);
 
       component.ngOnInit();
       expect(component.initialImageCount).toBe(0);
 
-      component.editedContent = { html: htmlWithImage };
+      component.editedContent = {html: htmlWithImage};
       expect(component.editedContent).toBeDefined();
       expect(component.editedContent.html).toBe(htmlWithImage);
       expect(component.isImageCountMismatched()).toBeTrue();
@@ -2873,14 +2880,15 @@ describe('Translation Suggestion Review Modal Component', function () {
       expect(component.initialSuggestionId).toBeDefined();
       expect(component.suggestionIdToContribution).toBeDefined();
       expect(
-        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
       ).toBe(htmlWithImage);
       expect(component.initialImageCount).toBe(0);
 
       component.ngOnInit();
       expect(component.initialImageCount).toBe(1);
 
-      component.editedContent = { html: htmlWithImage };
+      component.editedContent = {html: htmlWithImage};
       expect(component.editedContent).toBeDefined();
       expect(component.editedContent.html).toBe(htmlWithImage);
       expect(component.isImageCountMismatched()).toBeFalse();
@@ -2891,14 +2899,15 @@ describe('Translation Suggestion Review Modal Component', function () {
       expect(component.suggestionIdToContribution).toBeDefined();
       component.initialSuggestionId = 'suggestion_3';
       expect(
-        component.suggestionIdToContribution.suggestion_3.suggestion.change_cmd.content_html
+        component.suggestionIdToContribution.suggestion_3.suggestion.change_cmd
+          .content_html
       ).toBe(htmlWithTwoImages);
       expect(component.initialImageCount).toBe(0);
 
       component.ngOnInit();
       expect(component.initialImageCount).toBe(2);
 
-      component.editedContent = { html: htmlWithTwoImages };
+      component.editedContent = {html: htmlWithTwoImages};
       expect(component.editedContent).toBeDefined();
       expect(component.editedContent.html).toBe(htmlWithTwoImages);
       expect(component.isImageCountMismatched()).toBeFalse();
@@ -2908,7 +2917,8 @@ describe('Translation Suggestion Review Modal Component', function () {
       expect(component.initialSuggestionId).toBeDefined();
       expect(component.suggestionIdToContribution).toBeDefined();
       expect(
-        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
       ).toBe(htmlWithImage);
       expect(component.initialImageCount).toBe(0);
       expect(component.startedEditing).toBeFalse();
@@ -2919,7 +2929,7 @@ describe('Translation Suggestion Review Modal Component', function () {
       component.startedEditing = true;
       expect(component.startedEditing).toBeTrue();
 
-      component.editedContent = { html: htmlWithoutImage };
+      component.editedContent = {html: htmlWithoutImage};
       expect(component.editedContent).toBeDefined();
       expect(component.editedContent.html).toBe(htmlWithoutImage);
       expect(component.isUpdateDisabled).toBeTrue();
@@ -2928,17 +2938,23 @@ describe('Translation Suggestion Review Modal Component', function () {
     it('should handle successful update when image counts match', () => {
       expect(component.initialSuggestionId).toBeDefined();
       expect(component.suggestionIdToContribution).toBeDefined();
-      expect(component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html).toBe(htmlWithImage);
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
+      ).toBe(htmlWithImage);
       expect(component.initialImageCount).toBe(0);
       expect(component.errorFound).toBeFalse();
 
-      const updateSpy = spyOn(contributionAndReviewService, 'updateTranslationSuggestionAsync');
+      const updateSpy = spyOn(
+        contributionAndReviewService,
+        'updateTranslationSuggestionAsync'
+      );
       expect(updateSpy).not.toHaveBeenCalled();
 
       component.ngOnInit();
       expect(component.initialImageCount).toBe(1);
 
-      component.editedContent = { html: htmlWithImage };
+      component.editedContent = {html: htmlWithImage};
       expect(component.editedContent).toBeDefined();
       expect(component.editedContent.html).toBe(htmlWithImage);
 
@@ -2955,32 +2971,35 @@ describe('Translation Suggestion Review Modal Component', function () {
     it('should handle malformed HTML content', () => {
       expect(component.initialSuggestionId).toBeDefined();
       expect(component.suggestionIdToContribution).toBeDefined();
-      expect(component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html).toBe(htmlWithImage);
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
+      ).toBe(htmlWithImage);
       expect(component.initialImageCount).toBe(0);
 
       component.ngOnInit();
       expect(component.initialImageCount).toBe(1);
 
-      const malformedHtml = '<oppia-noninteractive-image alt-with-value="test">';
-      component.editedContent = { html: malformedHtml };
+      const malformedHtml =
+        '<oppia-noninteractive-image alt-with-value="test">';
+      component.editedContent = {html: malformedHtml};
       expect(component.editedContent).toBeDefined();
       expect(component.editedContent.html).toBe(malformedHtml);
       expect(component.isImageCountMismatched()).toBeTrue();
     });
 
-    it(
-      'should show error message when attempting update with mismatched images',
-      () => {
+    it('should show error message when attempting update with mismatched images', () => {
       expect(component.initialSuggestionId).toBeDefined();
       expect(component.suggestionIdToContribution).toBeDefined();
       expect(
-        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd.content_html
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
       ).toBe(htmlWithImage);
 
       component.translationHtml = htmlWithImage;
       component.ngOnInit();
 
-      component.editedContent = { html: htmlWithoutImage };
+      component.editedContent = {html: htmlWithoutImage};
       component.updateSuggestion();
 
       expect(component.errorMessage).toBe(
