@@ -59,6 +59,7 @@ import {UndoRedoService} from 'domain/editor/undo_redo/undo-redo.service';
 import {UrlInterpolationService} from 'domain/utilities/url-interpolation.service';
 import {WindowDimensionsService} from 'services/contextual/window-dimensions.service';
 import {WindowRef} from 'services/contextual/window-ref.service';
+import { SubtopicValidationService } from './services/subtopic-validation.service';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -118,10 +119,10 @@ import {WindowRef} from 'services/contextual/window-ref.service';
     StoryCreationBackendApiService,
     EntityCreationService,
     CreateNewSkillModalService,
+    SubtopicValidationService,
     ContextService,
     FocusManagerService,
     ImageUploadHelperService,
-    NgbModal,
     PageTitleService,
     TopicsAndSkillsDashboardBackendApiService,
     TopicEditorStateService,
@@ -130,7 +131,6 @@ import {WindowRef} from 'services/contextual/window-ref.service';
     UndoRedoService,
     UrlInterpolationService,
     WindowDimensionsService,
-    WindowRef
   ],
 })
 export class TopicEditorPageModule {}
