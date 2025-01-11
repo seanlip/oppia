@@ -27,9 +27,9 @@ from core.constants import constants
 from scripts import build
 from scripts import common
 from scripts import servers
+from scripts.utils.color_utils import colorize_error, colorize_warning , colorize_success
 
 from typing import Final, List, Optional, Tuple
-from scripts.utils.color_utils import colorize_error, colorize_warning , colorize_success
 
 _PARSER: Final = argparse.ArgumentParser(
     description="""
