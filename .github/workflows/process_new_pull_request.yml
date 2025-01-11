@@ -12,8 +12,6 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       pull-requests: write
-      issues: write
-    if: github.event.action == 'opened' 
     steps:
       - name: Set environment variables
         id: set-env
@@ -27,10 +25,6 @@ jobs:
           echo "REPO=${REPO}" >> $GITHUB_ENV
           echo "OWNER=${OWNER}" >> $GITHUB_ENV
           echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
-          echo "::set-output name=AUTHOR::${AUTHOR}"
-          echo "::set-output name=REPO::${REPO}"
-          echo "::set-output name=OWNER::${OWNER}"
-          echo "::set-output name=PR_NUMBER::${PR_NUMBER}"
       - name: Check if submitter is a new contributor
         id: check-new-contributor
         uses: actions/github-script@v6
@@ -53,7 +47,8 @@ jobs:
               }.`
             );
             core.setOutput('IS_NEW_CONTRIBUTOR', submitterIsNewContributor);
-      - name: Assign Reviewers
+      - name: Assign reviewers as assignees
+        id: assign-reviewers
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -63,37 +58,42 @@ jobs:
             const repo = process.env.REPO;
             const requestedReviewers = context.payload.pull_request.requested_reviewers.map(r => r.login);
             const requestedTeams = context.payload.pull_request.requested_teams.map(t => t.slug);
-            // Assign reviewers as assignees
             if (requestedReviewers.length > 0) {
-              setTimeout(async () => {
-                try {
-                  await github.rest.issues.addAssignees({
-                    owner,
-                    repo,
-                    issue_number: prNumber,
-                    assignees: requestedReviewers,
-                  });
-                  console.log(`Assigned reviewers: ${requestedReviewers.join(", ")}`);
-                } catch (error) {
-                  console.error(`Failed to assign reviewers: ${error.message}`);
-                }
-              }, Math.random() * 60000); 
+              try {
+                await github.rest.issues.addAssignees({
+                  owner,
+                  repo,
+                  issue_number: prNumber,
+                  assignees: requestedReviewers,
+                });
+                console.log(`Assigned reviewers: ${requestedReviewers.join(", ")}`);
+              } catch (error) {
+                console.error(`Failed to assign reviewers: ${error.message}`);
+              }
             }
-            // Notify team if no individual reviewers are found
-            if (requestedReviewers.length === 0) {
-              setTimeout(async () => {
-                try {
-                  await github.rest.issues.createComment({
-                    owner,
-                    repo,
-                    issue_number: prNumber,
-                    body: `No individual reviewers were found by GitHub. Please assign an appropriate reviewer. @oppia/dev-workflow-reviewers, could you please review the issue? Thank you!`,
-                  });
-                  console.log("Notified team about missing reviewers.");
-                } catch (error) {
-                  console.error(`Failed to notify team: ${error.message}`);
-                }
-              }, Math.random() * 60000); 
+      - name: Notify team if no individual reviewers are found
+        id: notify-team
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = process.env.PR_NUMBER;
+            const owner = process.env.OWNER;
+            const repo = process.env.REPO;
+            const requestedReviewers = context.payload.pull_request.requested_reviewers.map(r => r.login); 
+            const requestedTeams = context.payload.pull_request.requested_teams.map(t => t.slug);
+            if (requestedReviewers.length === 0 && requestedTeams.length === 0) {
+              try {
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: prNumber,
+                  body: `No individual reviewers or teams were found by GitHub. Please assign an appropriate reviewer. @oppia/dev-workflow-reviewers, could you please review the issue? Thank you!`,
+                });
+                console.log("Notified team about missing reviewers.");
+              } catch (error) {
+                console.error(`Failed to notify team: ${error.message}`);
+              }
             }
       - name: Add PTAL syntax comment for new contributors
         if: steps.check-new-contributor.outputs.IS_NEW_CONTRIBUTOR == 'true'
@@ -105,17 +105,15 @@ jobs:
             const owner = process.env.OWNER;
             const repo = process.env.REPO;
             const prNumber = process.env.PR_NUMBER;
-            setTimeout(async () => {
-              try {
-                const commentBody = `Hello @${author}! Thank you for making a PR. Please ensure your PR is assigned to the correct reviewers -- check the "Assignees" section in the sidebar on the right. Typically, this should match the "Reviewers" section. If it's not correct, you can leave a comment with the syntax \`@reviewer_username PTAL\` to request that a specific reviewer be assigned.\n\n Thanks!`;
-                await github.rest.issues.createComment({
-                  owner,
-                  repo,
-                  issue_number: prNumber,
-                  body: commentBody,
-                });
-                console.log(`Added PTAL syntax comment for new contributor @${author}.`);
-              } catch (error) {
-                console.error(`Failed to add comment: ${error.message}`);
-              }
-            }, Math.random() * 60000); 
+            try {
+              const commentBody = `Hello @${author}! Thank you for making a PR. Please ensure your PR is assigned to the correct reviewers -- check the "Assignees" section in the sidebar on the right. Typically, this should match the "Reviewers" section. If it's not correct, you can leave a comment with the syntax \`@reviewer_username PTAL\` to request that a specific reviewer be assigned.\n\n Thanks!`;
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: prNumber,
+                body: commentBody,
+              });
+              console.log(`Added PTAL syntax comment for new contributor @${author}.`);
+            } catch (error) {
+              console.error(`Failed to add comment: ${error.message}`);
+            }
