@@ -552,10 +552,6 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
         # A [no-any-return] is thrown if key is defined in the sort() method
         # instead. Reference: https://github.com/python/mypy/issues/9590.
         by_created_on = lambda m: m.created_on
-        question_contribution_stats = sorted(
-            question_contribution_stats,
-            key=by_created_on
-        )
         question_general_suggestions_sorted_stats = sorted(
             question_general_suggestions_stats,
             key=by_created_on
@@ -602,23 +598,25 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
         debug_logs: str = (
             'Question submitter ID: %s.\n' % contributor_user_id)
 
-        skill_ids_with_question_suggestions = {
-            v.target_id for v in general_suggestion_stats}
+        by_topic_id = lambda m: m.topic_id
+
+        skill_ids_with_question_suggestions = sorted({
+            v.target_id for v in general_suggestion_stats})
         debug_logs += (
             'Unique skill IDs with question suggestion: \n')
         with datastore_services.get_ndb_context():
             for skill_id in skill_ids_with_question_suggestions:
                 debug_logs += (
                     '- %s\n' % skill_id)
-                topic_assignments = (
+                topic_assignments = sorted(
                     skill_services.get_all_topic_assignments_for_skill(
-                        skill_id))
+                        skill_id), key=by_topic_id)
                 for topic_assignment in topic_assignments:
                     debug_logs += (
                         '-- Topic ID: %s\n' % topic_assignment.topic_id)
 
-        topic_ids_with_contribution_stats = {
-            v.topic_id for v in question_contribution_stats}
+        topic_ids_with_contribution_stats = sorted({
+            v.topic_id for v in question_contribution_stats})
         debug_logs += (
             'Unique topic IDs with contribution stats: \n')
         for topic_id in topic_ids_with_contribution_stats:
@@ -630,8 +628,8 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 stat.topic_id):
                 question_contribution_stats.remove(stat)
 
-        valid_topic_ids_with_contribution_stats = {
-            v.topic_id for v in question_contribution_stats}
+        valid_topic_ids_with_contribution_stats = sorted({
+            v.topic_id for v in question_contribution_stats})
         debug_logs += (
             'Unique valid topic IDs with contribution stats: \n')
         for topic_id in valid_topic_ids_with_contribution_stats:
@@ -715,11 +713,6 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
             - The debug logs.
         """
 
-        by_created_on = lambda m: m.created_on
-        question_reviewer_stats = sorted(
-            question_reviewer_stats,
-            key=by_created_on
-        )
         question_reviewer_stats = list(question_reviewer_stats)
         entity_id = reviewer_user_id
 
@@ -727,8 +720,8 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
         debug_logs: str = (
             'Question reviewer ID: %s.\n' % reviewer_user_id)
 
-        topic_ids_with_reviewer_stats = {
-            v.topic_id for v in question_reviewer_stats}
+        topic_ids_with_reviewer_stats = sorted({
+            v.topic_id for v in question_reviewer_stats})
         debug_logs += (
             'Unique topic IDs with contribution stats: \n')
         for topic_id in topic_ids_with_reviewer_stats:
@@ -740,55 +733,50 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
                 stat.topic_id):
                 question_reviewer_stats.remove(stat)
 
-        valid_topic_ids_with_reviewer_stats = {
-            v.topic_id for v in question_reviewer_stats}
+        valid_topic_ids_with_reviewer_stats = sorted({
+            v.topic_id for v in question_reviewer_stats})
         debug_logs += (
             'Unique valid topic IDs with contribution stats: \n')
         for topic_id in valid_topic_ids_with_reviewer_stats:
             debug_logs += (
                 '- %s\n' % topic_id)
 
-        try:
-            topic_ids = (
-                [v.topic_id for v in question_reviewer_stats])
-            reviewed_questions_count = sum(
-                v.reviewed_questions_count
-                    for v in question_reviewer_stats)
-            accepted_questions_count = sum(
-                v.accepted_questions_count
-                    for v in question_reviewer_stats)
-            accepted_questions_with_reviewer_edits_count = sum(
-                v.accepted_questions_with_reviewer_edits_count
-                    for v in question_reviewer_stats)
-            rejected_questions_count = (
-                reviewed_questions_count - accepted_questions_count
-            )
-            first_contribution_date = min(
-                (v.first_contribution_date for v in question_reviewer_stats))
-            last_contribution_date = max(
-                (v.last_contribution_date for v in question_reviewer_stats))
+        topic_ids = (
+            [v.topic_id for v in question_reviewer_stats])
+        reviewed_questions_count = sum(
+            v.reviewed_questions_count
+                for v in question_reviewer_stats)
+        accepted_questions_count = sum(
+            v.accepted_questions_count
+                for v in question_reviewer_stats)
+        accepted_questions_with_reviewer_edits_count = sum(
+            v.accepted_questions_with_reviewer_edits_count
+                for v in question_reviewer_stats)
+        rejected_questions_count = (
+            reviewed_questions_count - accepted_questions_count
+        )
+        first_contribution_date = min(
+            (v.first_contribution_date for v in question_reviewer_stats))
+        last_contribution_date = max(
+            (v.last_contribution_date for v in question_reviewer_stats))
 
-            with datastore_services.get_ndb_context():
-                question_review_stats_models = (
-                    suggestion_models.QuestionReviewerTotalContributionStatsModel( # pylint: disable=line-too-long
-                    id=entity_id,
-                    contributor_id=reviewer_user_id,
-                    topic_ids_with_question_reviews=topic_ids,
-                    reviewed_questions_count=reviewed_questions_count,
-                    accepted_questions_count=accepted_questions_count,
-                    accepted_questions_with_reviewer_edits_count=(
-                        accepted_questions_with_reviewer_edits_count),
-                    rejected_questions_count=rejected_questions_count,
-                    first_contribution_date=first_contribution_date,
-                    last_contribution_date=last_contribution_date
-                    )
+        with datastore_services.get_ndb_context():
+            question_review_stats_models = (
+                suggestion_models.QuestionReviewerTotalContributionStatsModel( # pylint: disable=line-too-long
+                id=entity_id,
+                contributor_id=reviewer_user_id,
+                topic_ids_with_question_reviews=topic_ids,
+                reviewed_questions_count=reviewed_questions_count,
+                accepted_questions_count=accepted_questions_count,
+                accepted_questions_with_reviewer_edits_count=(
+                    accepted_questions_with_reviewer_edits_count),
+                rejected_questions_count=rejected_questions_count,
+                first_contribution_date=first_contribution_date,
+                last_contribution_date=last_contribution_date
                 )
-                question_review_stats_models.update_timestamps()
-                return (question_review_stats_models, debug_logs)
-
-        except Exception as e:
-            logging.exception(e)
-            return (None, debug_logs)
+            )
+            question_review_stats_models.update_timestamps()
+            return (question_review_stats_models, debug_logs)
 
     @staticmethod
     def not_validate_topic(topic_id: str) -> bool:
