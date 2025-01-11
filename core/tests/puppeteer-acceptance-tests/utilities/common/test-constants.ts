@@ -236,5 +236,7 @@ export default {
   ],
   DEFAULT_SPEC_TIMEOUT_MSECS: 300000,
   // Video Recording Path in relative to root of oppia folder.
-  TEST_VIDEO_DIR: path.resolve('../test-recordings/acceptance-tests'),
+  TEST_VIDEO_DIR: path.resolve(
+    '../oppia_full_stack_test_video_recordings/acceptance'
+  ),
 };
