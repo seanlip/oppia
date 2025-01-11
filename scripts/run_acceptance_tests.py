@@ -27,9 +27,7 @@ from core.constants import constants
 from scripts import build
 from scripts import common
 from scripts import servers
-from scripts.utils.color_utils import colorize_error
-from scripts.utils.color_utils import colorize_success
-from scripts.utils.color_utils import colorize_warning
+from scripts.utils import color_utils
 
 from typing import Final, List, Optional, Tuple
 
@@ -182,20 +180,20 @@ def main(args: Optional[List[str]] = None) -> None:
     """Run acceptance tests."""
     try:
         parsed_args = _PARSER.parse_args(args=args)
-        print(colorize_success("Starting acceptance tests..."))
+        print(color_utils.colorize_success("Starting acceptance tests..."))
 
         with servers.managed_portserver():
             _, return_code = run_tests(parsed_args)
 
             if return_code != 0:
-                print(colorize_error('Tests failed. Please check the error messages above.'))
+                print(color_utils.colorize_error('Tests failed. Please check the error messages above.'))
             sys.exit(return_code)
 
     except KeyboardInterrupt:
-        print(colorize_warning('\nTest run interrupted by user.'))
+        print(color_utils.colorize_warning('\nTest run interrupted by user.'))
         sys.exit(130)
     except Exception as e:
-        print(colorize_error(f'Unexpected error: {str(e)}'))
+        print(color_utils.colorize_error(f'Unexpected error: {str(e)}'))
         sys.exit(1)
 
 
