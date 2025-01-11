@@ -3772,16 +3772,17 @@ class ImageUploadHandlerTests(BaseEditorControllerTests):
         exp_id = exp_fetchers.get_new_exploration_id()
         self.save_new_valid_exploration(exp_id, self.editor_id)
 
-        filename = 'malicious.php.svg'
-        filename_prefix = 'image'
+        invalid_filenames = [
+            'file!@#$name.png',
+            'file你好.png',
+            'file..name.png',
+            'malicious.php.svg'
+        ]
 
+        filename_prefix = 'image'
         publish_url = '%s/%s/%s' % (
             feconf.EXPLORATION_IMAGE_UPLOAD_PREFIX,
             feconf.ENTITY_TYPE_EXPLORATION, exp_id)
-
-        fs = fs_services.GcsFileSystem(feconf.ENTITY_TYPE_EXPLORATION, exp_id)
-        filepath = '%s/%s' % (filename_prefix, filename)
-        self.assertFalse(fs.isfile(filepath))
 
         with utils.open_file(
             os.path.join(feconf.TESTS_DATA_DIR, 'img.png'),
@@ -3789,28 +3790,31 @@ class ImageUploadHandlerTests(BaseEditorControllerTests):
         ) as f:
             raw_image = f.read()
 
-        response = self.post_json(
-            publish_url, {
-                'image': 'img',
-                'filename': filename,
-                'filename_prefix': filename_prefix
-            },
-            csrf_token=csrf_token,
-            expected_status_int=400,
-            upload_files=[('image', 'unused_filename', raw_image)]
-        )
+        for filename in invalid_filenames:
+            response = self.post_json(
+                publish_url, {
+                    'image': 'img',
+                    'filename': filename,
+                    'filename_prefix': filename_prefix
+                },
+                csrf_token=csrf_token,
+                expected_status_int=400,
+                upload_files=[('image', 'unused_filename', raw_image)]
+            )
 
-        self.assertIn(
-            'Schema validation for \'filename\' failed',
-            response['error']
-        )
+            self.assertIn(
+                'Schema validation for \'filename\' failed',
+                response['error']
+            )
 
-        fs = fs_services.GcsFileSystem(feconf.ENTITY_TYPE_EXPLORATION, exp_id)
-        filepath = '%s/%s' % (filename_prefix, filename)
-        self.assertFalse(fs.isfile(filepath))
+            fs = fs_services.GcsFileSystem(
+                feconf.ENTITY_TYPE_EXPLORATION,
+                exp_id
+            )
+            filepath = '%s/%s' % (filename_prefix, filename)
+            self.assertFalse(fs.isfile(filepath))
 
         self.logout()
-
 
 class EntityTranslationsBulkHandlerTest(test_utils.GenericTestBase):
     """Test fetching all translations of a given entity in bulk."""
