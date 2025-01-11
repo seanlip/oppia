@@ -3816,6 +3816,7 @@ class ImageUploadHandlerTests(BaseEditorControllerTests):
 
         self.logout()
 
+
 class EntityTranslationsBulkHandlerTest(test_utils.GenericTestBase):
     """Test fetching all translations of a given entity in bulk."""
 
