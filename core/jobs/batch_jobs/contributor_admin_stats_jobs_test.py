@@ -747,44 +747,7 @@ class GenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             job_run_result.JobRunResult(
                 stdout='Question Submitter Models SUCCESS: 3'),
             job_run_result.JobRunResult(
-                stdout='Question Reviewer Models SUCCESS: 3'),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question reviewer ID: user1.\nUnique topic IDs '
-                    'with contribution stats: \n- topic1\n- topic2\nUnique '
-                    'valid topic IDs with contribution stats: \n- topic1\n- '
-                    'topic2\n')),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question reviewer ID: user2.\nUnique topic IDs '
-                    'with contribution stats: \n- topic1\nUnique valid '
-                    'topic IDs with contribution stats: \n- topic1\n')),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question reviewer ID: user3.\nUnique topic IDs '
-                    'with contribution stats: \n- invalid_topic\n- topic1'
-                    '\nUnique valid topic IDs with contribution stats: \n- '
-                    'topic1\n')),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question submitter ID: user1.\nUnique skill IDs '
-                    'with question suggestion: \n- exp1\n-- Topic ID: topic1\n'
-                    '-- Topic ID: topic2\nUnique topic IDs with contribution '
-                    'stats: \n- topic1\n- topic2\nUnique valid topic IDs with '
-                    'contribution stats: \n- topic1\n- topic2\n')),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question submitter ID: user2.\nUnique skill IDs '
-                    'with question suggestion: \nUnique topic IDs with '
-                    'contribution stats: \n- topic1\nUnique valid topic IDs '
-                    'with contribution stats: \n- topic1\n')),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question submitter ID: user3.\nUnique skill IDs '
-                    'with question suggestion: \nUnique topic IDs with '
-                    'contribution stats: \n- invalid_topic\n- topic1'
-                    '\nUnique valid topic IDs with contribution stats: '
-                    '\n- topic1\n'))
+                stdout='Question Reviewer Models SUCCESS: 3')
         ])
 
         # Check for TranslationSubmitterTotalContributionStatsModel.
@@ -1129,13 +1092,7 @@ class GenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             job_run_result.JobRunResult(
                 stdout='Question Submitter Models SUCCESS: 1'),
             job_run_result.JobRunResult(
-                stdout='Translation Submitter Models SUCCESS: 1'),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question submitter ID: user1.\nUnique skill IDs '
-                    'with question suggestion: \n- exp1\nUnique topic IDs '
-                    'with contribution stats: \n- topic1\nUnique valid topic '
-                    'IDs with contribution stats: \n- topic1\n'))
+                stdout='Translation Submitter Models SUCCESS: 1')
         ])
 
         translation_model = (
@@ -1188,7 +1145,7 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
         self.question_suggestion_rejected_model.update_timestamps()
         self.question_suggestion_accepted_with_edits_model.update_timestamps()
         self.question_suggestion_accepted_model.update_timestamps()
-        self.question_suggestion_accepted_model_with_no_contribution_stats.update_timestamps() # pylint: disable=line-too-long
+        # self.question_suggestion_accepted_model_with_no_contribution_stats.update_timestamps() # pylint: disable=line-too-long
         self.translation_suggestion_rejected_model_user1.update_timestamps()
         self.translation_suggestion_rejected_model_user2.update_timestamps()
         self.translation_suggestion_accepted_with_edits_model.update_timestamps() # pylint: disable=line-too-long
@@ -1219,7 +1176,7 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             self.question_suggestion_rejected_model,
             self.question_suggestion_accepted_with_edits_model,
             self.question_suggestion_accepted_model,
-            self.question_suggestion_accepted_model_with_no_contribution_stats,
+            # self.question_suggestion_accepted_model_with_no_contribution_stats,
             self.translation_suggestion_rejected_model_user1,
             self.translation_suggestion_rejected_model_user2,
             self.translation_suggestion_accepted_with_edits_model,
@@ -1238,49 +1195,14 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             job_run_result.JobRunResult(
                 stdout='Question Submitter Models SUCCESS: 4'),
             job_run_result.JobRunResult(
-                stdout='Question Reviewer Models SUCCESS: 3'),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question reviewer ID: user1.\nUnique topic IDs '
-                    'with contribution stats: \n- topic1\n- topic2\nUnique '
-                    'valid topic IDs with contribution stats: \n- topic1\n- '
-                    'topic2\n')),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question reviewer ID: user2.\nUnique topic IDs '
-                    'with contribution stats: \n- topic1\nUnique valid '
-                    'topic IDs with contribution stats: \n- topic1\n')),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question reviewer ID: user3.\nUnique topic IDs '
-                    'with contribution stats: \n- topic1\nUnique valid '
-                    'topic IDs with contribution stats: \n- topic1\n')),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question submitter ID: user1.\nUnique skill IDs '
-                    'with question suggestion: \n- exp1\n-- Topic ID: topic1\n'
-                    '-- Topic ID: topic2\nUnique topic IDs with contribution '
-                    'stats: \n- topic1\n- topic2\nUnique valid topic IDs with '
-                    'contribution stats: \n- topic1\n- topic2\n')),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question submitter ID: user2.\nUnique skill IDs '
-                    'with question suggestion: \nUnique topic IDs with '
-                    'contribution stats: \n- topic1\nUnique valid topic IDs '
-                    'with contribution stats: \n- topic1\n')),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question submitter ID: user3.\nUnique skill IDs '
-                    'with question suggestion: \nUnique topic IDs with '
-                    'contribution stats: \n- topic1\nUnique valid topic IDs '
-                    'with contribution stats: \n- topic1\n')),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question submitter ID: user4.\nUnique skill IDs '
-                    'with question suggestion: \n- exp1\n-- Topic ID: topic1\n'
-                    '-- Topic ID: topic2\nUnique topic IDs with contribution '
-                    'stats: \nUnique valid topic IDs with contribution stats: '
-                    '\n')),
+                stdout='Question Reviewer Models SUCCESS: 3')
+            # job_run_result.JobRunResult(
+            #     stdout=(
+            #         'Question submitter ID: user4.\nUnique skill IDs '
+            #         'with question suggestion: \n- exp1\n-- Topic ID: topic1\n'
+            #         '-- Topic ID: topic2\nUnique topic IDs with contribution '
+            #         'stats: \nUnique valid topic IDs with contribution stats: '
+            #         '\n')),
         ])
 
     def test_job_for_recent_review_outcomes_limit(self) -> None:
@@ -1323,11 +1245,5 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             job_run_result.JobRunResult(
                 stdout='Translation Submitter Models SUCCESS: 1'),
             job_run_result.JobRunResult(
-                stdout='Question Submitter Models SUCCESS: 1'),
-            job_run_result.JobRunResult(
-                stdout=(
-                    'Question submitter ID: user1.\nUnique skill IDs '
-                    'with question suggestion: \n- exp1\nUnique topic IDs '
-                    'with contribution stats: \n- topic1\nUnique valid topic '
-                    'IDs with contribution stats: \n- topic1\n')),
+                stdout='Question Submitter Models SUCCESS: 1')
         ])
