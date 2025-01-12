@@ -54,23 +54,6 @@ class ConcurrentTaskUtilsTests(test_utils.GenericTestBase):
             self.task_stdout.append(' '.join(str(arg) for arg in args))
         self.print_swap = self.swap(builtins, 'print', mock_print)
 
-    def test_create_task_with_retryable_errors(self) -> None:
-        """Test for create_task method with retryable errors."""
-        test_target = "retryable_task"
-        parsed_args = type("ParsedArgs", (object,), {"verbose": True})  
-        
-        task = concurrent_task_utils.create_task(
-            lambda: None, 
-            parsed_args.verbose, 
-            self.semaphore, 
-            name=test_target,
-            report_enabled=False, 
-            errors_to_retry_on=concurrent_task_utils.ERRORS_TO_RETRY_ON
-        )
-        
-        self.assertIsInstance(task, concurrent_task_utils.TaskThread)
-        self.assertEqual(task.name, test_target)
-        self.assertEqual(task.errors_to_retry_on, concurrent_task_utils.ERRORS_TO_RETRY_ON)
 
 class TaskResultTests(ConcurrentTaskUtilsTests):
     """Tests for TaskResult class."""
@@ -218,3 +201,106 @@ class ExecuteTasksTests(ConcurrentTaskUtilsTests):
             'positional argument: \'unused_arg\'',
             self.task_stdout
         )
+
+class TaskRetryBehaviorTests(test_utils.GenericTestBase):
+    '''Tests for retry behaviors in create_task method.'''
+
+    def test_create_task_with_retryable_errors(self) -> None:
+        '''Test for create_task method with retryable errors.'''
+        call_count = 0
+
+        def mock_func():
+            nonlocal call_count
+            call_count += 1
+            if call_count == 1:
+                raise Exception('Error -11')
+            return [concurrent_task_utils.TaskResult(
+                name='mock_task', failed=False, trimmed_messages=[], messages=['Success'])]
+
+        test_target = 'retryable_task'
+        semaphore = threading.Semaphore(1)
+
+        task = concurrent_task_utils.create_task(
+            func=mock_func,
+            verbose=True,
+            semaphore=semaphore,
+            name=test_target,
+            report_enabled=False,
+            errors_to_retry_on=['Error -11']
+        )
+
+        task.run()
+
+        self.assertEqual(task.num_attempts, 2)
+        self.assertTrue(task.finished)
+        self.assertIsNone(task.exception)
+        self.assertEqual(call_count, 2)
+        self.assertEqual(task.task_results[0].messages[0], 'Success')
+
+    def test_create_task_with_non_retryable_errors(self) -> None:
+        '''Test for create_task method with non-retryable errors.'''
+
+        def mock_func():
+            raise Exception('Non-retryable error')
+
+        test_target = 'non_retryable_task'
+        semaphore = threading.Semaphore(1)
+
+        task = concurrent_task_utils.create_task(
+            func=mock_func,
+            verbose=True,
+            semaphore=semaphore,
+            name=test_target,
+            report_enabled=False,
+            errors_to_retry_on=['Error -11']
+        )
+
+        task.run()
+
+        self.assertEqual(task.num_attempts, 1)
+        self.assertTrue(task.finished)
+        self.assertIsNotNone(task.exception)
+        self.assertEqual(str(task.exception), 'Non-retryable error')
+
+    def test_create_task_with_bad_string_error(self) -> None:
+        '''Test for create_task method when a bad string error is encountered.'''
+
+        def mock_func(target: str):
+            if 'bad_string' in target:
+                raise ValueError('Bad string encountered')
+            return [concurrent_task_utils.TaskResult(
+                name=target, failed=False, trimmed_messages=[], messages=['Processed successfully'])]
+
+        semaphore = threading.Semaphore(1)
+
+        bad_task = concurrent_task_utils.create_task(
+            func=lambda: mock_func('bad_string_target'),
+            verbose=True,
+            semaphore=semaphore,
+            name='bad_task',
+            report_enabled=False,
+            errors_to_retry_on=['ValueError']
+        )
+
+        bad_task.run()
+
+        self.assertEqual(bad_task.num_attempts, 1)
+        self.assertTrue(bad_task.finished)
+        self.assertIsNotNone(bad_task.exception)
+        self.assertEqual(str(bad_task.exception), 'Bad string encountered')
+
+        valid_task = concurrent_task_utils.create_task(
+            func=lambda: mock_func('valid_target'),
+            verbose=True,
+            semaphore=semaphore,
+            name='valid_task',
+            report_enabled=False,
+            errors_to_retry_on=['ValueError']
+        )
+
+        valid_task.run()
+
+        self.assertEqual(valid_task.num_attempts, 1)
+        self.assertTrue(valid_task.finished)
+        self.assertIsNone(valid_task.exception)
+        self.assertEqual(valid_task.task_results[0].messages[0], 'Processed successfully')
