@@ -20,11 +20,11 @@ Provides functions to apply ANSI color codes to strings for terminal output.
 from __future__ import annotations
 
 import os
-from enum import Enum
-from typing import Callable
+import enum
+import typing
 
 
-class AnsiColor(Enum):
+class AnsiColor(enum.Enum):
     """Enum for ANSI color codes."""
 
     RED = '\033[91m'
@@ -37,7 +37,7 @@ class AnsiColor(Enum):
 ENABLE_COLOR = os.getenv('ENABLE_COLOR', 'true').lower() == 'true'
 
 
-def apply_color(message: str, color_func: Callable[[str], str]) -> str:
+def apply_color(message: str, color_func: typing.Callable[[str], str]) -> str:
     """Applies color to a message if colorization is enabled.
 
     Args:
@@ -70,5 +70,5 @@ def colorize_success(message: str) -> str:
 
 def colorize_warning(message: str) -> str:
     """Wraps the message in yellow color for warnings."""
-    
+
     return f'{AnsiColor.YELLOW.value}{message}{AnsiColor.RESET.value}'
