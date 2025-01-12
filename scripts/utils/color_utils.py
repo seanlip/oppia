@@ -31,7 +31,7 @@ class AnsiColor(enum.Enum):
     RESET = '\033[0m'
 
 
-#Controls whether color output is enabled or disabled.
+# Controls whether color output is enabled or disabled.
 
 ENABLE_COLOR = os.getenv('ENABLE_COLOR', 'true').lower() == 'true'
 
