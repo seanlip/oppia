@@ -41,11 +41,11 @@ def apply_color(message: str, color_func: typing.Callable[[str], str]) -> str:
     """Applies color to a message if colorization is enabled.
 
     Args:
-        message (str): The message to colorize.
-        color_func (Callable[[str], str]): The color function to apply.
+        message: str. The message to colorize.
+        color_func: Callable[[str], str]. The color function to apply.
 
     Returns:
-        str: Colorized message if enabled, original message otherwise.
+        str. Colorized message if enabled, original message otherwise.
     """
     return color_func(message) if ENABLE_COLOR else message
 
@@ -54,21 +54,33 @@ def colorize_error(message: str) -> str:
     """Wraps the message in red color for errors.
 
     Args:
-        message (str): The error message to colorize.
+        message: str. The error message to colorize.
 
     Returns:
-        str: Red-colored message.
+        str. Red-colored message.
     """
     return f'{AnsiColor.RED.value}{message}{AnsiColor.RESET.value}'
 
 
 def colorize_success(message: str) -> str:
-    """Wraps the message in green color for success."""
+    """Wraps the message in green color for success.
 
+    Args:
+        message: str. The success message to colorize.
+
+    Returns:
+        str. Green-colored message.
+    """
     return f'{AnsiColor.GREEN.value}{message}{AnsiColor.RESET.value}'
 
 
 def colorize_warning(message: str) -> str:
-    """Wraps the message in yellow color for warnings."""
+    """Wraps the message in yellow color for warnings.
 
+    Args:
+        message: str. The warning message to colorize.
+
+    Returns:
+        str. Yellow-colored message.
+    """
     return f'{AnsiColor.YELLOW.value}{message}{AnsiColor.RESET.value}'
