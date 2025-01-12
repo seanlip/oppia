@@ -275,20 +275,31 @@ class CreateExplorationVoiceArtistLinkModelsJob(base_jobs.JobBase):
                 old_snapshot_id, new_snapshot_id))
 
             if old_snapshot_id not in snapshot_models_dict:
+                logging.info(
+                    '%s not present in snapshot model dict.' % old_snapshot_id)
                 continue
             if new_snapshot_id not in snapshot_models_dict:
+                logging.info(
+                    '%s not present in snapshot model dict.' % new_snapshot_id)
                 continue
             if new_snapshot_id not in metadata_models_dict:
+                logging.info(
+                    '%s not present in metadata model dict.' % new_snapshot_id)
                 continue
 
             new_snapshot_model = snapshot_models_dict[new_snapshot_id]
             old_snapshot_model = snapshot_models_dict[old_snapshot_id]
+
+            logging.info('Fetched old and new snapshot model correctly.')
 
             # If the commit does not contain voiceover changes, then we should
             # skip the snapshot model.
             if not cls.is_voiceover_changes_made(
                     metadata_models_dict[new_snapshot_model.id]):
                 debug_logs += (
+                    'No voiceovers added in snapshot version: %s.\n'
+                    % new_snapshot_model.id)
+                logging.info(
                     'No voiceovers added in snapshot version: %s.\n'
                     % new_snapshot_model.id)
                 continue
@@ -299,6 +310,11 @@ class CreateExplorationVoiceArtistLinkModelsJob(base_jobs.JobBase):
                         new_snapshot_model, old_snapshot_model))
             except Exception as e:
                 debug_logs += (
+                    'Failed to get newly added voiceover between snapshot '
+                    'versions %s and %s, with error: %s' % (
+                        old_snapshot_model.id, new_snapshot_model.id, e)
+                )
+                logging.info(
                     'Failed to get newly added voiceover between snapshot '
                     'versions %s and %s, with error: %s' % (
                         old_snapshot_model.id, new_snapshot_model.id, e)
@@ -317,6 +333,7 @@ class CreateExplorationVoiceArtistLinkModelsJob(base_jobs.JobBase):
             voice_artist_id = (
                 metadata_models_dict[new_snapshot_model.id].committer_id
             )
+            logging.info('Got the voice artist ID: %s.' % voice_artist_id)
 
             try:
                 with datastore_services.get_ndb_context():
