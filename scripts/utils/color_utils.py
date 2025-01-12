@@ -17,15 +17,14 @@ Provides functions to apply ANSI color codes to strings for terminal output.
 """
 
 from __future__ import annotations
-
 import enum
 import os
 import typing
 
 
 class AnsiColor(enum.Enum):
-    
     """Enum for ANSI color codes."""
+
     RED = '\033[91m'
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
