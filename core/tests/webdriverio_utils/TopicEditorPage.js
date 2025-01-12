@@ -112,8 +112,8 @@ var TopicEditorPage = function () {
     return $$('.e2e-test-subtopic-column');
   };
   var subtopicDescriptionEditor = $('.e2e-test-subtopic-description-editor');
-  var subtopicsSelector = function () {
-    return $$('.e2e-test-subtopic');
+  var subtopicsSelector = async function () {
+    return await $$('.e2e-test-subtopic');
   };
   var subtopicTitleField = $('.e2e-test-subtopic-title-field');
   var subtopicThumbnailImageElement = $(
