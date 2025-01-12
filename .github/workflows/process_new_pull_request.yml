@@ -1,4 +1,4 @@
-name: Process New Pull Request
+name: Assign Reviewers for Contributors
 
 on:
   pull_request_target:
@@ -47,8 +47,8 @@ jobs:
               }.`
             );
             core.setOutput('IS_NEW_CONTRIBUTOR', submitterIsNewContributor);
-      - name: Assign reviewers as assignees
-        id: assign-reviewers
+      - name: Check for reviewers and teams
+        id: check-reviewers
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -58,21 +58,12 @@ jobs:
             const repo = process.env.REPO;
             const requestedReviewers = context.payload.pull_request.requested_reviewers.map(r => r.login);
             const requestedTeams = context.payload.pull_request.requested_teams.map(t => t.slug);
-            if (requestedReviewers.length > 0) {
-              try {
-                await github.rest.issues.addAssignees({
-                  owner,
-                  repo,
-                  issue_number: prNumber,
-                  assignees: requestedReviewers,
-                });
-                console.log(`Assigned reviewers: ${requestedReviewers.join(", ")}`);
-              } catch (error) {
-                console.error(`Failed to assign reviewers: ${error.message}`);
-              }
-            }
-      - name: Notify team if no individual reviewers are found
-        id: notify-team
+            const hasReviewers = requestedReviewers.length > 0;
+            const hasTeams = requestedTeams.length > 0;
+            core.setOutput('HAS_REVIEWERS', hasReviewers);
+            core.setOutput('HAS_TEAMS', hasTeams);
+      - name: Assign reviewers as assignees
+        if: steps.check-reviewers.outputs.HAS_REVIEWERS == 'true'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -80,20 +71,37 @@ jobs:
             const prNumber = process.env.PR_NUMBER;
             const owner = process.env.OWNER;
             const repo = process.env.REPO;
-            const requestedReviewers = context.payload.pull_request.requested_reviewers.map(r => r.login); 
-            const requestedTeams = context.payload.pull_request.requested_teams.map(t => t.slug);
-            if (requestedReviewers.length === 0 && requestedTeams.length === 0) {
-              try {
-                await github.rest.issues.createComment({
-                  owner,
-                  repo,
-                  issue_number: prNumber,
-                  body: `No individual reviewers or teams were found by GitHub. Please assign an appropriate reviewer. @oppia/dev-workflow-reviewers, could you please review the issue? Thank you!`,
-                });
-                console.log("Notified team about missing reviewers.");
-              } catch (error) {
-                console.error(`Failed to notify team: ${error.message}`);
-              }
+            const requestedReviewers = context.payload.pull_request.requested_reviewers.map(r => r.login);
+            try {
+              await github.rest.issues.addAssignees({
+                owner,
+                repo,
+                issue_number: prNumber,
+                assignees: requestedReviewers,
+              });
+              console.log(`Assigned reviewers: ${requestedReviewers.join(", ")}`);
+            } catch (error) {
+              console.error(`Failed to assign reviewers: ${error.message}`);
+            }
+      - name: Notify team if no individual reviewers are found
+        if: steps.check-reviewers.outputs.HAS_REVIEWERS == 'false' && steps.check-reviewers.outputs.HAS_TEAMS == 'false'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = process.env.PR_NUMBER;
+            const owner = process.env.OWNER;
+            const repo = process.env.REPO;
+            try {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: prNumber,
+                body: `No individual reviewers or teams were found by GitHub. Please assign an appropriate reviewer. @oppia/dev-workflow-reviewers, could you please review the issue? Thank you!`,
+              });
+              console.log("Notified team about missing reviewers.");
+            } catch (error) {
+              console.error(`Failed to notify team: ${error.message}`);
             }
       - name: Add PTAL syntax comment for new contributors
         if: steps.check-new-contributor.outputs.IS_NEW_CONTRIBUTOR == 'true'
