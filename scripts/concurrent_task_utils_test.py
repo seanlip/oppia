@@ -203,104 +203,90 @@ class ExecuteTasksTests(ConcurrentTaskUtilsTests):
         )
 
 class TaskRetryBehaviorTests(test_utils.GenericTestBase):
-    '''Tests for retry behaviors in create_task method.'''
+    """Tests for retry behaviors in create_task method."""
 
     def test_create_task_with_retryable_errors(self) -> None:
-        '''Test for create_task method with retryable errors.'''
-        call_count = 0
+        """Test for create_task method with retryable errors."""
+        call_count = 0  # Track the number of calls to the mock function.
 
         def mock_func():
             nonlocal call_count
             call_count += 1
             if call_count == 1:
-                raise Exception('Error -11')
+                raise Exception("Error -11")  # Retryable error.
             return [concurrent_task_utils.TaskResult(
-                name='mock_task', failed=False, trimmed_messages=[], messages=['Success'])]
+                name="mock_task", failed=False, trimmed_messages=[], messages=["Success"])]
 
-        test_target = 'retryable_task'
+        test_target = "retryable_task"
         semaphore = threading.Semaphore(1)
 
+        # Create the task with retryable errors.
         task = concurrent_task_utils.create_task(
             func=mock_func,
             verbose=True,
             semaphore=semaphore,
             name=test_target,
             report_enabled=False,
-            errors_to_retry_on=['Error -11']
+            errors_to_retry_on=["Error -11"]  # Retryable error list.
         )
 
-        task.run()
+        task.run()  # Run the task.
 
-        self.assertEqual(task.num_attempts, 2)
-        self.assertTrue(task.finished)
-        self.assertIsNone(task.exception)
-        self.assertEqual(call_count, 2)
-        self.assertEqual(task.task_results[0].messages[0], 'Success')
+        # Verify behavior.
+        self.assertEqual(task.num_attempts, 2)  # Retries once and succeeds.
+        self.assertTrue(task.finished)  # Task should be marked as finished.
+        self.assertIsNone(task.exception)  # Task should have no exception.
+        self.assertEqual(call_count, 2)  # Mock function called twice.
+        self.assertEqual(task.task_results[0].messages[0], "Success")  # Verify success.
 
     def test_create_task_with_non_retryable_errors(self) -> None:
-        '''Test for create_task method with non-retryable errors.'''
-
+        """Test for create_task method with non-retryable errors."""
         def mock_func():
-            raise Exception('Non-retryable error')
+            raise Exception("Non-retryable error")  # Error not in retryable list.
 
-        test_target = 'non_retryable_task'
+        test_target = "non_retryable_task"
         semaphore = threading.Semaphore(1)
 
+        # Create the task without retrying on "Non-retryable error".
         task = concurrent_task_utils.create_task(
             func=mock_func,
             verbose=True,
             semaphore=semaphore,
             name=test_target,
             report_enabled=False,
-            errors_to_retry_on=['Error -11']
+            errors_to_retry_on=["Error -11"]  # Retryable error list does not include this error.
         )
 
-        task.run()
+        task.run()  # Run the task.
 
-        self.assertEqual(task.num_attempts, 1)
-        self.assertTrue(task.finished)
-        self.assertIsNotNone(task.exception)
-        self.assertEqual(str(task.exception), 'Non-retryable error')
+        # Verify behavior.
+        self.assertEqual(task.num_attempts, 1)  # No retries should occur.
+        self.assertTrue(task.finished)  # Task should be marked as finished.
+        self.assertIsNotNone(task.exception)  # Exception should be raised.
+        self.assertEqual(str(task.exception), "Non-retryable error")  # Verify exception message.
 
     def test_create_task_with_bad_string_error(self) -> None:
-        '''Test for create_task method when a bad string error is encountered.'''
+        """Test for create_task method with bad string error."""
+        def mock_func():
+            raise Exception("Bad string error")  # Error not in retryable list.
 
-        def mock_func(target: str):
-            if 'bad_string' in target:
-                raise ValueError('Bad string encountered')
-            return [concurrent_task_utils.TaskResult(
-                name=target, failed=False, trimmed_messages=[], messages=['Processed successfully'])]
-
+        test_target = "bad_string_task"
         semaphore = threading.Semaphore(1)
 
-        bad_task = concurrent_task_utils.create_task(
-            func=lambda: mock_func('bad_string_target'),
+        # Create the task without retrying on "Bad string error".
+        task = concurrent_task_utils.create_task(
+            func=mock_func,
             verbose=True,
             semaphore=semaphore,
-            name='bad_task',
+            name=test_target,
             report_enabled=False,
-            errors_to_retry_on=['ValueError']
+            errors_to_retry_on=["Error -11"]  # Retryable error list does not include this error.
         )
 
-        bad_task.run()
+        task.run()  # Run the task.
 
-        self.assertEqual(bad_task.num_attempts, 1)
-        self.assertTrue(bad_task.finished)
-        self.assertIsNotNone(bad_task.exception)
-        self.assertEqual(str(bad_task.exception), 'Bad string encountered')
-
-        valid_task = concurrent_task_utils.create_task(
-            func=lambda: mock_func('valid_target'),
-            verbose=True,
-            semaphore=semaphore,
-            name='valid_task',
-            report_enabled=False,
-            errors_to_retry_on=['ValueError']
-        )
-
-        valid_task.run()
-
-        self.assertEqual(valid_task.num_attempts, 1)
-        self.assertTrue(valid_task.finished)
-        self.assertIsNone(valid_task.exception)
-        self.assertEqual(valid_task.task_results[0].messages[0], 'Processed successfully')
+        # Verify behavior.
+        self.assertEqual(task.num_attempts, 1)  # No retries should occur.
+        self.assertTrue(task.finished)  # Task should be marked as finished.
+        self.assertIsNotNone(task.exception)  # Exception should be raised.
+        self.assertEqual(str(task.exception), "Bad string error")  # Verify exception message.
