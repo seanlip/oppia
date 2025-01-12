@@ -24,6 +24,7 @@ import typing
 
 
 class AnsiColor(enum.Enum):
+    
     """Enum for ANSI color codes."""
     RED = '\033[91m'
     GREEN = '\033[92m'
@@ -31,7 +32,7 @@ class AnsiColor(enum.Enum):
     RESET = '\033[0m'
 
 
-# Control for enabling/disabling color output
+# Control for enabling or disabling color output
 ENABLE_COLOR = os.getenv('ENABLE_COLOR', 'true').lower() == 'true'
 
 
