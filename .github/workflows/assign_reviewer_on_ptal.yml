@@ -1,0 +1,71 @@
+name: Assign Reviewers on PR Comment
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions: read-all
+
+jobs:
+  assign-reviewers:
+    if: github.event.issue.pull_request != null 
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Assign Reviewers Based on PR Comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const comment = context.payload.comment.body;
+            const prNumber = context.payload.issue.number;
+            const repoOwner = context.repo.owner;
+            const repoName = context.repo.repo;
+
+            // To extract reviewers and check for PTAL 
+            function parseReviewers(comment) {
+              const reviewers = Array.from(comment.matchAll(/@([\w-]+)/g), match => match[1]);
+              const ptalRegex = /\b(ptal|take a pass|please review)\b/i;
+              const containsPtal = ptalRegex.test(comment);
+              return { reviewers, containsPtal };
+            }
+            
+            // Parse the comment
+            const { reviewers, containsPtal } = parseReviewers(comment);
+            if (reviewers.length > 0 && containsPtal) {
+              console.log(`Reviewers found: ${reviewers.join(", ")}`);
+              console.log("PTAL detected, proceeding with reviewer assignment...");
+
+              // Get PR details to identify the author
+              const pr = await github.rest.pulls.get({
+                owner: repoOwner,
+                repo: repoName,
+                pull_number: prNumber
+              });
+              const author = pr.data.user.login;
+              const currentAssignees = pr.data.assignees.map(a => a.login);
+
+              // Unassign author 
+              const newAssignees = currentAssignees.filter(a => a !== author);
+
+              // Add reviewers
+              newAssignees.push(...reviewers);
+              await github.rest.issues.update({
+                owner: repoOwner,
+                repo: repoName,
+                issue_number: prNumber,
+                assignees: newAssignees
+              });
+              console.log(`Assigned reviewers: ${reviewers.join(", ")}.`);
+              console.log(`Unassigned the author: ${author}.`);
+              // Post a comment confirming the assignment
+              await github.rest.issues.createComment({
+                owner: repoOwner,
+                repo: repoName,
+                issue_number: prNumber,
+                body: `Reviewers assigned: ${reviewers.map(r => `@${r}`).join(", ")}. The author @${author} has been unassigned from the review.`
+              });
+            } else {
+              console.log("No valid reviewers or PTAL detected in the comment. Skipping assignment.");
+            }
