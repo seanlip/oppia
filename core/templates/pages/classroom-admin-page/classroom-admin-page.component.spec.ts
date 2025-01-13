@@ -1408,6 +1408,7 @@ describe('Classroom Admin Page component ', () => {
     tick();
 
     component.togglePublicationStatus();
+    component.toggleDiagnosticTestStatus();
     component.saveClassroomData();
     expect(component.updateClassroomData).toHaveBeenCalled();
   }));
@@ -1494,6 +1495,7 @@ describe('Classroom Admin Page component ', () => {
     tick();
 
     component.togglePublicationStatus();
+    component.toggleDiagnosticTestStatus();
     component.saveClassroomData();
     expect(component.updateClassroomData).toHaveBeenCalled();
   }));

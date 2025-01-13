@@ -73,6 +73,7 @@ export interface ClassroomBackendDict {
     [topicId: string]: string[];
   };
   is_published: boolean;
+  is_diagnostic_test_enabled: boolean;
   thumbnail_data: ImageData;
   banner_data: ImageData;
 }
@@ -88,6 +89,7 @@ export interface ClassroomDict {
     [topicId: string]: string[];
   };
   isPublished: boolean;
+  isDiagnosticTestEnabled: boolean;
   thumbnailData: ImageData;
   bannerData: ImageData;
 }
@@ -186,6 +188,10 @@ export class ClassroomBackendApiService {
         }
       );
   }
+  getClassroomData(classroomName: string): Promise<ClassroomData> {
+    return this.http.get<ClassroomData>(`/classroom_data_handler/${classroomName}`).toPromise();
+  }
+
 
   async fetchClassroomDataAsync(
     classroomUrlFragment: string
@@ -242,6 +248,7 @@ export class ClassroomBackendApiService {
                 topicIdToPrerequisiteTopicIds:
                   response.classroom_dict.topic_id_to_prerequisite_topic_ids,
                 isPublished: response.classroom_dict.is_published,
+                isDiagnosticTestEnabled: response.classroom_dict.is_diagnostic_test_enabled ?? false,
                 thumbnailData: response.classroom_dict.thumbnail_data,
                 bannerData: response.classroom_dict.banner_data,
               },
@@ -279,6 +286,7 @@ export class ClassroomBackendApiService {
               classroomDict.topic_id_to_prerequisite_topic_ids,
             teaser_text: classroomDict.teaser_text,
             is_published: classroomDict.is_published,
+            is_diagnostic_test_enabled: classroomDict.is_diagnostic_test_enabled,
             thumbnail_data: {
               filename: classroomDict.thumbnail_data.filename,
               bg_color: classroomDict.thumbnail_data.bg_color,

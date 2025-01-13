@@ -29,6 +29,7 @@ class ClassroomDict(TypedDict):
     topic_ids: List[str]
     course_details: str
     topic_list_intro: str
+    is_diagnostic_test_enabled: bool
 
 # TODO(#17246): Currently, the classroom data is stored in the config model and
 # we are planning to migrate the storage into a new Classroom model. After the
@@ -44,7 +45,8 @@ class Classroom:
         url_fragment: str,
         topic_ids: List[str],
         course_details: str,
-        topic_list_intro: str
+        topic_list_intro: str,
+        is_diagnostic_test_enabled: bool = False,
     ) -> None:
         """Constructs a Classroom domain object.
 
@@ -60,6 +62,7 @@ class Classroom:
         self.topic_ids = topic_ids
         self.course_details = course_details
         self.topic_list_intro = topic_list_intro
+        self.is_diagnostic_test_enabled = is_diagnostic_test_enabled
 
     def to_dict(self) -> ClassroomDict:
         """Converts this Classroom domain instance into a dictionary form with
@@ -74,5 +77,17 @@ class Classroom:
             'url_fragment': self.url_fragment,
             'topic_ids': self.topic_ids,
             'course_details': self.course_details,
-            'topic_list_intro': self.topic_list_intro
+            'topic_list_intro': self.topic_list_intro,
+            'is_diagnostic_test_enabled': self.is_diagnostic_test_enabled
         }
+    @classmethod
+    def from_dict(cls, classroom_dict: ClassroomDict) -> Classroom:
+        return cls(
+            name=classroom_dict['name'],
+            url_fragment=classroom_dict['url_fragment'],
+            topic_ids=classroom_dict['topic_ids'],
+            course_details=classroom_dict['course_details'],
+            topic_list_intro=classroom_dict['topic_list_intro'],
+            is_diagnostic_test_enabled=classroom_dict.get('is_diagnostic_test_enabled', False)
+        )
+

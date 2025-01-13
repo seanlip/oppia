@@ -67,6 +67,8 @@ export class ExistingClassroomData
   _topicsCountInClassroom: number;
   _topicIdToTopicName!: TopicIdToTopicName;
   _isPublished: boolean;
+  _isDiagnosticTestEnabled: boolean;
+  _urlFragment: string;
   _thumbnail_data: ImageData;
   _banner_data: ImageData;
 
@@ -80,9 +82,11 @@ export class ExistingClassroomData
     topicIdToPrerequisiteTopicIds: TopicIdToPrerequisiteTopicIds,
     isPublished: boolean,
     thumbnailData: ImageData,
-    bannerData: ImageData
+    bannerData: ImageData,
+    isDiagnosticTestEnabled: boolean
   ) {
     super(classroomId, name, urlFragment);
+    this._urlFragment = urlFragment;
     this._courseDetails = courseDetails;
     this._teaserText = teaserText;
     this._topicListIntro = topicListIntro;
@@ -94,7 +98,16 @@ export class ExistingClassroomData
     this._isPublished = isPublished;
     this._thumbnail_data = thumbnailData;
     this._banner_data = bannerData;
+    this._isDiagnosticTestEnabled = isDiagnosticTestEnabled;
   }
+
+  getName(): string {
+    return this._name;
+}
+
+  setName(value: string): void {
+    this._name = value;
+}
 
   getCourseDetails(): string {
     return this._courseDetails;
@@ -148,6 +161,22 @@ export class ExistingClassroomData
     this._thumbnail_data = thumbnailData;
   }
 
+  getIsDiagnosticTestEnabled(): boolean {
+    return this._isDiagnosticTestEnabled;
+  }
+
+  setIsDiagnosticTestEnabled(status: boolean): void {
+    this._isDiagnosticTestEnabled = status;
+  }
+
+  getUrlFragment(): string {
+    return this._urlFragment;
+  }
+
+  setUrlFragment(value: string): void {
+    this._urlFragment = value;
+  }
+
   setTopicIdToPrerequisiteTopicId(
     topicIdToPrerequisiteTopicIds: TopicIdToPrerequisiteTopicIds
   ): void {
@@ -167,7 +196,8 @@ export class ExistingClassroomData
       classroomDict.topicIdToPrerequisiteTopicIds,
       classroomDict.isPublished,
       classroomDict.thumbnailData,
-      classroomDict.bannerData
+      classroomDict.bannerData,
+      classroomDict.isDiagnosticTestEnabled
     );
   }
 
