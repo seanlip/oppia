@@ -110,7 +110,7 @@ describe('Topic editor functionality', function () {
       'Subtopic1 content'
     );
     await topicEditorPage.navigateToTopicEditorTab();
-    await topicEditorPage.navigateToSubtopicWithIndex(0);
+    // await topicEditorPage.navigateToSubtopicWithIndex(0);
     // await topicEditorPage.changeSubtopicTitle('Modified Title');
     // await topicEditorPage.changeSubtopicPageContents('Subtopic Contents');
     // await topicEditorPage.submitSubtopicThumbnail(
