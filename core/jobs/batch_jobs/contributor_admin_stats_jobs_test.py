@@ -1151,7 +1151,7 @@ class GenerateContributorAdminStatsJobTests(ContributorDashboardTest):
         assert question_model is not None
 
         self.assertEqual(100, len(question_model.recent_review_outcomes))
- 
+
     def test_job_does_not_creates_stats_if_contribution_stats_model_does_not_exist_for_a_suggestion(self) -> None: # pylint: disable=line-too-long
         self.question_contribution_model_1.update_timestamps()
         self.question_contribution_model_2.update_timestamps()
