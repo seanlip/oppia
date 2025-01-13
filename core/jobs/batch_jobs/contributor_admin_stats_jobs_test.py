@@ -353,6 +353,18 @@ class ContributorDashboardTest(job_test_utils.JobTestBase):
             last_contribution_date=self.LAST_CONTRIBUTION_DATE
         )
 
+        self.question_contribution_model_5 = self.create_model(
+            suggestion_models.QuestionContributionStatsModel,
+            contributor_user_id='user4',
+            topic_id='topic1',
+            submitted_questions_count=self.SUBMITTED_QUESTION_COUNT,
+            accepted_questions_count=self.ACCEPTED_QUESTIONS_COUNT,
+            accepted_questions_without_reviewer_edits_count=(
+                self.ACCEPTED_QUESTIONS_WITHOUT_REVIEWER_EDITS_COUNT),
+            first_contribution_date=self.FIRST_CONTRIBUTION_DATE,
+            last_contribution_date=self.LAST_CONTRIBUTION_DATE
+        )
+
         self.question_contribution_model_with_invalid_topic = (
             self.create_model(
                 suggestion_models.QuestionContributionStatsModel,
@@ -500,7 +512,7 @@ class ContributorDashboardTest(job_test_utils.JobTestBase):
             edited_by_reviewer=False,
             created_on=datetime.datetime(2023, 3, 2))
 
-        self.question_suggestion_accepted_model_with_no_contribution_stats = (
+        self.question_suggestion_accepted_model_with_incomplete_contribution_stats = ( # pylint: disable=line-too-long
             self.create_model(
                 suggestion_models.GeneralSuggestionModel,
                 suggestion_type=feconf.SUGGESTION_TYPE_ADD_QUESTION,
@@ -1155,26 +1167,28 @@ class GenerateContributorAdminStatsJobTests(ContributorDashboardTest):
     def test_job_does_not_creates_stats_if_contribution_stats_model_does_not_exist_for_a_suggestion(self) -> None: # pylint: disable=line-too-long
         self.question_contribution_model_1.update_timestamps()
         self.question_contribution_model_2.update_timestamps()
+        self.question_contribution_model_5.update_timestamps()
         self.question_suggestion_rejected_model.update_timestamps()
         self.question_suggestion_accepted_with_edits_model.update_timestamps()
         self.question_suggestion_accepted_model.update_timestamps()
-        self.question_suggestion_accepted_model_with_no_contribution_stats.update_timestamps() # pylint: disable=line-too-long
+        self.question_suggestion_accepted_model_with_incomplete_contribution_stats.update_timestamps() # pylint: disable=line-too-long
         self.topic_model_1.update_timestamps()
         self.topic_model_2.update_timestamps()
 
         self.put_multi([
             self.question_contribution_model_1,
             self.question_contribution_model_2,
+            self.question_contribution_model_5,
             self.question_suggestion_rejected_model,
             self.question_suggestion_accepted_with_edits_model,
             self.question_suggestion_accepted_model,
-            self.question_suggestion_accepted_model_with_no_contribution_stats,
+            self.question_suggestion_accepted_model_with_incomplete_contribution_stats, # pylint: disable=line-too-long
             self.topic_model_1,
             self.topic_model_2,
         ])
 
         # The model is only created for user1, and not for user4. The job also
-        # the debugging logs for user4.
+        # prints the debugging logs for user4.
         self.assert_job_output_is([
             job_run_result.JobRunResult(
                 stdout='Question Submitter Models SUCCESS: 1'),
@@ -1183,8 +1197,8 @@ class GenerateContributorAdminStatsJobTests(ContributorDashboardTest):
                     'Question submitter ID: user4.\nUnique skill IDs '
                     'with question suggestion: \n- exp1\n-- Topic ID: topic1\n'
                     '-- Topic ID: topic2\nUnique topic IDs with contribution '
-                    'stats: \nUnique valid topic IDs with contribution stats: '
-                    '\n')),
+                    'stats: \n- topic1\nUnique valid topic IDs with '
+                    'contribution stats: \n- topic1\n')),
         ])
 
         # Check for QuestionSubmitterTotalContributionStatsModel.
@@ -1346,26 +1360,28 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
 
         self.question_contribution_model_1.update_timestamps()
         self.question_contribution_model_2.update_timestamps()
+        self.question_contribution_model_5.update_timestamps()
         self.question_suggestion_rejected_model.update_timestamps()
         self.question_suggestion_accepted_with_edits_model.update_timestamps()
         self.question_suggestion_accepted_model.update_timestamps()
-        self.question_suggestion_accepted_model_with_no_contribution_stats.update_timestamps() # pylint: disable=line-too-long
+        self.question_suggestion_accepted_model_with_incomplete_contribution_stats.update_timestamps() # pylint: disable=line-too-long
         self.topic_model_1.update_timestamps()
         self.topic_model_2.update_timestamps()
 
         self.put_multi([
             self.question_contribution_model_1,
             self.question_contribution_model_2,
+            self.question_contribution_model_5,
             self.question_suggestion_rejected_model,
             self.question_suggestion_accepted_with_edits_model,
             self.question_suggestion_accepted_model,
-            self.question_suggestion_accepted_model_with_no_contribution_stats,
+            self.question_suggestion_accepted_model_with_incomplete_contribution_stats, # pylint: disable=line-too-long
             self.topic_model_1,
             self.topic_model_2,
         ])
 
         # The model is only created for user1, and not for user4. The job also
-        # the debugging logs for user4.
+        # prints the debugging logs for user4.
         self.assert_job_output_is([
             job_run_result.JobRunResult(
                 stdout='Question Submitter Models SUCCESS: 1'),
@@ -1374,6 +1390,6 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
                     'Question submitter ID: user4.\nUnique skill IDs '
                     'with question suggestion: \n- exp1\n-- Topic ID: topic1\n'
                     '-- Topic ID: topic2\nUnique topic IDs with contribution '
-                    'stats: \nUnique valid topic IDs with contribution stats: '
-                    '\n')),
+                    'stats: \n- topic1\nUnique valid topic IDs with '
+                    'contribution stats: \n- topic1\n')),
         ])

@@ -612,7 +612,7 @@ class GenerateContributorAdminStatsJob(base_jobs.JobBase):
             sorted([v.topic_id for v in question_contribution_stats]))
 
         # We only generate total contribution stats model if there exists a
-        # valid contribution stats models for each topic id, a contributor
+        # valid contribution stats model for each topic id, a contributor
         # submitted a question suggestion to. Otherwise we return the debugging
         # logs.
         if topic_ids_with_question_submissions != (
