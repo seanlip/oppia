@@ -110,9 +110,10 @@ class AssetDevHandlerImageTests(test_utils.GenericTestBase):
         error_msg = (
             'At \'http://localhost/createhandler/imageupload/exploration/0\' '
             'these errors are happening:\n'
-            'Schema validation for \'filename\' failed: Validation'
-            ' failed: is_regex_matched ({\'regex_pattern\': '
-            '\'\\\\w+[.]\\\\w+\'}) for object .png'
+            'Schema validation for \'filename\' failed: Validation failed: '
+            'is_regex_matched ({\'regex_pattern\': '
+            '\'^[a-zA-Z0-9\\\\-_]+\\\\.[a-zA-Z0-9]+$\'}'
+            ') for object .png'
         )
         self.assertEqual(response_dict['error'], error_msg)
 
@@ -442,8 +443,10 @@ class AssetDevHandlerImageTests(test_utils.GenericTestBase):
 
         error_msg = (
             'Schema validation for \'filename\' failed: Validation failed: '
-            'is_regex_matched ({\'regex_pattern\': \'\\\\w+[.]\\\\w+\'}) '
-            'for object test/a.png')
+            'is_regex_matched ({\'regex_pattern\': '
+            '\'^[a-zA-Z0-9\\\\-_]+\\\\.[a-zA-Z0-9]+$\'}'
+            ') for object test/a.png'
+        )
         self.assertIn(error_msg, response_dict['error'])
 
         self.logout()
@@ -469,8 +472,11 @@ class AssetDevHandlerImageTests(test_utils.GenericTestBase):
             'At \'http://localhost/createhandler/imageupload/exploration/0\' '
             'these errors are happening:\n'
             'Schema validation for \'filename\' failed: Validation failed: '
-            'is_regex_matched ({\'regex_pattern\': \'\\\\w+[.]\\\\w+\'}) '
-            'for object test')
+            'is_regex_matched ({\'regex_pattern\': '
+            '\'^[a-zA-Z0-9\\\\-_]+\\\\.[a-zA-Z0-9]+$\'}'
+            ') for object test'
+        )
+
         self.assertEqual(error_msg, response_dict['error'])
 
         self.logout()
