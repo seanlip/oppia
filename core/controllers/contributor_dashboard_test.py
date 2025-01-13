@@ -1785,6 +1785,157 @@ class TranslatableTopicNamesHandlerTest(test_utils.GenericTestBase):
         )
 
 
+class TranslatableTopicNamesPerClassRoomHandlerTest(test_utils.GenericTestBase):
+    """Test for the TranslatableTopicNamesByClassRoomHandlerTest."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.signup(self.CURRICULUM_ADMIN_EMAIL, self.CURRICULUM_ADMIN_USERNAME)
+        self.signup(self.OWNER_EMAIL, self.OWNER_USERNAME)
+
+        self.admin_id = self.get_user_id_from_email(self.CURRICULUM_ADMIN_EMAIL)
+        self.owner_id = self.get_user_id_from_email(self.OWNER_EMAIL)
+
+        self.set_curriculum_admins([self.CURRICULUM_ADMIN_USERNAME])
+
+    def test_get_translatable_topic_names_per_classroom(self) -> None:
+        # Initially there should be no topics.
+        response = self.get_json('/gettranslatabletopicnamesperclassroom')
+        self.assertEqual(
+            response,
+            {'topic_names_per_classRoom': []}
+        )
+
+        # Create a classroom and topic.
+        topic_id = topic_fetchers.get_new_topic_id()
+        self._create_topic(
+            topic_id, 'topic', 'abbrev', 'description')
+
+        classroom_id_1 = classroom_config_services.get_new_classroom_id()
+        self.save_new_valid_classroom(
+            classroom_id=classroom_id_1,
+            name='Class 1',
+            topic_id_to_prerequisite_topic_ids={
+                topic_id: []
+            }
+        )
+
+        # Unpublished topic should not show up.
+        response = self.get_json('/gettranslatabletopicnamesperclassroom')
+        self.assertEqual(
+            response,
+            {'topic_names_per_classRoom': []}
+        )
+
+        topic_services.publish_topic(topic_id, self.admin_id)
+        # Now the topic should appear under its classroom.
+        response = self.get_json('/gettranslatabletopicnamesperclassroom')
+        self.assertEqual(
+            response,
+            {'topic_names_per_classRoom': [
+                {
+                    'classRoom': 'Class 1',
+                    'topics': ['topic']
+                }
+            ]}
+        )
+
+        # Create another classroom and topic.
+        topic_2_id = topic_fetchers.get_new_topic_id()
+        self._create_topic(
+            topic_2_id, 'topic 2', 'abbrev-two', 'description')
+
+        topic_services.publish_topic(topic_2_id, self.admin_id)
+        classroom_id_2 = classroom_config_services.get_new_classroom_id()
+        self.save_new_valid_classroom(
+            classroom_id=classroom_id_2,
+            name='Class 2',
+            topic_id_to_prerequisite_topic_ids={
+                topic_2_id: []
+            }
+        )
+
+        # Both topics should appear under their respective classrooms.
+        response = self.get_json('/gettranslatabletopicnamesperclassroom')
+        expected_response = {
+            'topic_names_per_classRoom': [
+                {
+                    'classRoom': 'Class 1',
+                    'topics': ['topic']
+                },
+                {
+                    'classRoom': 'Class 2', 
+                    'topics': ['topic 2']
+                }
+            ]
+        }
+
+        # Sort both lists by classroom name for order-independent comparison.
+        response['topic_names_per_classRoom'].sort(
+            key=lambda x: str(x['classRoom']))
+        expected_response['topic_names_per_classRoom'].sort(
+            key=lambda x: str(x['classRoom']))
+
+        self.assertEqual(response, expected_response)
+
+        # Topics not associated with any classroom should appear under ''.
+        topic_3_id = topic_fetchers.get_new_topic_id()
+        self._create_topic(
+            topic_3_id, 'topic 3', 'abbrev-three', 'descriptio  n')
+        topic_services.publish_topic(topic_3_id, self.admin_id)
+
+        response = self.get_json('/gettranslatabletopicnamesperclassroom')
+        expected_response = {
+            'topic_names_per_classRoom': [
+                {
+                    'classRoom': 'Class 1',
+                    'topics': ['topic']
+                },
+                {
+                    'classRoom': '',
+                    'topics': ['topic 3']
+                },
+                {
+                    'classRoom': 'Class 2', 
+                    'topics': ['topic 2']
+                }
+            ]
+        }
+
+        # Sort both lists by classroom name for order-independent comparison.
+        response['topic_names_per_classRoom'].sort(
+            key=lambda x: str(x['classRoom']))
+        expected_response['topic_names_per_classRoom'].sort(
+            key=lambda x: str(x['classRoom']))
+
+        self.assertEqual(response, expected_response)
+
+    def _create_topic(
+        self, topic_id: str, name: str, abbreviated_name: str,
+        description: str
+    ) -> None:
+        """Creates and publishes a topic.
+
+        Args:
+            topic_id: str. The topic ID.
+            name: str. The topic name.
+            abbreviated_name: str. The abbreviated topic name.
+            description: str. The topic description.
+        """
+        topic = topic_domain.Topic.create_default_topic(
+            topic_id, name, abbreviated_name, description, 'fragm')
+        topic.thumbnail_filename = 'thumbnail.svg'
+        topic.thumbnail_bg_color = '#C6DCDA'
+        topic.subtopics = [
+            topic_domain.Subtopic(
+                1, 'Title', ['skill_id_3'], 'image.svg',
+                constants.ALLOWED_THUMBNAIL_BG_COLORS['subtopic'][0], 21131,
+                'dummy-subtopic-three')]
+        topic.next_subtopic_id = 2
+        topic.skill_ids_for_diagnostic_test = ['skill_id_3']
+        topic_services.save_new_topic(self.admin_id, topic)
+
+
 class TranslationPreferenceHandlerTest(test_utils.GenericTestBase):
     """Test for the TranslationPreferenceHandler."""
 

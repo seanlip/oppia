@@ -78,6 +78,15 @@ interface TopicNamesBackendDict {
   topic_names: string[];
 }
 
+interface TopicNamesPerClassRoomDict {
+  classRoom: string;
+  topics: string[];
+}
+
+interface TopicNamesPerClassRoomBackendDict {
+  topic_names_per_classRoom: TopicNamesPerClassRoomDict[];
+}
+
 interface PreferredTranslationLanguageBackendDict {
   preferred_translation_language_code: string | null;
 }
@@ -253,6 +262,33 @@ export class ContributionOpportunitiesBackendApiService {
         .toPromise();
 
       return [AppConstants.TOPIC_SENTINEL_NAME_ALL, ...response.topic_names];
+    } catch {
+      return [];
+    }
+  }
+
+  async fetchTranslatableTopicNamesPerClassRoomAsync(): Promise<
+    TopicNamesPerClassRoomDict[]
+  > {
+    try {
+      const response = await this.http
+        .get<TopicNamesPerClassRoomBackendDict>(
+          '/gettranslatabletopicnamesperclassroom'
+        )
+        .toPromise();
+
+      // Convert the object to array format.
+      const topicsPerClassRoom = response.topic_names_per_classRoom.map(
+        ({classRoom, topics}) => ({
+          classRoom,
+          topics:
+            classRoom === ''
+              ? [AppConstants.TOPIC_SENTINEL_NAME_ALL, ...topics]
+              : topics,
+        })
+      );
+
+      return topicsPerClassRoom;
     } catch {
       return [];
     }

@@ -451,6 +451,9 @@ URLS = [
         r'/gettranslatabletopicnames',
         contributor_dashboard.TranslatableTopicNamesHandler),
     get_redirect_route(
+        r'/gettranslatabletopicnamesperclassroom',
+        contributor_dashboard.TranslatableTopicNamesPerClassRoomHandler),
+    get_redirect_route(
         r'%s' % feconf.NEW_SKILL_URL,
         topics_and_skills_dashboard.NewSkillHandler),
     get_redirect_route(

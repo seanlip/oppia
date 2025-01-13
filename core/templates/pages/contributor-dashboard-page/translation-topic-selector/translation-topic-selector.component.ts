@@ -27,6 +27,8 @@ import {
   ElementRef,
 } from '@angular/core';
 
+import {AppConstants} from 'app.constants';
+
 import {
   ContributionOpportunitiesBackendApiService,
   // eslint-disable-next-line max-len
@@ -46,6 +48,7 @@ export class TranslationTopicSelectorComponent implements OnInit {
 
   options!: string[];
   dropdownShown = false;
+  topicsPerClassRoomMap: Record<string, string[]> = {};
 
   constructor(
     private contributionOpportunitiesBackendApiService: ContributionOpportunitiesBackendApiService
@@ -53,10 +56,16 @@ export class TranslationTopicSelectorComponent implements OnInit {
 
   ngOnInit(): void {
     this.contributionOpportunitiesBackendApiService
-      .fetchTranslatableTopicNamesAsync()
-      .then(topicNames => {
-        this.options = topicNames;
+      .fetchTranslatableTopicNamesPerClassRoomAsync()
+      .then(topicsPerClassRoom => {
+        topicsPerClassRoom.forEach(({classRoom, topics}) => {
+          this.topicsPerClassRoomMap[classRoom] = topics;
+        });
       });
+
+    // Set initial value for activeTopicName to "ALL".
+    this.activeTopicName = AppConstants.TOPIC_SENTINEL_NAME_ALL;
+    this.setActiveTopicName.emit(this.activeTopicName);
   }
 
   toggleDropdown(): void {
