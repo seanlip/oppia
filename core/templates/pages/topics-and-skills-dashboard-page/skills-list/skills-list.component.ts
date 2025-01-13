@@ -246,10 +246,19 @@ export class SkillsListComponent {
           }
         }
       },
-      () => {
+      (topicIds?: string[]) => {
         // Note to developers:
         // This callback is triggered when the Cancel button is clicked.
-        // No further action is needed.
+        if (!topicIds) {
+          return;
+        }
+        for (let i = 0; i < topicIds.length; i++) {
+          for (let j = 0; j < topicSummaries.length; j++) {
+            if (topicSummaries[j].id === topicIds[i]) {
+              this.editableTopicSummaries[j].isSelected = false;
+            }
+          }
+        }
       }
     );
   }
