@@ -60,6 +60,21 @@ import {UrlInterpolationService} from 'domain/utilities/url-interpolation.servic
 import {WindowDimensionsService} from 'services/contextual/window-dimensions.service';
 import {WindowRef} from 'services/contextual/window-ref.service';
 import { SubtopicValidationService } from './services/subtopic-validation.service';
+import { PlatformFeatureService } from 'services/platform-feature.service';
+import { ImageLocalStorageService } from 'services/image-local-storage.service';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { StoryEditorStateService } from 'pages/story-editor-page/services/story-editor-state.service';
+import { AlertsService } from 'services/alerts.service';
+import { AssetsBackendApiService } from 'services/assets-backend-api.service';
+import { ExtractImageFilenamesFromModelService } from '../exploration-player-page/services/extract-image-filenames-from-model.service';
+import { SkillBackendApiService } from 'domain/skill/skill-backend-api.service';
+import { TopicRightsBackendApiService } from 'domain/topic/topic-rights-backend-api.service';
+import { UrlService } from 'services/contextual/url.service';
+import { QuestionsListService } from 'services/questions-list.service';
+import { QuestionBackendApiService } from 'domain/question/question-backend-api.service';
+import { BottomNavbarStatusService } from 'services/bottom-navbar-status.service';
+import { LoaderService } from 'services/loader.service';
+import { PreventPageUnloadEventService } from 'services/prevent-page-unload-event.service';
 
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -131,6 +146,23 @@ import { SubtopicValidationService } from './services/subtopic-validation.servic
     UndoRedoService,
     UrlInterpolationService,
     WindowDimensionsService,
+    NgbModal,
+    WindowRef,
+    PlatformFeatureService,
+    ImageLocalStorageService,
+    NgbActiveModal,
+    StoryEditorStateService,
+    AlertsService,
+    AssetsBackendApiService,
+    ExtractImageFilenamesFromModelService,
+    SkillBackendApiService,
+    TopicRightsBackendApiService,
+    UrlService,
+    QuestionsListService,
+    QuestionBackendApiService,
+    BottomNavbarStatusService,
+    LoaderService,
+    PreventPageUnloadEventService
   ],
 })
 export class TopicEditorPageModule {}
