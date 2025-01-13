@@ -24,6 +24,7 @@ import logging
 import re
 
 from core import feconf
+from core import utils
 from core.constants import constants
 from core.domain import contribution_stats_services
 from core.domain import email_manager
@@ -44,7 +45,8 @@ from core.platform import models
 
 from typing import (
     Callable, Dict, Final, List, Literal, Mapping, Match,
-    Optional, Sequence, Set, Tuple, Union, cast, overload)
+    Optional, Sequence, Set, Tuple, Union, cast, overload
+)
 
 MYPY = False
 if MYPY:  # pragma: no cover
@@ -98,6 +100,8 @@ SUGGESTION_EMPHASIZED_TEXT_GETTER_FUNCTIONS: Dict[str, Callable[..., str]] = {
 }
 
 RECENT_REVIEW_OUTCOMES_LIMIT: Final = 100
+
+IMAGE_TAG_REGEX = r'<oppia-noninteractive-image\b[^>]*?filepath-with-value='
 
 
 @overload
@@ -2142,6 +2146,11 @@ def _update_suggestion_counts_in_community_contribution_stats(
         suggestions, amount)
 
 
+def count_images(html_content: str) -> int:
+    """Counts the number of image tags in the provided HTML content."""
+    return len(re.findall(IMAGE_TAG_REGEX, html_content))
+
+
 def update_translation_suggestion(
     suggestion_id: str, translation_html: str
 ) -> None:
@@ -2164,6 +2173,18 @@ def update_translation_suggestion(
             'Expected SuggestionTranslateContent suggestion but found: %s.'
             % type(suggestion).__name__
         )
+    original_text_html = suggestion.change_cmd.content_html
+    original_image_count = count_images(original_text_html)
+    updated_image_count = count_images(translation_html)
+
+    if updated_image_count != original_image_count:
+        raise utils.InvalidInputException(
+            'The number of images in the updated translation (%d) '
+            'must match the original content (%d). '
+            'Adding or removing images is not '
+            'allowed.' % (updated_image_count, original_image_count)
+        )
+
     suggestion.change_cmd.translation_html = (
         html_cleaner.clean(translation_html)
         if isinstance(translation_html, str)

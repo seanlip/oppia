@@ -45,6 +45,7 @@ import {RteOutputDisplayComponent} from 'rich_text_components/rte-output-display
 import {UndoSnackbarComponent} from 'components/custom-snackbar/undo-snackbar.component';
 import {MatSnackBar, MatSnackBarRef} from '@angular/material/snack-bar';
 import {PlatformFeatureService} from 'services/platform-feature.service';
+import {HtmlParsingService} from 'services/html-parsing.service';
 
 interface HTMLSchema {
   type: string;
@@ -60,7 +61,7 @@ interface ActiveContributionDetailsDict {
   topic_name: string;
 }
 
-interface SuggestionChangeDict {
+export interface SuggestionChangeDict {
   cmd: string;
   content_html: string | string[];
   content_id: string;
@@ -70,7 +71,7 @@ interface SuggestionChangeDict {
   translation_html: string;
 }
 
-interface ActiveSuggestionDict {
+export interface ActiveSuggestionDict {
   author_name: string;
   change_cmd: SuggestionChangeDict;
   exploration_content_html: string | string[] | null;
@@ -163,6 +164,8 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
   hasQueuedSuggestion: boolean = false;
   currentSnackbarRef?: MatSnackBarRef<UndoSnackbarComponent>;
   isUndoFeatureEnabled: boolean = false;
+  initialImageCount: number = 0;
+
   @Input() altTextIsDisplayed: boolean = false;
 
   @ViewChild('contentPanel')
@@ -206,7 +209,8 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     private userService: UserService,
     private validatorsService: ValidatorsService,
     private snackBar: MatSnackBar,
-    private platformFeatureService: PlatformFeatureService
+    private platformFeatureService: PlatformFeatureService,
+    private htmlParsingService: HtmlParsingService
   ) {}
 
   ngOnInit(): void {
@@ -245,8 +249,11 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     this.isLastItem = this.remainingContributionIds.length === 0;
     this.allContributions = this.suggestionIdToContribution;
     this.allContributions[this.activeSuggestionId] = this.activeContribution;
-
     this.refreshActiveContributionState();
+    const originalContentHtml = this.activeSuggestion.change_cmd
+      .content_html as string;
+    this.initialImageCount =
+      this.htmlParsingService.countImageTags(originalContentHtml);
     // The 'html' value is passed as an object as it is required for
     // schema-based-editor. Otherwise the corrrectly updated value for
     // the translation is not received from the editor when the translation
@@ -367,9 +374,30 @@ export class TranslationSuggestionReviewModalComponent implements OnInit {
     }
   }
 
+  isImageCountMismatched(): boolean {
+    const originalContentHtml = this.activeSuggestion.change_cmd.content_html;
+    const updatedTranslationHtml = this.editedContent.html;
+    return this.htmlParsingService.isImageCountMismatched(
+      originalContentHtml as string,
+      updatedTranslationHtml
+    );
+  }
+
+  get isUpdateDisabled(): boolean {
+    return this.startedEditing && this.isImageCountMismatched();
+  }
+
   updateSuggestion(): void {
     const updatedTranslation = this.editedContent.html;
     const suggestionId = this.activeSuggestion.suggestion_id;
+
+    if (this.isImageCountMismatched()) {
+      this.errorMessage =
+        'The number of images in the translation must match the original content.';
+      this.errorFound = true;
+      return;
+    }
+
     this.preEditTranslationHtml = this.translationHtml;
     this.translationHtml = updatedTranslation;
     this.contributionAndReviewService.updateTranslationSuggestionAsync(

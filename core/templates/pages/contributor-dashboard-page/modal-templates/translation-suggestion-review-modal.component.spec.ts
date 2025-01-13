@@ -126,6 +126,7 @@ describe('Translation Suggestion Review Modal Component', function () {
     userService = TestBed.inject(UserService);
     contributionAndReviewService = TestBed.inject(ContributionAndReviewService);
     languageUtilService = TestBed.inject(LanguageUtilService);
+
     spyOn(
       siteAnalyticsService,
       'registerContributorDashboardViewSuggestionForReview'
@@ -152,6 +153,36 @@ describe('Translation Suggestion Review Modal Component', function () {
       new ElementRef({offsetHeight: 200}),
       null
     );
+    component.initialSuggestionId = 'suggestion_1';
+    component.suggestionIdToContribution = {
+      suggestion_1: {
+        suggestion: {
+          author_name: 'author_name',
+          language_code: 'language_code',
+          last_updated_msecs: 1559074000000,
+          status: 'status',
+          suggestion_id: 'suggestion_1',
+          target_id: '1',
+          target_type: 'target_type',
+          suggestion_type: 'translate_content',
+          change_cmd: {
+            content_id: 'hint_1',
+            content_html: '<p>content</p>',
+            translation_html: 'Translation content',
+            state_name: 'StateName',
+            cmd: 'edit_state_property',
+            data_format: 'html',
+            language_code: 'language_code',
+          },
+          exploration_content_html: '<p>content</p>',
+        },
+        details: {
+          topic_name: 'topic_1',
+          story_title: 'story_1',
+          chapter_title: 'chapter_1',
+        },
+      },
+    };
   });
 
   describe('when initializing the modal ', () => {
@@ -2678,5 +2709,303 @@ describe('Translation Suggestion Review Modal Component', function () {
     const result = component.getImageInfoForSuggestion(content);
 
     expect(result).toEqual(expectedHtmlString);
+  });
+
+  describe('Translation Suggestion Review Modal - Image Count Feature', () => {
+    const htmlWithImage = `
+      <p>Content with image</p>
+      <oppia-noninteractive-image
+        alt-with-value="&amp;quot;Image description&amp;quot;"
+        filepath-with-value="&amp;quot;img_20241109_030945_oc195e5356_height_350_width_450.svg&amp;quot;">
+      </oppia-noninteractive-image>
+    `;
+    const htmlWithoutImage = '<p>Content without image</p>';
+    const htmlWithTwoImages = `
+    <p>Content with two images</p>
+    <oppia-noninteractive-image
+      alt-with-value="&amp;quot;Image 1&amp;quot;"
+      filepath-with-value="&amp;quot;img1.svg&amp;quot;">
+    </oppia-noninteractive-image>
+    <oppia-noninteractive-image
+      alt-with-value="&amp;quot;Image 2&amp;quot;"
+      filepath-with-value="&amp;quot;img2.svg&amp;quot;">
+    </oppia-noninteractive-image>
+  `;
+
+    beforeEach(() => {
+      component.initialSuggestionId = 'suggestion_1';
+      component.suggestionIdToContribution = {
+        suggestion_1: {
+          suggestion: {
+            author_name: 'author_name',
+            language_code: 'language_code',
+            last_updated_msecs: 1559074000000,
+            status: 'status',
+            suggestion_id: 'suggestion_1',
+            target_id: '1',
+            target_type: 'target_type',
+            suggestion_type: 'translate_content',
+            change_cmd: {
+              content_id: 'hint_1',
+              content_html: htmlWithImage,
+              translation_html: htmlWithImage,
+              state_name: 'StateName',
+              cmd: 'edit_state_property',
+              data_format: 'html',
+              language_code: 'language_code',
+            },
+            exploration_content_html: '<p>content</p>',
+          },
+          details: {
+            topic_name: 'topic_1',
+            story_title: 'story_1',
+            chapter_title: 'chapter_1',
+          },
+        },
+        suggestion_2: {
+          suggestion: {
+            author_name: 'author_name',
+            language_code: 'language_code',
+            last_updated_msecs: 1559074000000,
+            status: 'status',
+            suggestion_id: 'suggestion_2',
+            target_id: '2',
+            target_type: 'target_type',
+            suggestion_type: 'translate_content',
+            change_cmd: {
+              content_id: 'hint_2',
+              content_html: htmlWithoutImage,
+              translation_html: htmlWithoutImage,
+              state_name: 'StateName',
+              cmd: 'edit_state_property',
+              data_format: 'html',
+              language_code: 'language_code',
+            },
+            exploration_content_html: '<p>content</p>',
+          },
+          details: {
+            topic_name: 'topic_2',
+            story_title: 'story_2',
+            chapter_title: 'chapter_2',
+          },
+        },
+        suggestion_3: {
+          suggestion: {
+            author_name: 'author_name',
+            language_code: 'language_code',
+            last_updated_msecs: 1559074000000,
+            status: 'status',
+            suggestion_id: 'suggestion_3',
+            target_id: '3',
+            target_type: 'target_type',
+            suggestion_type: 'translate_content',
+            change_cmd: {
+              content_id: 'hint_3',
+              content_html: htmlWithTwoImages,
+              translation_html: htmlWithTwoImages,
+              state_name: 'StateName',
+              cmd: 'edit_state_property',
+              data_format: 'html',
+              language_code: 'language_code',
+            },
+            exploration_content_html: '<p>content</p>',
+          },
+          details: {
+            topic_name: 'topic_3',
+            story_title: 'story_3',
+            chapter_title: 'chapter_3',
+          },
+        },
+      };
+    });
+
+    it('should initialize with correct image count from original content', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(component.suggestionIdToContribution.suggestion_1).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion
+      ).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+      ).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
+      ).toBe(htmlWithImage);
+      expect(component.initialImageCount).toBe(0);
+
+      component.ngOnInit();
+      expect(component.initialImageCount).toBe(1);
+    });
+
+    it('should detect image count mismatch when removing images', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
+      ).toBe(htmlWithImage);
+      expect(component.initialImageCount).toBe(0);
+
+      component.ngOnInit();
+      expect(component.initialImageCount).toBe(1);
+
+      component.editedContent = {html: htmlWithoutImage};
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(htmlWithoutImage);
+      expect(component.isImageCountMismatched()).toBeTrue();
+    });
+
+    it('should detect image count mismatch when adding images', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      component.initialSuggestionId = 'suggestion_2';
+      expect(
+        component.suggestionIdToContribution.suggestion_2.suggestion.change_cmd
+          .content_html
+      ).toBe(htmlWithoutImage);
+      expect(component.initialImageCount).toBe(0);
+
+      component.ngOnInit();
+      expect(component.initialImageCount).toBe(0);
+
+      component.editedContent = {html: htmlWithImage};
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(htmlWithImage);
+      expect(component.isImageCountMismatched()).toBeTrue();
+    });
+
+    it('should detect no mismatch when image count is the same', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
+      ).toBe(htmlWithImage);
+      expect(component.initialImageCount).toBe(0);
+
+      component.ngOnInit();
+      expect(component.initialImageCount).toBe(1);
+
+      component.editedContent = {html: htmlWithImage};
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(htmlWithImage);
+      expect(component.isImageCountMismatched()).toBeFalse();
+    });
+
+    it('should handle multiple images correctly', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      component.initialSuggestionId = 'suggestion_3';
+      expect(
+        component.suggestionIdToContribution.suggestion_3.suggestion.change_cmd
+          .content_html
+      ).toBe(htmlWithTwoImages);
+      expect(component.initialImageCount).toBe(0);
+
+      component.ngOnInit();
+      expect(component.initialImageCount).toBe(2);
+
+      component.editedContent = {html: htmlWithTwoImages};
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(htmlWithTwoImages);
+      expect(component.isImageCountMismatched()).toBeFalse();
+    });
+
+    it('should disable update button when image count mismatches', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
+      ).toBe(htmlWithImage);
+      expect(component.initialImageCount).toBe(0);
+      expect(component.startedEditing).toBeFalse();
+
+      component.ngOnInit();
+      expect(component.initialImageCount).toBe(1);
+
+      component.startedEditing = true;
+      expect(component.startedEditing).toBeTrue();
+
+      component.editedContent = {html: htmlWithoutImage};
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(htmlWithoutImage);
+      expect(component.isUpdateDisabled).toBeTrue();
+    });
+
+    it('should handle successful update when image counts match', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
+      ).toBe(htmlWithImage);
+      expect(component.initialImageCount).toBe(0);
+      expect(component.errorFound).toBeFalse();
+
+      const updateSpy = spyOn(
+        contributionAndReviewService,
+        'updateTranslationSuggestionAsync'
+      );
+      expect(updateSpy).not.toHaveBeenCalled();
+
+      component.ngOnInit();
+      expect(component.initialImageCount).toBe(1);
+
+      component.editedContent = {html: htmlWithImage};
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(htmlWithImage);
+
+      component.updateSuggestion();
+      expect(component.errorFound).toBeFalse();
+      expect(updateSpy).toHaveBeenCalledWith(
+        component.initialSuggestionId,
+        htmlWithImage,
+        jasmine.any(Function),
+        jasmine.any(Function)
+      );
+    });
+
+    it('should handle malformed HTML content', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
+      ).toBe(htmlWithImage);
+      expect(component.initialImageCount).toBe(0);
+
+      component.ngOnInit();
+      expect(component.initialImageCount).toBe(1);
+
+      const malformedHtml =
+        '<oppia-noninteractive-image alt-with-value="test">';
+      component.editedContent = {html: malformedHtml};
+      expect(component.editedContent).toBeDefined();
+      expect(component.editedContent.html).toBe(malformedHtml);
+      expect(component.isImageCountMismatched()).toBeTrue();
+    });
+
+    it('should show error message when attempting update with mismatched images', () => {
+      expect(component.initialSuggestionId).toBeDefined();
+      expect(component.suggestionIdToContribution).toBeDefined();
+      expect(
+        component.suggestionIdToContribution.suggestion_1.suggestion.change_cmd
+          .content_html
+      ).toBe(htmlWithImage);
+
+      component.translationHtml = htmlWithImage;
+      component.ngOnInit();
+
+      component.editedContent = {html: htmlWithoutImage};
+      component.updateSuggestion();
+
+      expect(component.errorMessage).toBe(
+        'The number of images in the translation must match the original content.'
+      );
+      expect(component.errorFound).toBeTrue();
+    });
   });
 });
