@@ -516,6 +516,9 @@
   justify-content: space-between;
 }
 .oppia-navbar-impactreport-tab-content {
+  list-style-type: none;
+}
+.oppia-navbar-impactreport-submenu-tab-content {
   margin-left: -15px;
   width: 150px;
 }
