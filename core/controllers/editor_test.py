@@ -36,6 +36,7 @@ from core.domain import fs_services
 from core.domain import platform_parameter_domain
 from core.domain import platform_parameter_list
 from core.domain import platform_parameter_registry
+from core.domain import platform_parameter_services
 from core.domain import question_services
 from core.domain import rights_domain
 from core.domain import rights_manager
@@ -1278,7 +1279,12 @@ class ExplorationDeletionRightsTests(BaseEditorControllerTests):
             self.delete_json(
                 '/createhandler/data/%s' % exp_id)
 
+            # TODO(release-scripts#137): Update once project ID is verified on
+            # all servers.
             self.assertEqual(observed_log_messages, [
+                'Logging project ID for debugging: dev-project-id',
+                'Logging project ID for debugging: dev-project-id',
+                'Logging project ID for debugging: dev-project-id',
                 '(%s) %s tried to delete exploration %s' %
                 ([feconf.ROLE_ID_FULL_USER], self.owner_id, exp_id),
                 '(%s) %s deleted exploration %s' %
@@ -1296,7 +1302,12 @@ class ExplorationDeletionRightsTests(BaseEditorControllerTests):
 
             self.login(self.MODERATOR_EMAIL)
             self.delete_json('/createhandler/data/%s' % exp_id)
+            # TODO(release-scripts#137): Update once project ID is verified on
+            # all servers.
             self.assertEqual(observed_log_messages, [
+                'Logging project ID for debugging: dev-project-id',
+                'Logging project ID for debugging: dev-project-id',
+                'Logging project ID for debugging: dev-project-id',
                 '(%s) %s tried to delete exploration %s' % (
                     [feconf.ROLE_ID_FULL_USER, feconf.ROLE_ID_MODERATOR],
                     self.moderator_id, exp_id),
@@ -2547,7 +2558,17 @@ class ModeratorEmailsTests(test_utils.EmailTestBase):
         )
 
     @test_utils.set_platform_parameters(
-        [(platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, False)]
+        [
+            (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, False),
+            (
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS,
+                'testadmin@example.com'
+            ),
+            (
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+                'system@example.com'
+            )
+        ]
     )
     def test_error_cases_when_can_send_emails_param_is_false(self) -> None:
         # Log in as a moderator.
@@ -2586,6 +2607,14 @@ class ModeratorEmailsTests(test_utils.EmailTestBase):
             (platform_parameter_list.ParamName.SERVER_CAN_SEND_EMAILS, True),
             (platform_parameter_list.ParamName.EMAIL_FOOTER, 'footer'),
             (platform_parameter_list.ParamName.EMAIL_SENDER_NAME, 'Site Admin'), # pylint: disable=line-too-long
+            (
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS,
+                'testadmin@example.com'
+            ),
+            (
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+                'system@example.com'
+            )
         ]
     )
     def test_error_cases_when_can_send_emails_param_is_true(self) -> None:
@@ -2620,6 +2649,14 @@ class ModeratorEmailsTests(test_utils.EmailTestBase):
                 'page.'
             ),
             (platform_parameter_list.ParamName.EMAIL_SENDER_NAME, 'Site Admin'), # pylint: disable=line-too-long
+            (
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS,
+                'testadmin@example.com'
+            ),
+            (
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+                'system@example.com'
+            )
         ]
     )
     def test_email_is_sent_correctly_when_unpublishing(self) -> None:
@@ -2647,10 +2684,16 @@ class ModeratorEmailsTests(test_utils.EmailTestBase):
 
         self.assertEqual(
             messages[0].sender,
-            'Site Admin <%s>' % feconf.SYSTEM_EMAIL_ADDRESS)
+            'Site Admin <%s>' % (
+            platform_parameter_services.get_platform_parameter_value(
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS.value)))
         self.assertEqual(messages[0].to, [self.EDITOR_EMAIL])
         self.assertFalse(hasattr(messages[0], 'cc'))
-        self.assertEqual(messages[0].bcc, feconf.ADMIN_EMAIL_ADDRESS)
+
+        self.assertEqual(
+            messages[0].bcc,
+            platform_parameter_services.get_platform_parameter_value(
+                platform_parameter_list.ParamName.ADMIN_EMAIL_ADDRESS.value))
         self.assertEqual(
             messages[0].subject,
             'Your Oppia exploration "My Exploration" has been unpublished')
@@ -2688,6 +2731,10 @@ class ModeratorEmailsTests(test_utils.EmailTestBase):
                 'page.'
             ),
             (platform_parameter_list.ParamName.EMAIL_SENDER_NAME, 'Site Admin'), # pylint: disable=line-too-long
+            (
+                platform_parameter_list.ParamName.SYSTEM_EMAIL_ADDRESS,
+                'system@example.com'
+            )
         ]
     )
     def test_email_functionality_cannot_be_used_by_non_moderators(self) -> None:
