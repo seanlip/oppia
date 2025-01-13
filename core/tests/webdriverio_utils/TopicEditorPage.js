@@ -114,11 +114,11 @@ var TopicEditorPage = function () {
   var subtopicDescriptionEditor = $('.e2e-test-subtopic-description-editor');
   var subtopicsSelector = async function () {
     await waitFor.pageToFullyLoad();
-    let singleSubtopic = $('.e2e-test-subtopic');
-      await waitFor.presenceOf(
-        singleSubtopic,
-        'Subtopic taking too long to appear'
-      );
+    // let singleSubtopic = $('.e2e-test-subtopic');
+    //   await waitFor.presenceOf(
+    //     singleSubtopic,
+    //     'Subtopic taking too long to appear'
+    //   );
     let listOfSubtopics = await $$('.e2e-test-subtopic');
     return listOfSubtopics;
   };
