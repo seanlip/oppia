@@ -25,8 +25,10 @@ from core import feature_flag_list
 from core import feconf
 from core import utils
 from core.constants import constants
+from core.domain import caching_services
 from core.domain import exp_services
 from core.domain import feature_flag_services
+from core.domain import feedback_services
 from core.domain import fs_services
 from core.domain import question_domain
 from core.domain import rights_manager
@@ -43,6 +45,7 @@ from core.domain import translation_domain
 from core.domain import user_services
 from core.platform import models
 from core.tests import test_utils
+from core.domain import opportunity_services
 
 from typing import Dict, List, Optional, Union
 
@@ -1582,6 +1585,57 @@ class TopicServicesUnitTests(test_utils.GenericTestBase):
         self.assertEqual(
             topic_commit_log_entry.commit_message,
             'Added story_id_4 to additional story ids')
+
+    def test_topic_deletion_is_fully_rolled_back_if_error_happens(self) -> None:
+        caching_services.flush_memory_caches()
+        content_id_generator = translation_domain.ContentIdGenerator()
+        question = self.save_new_question(
+            'question_id',
+            self.user_id_admin,
+            self._create_valid_question_data('dest', content_id_generator),
+            [self.skill_id_1],
+            content_id_generator.next_content_id_index
+        )
+        self.assertIsNotNone(topic_models.TopicRightsModel.get(
+            self.TOPIC_ID))
+        self.assertIsNotNone(topic_fetchers.get_topic_rights(
+            self.TOPIC_ID, strict=False))
+        self.assertIsNotNone(topic_fetchers.get_topic_by_id(
+            self.TOPIC_ID, strict=False))
+        self.assertIsNotNone(topic_fetchers.get_topic_summary_by_id(
+            self.TOPIC_ID, strict=False))
+        self.assertIsNotNone(subtopic_page_services.get_subtopic_page_by_id(
+            self.TOPIC_ID, 1, strict=False))
+        def mock_delete_threads_for_multiple_entities(entity_type, entity_ids):
+            """Mock function to simulate failure for rollback testing."""
+            raise Exception("Intentional failure for rollback testing")
+
+        swap_with_checks_context = self.swap_with_checks(
+            feedback_services,
+            'delete_threads_for_multiple_entities',
+            mock_delete_threads_for_multiple_entities,
+            expected_args=[feconf.ENTITY_TYPE_TOPIC, []],
+            expected_kwargs={},
+            called=True
+        )
+        with swap_with_checks_context:
+            with self.assertRaisesRegex(Exception, "Intentional failure for rollback testing"):
+                topic_services.delete_topic(self.user_id_admin, self.TOPIC_ID)
+
+        self.assertIsNotNone(topic_fetchers.get_topic_rights(
+            self.TOPIC_ID, strict=False))
+        self.assertIsNotNone(topic_fetchers.get_topic_by_id(
+            self.TOPIC_ID, strict=False))
+        self.assertIsNotNone(topic_fetchers.get_topic_summary_by_id(
+            self.TOPIC_ID, strict=False))
+        self.assertIsNotNone(subtopic_page_services.get_subtopic_page_by_id(
+            self.TOPIC_ID, 1, strict=False))
+        self.assertIsNotNone(
+            caching_services.get_multi(
+                caching_services.CACHE_NAMESPACE_TOPIC, None, [self.TOPIC_ID]
+            ),
+            'Topic is not in cache'
+        )
 
     def test_delete_topic(self) -> None:
         # Add suggestion for the topic to test if it is deleted too.

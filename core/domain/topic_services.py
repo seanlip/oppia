@@ -46,14 +46,17 @@ from core.domain import topic_fetchers
 from core.domain import user_domain
 from core.domain import user_services
 from core.platform import models
+from core.platform.datastore.cloud_datastore_services import ndb
 
 from typing import Dict, List, Optional, Sequence, Tuple, cast
 
 MYPY = False
 if MYPY: # pragma: no cover
     from mypy_imports import topic_models
+    from mypy_imports import transaction_services
 
 (topic_models,) = models.Registry.import_models([models.Names.TOPIC])
+transaction_services = models.Registry.import_transaction_services()
 
 
 def _create_topic(
@@ -1015,23 +1018,12 @@ def add_additional_story(
         'Added %s to additional story ids' % story_id)
 
 
-def delete_topic(
+@transaction_services.run_in_transaction_wrapper
+def delete_topic_transactional(
     committer_id: str, topic_id: str, force_deletion: bool = False
 ) -> None:
-    """Deletes the topic with the given topic_id.
+    """Transactional function to delete a topic."""
 
-    Args:
-        committer_id: str. ID of the committer.
-        topic_id: str. ID of the topic to be deleted.
-        force_deletion: bool. If true, the topic and its history are fully
-            deleted and are unrecoverable. Otherwise, the topic and all
-            its history are marked as deleted, but the corresponding models are
-            still retained in the datastore. This last option is the preferred
-            one.
-
-    Raises:
-        ValueError. User does not have enough rights to delete a topic.
-    """
     topic_rights_model = topic_models.TopicRightsModel.get(topic_id)
     topic_rights_model.delete(
         committer_id, feconf.COMMIT_MESSAGE_TOPIC_DELETED,
@@ -1055,10 +1047,28 @@ def delete_topic(
     topic_model.delete(
         committer_id, feconf.COMMIT_MESSAGE_TOPIC_DELETED,
         force_deletion=force_deletion)
-
     feedback_services.delete_threads_for_multiple_entities(
         feconf.ENTITY_TYPE_TOPIC, [topic_id])
 
+
+def delete_topic(
+    committer_id: str, topic_id: str, force_deletion: bool = False
+) -> None:
+    """Deletes the topic with the given topic_id.
+
+    Args:
+        committer_id: str. ID of the committer.
+        topic_id: str. ID of the topic to be deleted.
+        force_deletion: bool. If true, the topic and its history are fully
+            deleted and are unrecoverable. Otherwise, the topic and all
+            its history are marked as deleted, but the corresponding models are
+            still retained in the datastore. This last option is the preferred
+            one.
+
+    Raises:
+        ValueError. User does not have enough rights to delete a topic.
+    """
+    delete_topic_transactional(committer_id,topic_id,force_deletion)
     # This must come after the topic is retrieved. Otherwise the memcache
     # key will be reinstated.
     caching_services.delete_multi(
