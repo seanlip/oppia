@@ -29,7 +29,7 @@ LOG_LOCK: Final = threading.Lock()
 ALL_ERRORS: Final = []
 SUCCESS_MESSAGE_PREFIX: Final = 'SUCCESS '
 FAILED_MESSAGE_PREFIX: Final = 'FAILED '
-
+MAX_ATTEMPTS: Final = 3  
 
 def log(message: str, show_time: bool = False) -> None:
     """Logs a message to the terminal.
@@ -97,7 +97,8 @@ class TaskThread(threading.Thread):
         verbose: bool,
         semaphore: threading.Semaphore,
         name: Optional[str],
-        report_enabled: bool
+        report_enabled: bool,
+        errors_to_retry_on: Optional[List[str]] = None
     ) -> None:
         super().__init__()
         self.func = func
@@ -109,42 +110,31 @@ class TaskThread(threading.Thread):
         self.semaphore = semaphore
         self.finished = False
         self.report_enabled = report_enabled
+        self.errors_to_retry_on = errors_to_retry_on or []
+        self.num_attempts = 0 
 
     def run(self) -> None:
-        try:
-            self.task_results = self.func()
-            if self.verbose:
-                for task_result in self.task_results:
-                    # The following section will print the output of the lint
-                    # checks.
-                    if self.report_enabled:
-                        log(
-                            'Report from %s check\n'
-                            '----------------------------------------\n'
-                            '%s' % (task_result.name, '\n'.join(
-                                task_result.get_report())), show_time=True)
-                    # The following section will print the output of backend
-                    # tests.
-                    else:
-                        log(
-                            'LOG %s:\n%s'
-                            '----------------------------------------' %
-                            (self.name, task_result.messages[0]),
-                            show_time=True)
-            log(
-                'FINISHED %s: %.1f secs' % (
-                    self.name, time.time() - self.start_time), show_time=True)
-        except Exception as e:
-            self.exception = e
-            self.stacktrace = traceback.format_exc()
-            if 'KeyboardInterrupt' not in self.exception.args[0]:
-                log(str(e))
-                log(
-                    'ERROR %s: %.1f secs' %
-                    (self.name, time.time() - self.start_time), show_time=True)
-        finally:
-            self.semaphore.release()
-            self.finished = True
+        """Executes the task and retries on specified errors."""
+        while self.num_attempts < MAX_ATTEMPTS:  
+            self.num_attempts += 1  
+            try:
+                self.task_results = self.func()
+                log(f"FINISHED {self.name}: {time.time() - self.start_time:.1f} secs", show_time=True)
+                return  # Exit on success.
+            except Exception as e:
+                if any(err in str(e) for err in self.errors_to_retry_on):
+                    log(f"Retrying {self.name} due to error: {e}. "
+                        f"Attempt {self.num_attempts}/{MAX_ATTEMPTS}.")
+                    if self.num_attempts >= MAX_ATTEMPTS:
+                        self.exception = e
+                        self.stacktrace = traceback.format_exc()
+                        break
+                    continue  
+                self.exception = e  
+                self.stacktrace = traceback.format_exc()
+                break
+        self.semaphore.release()  
+        self.finished = True  
 
 
 def _check_all_tasks(tasks: List[TaskThread]) -> None:
@@ -214,7 +204,8 @@ def create_task(
     verbose: bool,
     semaphore: threading.Semaphore,
     name: Optional[str] = None,
-    report_enabled: bool = True
+    report_enabled: bool = True,
+    errors_to_retry_on: Optional[List[str]] = None
 ) -> TaskThread:
     """Create a Task in its Thread.
 
@@ -225,9 +216,11 @@ def create_task(
             can run at any time.
         name: str|None. Name of the task that is going to be created.
         report_enabled: bool. Decide whether task result will print or not.
+        errors_to_retry_on: list(str)|None. List of error strings to retry on.
 
     Returns:
         task: TaskThread object. Created task.
     """
-    task = TaskThread(func, verbose, semaphore, name, report_enabled)
+    task = TaskThread(func, verbose, semaphore, name, report_enabled, errors_to_retry_on)
     return task
+
