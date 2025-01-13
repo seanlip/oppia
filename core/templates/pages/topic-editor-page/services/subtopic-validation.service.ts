@@ -21,7 +21,9 @@ import {downgradeInjectable} from '@angular/upgrade/static';
 import {TopicEditorStateService} from './topic-editor-state.service';
 import {AppConstants} from 'app.constants';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class SubtopicValidationService {
   private _VALID_URL_FRAGMENT_REGEX = new RegExp(
     AppConstants.VALID_URL_FRAGMENT_REGEX
