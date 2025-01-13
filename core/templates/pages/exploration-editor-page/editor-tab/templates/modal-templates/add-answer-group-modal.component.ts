@@ -218,7 +218,7 @@ export class AddAnswerGroupModalComponent
   }
 
   ngAfterViewInit(): void {
-      this.addResponseRef.nativeElement.focus();
+    this.addResponseRef.nativeElement.focus();
   }
 
   ngOnDestroy(): void {
