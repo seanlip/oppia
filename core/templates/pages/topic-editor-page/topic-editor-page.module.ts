@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Module for the story viewer page.
+ * @fileoverview Module for the topic editor page.
  */
 
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
@@ -113,6 +113,7 @@ import { PreventPageUnloadEventService } from 'services/prevent-page-unload-even
     SubtopicEditorTabComponent,
   ],
   entryComponents: [
+    TopicEditorPageRootComponent,
     ChangeSubtopicAssignmentModalComponent,
     RearrangeSkillsInSubtopicsModalComponent,
     SubtopicPreviewTab,
