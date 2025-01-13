@@ -218,7 +218,6 @@ export class AddAnswerGroupModalComponent
   }
 
   ngAfterViewInit(): void {
-    console.log(`Focus change called, nativeElement: ${this.addResponseRef.nativeElement}`);
     this.addResponseRef.nativeElement.focus();
   }
 
