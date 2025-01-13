@@ -28,6 +28,7 @@ const imageToUpload = testConstants.data.curriculumAdminThumbnailImage;
 
 const createExplorationButton = 'button.e2e-test-create-new-exploration-button';
 const dismissWelcomeModalSelector = 'button.e2e-test-dismiss-welcome-modal';
+const dropdownToggleIcon = '.e2e-test-mobile-options-dropdown';
 const saveContentButton = 'button.e2e-test-save-state-content';
 const addInteractionButton = 'button.e2e-test-open-add-interaction-modal';
 const saveInteractionButton = 'button.e2e-test-save-interaction';
@@ -407,6 +408,23 @@ export class ExplorationEditor extends BaseUser {
       showMessage('Tutorial pop-up closed successfully.');
     } catch (error) {
       showMessage(`welcome modal not found: ${error.message}`);
+    }
+  }
+
+  /**
+   * Function to close editor navigation dropdown. Can be done by clicking
+   * on the dropdown toggle.
+   */
+  async closeEditorNavigationDropdownOnMobile(): Promise<void> {
+    try {
+      await this.page.waitForSelector(dropdownToggleIcon, {
+        visible: true,
+        timeout: 5000,
+      });
+      await this.clickOn(dropdownToggleIcon);
+      showMessage('Editor navigation closed successfully.');
+    } catch (error) {
+      showMessage(`Dropdown Toggle Icon not found: ${error.message}`);
     }
   }
 
@@ -997,6 +1015,13 @@ export class ExplorationEditor extends BaseUser {
     await this.clickOn(saveOutcomeDestButton);
   }
 
+  async directLearnersToAlreadyExistingCard(cardName: string): Promise<void> {
+    await this.clickOn(openOutcomeDestButton);
+    await this.waitForElementToBeClickable(destinationCardSelector);
+    await this.select(destinationCardSelector, cardName);
+    await this.clickOn(saveOutcomeDestButton);
+  }
+
   /**
    * Function to navigate to a specific card in the exploration.
    * @param {string} cardName - The name of the card to navigate to.
@@ -1062,6 +1087,13 @@ export class ExplorationEditor extends BaseUser {
         await this.page.type(floatFormInput, answer);
         break;
       case 'Multiple Choice':
+        await this.page.waitForSelector(responseModalHeaderSelector, {
+          visible: true,
+        });
+        await this.page.waitForSelector(multipleChoiceResponseDropdown, {
+          visible: true,
+        });
+        await this.page.click(responseModalHeaderSelector);
         await this.clickOn(multipleChoiceResponseDropdown);
         await this.page.waitForSelector(multipleChoiceResponseOption, {
           visible: true,
@@ -1101,7 +1133,6 @@ export class ExplorationEditor extends BaseUser {
       default:
         throw new Error(`Unsupported interaction type: ${interactionType}`);
     }
-
     await this.clickOn(feedbackEditorSelector);
     await this.type(stateContentInputField, feedback);
     // The '/' value is used to select the 'a new card called' option in the dropdown.
@@ -1136,7 +1167,7 @@ export class ExplorationEditor extends BaseUser {
    * @param {string} [directToCardWhenStuck] - The card to direct to when the learner is stuck (optional).
    */
   async editDefaultResponseFeedback(
-    defaultResponseFeedback?: string,
+    defaultResponseFeedback: string,
     directToCard?: string,
     directToCardWhenStuck?: string
   ): Promise<void> {

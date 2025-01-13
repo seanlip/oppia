@@ -374,6 +374,7 @@ describe('MathExpressionContentEditorComponent', () => {
     spyOnProperty(externalRteSaveService, 'onExternalRteSave').and.returnValue(
       mockOnExternalRteSaveEventEmitter
     );
+
     component.ngOnInit();
     component.svgString = '';
 
@@ -398,11 +399,14 @@ describe('MathExpressionContentEditorComponent', () => {
     );
 
     spyOn(component.valueChanged, 'emit');
+
     component.value.raw_latex = '';
     component.ngOnInit();
     flush();
+
     component.debouncedUpdate$.next('\\frac{x}{y}');
     tick(1000);
+
     expect(component.value.raw_latex).toBe('\\frac{x}{y}');
     expect(component.valueChanged.emit).toHaveBeenCalledWith(component.value);
   }));
@@ -506,9 +510,9 @@ describe('MathExpressionContentEditorComponent', () => {
       },
     };
     component.localValue.label = '\\frac{a}{b}';
-
+    // Trigger ngOnChanges with the simulated changes.
     component.ngOnChanges(changes);
-
+    // Expect localValue.label to be updated.
     expect(component.localValue.label).toBe('\\frac{x}{y}');
   });
 });
