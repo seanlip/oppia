@@ -76,6 +76,7 @@ class ContributorDashboardTest(job_test_utils.JobTestBase):
 
     topic_name = 'topic'
     target_id = 'exp1'
+    target_id_2 = 'exp2'
     target_version_at_submission = 1
     change_cmd: Mapping[
         str, change_domain.AcceptableChangeDictTypes
@@ -469,6 +470,36 @@ class ContributorDashboardTest(job_test_utils.JobTestBase):
             edited_by_reviewer=False,
             created_on=datetime.datetime(2023, 3, 2))
 
+        self.question_suggestion_accepted_model_user2 = self.create_model(
+            suggestion_models.GeneralSuggestionModel,
+            suggestion_type=feconf.SUGGESTION_TYPE_ADD_QUESTION,
+            target_type=feconf.ENTITY_TYPE_EXPLORATION,
+            target_id=self.target_id_2,
+            target_version_at_submission=self.target_version_at_submission,
+            status=suggestion_models.STATUS_ACCEPTED,
+            author_id='user2',
+            final_reviewer_id='reviewer_3',
+            change_cmd=self.change_cmd,
+            score_category=self.score_category,
+            language_code=None,
+            edited_by_reviewer=False,
+            created_on=datetime.datetime(2023, 3, 2))
+
+        self.question_suggestion_accepted_model_user3 = self.create_model(
+            suggestion_models.GeneralSuggestionModel,
+            suggestion_type=feconf.SUGGESTION_TYPE_ADD_QUESTION,
+            target_type=feconf.ENTITY_TYPE_EXPLORATION,
+            target_id=self.target_id_2,
+            target_version_at_submission=self.target_version_at_submission,
+            status=suggestion_models.STATUS_ACCEPTED,
+            author_id='user3',
+            final_reviewer_id='reviewer_3',
+            change_cmd=self.change_cmd,
+            score_category=self.score_category,
+            language_code=None,
+            edited_by_reviewer=False,
+            created_on=datetime.datetime(2023, 3, 2))
+
         self.question_suggestion_accepted_model_with_no_contribution_stats = (
             self.create_model(
                 suggestion_models.GeneralSuggestionModel,
@@ -567,7 +598,8 @@ class ContributorDashboardTest(job_test_utils.JobTestBase):
             canonical_name='name-a',
             description='description',
             story_reference_schema_version=1,
-            uncategorized_skill_ids=[self.target_id],
+            uncategorized_skill_ids=[
+                self.target_id, self.target_id_2],
             subtopic_schema_version=1,
             next_subtopic_id=1,
             language_code='cs',
@@ -650,8 +682,10 @@ class ContributorDashboardTest(job_test_utils.JobTestBase):
             'topic4', 'name4', 'name-d', 'description', 'fragmmmmm')
         topic_services.save_new_topic(feconf.SYSTEM_COMMITTER_ID, topic)
 
+        # Skill ids 'exp1' and 'exp2' are assigned to topic1.
         unused_topic_assignment = skill_domain.TopicAssignment(
             'topic1', 'name1', 2, 1)
+        # Skill id 'exp1' is assigned to topic2.
         unused_topic_assignment = skill_domain.TopicAssignment(
             'topic2', 'name1', 2, 1)
 
@@ -666,7 +700,6 @@ class GenerateContributorAdminStatsJobTests(ContributorDashboardTest):
         self.assert_job_output_is_empty()
 
     def test_job_creates_admin_stats(self) -> None:
-
         self.translation_contribution_model_1.update_timestamps()
         self.translation_contribution_model_2.update_timestamps()
         self.translation_contribution_model_3.update_timestamps()
@@ -692,6 +725,8 @@ class GenerateContributorAdminStatsJobTests(ContributorDashboardTest):
         self.question_suggestion_rejected_model.update_timestamps()
         self.question_suggestion_accepted_with_edits_model.update_timestamps()
         self.question_suggestion_accepted_model.update_timestamps()
+        self.question_suggestion_accepted_model_user2.update_timestamps()
+        self.question_suggestion_accepted_model_user3.update_timestamps()
         self.translation_suggestion_rejected_model_user1.update_timestamps()
         self.translation_suggestion_rejected_model_user2.update_timestamps()
         self.translation_suggestion_accepted_with_edits_model.update_timestamps() # pylint: disable=line-too-long
@@ -728,6 +763,8 @@ class GenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             self.question_suggestion_rejected_model,
             self.question_suggestion_accepted_with_edits_model,
             self.question_suggestion_accepted_model,
+            self.question_suggestion_accepted_model_user2,
+            self.question_suggestion_accepted_model_user3,
             self.translation_suggestion_rejected_model_user1,
             self.translation_suggestion_rejected_model_user2,
             self.translation_suggestion_accepted_with_edits_model,
@@ -1083,6 +1120,8 @@ class GenerateContributorAdminStatsJobTests(ContributorDashboardTest):
                 language_code='hi',
                 edited_by_reviewer=False).put()
 
+        self.topic_model_1.update_timestamps()
+        self.put_multi([self.topic_model_1])
         self.translation_contribution_model_1.update_timestamps()
         self.translation_contribution_model_1.put()
         self.question_contribution_model_1.update_timestamps()
@@ -1112,6 +1151,64 @@ class GenerateContributorAdminStatsJobTests(ContributorDashboardTest):
         assert question_model is not None
 
         self.assertEqual(100, len(question_model.recent_review_outcomes))
+ 
+    def test_job_does_not_creates_stats_if_contribution_stats_model_does_not_exist_for_a_suggestion(self) -> None: # pylint: disable=line-too-long
+        self.question_contribution_model_1.update_timestamps()
+        self.question_contribution_model_2.update_timestamps()
+        self.question_suggestion_rejected_model.update_timestamps()
+        self.question_suggestion_accepted_with_edits_model.update_timestamps()
+        self.question_suggestion_accepted_model.update_timestamps()
+        self.question_suggestion_accepted_model_with_no_contribution_stats.update_timestamps() # pylint: disable=line-too-long
+        self.topic_model_1.update_timestamps()
+        self.topic_model_2.update_timestamps()
+
+        self.put_multi([
+            self.question_contribution_model_1,
+            self.question_contribution_model_2,
+            self.question_suggestion_rejected_model,
+            self.question_suggestion_accepted_with_edits_model,
+            self.question_suggestion_accepted_model,
+            self.question_suggestion_accepted_model_with_no_contribution_stats,
+            self.topic_model_1,
+            self.topic_model_2,
+        ])
+
+        # The model is only created for user1, and not for user4. The job also
+        # the debugging logs for user4.
+        self.assert_job_output_is([
+            job_run_result.JobRunResult(
+                stdout='Question Submitter Models SUCCESS: 1'),
+            job_run_result.JobRunResult(
+                stdout=(
+                    'Question submitter ID: user4.\nUnique skill IDs '
+                    'with question suggestion: \n- exp1\n-- Topic ID: topic1\n'
+                    '-- Topic ID: topic2\nUnique topic IDs with contribution '
+                    'stats: \nUnique valid topic IDs with contribution stats: '
+                    '\n')),
+        ])
+
+        # Check for QuestionSubmitterTotalContributionStatsModel.
+        question_submitter_all_models = (
+            suggestion_models.QuestionSubmitterTotalContributionStatsModel
+            .get_all()
+        )
+        self.assertEqual(1, question_submitter_all_models.count())
+
+        question_submitter_total_stats = (
+            suggestion_models.QuestionSubmitterTotalContributionStatsModel
+            .get('user1')
+        )
+        # Ruling out the possibility of None for mypy type checking.
+        assert question_submitter_total_stats is not None
+        self.assertItemsEqual(
+            ['topic1', 'topic2'],
+            question_submitter_total_stats
+            .topic_ids_with_question_submissions
+        )
+        self.assertEqual(
+            ['accepted', 'accepted_with_edits', 'rejected'],
+            question_submitter_total_stats.recent_review_outcomes
+        )
 
 
 class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
@@ -1145,7 +1242,8 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
         self.question_suggestion_rejected_model.update_timestamps()
         self.question_suggestion_accepted_with_edits_model.update_timestamps()
         self.question_suggestion_accepted_model.update_timestamps()
-        # self.question_suggestion_accepted_model_with_no_contribution_stats.update_timestamps() # pylint: disable=line-too-long
+        self.question_suggestion_accepted_model_user2.update_timestamps()
+        self.question_suggestion_accepted_model_user3.update_timestamps()
         self.translation_suggestion_rejected_model_user1.update_timestamps()
         self.translation_suggestion_rejected_model_user2.update_timestamps()
         self.translation_suggestion_accepted_with_edits_model.update_timestamps() # pylint: disable=line-too-long
@@ -1176,7 +1274,8 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             self.question_suggestion_rejected_model,
             self.question_suggestion_accepted_with_edits_model,
             self.question_suggestion_accepted_model,
-            # self.question_suggestion_accepted_model_with_no_contribution_stats,
+            self.question_suggestion_accepted_model_user2,
+            self.question_suggestion_accepted_model_user3,
             self.translation_suggestion_rejected_model_user1,
             self.translation_suggestion_rejected_model_user2,
             self.translation_suggestion_accepted_with_edits_model,
@@ -1193,16 +1292,9 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             job_run_result.JobRunResult(
                 stdout='Translation Submitter Models SUCCESS: 3'),
             job_run_result.JobRunResult(
-                stdout='Question Submitter Models SUCCESS: 4'),
+                stdout='Question Submitter Models SUCCESS: 3'),
             job_run_result.JobRunResult(
                 stdout='Question Reviewer Models SUCCESS: 3')
-            # job_run_result.JobRunResult(
-            #     stdout=(
-            #         'Question submitter ID: user4.\nUnique skill IDs '
-            #         'with question suggestion: \n- exp1\n-- Topic ID: topic1\n'
-            #         '-- Topic ID: topic2\nUnique topic IDs with contribution '
-            #         'stats: \nUnique valid topic IDs with contribution stats: '
-            #         '\n')),
         ])
 
     def test_job_for_recent_review_outcomes_limit(self) -> None:
@@ -1236,6 +1328,8 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
             language_code='hi',
             edited_by_reviewer=True).put()
 
+        self.topic_model_1.update_timestamps()
+        self.put_multi([self.topic_model_1])
         self.translation_contribution_model_1.update_timestamps()
         self.translation_contribution_model_1.put()
         self.question_contribution_model_1.update_timestamps()
@@ -1246,4 +1340,40 @@ class AuditGenerateContributorAdminStatsJobTests(ContributorDashboardTest):
                 stdout='Translation Submitter Models SUCCESS: 1'),
             job_run_result.JobRunResult(
                 stdout='Question Submitter Models SUCCESS: 1')
+        ])
+
+    def test_job_does_not_audits_stats_if_contribution_stats_model_does_not_exist_for_a_suggestion(self) -> None: # pylint: disable=line-too-long
+
+        self.question_contribution_model_1.update_timestamps()
+        self.question_contribution_model_2.update_timestamps()
+        self.question_suggestion_rejected_model.update_timestamps()
+        self.question_suggestion_accepted_with_edits_model.update_timestamps()
+        self.question_suggestion_accepted_model.update_timestamps()
+        self.question_suggestion_accepted_model_with_no_contribution_stats.update_timestamps() # pylint: disable=line-too-long
+        self.topic_model_1.update_timestamps()
+        self.topic_model_2.update_timestamps()
+
+        self.put_multi([
+            self.question_contribution_model_1,
+            self.question_contribution_model_2,
+            self.question_suggestion_rejected_model,
+            self.question_suggestion_accepted_with_edits_model,
+            self.question_suggestion_accepted_model,
+            self.question_suggestion_accepted_model_with_no_contribution_stats,
+            self.topic_model_1,
+            self.topic_model_2,
+        ])
+
+        # The model is only created for user1, and not for user4. The job also
+        # the debugging logs for user4.
+        self.assert_job_output_is([
+            job_run_result.JobRunResult(
+                stdout='Question Submitter Models SUCCESS: 1'),
+            job_run_result.JobRunResult(
+                stdout=(
+                    'Question submitter ID: user4.\nUnique skill IDs '
+                    'with question suggestion: \n- exp1\n-- Topic ID: topic1\n'
+                    '-- Topic ID: topic2\nUnique topic IDs with contribution '
+                    'stats: \nUnique valid topic IDs with contribution stats: '
+                    '\n')),
         ])
