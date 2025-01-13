@@ -1081,6 +1081,16 @@ export class ExplorationEditor extends BaseUser {
     responseIsCorrect: boolean,
     isLastResponse: boolean = true
   ): Promise<void> {
+    this.page.on('console', msg => console.log(`Browser Log: ${msg.text()}`));
+     await this.page.evaluate(() => {
+      const logActiveElement = () => {
+        const activeTag = document.activeElement?.tagName;
+        const activeClass = document.activeElement?.className;
+        console.log(`Focus changed to: Tag: ${activeTag} Class: ${activeClass}`);
+      };
+      document.addEventListener('focusin', logActiveElement);
+      logActiveElement();
+    });
     switch (interactionType) {
       case 'Number Input':
         await this.page.waitForSelector(floatFormInput);
@@ -1158,6 +1168,10 @@ export class ExplorationEditor extends BaseUser {
     } else {
       await this.clickOn(addAnotherResponseButton);
     }
+    await this.page.evaluate(() => {
+      document.removeEventListener('focusin', document['logActiveElement']);
+    });
+    this.page.removeListener('console', msg => console.log(`Browser Log: ${msg.text()}`));
   }
 
   /**
