@@ -366,6 +366,16 @@ const stayAnonymousCheckbox = '.e2e-test-stay-anonymous-checkbox';
 
 const getStartedHeader = '.e2e-test-get-started-page';
 
+const newsletterInputField = '.e2e-test-newsletter-input';
+const newsletterSubscribeButton = '.e2e-test-newsletter-subscribe-btn';
+const expectNewsletterSubscriptionThanksMessage =
+  '.e2e-test-thanks-subscribe-message';
+const thanksWatchAVideoButton =
+  '.e2e-test-thanks-for-subscribe-watch-video-btn';
+const thanksReadBlogButton = '.e2e-test-thanks-for-subscribe-read-blog-btn';
+const watchVideoUrl = testConstants.URLs.WatchVideoLink;
+const readBlogUrl = testConstants.URLs.ReadBlogLink;
+
 /**
  * The KeyInput type is based on the key names from the UI Events KeyboardEvent key Values specification.
  * According to this specification, the keys for the numbers 0 through 9 are named 'Digit0' through 'Digit9'.
@@ -2474,6 +2484,52 @@ export class LoggedOutUser extends BaseUser {
     await this.waitForElementToBeClickable(submitResponseToInteractionInput);
     await this.type(submitResponseToInteractionInput, answer);
     await this.clickOn(submitAnswerButton);
+  }
+
+  /**
+   * Function to submit an email to the newsletter input field.
+   * @param {string} email - The email to submit.
+   */
+  async submitEmailForNewsletter(email: string): Promise<void> {
+    await this.waitForElementToBeClickable(newsletterInputField);
+    await this.type(newsletterInputField, email);
+    await this.clickOn(newsletterSubscribeButton);
+  }
+
+  /**
+   * Function to check for presence of Thanks Message to verify Newsletter Subscription.
+   * @param {string} text - The message to check.
+   */
+  async expectNewsletterSubscriptionThanksMessage(text: string): Promise<void> {
+    await this.page.waitForSelector(expectNewsletterSubscriptionThanksMessage);
+    const thanksMessage = await this.page.$eval(
+      expectNewsletterSubscriptionThanksMessage,
+      element => element.textContent
+    );
+
+    if (!thanksMessage || !thanksMessage.includes(text)) {
+      throw new Error(
+        'Subscribing to newsletter did not complete successfully'
+      );
+    }
+
+    showMessage('Subscribed to newsletter successfully');
+  }
+
+  /**
+   * Function to verify the Watch a Video button after subscribing to newsletter.
+   */
+  async clickWatchAVideoButton(): Promise<void> {
+    await this.openExternalLink(thanksWatchAVideoButton, watchVideoUrl);
+    await this.clickOn(thanksWatchAVideoButton);
+  }
+
+  /**
+   * Function to verify the Read Blog button after subscribing to newsletter.
+   */
+  async clickReadBlogButton(): Promise<void> {
+    await this.openExternalLink(thanksReadBlogButton, readBlogUrl);
+    await this.clickOn(thanksReadBlogButton);
   }
 
   /**
