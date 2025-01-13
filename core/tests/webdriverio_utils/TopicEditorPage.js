@@ -112,8 +112,15 @@ var TopicEditorPage = function () {
     return $$('.e2e-test-subtopic-column');
   };
   var subtopicDescriptionEditor = $('.e2e-test-subtopic-description-editor');
-  var subtopicsSelector = function () {
-    return $$('.e2e-test-subtopic');
+  var subtopicsSelector = async function () {
+    await waitFor.pageToFullyLoad();
+    // let singleSubtopic = $('.e2e-test-subtopic');
+    //   await waitFor.presenceOf(
+    //     singleSubtopic,
+    //     'Subtopic taking too long to appear'
+    //   );
+    let listOfSubtopics = await $$('.e2e-test-subtopic');
+    return listOfSubtopics;
   };
   var subtopicTitleField = $('.e2e-test-subtopic-title-field');
   var subtopicThumbnailImageElement = $(
@@ -235,7 +242,8 @@ var TopicEditorPage = function () {
   };
 
   this.expectTitleOfSubtopicWithIndexToMatch = async function (title, index) {
-    var subtopic = await subtopicsSelector()[index];
+    var subtopicList = await subtopicsSelector();
+    var subtopic = await subtopicList[index];
     var text = await action.getText('Subtopic Text', subtopic);
     expect(text).toEqual(title);
   };
@@ -512,7 +520,8 @@ var TopicEditorPage = function () {
   };
 
   this.navigateToSubtopicWithIndex = async function (subtopicIndex) {
-    var subtopic = await subtopicsSelector()[subtopicIndex];
+    var subtopicList = await subtopicsSelector();
+    var subtopic = await subtopicList[subtopicIndex];
     await action.click('Subtopic', subtopic);
     await waitFor.pageToFullyLoad();
   };
