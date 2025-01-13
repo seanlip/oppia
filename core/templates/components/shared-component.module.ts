@@ -194,6 +194,7 @@ import {DonationBoxComponent} from 'pages/donate-page/donation-box/donation-box.
 import {DonationBoxModalComponent} from 'pages/donate-page/donation-box/donation-box-modal.component';
 import {RteHelperModalComponent} from 'services/rte-helper-modal.controller';
 import {DirectivesModule} from 'directives/directives.module';
+import {UrlFragmentEditorComponent} from './url-fragment-editor/url-fragment-editor.component';
 
 @NgModule({
   imports: [
@@ -374,6 +375,7 @@ import {DirectivesModule} from 'directives/directives.module';
     UndoSnackbarComponent,
     TranslationModalComponent,
     FullExpandAccordionComponent,
+    UrlFragmentEditorComponent,
   ],
 
   entryComponents: [
@@ -512,6 +514,7 @@ import {DirectivesModule} from 'directives/directives.module';
     UndoSnackbarComponent,
     TranslationModalComponent,
     FullExpandAccordionComponent,
+    UrlFragmentEditorComponent,
   ],
 
   exports: [
@@ -660,6 +663,7 @@ import {DirectivesModule} from 'directives/directives.module';
     UndoSnackbarComponent,
     TranslationModalComponent,
     FullExpandAccordionComponent,
+    UrlFragmentEditorComponent,
   ],
 })
 export class SharedComponentsModule {}

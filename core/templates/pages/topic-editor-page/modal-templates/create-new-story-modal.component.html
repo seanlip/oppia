@@ -42,37 +42,18 @@
         </em>
       </span>
     </div>
-    <div class="story-input">
-      <div class="story-input-header">
-        <span>Url Fragment*</span>
-      </div>
-      <input class="e2e-test-new-story-url-fragment-field"
-             [(ngModel)]="story.urlFragment"
-             [ngModelOptions]="{standalone: true}"
-             [maxlength]="MAX_CHARS_IN_STORY_URL_FRAGMENT"
-             [ngClass]="{'is-invalid': storyUrlFragmentExists || !validUrlFragmentRegex.test(story.urlFragment)}"
-             (change)="onStoryUrlFragmentChange()">
-      <div>
-        <div class="oppia-input-box-subtitle text-danger" [hidden]="story.urlFragment === '' || validUrlFragmentRegex.test(story.urlFragment)">
-          <b>
-            Please use only lowercase letters, optionally separated by hyphen.
-          </b>
-        </div>
-        <span class="oppia-input-box-subtitle">
-          <em>
-            The story URL fragment is used to uniquely access the story viewer page. It should consist of one or more hyphen-separated words, all in lowercase, with at most {{ MAX_CHARS_IN_STORY_URL_FRAGMENT }} characters in total and must be unique across the topic. Please use meaningful keywords, and avoid using words like "and", "of", or "the".
-            This story can be accessed at the following URL:<br>
-            {{ hostname }}/learn/{{ classroomUrlFragment }}/{{ topicUrlFragment }}/story/{{ story.urlFragment }}
-          </em>
-        </span>
-        <div *ngIf="storyUrlFragmentExists"
-             class="oppia-input-box-subtitle text-danger">
-          <em>
-            This story fragment already exists in this or another topic.
-          </em>
-        </div>
-      </div>
-    </div>
+    <UrlFragmentEditorComponent label="Url Fragment"
+                                placeholder="Enter url fragment for the story."
+                                [maxLength]="MAX_CHARS_IN_STORY_URL_FRAGMENT"
+                                fragmentType="story"
+                                [generatedUrlPrefix]="generatedUrlPrefix"
+                                [(fragmentExists)]="storyUrlFragmentExists"
+                                inputId="storyUrlFragment"
+                                accessingPage="story viewer"
+                                [(urlFragment)]="story.urlFragment"
+                                [disabled]="false"
+                                (urlFragmentChange)="onUrlFragmentChange($event)">
+    </UrlFragmentEditorComponent>
     <div class="story-input story-input-thumbnail">
       <div class="story-input-header">
         <span>Thumbnail Image*</span>

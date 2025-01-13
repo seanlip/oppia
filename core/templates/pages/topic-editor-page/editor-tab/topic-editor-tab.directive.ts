@@ -102,6 +102,7 @@ export class TopicEditorTabComponent implements OnInit, OnDestroy {
   classroomUrlFragment: string | null = null;
   classroomName: string | null = null;
   curriculumAdminUsernames: string[] = [];
+  generatedUrlPrefix: string;
 
   constructor(
     private contextService: ContextService,
@@ -122,6 +123,7 @@ export class TopicEditorTabComponent implements OnInit, OnDestroy {
   ) {}
 
   directiveSubscriptions = new Subscription();
+  validUrlFragmentRegex = new RegExp(AppConstants.VALID_URL_FRAGMENT_REGEX);
 
   drop(event: CdkDragDrop<Subtopic[]>): void {
     moveItemInArray(this.subtopics, event.previousIndex, event.currentIndex);
@@ -186,6 +188,7 @@ export class TopicEditorTabComponent implements OnInit, OnDestroy {
         this.contextService.getEntityType(),
         this.contextService.getEntityId()
       );
+    this.generatedUrlPrefix = `${this.hostname}/learn/${this.classroomUrlFragment}`;
   }
 
   getEligibleSkillSummariesForDiagnosticTest(): ShortSkillSummary[] {
@@ -387,6 +390,10 @@ export class TopicEditorTabComponent implements OnInit, OnDestroy {
         newTopicUrlFragment
       );
     }
+  }
+
+  onChangeTopicEditorUrlFragment(urlFragment: string): void {
+    this.editableTopicUrlFragment = urlFragment;
   }
 
   updateTopicThumbnailFilename(newThumbnailFilename: string): void {
