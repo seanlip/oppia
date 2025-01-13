@@ -26,6 +26,7 @@ from core import feconf
 from core.constants import constants
 from core.platform import models
 from core.tests import test_utils
+from datetime import datetime, timezone, timedelta
 
 from typing import Dict, List, Set, Union, cast
 
@@ -880,3 +881,102 @@ class BaseModelTests(test_utils.GenericTestBase):
 
         with assert_raises_regexp_context_manager, get_by_id_swap:
             TestBaseModel.get_new_id('exploration')
+    def  test_datetime_property_migration_proof(self):
+        from datetime import datetime, timezone, timedelta
+        datetime_scenarios = [
+            {
+                'name': 'Current Standard - utcnow()',
+                'time': datetime.utcnow(),
+                'method': 'standard_utcnow',
+                'description': 'Most common pattern using datetime.utcnow()'
+            },
+            {
+                'name': 'Direct Naive Assignment',
+                'time': datetime(2024, 1, 1, 12, 0),
+                'method': 'direct_naive',
+                'description': 'Direct assignment of naive datetime'
+            },
+            {
+                'name': 'Through update_timestamps()',
+                'time': None,
+                'method': 'update_timestamps',
+                'description': 'Timestamp set via update_timestamps() method'
+            }
+        ]
+
+        # Test current implementation
+        original_timestamps = []
+        for scenario in datetime_scenarios:
+            model = TestBaseModel()
+            
+            if scenario['method'] == 'update_timestamps':
+                model.update_timestamps()
+            else:
+                model.last_updated = scenario['time']
+                model.update_timestamps(update_last_updated_time=False)
+            
+            model.put()
+            
+            retrieved_model = TestBaseModel.get_by_id(model.id)
+            original_timestamps.append({
+                'scenario': scenario['name'],
+                'original_time': scenario['time'] if scenario['time'] else model.last_updated,
+                'retrieved_time': retrieved_model.last_updated
+            })
+
+        # Test proposed implementation using datetime.now(timezone.utc)
+        def new_update_timestamps(self, update_last_updated_time=True):
+                """New timestamp update method using timezone-aware datetime creation.
+                We create the timestamp with timezone info but strip it before assignment,
+                since DateTimeProperty requires naive datetimes when tzinfo is not set.
+                """
+                now = datetime.now(timezone.utc).replace(tzinfo=None)
+                
+                if self.created_on is None:
+                    self.created_on = now
+                if update_last_updated_time or self.last_updated is None:
+                    self.last_updated = now
+                
+                self._last_updated_timestamp_is_fresh = True
+
+            # Temporarily replace the update_timestamps method
+                original_method = TestBaseModel.update_timestamps
+                TestBaseModel.update_timestamps = new_update_timestamps
+
+                try:
+                    migrated_timestamps = []
+                    for scenario in datetime_scenarios:
+                        model = TestBaseModel()
+                        
+                        if scenario['method'] == 'update_timestamps':
+                            model.update_timestamps()
+                        else:
+                            model.last_updated = scenario['time']
+                            model.update_timestamps(update_last_updated_time=False)
+                        
+                        model.put()
+                        
+                        retrieved_model = TestBaseModel.get_by_id(model.id)
+                        migrated_timestamps.append({
+                            'scenario': scenario['name'],
+                            'retrieved_time': retrieved_model.last_updated
+                        })
+
+                    # Verify behavior remains consistent
+                    for orig, migrated in zip(original_timestamps, migrated_timestamps):
+                        # Verify all timestamps are naive
+                        self.assertIsNone(
+                            orig['retrieved_time'].tzinfo,
+                            f"Original {orig['scenario']} should be naive")
+                        self.assertIsNone(
+                            migrated['retrieved_time'].tzinfo,
+                            f"Migrated {orig['scenario']} should be naive")
+
+                        # Compare timestamps
+                        time_diff = abs(
+                            (migrated['retrieved_time'] - orig['retrieved_time']).total_seconds())
+                        self.assertLess(
+                            time_diff, 300,
+                            f"Time difference too large for {orig['scenario']}: {time_diff} seconds")
+                finally:
+                    TestBaseModel.update_timestamps = original_method
