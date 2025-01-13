@@ -362,7 +362,10 @@ class AssetDevHandlerImageTests(test_utils.GenericTestBase):
             upload_files=[('image', 'unused_filename', b'non_image_data')]
         )
         self.assertEqual(response_dict['status_code'], 400)
-        self.assertEqual(response_dict['error'], 'Image not recognized')
+        self.assertEqual(
+            response_dict['error'],
+            'Image not recognized or uses unsupported format'
+        )
 
         self.logout()
 

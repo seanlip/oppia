@@ -405,19 +405,19 @@ DEFAULT_ABBREVIATED_TOPIC_NAME = ''
 # Default content id for the subtopic page's content.
 DEFAULT_SUBTOPIC_PAGE_CONTENT_ID = 'content'
 
-IMAGE_FORMAT_JPEG = 'jpeg'
+IMAGE_FORMAT_JPEG = 'jpg'
 IMAGE_FORMAT_PNG = 'png'
 IMAGE_FORMAT_GIF = 'gif'
 IMAGE_FORMAT_SVG = 'svg'
 
-# An array containing the accepted image formats (as determined by the imghdr
+# An array containing the accepted image formats (as determined by the filetype
 # module) and the corresponding allowed extensions in the filenames of uploaded
 # images.
 ACCEPTED_IMAGE_FORMATS_AND_EXTENSIONS = {
-    IMAGE_FORMAT_JPEG: ['jpg', 'jpeg'],
-    IMAGE_FORMAT_PNG: ['png'],
-    IMAGE_FORMAT_GIF: ['gif'],
-    IMAGE_FORMAT_SVG: ['svg']
+    'jpg': ['jpg', 'jpeg'],
+    'png': ['png'],
+    'gif': ['gif'],
+    'svg': ['svg']
 }
 
 # An array containing the image formats that can be compressed.
