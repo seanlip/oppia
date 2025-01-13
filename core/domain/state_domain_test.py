@@ -851,12 +851,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
             },
             'linked_skill_id': None,
             'param_changes': [],
-            'recorded_voiceovers': {
-                'voiceovers_mapping': {
-                    'content_2': {},
-                    'default_outcome_3': {}
-                }
-            },
             'solicit_answer_details': False,
             'card_is_checkpoint': False,
             'inapplicable_skill_misconception_ids': []
@@ -1478,9 +1472,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
                     }
                 }
             },
-            'recorded_voiceovers': {
-                'voiceovers_mapping': {}
-            }
         }
 
         state_dict_with_new_math_schema = {
@@ -1560,9 +1551,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
                         'html': '<p>This is solution for state1</p>'
                     }
                 }
-            },
-            'recorded_voiceovers': {
-                'voiceovers_mapping': {}
             }
         }
 
@@ -1739,9 +1727,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
                 'id': 'ItemSelectionInput',
                 'hints': []
             },
-            'recorded_voiceovers': {
-                'voiceovers_mapping': {}
-            }
         }
 
         state_dict_with_new_math_schema = {
@@ -1813,9 +1798,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
                 'confirmed_unclassified_answers': [],
                 'id': 'ItemSelectionInput',
                 'hints': []
-            },
-            'recorded_voiceovers': {
-                'voiceovers_mapping': {}
             }
         }
         interaction_registry.Registry.get_all_specs_for_state_schema_version(
@@ -1950,9 +1932,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
                         }
                     }]
             },
-            'recorded_voiceovers': {
-                'voiceovers_mapping': {}
-            }
         }
 
         state_dict_with_new_math_schema = {
@@ -2016,9 +1995,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
                             'html': html_with_new_math_schema
                         }
                     }]
-            },
-            'recorded_voiceovers': {
-                'voiceovers_mapping': {}
             }
         }
         self.assertEqual(
@@ -2117,9 +2093,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
                 'id': 'ItemSelectionInput',
                 'hints': []
             },
-            'recorded_voiceovers': {
-                'voiceovers_mapping': {}
-            }
         }
 
         mock_html_field_types_to_rule_specs_dict = copy.deepcopy(
@@ -2236,9 +2209,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
                 'confirmed_unclassified_answers': [],
                 'id': 'ItemSelectionInput',
                 'hints': []
-            },
-            'recorded_voiceovers': {
-                'voiceovers_mapping': {}
             }
         }
 
@@ -2338,9 +2308,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
                     }
                 ]
             },
-            'recorded_voiceovers': {
-                'voiceovers_mapping': {}
-            }
         }
 
         mock_html_field_types_to_rule_specs_dict = copy.deepcopy(
@@ -2424,9 +2391,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
                         }
                     }]
             },
-            'recorded_voiceovers': {
-                'voiceovers_mapping': {}
-            }
         }
 
         state_dict_with_new_math_schema: state_domain.StateDict = {
@@ -2471,9 +2435,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
                         }
                     }]
             },
-            'recorded_voiceovers': {
-                'voiceovers_mapping': {}
-            }
         }
         solution_dict: state_domain.SolutionDict = {
             'answer_is_exclusive': True,
@@ -2913,98 +2874,6 @@ class StateDomainUnitTests(test_utils.GenericTestBase):
 
         self.assertEqual(len(captured_logs), 1)
         self.assertIn('Bad state dict: invalid_state_dict', captured_logs[0])
-
-    def test_cannot_update_hints_with_content_id_not_in_recorded_voiceovers(
-        self
-    ) -> None:
-        exploration = self.save_new_valid_exploration('exp_id', 'owner_id')
-        old_hints_list = [
-            state_domain.Hint(
-                state_domain.SubtitledHtml(
-                    'hint_1', '<p>Hello, this is html1 for state2</p>')
-            )
-        ]
-        new_hints_list = [
-            state_domain.Hint(
-                state_domain.SubtitledHtml(
-                    'hint_2', '<p>Hello, this is html2 for state2</p>')
-            )
-        ]
-
-        exploration.init_state.update_interaction_hints(old_hints_list)
-
-        recorded_voiceovers_dict: state_domain.RecordedVoiceoversDict = {
-            'voiceovers_mapping': {
-                'content': {
-                    'en': {
-                        'filename': 'filename3.mp3',
-                        'file_size_bytes': 3000,
-                        'needs_update': False,
-                        'duration_secs': 8.1
-                    }
-                },
-                'default_outcome': {}
-            }
-        }
-        recorded_voiceovers = (
-            state_domain.RecordedVoiceovers.from_dict(recorded_voiceovers_dict))
-
-        exploration.init_state.update_recorded_voiceovers(recorded_voiceovers)
-
-        with self.assertRaisesRegex(
-            Exception,
-            'The content_id hint_1 does not exist in recorded_voiceovers'):
-            exploration.init_state.update_interaction_hints(new_hints_list)
-
-    def test_cannot_update_hints_with_new_content_id_in_recorded_voiceovers(
-        self
-    ) -> None:
-        exploration = self.save_new_valid_exploration('exp_id', 'owner_id')
-        old_hints_list = [
-            state_domain.Hint(
-                state_domain.SubtitledHtml(
-                    'hint_1', '<p>Hello, this is html1 for state2</p>')
-            )
-        ]
-        new_hints_list = [
-            state_domain.Hint(
-                state_domain.SubtitledHtml(
-                    'hint_2', '<p>Hello, this is html2 for state2</p>')
-            )
-        ]
-
-        exploration.init_state.update_interaction_hints(old_hints_list)
-
-        recorded_voiceovers_dict: state_domain.RecordedVoiceoversDict = {
-            'voiceovers_mapping': {
-                'hint_1': {
-                    'en': {
-                        'filename': 'filename3.mp3',
-                        'file_size_bytes': 3000,
-                        'needs_update': False,
-                        'duration_secs': 6.1
-                    }
-                },
-                'hint_2': {
-                    'en': {
-                        'filename': 'filename4.mp3',
-                        'file_size_bytes': 3000,
-                        'needs_update': False,
-                        'duration_secs': 7.5
-                    }
-                },
-                'default_outcome': {}
-            }
-        }
-        recorded_voiceovers = (
-            state_domain.RecordedVoiceovers.from_dict(recorded_voiceovers_dict))
-
-        exploration.init_state.update_recorded_voiceovers(recorded_voiceovers)
-
-        with self.assertRaisesRegex(
-            Exception,
-            'The content_id hint_2 already exists in recorded_voiceovers'):
-            exploration.init_state.update_interaction_hints(new_hints_list)
 
     def test_cannot_update_interaction_solution_with_non_dict_solution(
         self

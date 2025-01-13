@@ -86,6 +86,10 @@ class MockWindowRef {
       href: 'http://localhost:8181/explore/wZiXFx1iV5bz',
       pathname: '/explore/wZiXFx1iV5bz',
     },
+    navigator: {
+      onLine: true,
+      userAgent: null,
+    },
   };
 }
 
@@ -184,10 +188,6 @@ describe('Content language selector component', () => {
   );
 
   it('should correcly initialize newLanguageCode', fakeAsync(() => {
-    spyOn(
-      component,
-      'isVoiceoverContributionWithAccentEnabled'
-    ).and.returnValue(true);
     entityVoiceoversService.entityType = 'exploration';
     entityVoiceoversService.entityId = 'exploration_id_1';
     entityVoiceoversService.entityVersion = 1;
@@ -272,10 +272,6 @@ describe('Content language selector component', () => {
       contentTranslationLanguageService,
       'setCurrentContentLanguageCode'
     );
-    spyOn(
-      component,
-      'isVoiceoverContributionWithAccentEnabled'
-    ).and.returnValue(true);
     spyOn(entityVoiceoversService, 'fetchEntityVoiceovers').and.returnValue(
       Promise.resolve()
     );

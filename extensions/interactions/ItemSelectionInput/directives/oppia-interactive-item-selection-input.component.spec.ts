@@ -168,6 +168,18 @@ describe('oppiaInteractiveItemSelectionInput', function () {
       }).toThrowError('Content id is null');
     });
 
+    it('should return correct content id', () => {
+      component.choicesValue = [
+        {
+          html: 'choice 1',
+          _contentId: 'content_0',
+        },
+      ] as SubtitledHtml[];
+      let contentId = component.getContentId();
+
+      expect(contentId).toEqual('content_0');
+    });
+
     it(
       'should deselect previously selected option and select the option' +
         ' checked by the user',

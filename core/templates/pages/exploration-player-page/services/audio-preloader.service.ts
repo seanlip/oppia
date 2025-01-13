@@ -125,38 +125,27 @@ export class AudioPreloaderService {
     }
     const audioFilenamesInBfsOrder = [];
     for (const stateName of bfsTraversalOfStates) {
-      if (this.isVoiceoverContributionWithAccentEnabled()) {
-        let contentIds = this.getAllContentIdsFromState(stateName) as string[];
+      let contentIds = this.getAllContentIdsFromState(stateName) as string[];
 
-        let contentIdsToVoiceovers =
-          this.entityVoiceoversService.getAllContentIdsToVoiceovers();
+      let contentIdsToVoiceovers =
+        this.entityVoiceoversService.getAllContentIdsToVoiceovers();
 
-        for (let contentId of contentIds) {
-          let voiceovers = contentIdsToVoiceovers[contentId];
+      for (let contentId of contentIds) {
+        let voiceovers = contentIdsToVoiceovers[contentId];
 
-          if (voiceovers === undefined) {
-            continue;
-          }
-
-          for (let voiceover of voiceovers) {
-            let filename = voiceover.filename;
-            if (audioFilenamesInBfsOrder.indexOf(filename) === -1) {
-              audioFilenamesInBfsOrder.push(voiceover.filename);
-            }
-          }
+        if (voiceovers === undefined) {
+          continue;
         }
-      } else {
-        let allVoiceovers = this.exploration.getAllVoiceovers(languageCode);
-        for (const voiceover of allVoiceovers[stateName]) {
-          audioFilenamesInBfsOrder.push(voiceover.filename);
+
+        for (let voiceover of voiceovers) {
+          let filename = voiceover.filename;
+          if (audioFilenamesInBfsOrder.indexOf(filename) === -1) {
+            audioFilenamesInBfsOrder.push(voiceover.filename);
+          }
         }
       }
     }
     return audioFilenamesInBfsOrder;
-  }
-
-  isVoiceoverContributionWithAccentEnabled(): boolean {
-    return this.platformFeatureService.status.AddVoiceoverWithAccent.isEnabled;
   }
 
   getAllContentIdsFromState(stateName: string): string[] | undefined {

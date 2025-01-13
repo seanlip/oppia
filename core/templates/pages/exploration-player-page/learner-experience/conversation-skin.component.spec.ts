@@ -40,7 +40,6 @@ import {
   FetchExplorationBackendResponse,
   ReadOnlyExplorationBackendApiService,
 } from 'domain/exploration/read-only-exploration-backend-api.service';
-import {BindableVoiceovers} from 'domain/exploration/recorded-voiceovers.model';
 import {SubtitledHtml} from 'domain/exploration/subtitled-html.model';
 import {ConceptCardBackendApiService} from 'domain/skill/concept-card-backend-api.service';
 import {ConceptCard} from 'domain/skill/concept-card.model';
@@ -108,6 +107,10 @@ class MockWindowRef {
     location: {
       pathname: '/path/name',
       reload: () => {},
+    },
+    navigator: {
+      onLine: true,
+      userAgent: null,
     },
     onresize: () => {},
     addEventListener(event: string, callback) {
@@ -2504,7 +2507,6 @@ describe('Conversation skin component', () => {
         nextCard: StateCard,
         refreshInteraction: boolean,
         feedbackHtml: string,
-        feedbackAudioTranslations: BindableVoiceovers,
         refresherExplorationId: string,
         missingPrerequisiteSkillId: string,
         remainOnCurrentCard: boolean,
@@ -2530,7 +2532,6 @@ describe('Conversation skin component', () => {
         stateCard,
         true,
         'feedback',
-        null,
         'refresherId',
         '',
         false,
@@ -2545,7 +2546,6 @@ describe('Conversation skin component', () => {
         stateCard,
         true,
         '',
-        null,
         'refresherId',
         '',
         false,
@@ -2560,7 +2560,6 @@ describe('Conversation skin component', () => {
         stateCard,
         true,
         'feedback',
-        null,
         'refresherId',
         '',
         false,
@@ -2575,7 +2574,6 @@ describe('Conversation skin component', () => {
         stateCard,
         true,
         '',
-        null,
         'refresherId',
         '',
         false,
@@ -2590,7 +2588,6 @@ describe('Conversation skin component', () => {
         stateCard,
         true,
         'feedback',
-        null,
         '',
         'skill_id',
         true,
@@ -2620,7 +2617,6 @@ describe('Conversation skin component', () => {
         stateCard,
         true,
         'feedback',
-        null,
         '',
         'skill_id',
         true,
@@ -2646,7 +2642,6 @@ describe('Conversation skin component', () => {
         stateCard,
         true,
         'feedback',
-        null,
         'refresherId',
         'skill_id',
         true,
